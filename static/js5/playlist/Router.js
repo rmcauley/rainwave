@@ -228,7 +228,6 @@ var Router = (function () {
         current_open_type = null;
         return false;
       }
-      if (typeof ga == "object") ga("send", "pageview", "/" + new_route);
       new_route = new_route.split("/");
       document.body.classList.remove("requests");
       document.body.classList.remove("search_open");

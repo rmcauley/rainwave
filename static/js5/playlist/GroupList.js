@@ -47,7 +47,7 @@ var GroupList = function (el) {
     item._el.textContent = item.name;
   };
 
-  self.update_item_element = function (item) {
+  self.update_item_element = function () {
     // this has no need
   };
 

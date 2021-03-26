@@ -39,7 +39,6 @@ var Timeline = (function () {
     });
     API.add_callback("_SYNC_SCHEDULE_COMPLETE", self.update);
     API.add_callback("_SYNC_SCHEDULE_COMPLETE", self.reflow);
-    API.add_callback("playback_history", open_long_history);
     API.add_callback("already_voted", self.handle_already_voted);
     API.add_callback("all_stations_info", check_for_events);
     API.add_callback("user", self.voting_allowed_check);
@@ -62,7 +61,7 @@ var Timeline = (function () {
     el = template.timeline_sizer;
     history_bar = template.history_bar;
 
-    template.history_header_link.addEventListener("click", function (e) {
+    template.history_header_link.addEventListener("click", function () {
       Prefs.change("l_stk", !Prefs.get("l_stk"));
     });
 
@@ -101,8 +100,6 @@ var Timeline = (function () {
       events[i]._pending_delete = true;
     }
 
-    var z_index = sched_history.length + sched_next.length + 2;
-
     // with history, [0] is the most recent song, so we start inserting from sched_history.length
     self.history_events = [];
     for (i = sched_history.length - 1; i >= 0; i--) {
@@ -114,19 +111,12 @@ var Timeline = (function () {
       }
       sched_history[i].change_to_history();
       sched_history[i].hide_header();
-      z_index--;
       new_events.push(sched_history[i]);
       if (i === 0) sched_history[i].height += 8;
     }
 
-    var unappended_events = 0;
     sched_current = find_and_update_event(sched_current);
     sched_current.change_to_now_playing();
-    // sched_current.show_header();
-    if (sched_current.el.parentNode != el) {
-      unappended_events++;
-    }
-    z_index--;
     new_events.push(sched_current);
 
     var previous_evt = sched_current;
@@ -145,10 +135,6 @@ var Timeline = (function () {
         // sched_next[i].show_header();
       }
       sched_next[i].change_to_coming_up(is_continuing);
-      if (sched_next[i].el.parentNode != el) {
-        unappended_events++;
-      }
-      z_index--;
       new_events.push(sched_next[i]);
       previous_evt = sched_next[i];
     }
@@ -444,16 +430,6 @@ var Timeline = (function () {
       return sched_current.songs[0].rating_user;
     }
     return null;
-  };
-
-  var open_long_history = function (json) {
-    // var w = $id("longhist_window");
-    // while (w.firstChild) {
-    // 	w.removeChild(w.firstChild);
-    // }
-    // var t = SongsTable(json, [ "song_played_at", "title", "album_name", "artists", "rating" ], true);
-    // w.appendChild(t);
-    // Menu.show_modal($id("longhist_window_container"));
   };
 
   var do_event = function (json, sid) {

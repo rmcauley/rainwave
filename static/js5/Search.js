@@ -11,65 +11,30 @@ var SearchPanel = (function () {
   var search_regex_greedy;
   var input_container;
 
-  BOOTSTRAP.on_init.push(function (root_template) {
-    container = root_template.search_results_container;
-    el = root_template.search_results;
-    input = root_template.search;
-    input_container = root_template.search_box_container;
-
-    root_template.search_container.addEventListener("click", function (e) {
-      e.stopPropagation();
-    });
-
-    root_template.search_close.addEventListener("click", function () {
-      if (!Sizing.simple) {
-        Router.open_last_id();
-      } else {
-        Router.change();
-      }
-    });
-
-    root_template.search_link.addEventListener("click", function () {
-      if (!document.body.classList.contains("search_open")) {
-        Router.change("search");
-      } else if (!Sizing.simple) {
-        Router.open_last_id();
-      } else {
-        Router.change();
-      }
-    });
-
-    root_template.search_form.addEventListener("submit", do_search);
-
-    input.addEventListener("keypress", function (evt) {
-      if (evt.keyCode == 27) {
-        clear_search();
-      } else {
-        search_reset_color();
-      }
-    });
-    input.addEventListener("input", function () {
-      if (input.value && !input_container.classList.contains("has_value")) {
-        input_container.classList.add("has_value");
-      } else if (
-        !input.value &&
-        input_container.classList.contains("has_value")
-      ) {
-        input_container.classList.remove("has_value");
-      }
-    });
-    root_template.search_cancel.addEventListener("click", function () {
-      clear_search();
-      self.focus();
-    });
-  });
-
-  BOOTSTRAP.on_draw.push(function (root_template) {
-    scroller = Scrollbar.create(container);
-  });
-
   self.focus = function () {
     input.focus();
+  };
+
+  var search_reset_color = function () {
+    input_container.classList.remove("search_error");
+    input_container.classList.remove("active");
+    input.removeEventListener("input", search_reset_color);
+  };
+
+  var search_error = function (json) {
+    while (el.hasChildNodes()) {
+      el.removeChild(el.lastChild);
+    }
+
+    var div = document.createElement("div");
+    div.className = "no_result_message";
+    div.textContent = $l(json.tl_key, json);
+    el.appendChild(div);
+
+    input_container.classList.add("search_error");
+    input.addEventListener("input", search_reset_color);
+
+    return true;
   };
 
   var clear_search = function () {
@@ -79,31 +44,6 @@ var SearchPanel = (function () {
     input.value = "";
     input_container.classList.remove("has_value");
     search_reset_color();
-  };
-
-  var do_search = function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (Formatting.make_searchable_string(input.value).trim().length < 3) {
-      // fake a server response
-      search_error({ tl_key: "search_string_too_short" });
-      return;
-    }
-    search_text = input.value.trim();
-    var raw_re = Formatting.make_searchable_string(search_text)
-      .split("")
-      .join("{1}[^ws]?");
-    search_regex = new RegExp("^(.*?)(" + raw_re + ")", "i");
-    raw_re = Formatting.make_searchable_string(search_text)
-      .split("")
-      .join("{1}[^ws]*?");
-    search_regex_greedy = new RegExp("^(.*?)(" + raw_re + ")", "i");
-    API.async_get(
-      "search",
-      { search: input.value },
-      search_result,
-      search_error
-    );
   };
 
   var highlight_text = function (title) {
@@ -183,27 +123,87 @@ var SearchPanel = (function () {
     scroller.refresh();
   };
 
-  var search_error = function (json) {
-    while (el.hasChildNodes()) {
-      el.removeChild(el.lastChild);
+  var do_search = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (Formatting.make_searchable_string(input.value).trim().length < 3) {
+      // fake a server response
+      search_error({ tl_key: "search_string_too_short" });
+      return;
     }
-
-    var div = document.createElement("div");
-    div.className = "no_result_message";
-    div.textContent = $l(json.tl_key, json);
-    el.appendChild(div);
-
-    input_container.classList.add("search_error");
-    input.addEventListener("input", search_reset_color);
-
-    return true;
+    search_text = input.value.trim();
+    var raw_re = Formatting.make_searchable_string(search_text)
+      .split("")
+      .join("{1}[^ws]?");
+    search_regex = new RegExp("^(.*?)(" + raw_re + ")", "i");
+    raw_re = Formatting.make_searchable_string(search_text)
+      .split("")
+      .join("{1}[^ws]*?");
+    search_regex_greedy = new RegExp("^(.*?)(" + raw_re + ")", "i");
+    API.async_get(
+      "search",
+      { search: input.value },
+      search_result,
+      search_error
+    );
   };
 
-  var search_reset_color = function () {
-    input_container.classList.remove("search_error");
-    input_container.classList.remove("active");
-    input.removeEventListener("input", search_reset_color);
-  };
+  BOOTSTRAP.on_init.push(function (root_template) {
+    container = root_template.search_results_container;
+    el = root_template.search_results;
+    input = root_template.search;
+    input_container = root_template.search_box_container;
+
+    root_template.search_container.addEventListener("click", function (e) {
+      e.stopPropagation();
+    });
+
+    root_template.search_close.addEventListener("click", function () {
+      if (!Sizing.simple) {
+        Router.open_last_id();
+      } else {
+        Router.change();
+      }
+    });
+
+    root_template.search_link.addEventListener("click", function () {
+      if (!document.body.classList.contains("search_open")) {
+        Router.change("search");
+      } else if (!Sizing.simple) {
+        Router.open_last_id();
+      } else {
+        Router.change();
+      }
+    });
+
+    root_template.search_form.addEventListener("submit", do_search);
+
+    input.addEventListener("keypress", function (evt) {
+      if (evt.keyCode == 27) {
+        clear_search();
+      } else {
+        search_reset_color();
+      }
+    });
+    input.addEventListener("input", function () {
+      if (input.value && !input_container.classList.contains("has_value")) {
+        input_container.classList.add("has_value");
+      } else if (
+        !input.value &&
+        input_container.classList.contains("has_value")
+      ) {
+        input_container.classList.remove("has_value");
+      }
+    });
+    root_template.search_cancel.addEventListener("click", function () {
+      clear_search();
+      self.focus();
+    });
+  });
+
+  BOOTSTRAP.on_draw.push(function () {
+    scroller = Scrollbar.create(container);
+  });
 
   return self;
 })();

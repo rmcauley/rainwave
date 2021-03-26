@@ -5,7 +5,6 @@ var Clock = (function () {
   var ready = false;
   var page_title;
   var page_title_end;
-  var force_sync_ok = false;
   var original_title = document.title;
 
   var self = {};
@@ -14,7 +13,21 @@ var Clock = (function () {
   self.pageclock_bar_function = null;
   self.pageclock_function2 = null;
 
-  BOOTSTRAP.on_init.push(function (template) {
+  var handle_visibility_change = function () {
+    if (document[visibilityEventNames.hidden]) {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    } else {
+      self.loop();
+      if (!interval) {
+        interval = setInterval(self.loop, 1000);
+      }
+    }
+  };
+
+  BOOTSTRAP.on_init.push(function () {
     Prefs.define("t_rt", [false, true], true);
     Prefs.define("t_clk", [true, false]);
     Prefs.define("t_tl", [true, false]);
@@ -39,20 +52,6 @@ var Clock = (function () {
     }
   });
 
-  var handle_visibility_change = function () {
-    if (document[visibilityEventNames.hidden]) {
-      if (interval) {
-        clearInterval(interval);
-        interval = null;
-      }
-    } else {
-      self.loop();
-      if (!interval) {
-        interval = setInterval(self.loop, 1000);
-      }
-    }
-  };
-
   self.time = function () {
     return Math.round(new Date().getTime() / 1000);
   };
@@ -73,9 +72,6 @@ var Clock = (function () {
   };
 
   self.set_page_title = function (new_title, new_end_time) {
-    if (new_end_time != page_title_end && new_end_time > self.now) {
-      force_sync_ok = true;
-    }
     page_title = new_title;
     page_title_end = new_end_time;
   };

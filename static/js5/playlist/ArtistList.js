@@ -49,7 +49,7 @@ var ArtistList = function (el) {
     item._el._id = item.id;
   };
 
-  self.update_item_element = function (item) {
+  self.update_item_element = function () {
     // this has no need
   };
 

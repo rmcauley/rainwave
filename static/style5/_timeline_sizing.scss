@@ -1,309 +1,309 @@
 body.simple div.timeline_sizer {
-    position: relative;
-    width: 100%;
-    max-width: 1024px;
-    margin: auto;
+  position: relative;
+  width: 100%;
+  max-width: 1024px;
+  margin: auto;
 }
 
 body.simple.normal div.timeline {
-    div.song {
-        height: $simple_art_size;
+  div.song {
+    height: $simple_art_size;
 
-        div.art_anchor {
-            width: $simple_art_size;
-            height: $simple_art_size;
-        }
-
-        div.art_container {
-            width: $simple_art_size;
-            height: $simple_art_size;
-
-            &.art_expandable:hover {
-                width: $simple_art_hover_size;
-                height: $simple_art_hover_size;
-            }
-        }
-
-        &.now_playing {
-            height: $simple_np_size;
-
-            div.art_anchor {
-                width: $simple_np_size;
-                height: $simple_np_size;
-            }
-
-            div.art_container {
-                width: $simple_np_size;
-                height: $simple_np_size;
-
-                &.art_expandable:hover {
-                    width: $simple_np_size * 1.2;
-                    height: $simple_np_size * 1.2;
-                }
-            }
-        }
+    div.art_anchor {
+      width: $simple_art_size;
+      height: $simple_art_size;
     }
+
+    div.art_container {
+      width: $simple_art_size;
+      height: $simple_art_size;
+
+      &.art_expandable:hover {
+        width: $simple_art_hover_size;
+        height: $simple_art_hover_size;
+      }
+    }
+
+    &.now_playing {
+      height: $simple_np_size;
+
+      div.art_anchor {
+        width: $simple_np_size;
+        height: $simple_np_size;
+      }
+
+      div.art_container {
+        width: $simple_np_size;
+        height: $simple_np_size;
+
+        &.art_expandable:hover {
+          width: $simple_np_size * 1.2;
+          height: $simple_np_size * 1.2;
+        }
+      }
+    }
+  }
 }
 
 div.timeline {
-    div.song {
-        div.art_anchor {
-            width: $art_size;
-            height: $art_size;
-        }
-
-        div.art_container {
-            width: $art_size;
-            height: $art_size;
-
-            &.art_expandable:hover {
-                width: $art_size * 1.15;
-                height: $art_size * 1.15;
-            }
-        }
-
-        &.now_playing {
-            height: $art_size + 20;
-
-            div.art_anchor {
-                width: $art_size + 20;
-                height: $art_size + 20;
-            }
-
-            div.art_container {
-                width: $art_size + 20;
-                height: $art_size + 20;
-
-                &.art_expandable:hover {
-                    width: $art_size + 20 * 1.15;
-                    height: $art_size + 20 * 1.15;
-                }
-            }
-        }
+  div.song {
+    div.art_anchor {
+      width: $art_size;
+      height: $art_size;
     }
+
+    div.art_container {
+      width: $art_size;
+      height: $art_size;
+
+      &.art_expandable:hover {
+        width: $art_size * 1.15;
+        height: $art_size * 1.15;
+      }
+    }
+
+    &.now_playing {
+      height: $art_size + 20;
+
+      div.art_anchor {
+        width: $art_size + 20;
+        height: $art_size + 20;
+      }
+
+      div.art_container {
+        width: $art_size + 20;
+        height: $art_size + 20;
+
+        &.art_expandable:hover {
+          width: $art_size + 20 * 1.15;
+          height: $art_size + 20 * 1.15;
+        }
+      }
+    }
+  }
 }
 
 body.simple {
-    div.panel.detail,
-    div.search_panel {
-        div.artists,
-        div.rating_clear,
-        div.rating_site {
-            display: none;
-        }
+  div.panel.detail,
+  div.search_panel {
+    div.artists,
+    div.rating_clear,
+    div.rating_site {
+      display: none;
     }
-    div.search_panel {
-        div.cool_info,
-        div.length {
-            display: none;
-        }
+  }
+  div.search_panel {
+    div.cool_info,
+    div.length {
+      display: none;
+    }
 
-        div.album_name {
-            width: 130px;
-        }
+    div.album_name {
+      width: 130px;
     }
+  }
 }
 
 body.full {
-    div.panel {
-        position: absolute;
-        z-index: 100;
-        background: $panel_bkg;
-        top: 0px;
-        overflow: hidden;
-        border-left: solid 1px $panel_b;
+  div.panel {
+    position: absolute;
+    z-index: 100;
+    background: $panel_bkg;
+    top: 0px;
+    overflow: hidden;
+    border-left: solid 1px $panel_b;
 
-        &.lists,
-        &.detail {
-            transform: none !important;
-            -ms-transform: none !important;
-            -webkit-transform: translate3d(0, 0, 0) !important;
-        }
-
-        div.close {
-            display: none;
-        }
+    &.lists,
+    &.detail {
+      transform: none !important;
+      -ms-transform: none !important;
+      -webkit-transform: translate3d(0, 0, 0) !important;
     }
 
-    li.requests_link,
-    li.playlist_link {
-        display: none !important;
+    div.close {
+      display: none;
+    }
+  }
+
+  li.requests_link,
+  li.playlist_link {
+    display: none !important;
+  }
+
+  div.panel.detail,
+  div.search_panel,
+  div.dj_panel {
+    ul.panel_header li {
+      color: $pwrmode_tab;
+      border-bottom: 2px solid $pwrmode_tab_b;
+    }
+
+    div.artists {
+      width: 25%;
+    }
+
+    div.full_artists {
+      display: none;
+
+      &.multi_artist {
+        display: block;
+      }
+    }
+  }
+
+  div.search_panel {
+    div.album_name {
+      width: 30%;
+    }
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body.full {
+    font-size: smaller;
+
+    &.nofontsize {
+      font-size: inherit;
+    }
+
+    div.panel.lists {
+      width: 25%;
     }
 
     div.panel.detail,
     div.search_panel,
     div.dj_panel {
-        ul.panel_header li {
-            color: $pwrmode_tab;
-            border-bottom: 2px solid $pwrmode_tab_b;
-        }
+      width: 37%;
 
-        div.artists {
-            width: 25%;
-        }
+      div.artists,
+      div.rating_clear,
+      div.rating_site {
+        display: none;
+      }
 
-        div.full_artists {
-            display: none;
-
-            &.multi_artist {
-                display: block;
-            }
-        }
+      div.full_artists {
+        display: block;
+      }
     }
 
     div.search_panel {
-        div.album_name {
-            width: 30%;
-        }
+      div.cool_info,
+      div.length {
+        display: none;
+      }
     }
-}
-
-@media (min-width: 1024px) and (max-width: 1279px) {
-    body.full {
-        font-size: smaller;
-
-        &.nofontsize {
-            font-size: inherit;
-        }
-
-        div.panel.lists {
-            width: 25%;
-        }
-
-        div.panel.detail,
-        div.search_panel,
-        div.dj_panel {
-            width: 37%;
-
-            div.artists,
-            div.rating_clear,
-            div.rating_site {
-                display: none;
-            }
-
-            div.full_artists {
-                display: block;
-            }
-        }
-
-        div.search_panel {
-            div.cool_info,
-            div.length {
-                display: none;
-            }
-        }
-    }
+  }
 }
 
 @media (min-width: 1280px) and (max-width: 1430px) {
-    body.full {
-        font-size: smaller;
+  body.full {
+    font-size: smaller;
 
-        &.nofontsize {
-            font-size: inherit;
-        }
-
-        div.panel.lists {
-            width: 25%;
-        }
-
-        div.panel.detail,
-        div.search_panel,
-        div.dj_panel {
-            width: 37%;
-
-            div.artists,
-            div.rating_clear,
-            div.rating_site {
-                display: none;
-            }
-
-            div.full_artists {
-                display: block;
-            }
-        }
-
-        div.search_panel {
-            div.cool_info,
-            div.length {
-                display: none;
-            }
-        }
+    &.nofontsize {
+      font-size: inherit;
     }
+
+    div.panel.lists {
+      width: 25%;
+    }
+
+    div.panel.detail,
+    div.search_panel,
+    div.dj_panel {
+      width: 37%;
+
+      div.artists,
+      div.rating_clear,
+      div.rating_site {
+        display: none;
+      }
+
+      div.full_artists {
+        display: block;
+      }
+    }
+
+    div.search_panel {
+      div.cool_info,
+      div.length {
+        display: none;
+      }
+    }
+  }
 }
 
 @media (min-width: 1431px) and (max-width: 1599px) {
-    body.full {
-        font-size: smaller;
+  body.full {
+    font-size: smaller;
 
-        &.nofontsize {
-            font-size: inherit;
-        }
-
-        div.panel.lists {
-            width: 25%;
-        }
-
-        div.panel.detail,
-        div.search_panel,
-        div.dj_panel {
-            width: 42%;
-        }
+    &.nofontsize {
+      font-size: inherit;
     }
+
+    div.panel.lists {
+      width: 25%;
+    }
+
+    div.panel.detail,
+    div.search_panel,
+    div.dj_panel {
+      width: 42%;
+    }
+  }
 }
 
 @media (min-width: 1600px) and (max-width: 1799px) {
-    body.full {
-        div.panel.lists {
-            width: 25%;
-        }
-
-        div.panel.detail,
-        div.search_panel,
-        div.dj_panel {
-            width: 40%;
-        }
+  body.full {
+    div.panel.lists {
+      width: 25%;
     }
+
+    div.panel.detail,
+    div.search_panel,
+    div.dj_panel {
+      width: 40%;
+    }
+  }
 }
 
 @media (min-width: 1800px) and (max-width: 1909px) {
-    body.full {
-        div.panel.lists {
-            width: 23%;
-        }
-
-        div.panel.detail,
-        div.search_panel,
-        div.dj_panel {
-            width: 42%;
-        }
+  body.full {
+    div.panel.lists {
+      width: 23%;
     }
+
+    div.panel.detail,
+    div.search_panel,
+    div.dj_panel {
+      width: 42%;
+    }
+  }
 }
 
 @media (min-width: 1910px) and (max-width: 2559px) {
-    body.full {
-        div.panel.lists {
-            width: 20%;
-        }
-
-        div.panel.detail,
-        div.search_panel,
-        div.dj_panel {
-            width: 45%;
-        }
+  body.full {
+    div.panel.lists {
+      width: 20%;
     }
+
+    div.panel.detail,
+    div.search_panel,
+    div.dj_panel {
+      width: 45%;
+    }
+  }
 }
 
 @media (min-width: 2560px) {
-    body.full {
-        div.panel.lists {
-            width: 15%;
-        }
-
-        div.panel.detail,
-        div.search_panel,
-        div.dj_panel {
-            width: 45%;
-        }
+  body.full {
+    div.panel.lists {
+      width: 15%;
     }
+
+    div.panel.detail,
+    div.search_panel,
+    div.dj_panel {
+      width: 45%;
+    }
+  }
 }

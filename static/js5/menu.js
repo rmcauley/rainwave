@@ -3,7 +3,10 @@ var Menu = (function () {
 
   var self = {};
   var template;
-  var has_calendar;
+
+  var stop_propagation = function (e) {
+    e.stopPropagation();
+  };
 
   var open_station = function (e) {
     if (RWAudio && RWAudio.isPlaying && !MOBILE) {
@@ -11,6 +14,70 @@ var Menu = (function () {
       e.preventDefault();
       window.location.href = this._href;
       return false;
+    }
+  };
+
+  var close_station_select = function (e) {
+    if (template.station_select.classList.contains("open")) {
+      template.station_select.classList.remove("open");
+      template.station_select.classList.add("closed");
+      template.station_select_header.removeEventListener(
+        "click",
+        close_station_select
+      );
+      template.header.removeEventListener("mouseleave", close_station_select);
+
+      template.station_select.removeEventListener(
+        "touchstart",
+        stop_propagation
+      );
+      document.body.removeEventListener("touchstart", close_station_select);
+
+      e.stopPropagation();
+    }
+  };
+
+  var open_station_select = function (e) {
+    if (!template.station_select.classList.contains("open")) {
+      template.hamburger_container.classList.remove("burger_open");
+      template.station_select.classList.add("open");
+      template.station_select.classList.remove("closed");
+      template.station_select_header.addEventListener(
+        "click",
+        close_station_select
+      );
+      template.header.addEventListener("mouseleave", close_station_select);
+
+      template.station_select.addEventListener("touchstart", stop_propagation);
+      document.body.addEventListener("touchstart", close_station_select);
+
+      e.stopPropagation();
+    }
+  };
+
+  var toggle_station_select = function (e) {
+    if (template.station_select.classList.contains("open")) {
+      close_station_select(e);
+    } else {
+      open_station_select(e);
+    }
+  };
+
+  var update_station_info = function (json) {
+    var i, key;
+    for (key in json) {
+      if (!json[key]) {
+        continue;
+      }
+
+      for (i = 0; i < Stations.length; i++) {
+        if (Stations[i].id == key && Stations[i].$t.menu_np_art) {
+          Stations[i].$t.menu_np_art.style.backgroundImage =
+            "url(" + json[key].art + "_120.jpg)";
+          Stations[i].$t.menu_np_song.textContent = json[key].title;
+          Stations[i].$t.menu_np_album.textContent = json[key].album;
+        }
+      }
     }
   };
 
@@ -74,110 +141,10 @@ var Menu = (function () {
       template.user_link.addEventListener("click", close_burger);
     }
 
-    if (template.calendar_dropdown) {
-      var calendar_toggle = function (e) {
-        if (!has_calendar) {
-          var tz_param;
-          if (jstz) {
-            tz_param = "&ctz=" + jstz.determine().name();
-          }
-          var iframe = document.createElement("iframe");
-          iframe.setAttribute(
-            "src",
-            "https://www.google.com/calendar/embed?showTitle=0&showNav=0&showDate=0&showPrint=0&showCalendars=0&mode=AGENDA&height=500&wkst=1&bgcolor=%23ffffff&src=rainwave.cc_9anf0lu3gsjmgb6k3fcoao894o@group.calendar.google.com&color=%232952A3" +
-              tz_param
-          );
-          iframe.setAttribute("frameborder", 0);
-          template.calendar_dropdown.appendChild(iframe);
-          has_calendar = true;
-        }
-        if (template.calendar_dropdown.classList.contains("show_calendar")) {
-          calendar_hide();
-        } else {
-          template.calendar_dropdown.classList.add("show_calendar");
-        }
-      };
-
-      var calendar_hide = function (e) {
-        template.calendar_dropdown.classList.remove("show_calendar");
-      };
-
-      template.calendar_menu_item.addEventListener("click", calendar_toggle);
-      template.menu_wrapper.addEventListener("mouseleave", calendar_hide);
-    }
-
     if (!MOBILE) {
       API.add_callback("all_stations_info", update_station_info);
     }
   });
-
-  var toggle_station_select = function (e) {
-    if (template.station_select.classList.contains("open")) {
-      close_station_select(e);
-    } else {
-      open_station_select(e);
-    }
-  };
-
-  var stop_propagation = function (e) {
-    e.stopPropagation();
-  };
-
-  var open_station_select = function (e) {
-    if (!template.station_select.classList.contains("open")) {
-      template.hamburger_container.classList.remove("burger_open");
-      template.station_select.classList.add("open");
-      template.station_select.classList.remove("closed");
-      template.station_select_header.addEventListener(
-        "click",
-        close_station_select
-      );
-      template.header.addEventListener("mouseleave", close_station_select);
-
-      template.station_select.addEventListener("touchstart", stop_propagation);
-      document.body.addEventListener("touchstart", close_station_select);
-
-      e.stopPropagation();
-    }
-  };
-
-  var close_station_select = function (e) {
-    if (template.station_select.classList.contains("open")) {
-      template.station_select.classList.remove("open");
-      template.station_select.classList.add("closed");
-      template.station_select_header.removeEventListener(
-        "click",
-        close_station_select
-      );
-      template.header.removeEventListener("mouseleave", close_station_select);
-
-      template.station_select.removeEventListener(
-        "touchstart",
-        stop_propagation
-      );
-      document.body.removeEventListener("touchstart", close_station_select);
-
-      e.stopPropagation();
-    }
-  };
-
-  var update_station_info = function (json) {
-    var i, key;
-    for (key in json) {
-      if (!json[key]) {
-        continue;
-      }
-
-      for (i = 0; i < Stations.length; i++) {
-        if (Stations[i].id == key && Stations[i].$t.menu_np_art) {
-          Stations[i].$t.menu_np_art.style.backgroundImage =
-            "url(" + json[key].art + "_120.jpg)";
-          Stations[i].$t.menu_np_song.textContent = json[key].title;
-          Stations[i].$t.menu_np_album.textContent = json[key].album;
-        }
-      }
-    }
-  };
 
   return self;
 })();

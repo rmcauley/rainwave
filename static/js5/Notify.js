@@ -7,25 +7,6 @@ var R4Notify = (function () {
   var current_song_id;
   var notifier;
 
-  BOOTSTRAP.on_init.push(function (template) {
-    Prefs.define("notify", [false, true]);
-    if (!self.capable) return;
-    if (MOBILE) return;
-
-    Prefs.add_callback("notify", self.check_permission);
-    self.check_permission();
-    API.add_callback("sched_current", self.notify);
-
-    var ua = navigator.userAgent.toLowerCase();
-    if (ua.indexOf("linux") >= 0) {
-      notifier = linuxNotifier;
-    } else if (ua.indexOf("windows") >= 0 && ua.indexOf("gecko") >= 0) {
-      notifier = windowsFirefoxNotifier;
-    } else {
-      notifier = standardNotifier;
-    }
-  });
-
   var standardNotifier = function (song, artists, art) {
     return new Notification(song.title, {
       body: song.albums[0].name + "\n" + artists,
@@ -42,7 +23,7 @@ var R4Notify = (function () {
     });
   };
 
-  var linuxNotifier = function (song, artists, art) {
+  var linuxNotifier = function (song, artists) {
     return new Notification(song.title, {
       body: song.albums[0].name + "\n" + artists,
       tag: "current_song",
@@ -96,6 +77,25 @@ var R4Notify = (function () {
       self.enabled = false;
     }
   };
+
+  BOOTSTRAP.on_init.push(function () {
+    Prefs.define("notify", [false, true]);
+    if (!self.capable) return;
+    if (MOBILE) return;
+
+    Prefs.add_callback("notify", self.check_permission);
+    self.check_permission();
+    API.add_callback("sched_current", self.notify);
+
+    var ua = navigator.userAgent.toLowerCase();
+    if (ua.indexOf("linux") >= 0) {
+      notifier = linuxNotifier;
+    } else if (ua.indexOf("windows") >= 0 && ua.indexOf("gecko") >= 0) {
+      notifier = windowsFirefoxNotifier;
+    } else {
+      notifier = standardNotifier;
+    }
+  });
 
   return self;
 })();

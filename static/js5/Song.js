@@ -83,7 +83,7 @@ var Song = function (self, parent_event) {
       self.autovoted = false;
     }
     self.el.classList.add("voting_clicked");
-    API.async_get("vote", { entry_id: self.entry_id }, null, function (json) {
+    API.async_get("vote", { entry_id: self.entry_id }, null, function () {
       self.el.classList.remove("voting_clicked");
     });
   };

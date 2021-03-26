@@ -4,6 +4,23 @@ var Indicator = function (indicator, indicator_start_count, indicator2) {
   var indicator_timeout;
   var current_count = indicator_start_count;
 
+  var blank_indicator = function () {
+    indicator_timeout = null;
+    indicator.textContent = "";
+    if (indicator2) {
+      indicator2.textContent = "";
+    }
+  };
+
+  var unindicate = function () {
+    indicator.classList.remove("show");
+    if (indicator2) {
+      indicator2.classList.remove("show");
+    }
+    indicator_timeout = setTimeout(blank_indicator, 300);
+    indicator_start_count = current_count;
+  };
+
   var indicate = function (new_count) {
     if (
       document.body.classList.contains("loading") ||
@@ -49,23 +66,6 @@ var Indicator = function (indicator, indicator_start_count, indicator2) {
       indicator2.classList.add("show");
     }
     indicator_timeout = setTimeout(unindicate, 2000);
-  };
-
-  var unindicate = function () {
-    indicator.classList.remove("show");
-    if (indicator2) {
-      indicator2.classList.remove("show");
-    }
-    indicator_timeout = setTimeout(blank_indicator, 300);
-    indicator_start_count = current_count;
-  };
-
-  var blank_indicator = function () {
-    indicator_timeout = null;
-    indicator.textContent = "";
-    if (indicator2) {
-      indicator2.textContent = "";
-    }
   };
 
   return indicate;

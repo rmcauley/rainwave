@@ -1,72 +1,72 @@
 // This box is also affected by rules in _playlist.scss
 
 div.search_panel {
-    z-index: 101 !important;
-    max-width: 100%;
+  z-index: 101 !important;
+  max-width: 100%;
 
-    ul.panel_header {
-        margin-bottom: 0;
-    }
+  ul.panel_header {
+    margin-bottom: 0;
+  }
 
-    body.full & {
-        left: 100%;
-        width: 450px;
-    }
+  body.full & {
+    left: 100%;
+    width: 450px;
+  }
 
-    body.search_open & {
-        @include transform(translateX(-100%));
-        opacity: 1;
-        visibility: visible;
-    }
+  body.search_open & {
+    @include transform(translateX(-100%));
+    opacity: 1;
+    visibility: visible;
+  }
 
-    body.full.search_open & {
-        @include transform(translateX(-100%) translateX(-90px));
-    }
+  body.full.search_open & {
+    @include transform(translateX(-100%) translateX(-90px));
+  }
 
-    body.full &.panel div.close {
-        display: block;
-    }
+  body.full &.panel div.close {
+    display: block;
+  }
 
-    button {
-        box-sizing: border-box;
-        z-index: 2;
-        position: absolute;
-        left: 100%;
-        @include transform(translateX(-100%) translateX(-10px));
-        border: none;
-        background: $blue;
-        color: $text;
-        height: 28px;
-        padding: 5px 7px 5px 7px;
-        white-space: nowrap;
-    }
+  button {
+    box-sizing: border-box;
+    z-index: 2;
+    position: absolute;
+    left: 100%;
+    @include transform(translateX(-100%) translateX(-10px));
+    border: none;
+    background: $blue;
+    color: $text;
+    height: 28px;
+    padding: 5px 7px 5px 7px;
+    white-space: nowrap;
+  }
 
-    div.search_results {
-        box-sizing: border-box;
-        padding-top: 10px;
-        padding-bottom: 5px;
-    }
+  div.search_results {
+    box-sizing: border-box;
+    padding-top: 10px;
+    padding-bottom: 5px;
+  }
 
-    div.row_artist {
-        padding-left: 23px;
-    }
+  div.row_artist {
+    padding-left: 23px;
+  }
 
-    p {
-        padding: 0px 15px;
-        margin: 0;
-    }
+  p {
+    padding: 0px 15px;
+    margin: 0;
+  }
 
-    div.search_oob {
-        color: $text_d;
-    }
+  div.search_oob {
+    color: $text_d;
+  }
 
-    span.search_highlight,
-    a span.search_highlight {
-        color: $orange;
-    }
+  span.search_highlight,
+  a span.search_highlight {
+    color: $orange;
+  }
 
-    div.no_result_message {
-        top: 10px;
-        display: block;
-    }
+  div.no_result_message {
+    top: 10px;
+    display: block;
+  }
 }

@@ -1,85 +1,85 @@
 div.art_anchor {
-    position: relative;
-    float: left;
-    width: $art_size;
-    height: $art_size;
-    margin-right: 10px;
-    z-index: 1;
+  position: relative;
+  float: left;
+  width: $art_size;
+  height: $art_size;
+  margin-right: 10px;
+  z-index: 1;
 }
 
 div.art_container {
+  position: absolute;
+  text-align: center;
+  border-color: $art_b;
+  border-width: 0px;
+  border-style: solid;
+  background-color: $bkg;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: $art_size;
+  height: $art_size;
+  @include transition-wtime(
+    300ms,
+    width,
+    height,
+    border-width,
+    background-color,
+    transform
+  );
+
+  div.art_full_size {
     position: absolute;
-    text-align: center;
-    border-color: $art_b;
-    border-width: 0px;
-    border-style: solid;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
     background-color: $bkg;
+    background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;
-    background-size: cover;
-    width: $art_size;
-    height: $art_size;
-    @include transition-wtime(
-        300ms,
-        width,
-        height,
-        border-width,
-        background-color,
-        transform
-    );
+    @include transition-wtime(500ms, opacity);
+  }
 
-    div.art_full_size {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        background-color: $bkg;
-        background-size: contain;
-        background-position: center center;
-        background-repeat: no-repeat;
-        @include transition-wtime(500ms, opacity);
+  &.art_expandable {
+    cursor: pointer;
+
+    &:hover {
+      border-width: 2px;
+      width: $art_hover_size;
+      height: $art_hover_size;
+      box-shadow: 3px 3px 5px $drop_shadow;
+
+      body.simple & {
+        width: $simple_np_size;
+        height: $simple_np_size;
+      }
     }
 
-    &.art_expandable {
-        cursor: pointer;
+    &.art_expanded,
+    &.art_expanded:hover {
+      width: $art_full_size !important;
+      height: $art_full_size !important;
+      box-shadow: 3px 3px 5px $drop_shadow;
 
-        &:hover {
-            border-width: 2px;
-            width: $art_hover_size;
-            height: $art_hover_size;
-            box-shadow: 3px 3px 5px $drop_shadow;
-
-            body.simple & {
-                width: $simple_np_size;
-                height: $simple_np_size;
-            }
-        }
-
-        &.art_expanded,
-        &.art_expanded:hover {
-            width: $art_full_size !important;
-            height: $art_full_size !important;
-            box-shadow: 3px 3px 5px $drop_shadow;
-
-            div.art_full_size.loaded {
-                opacity: 1;
-            }
-        }
-
-        &.art_expand_left.art_expand_up {
-            @include transform(translate(-200px, -200px) !important);
-        }
-
-        &.art_expand_left.art_expand_down {
-            @include transform(translate(-250px, 0) !important);
-        }
-
-        &.art_expand_right.art_expand_up {
-            @include transform(translate(0, -200px) !important);
-        }
-
-        &.art_expand_right.art_expand_down {
-            @include transform(translate(0, 0));
-        }
+      div.art_full_size.loaded {
+        opacity: 1;
+      }
     }
+
+    &.art_expand_left.art_expand_up {
+      @include transform(translate(-200px, -200px) !important);
+    }
+
+    &.art_expand_left.art_expand_down {
+      @include transform(translate(-250px, 0) !important);
+    }
+
+    &.art_expand_right.art_expand_up {
+      @include transform(translate(0, -200px) !important);
+    }
+
+    &.art_expand_right.art_expand_down {
+      @include transform(translate(0, 0));
+    }
+  }
 }

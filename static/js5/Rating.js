@@ -3,21 +3,6 @@ var Rating = (function () {
   var self = {};
   self.album_callback = null;
 
-  BOOTSTRAP.on_init.push(function (template) {
-    API.add_callback("rate_result", rating_api_callback);
-
-    Prefs.define("r_incmplt", [false, true], true);
-    Prefs.add_callback("r_incmplt", rating_complete_toggle);
-    Prefs.define("r_noglbl", [false, true], true);
-    Prefs.add_callback("r_noglbl", hide_global_rating_callback);
-    Prefs.define("r_clear", [false, true], true);
-    Prefs.add_callback("r_clear", rating_clear_toggle);
-
-    rating_complete_toggle(Prefs.get("r_incmplt"));
-    hide_global_rating_callback(Prefs.get("r_noglbl"));
-    rating_clear_toggle(Prefs.get("r_clear"));
-  });
-
   // PREF CALLBACKS
 
   var rating_clear_toggle = function (v) {
@@ -145,37 +130,6 @@ var Rating = (function () {
 
   // RATING EFFECTS
 
-  var add_effect = function (el) {
-    el.rating_to = 0;
-    el.rating_from = 0;
-    el.rating_now = 0;
-    el.rating_started = 0;
-    el.rating_anim_id = null;
-    // I have tested this and found it to not cause any memory leaks!
-    // I still feel dirty though.
-    el.rating_set = rating_set.bind(el);
-    el.rating_start = rating_start.bind(el);
-    el.rating_step = rating_step.bind(el);
-  };
-
-  var rating_set = function (pos) {
-    this.rating_now = pos;
-    this.rating_to = pos;
-    if (!this.rating_anim_id) {
-      this.rating_step(this.rating_started);
-    }
-  };
-
-  var rating_start = function (stopat) {
-    if (this.rating_to == stopat) return;
-    this.rating_started = performance.now();
-    this.rating_to = stopat;
-    this.rating_from = this.rating_now;
-    if (!this.rating_anim_id) {
-      this.rating_step(this.rating_started);
-    }
-  };
-
   var rating_step = function (steptime) {
     if (
       steptime < this.rating_started + 300 &&
@@ -199,6 +153,37 @@ var Rating = (function () {
       "0px " +
       (-(Math.round(Math.round(this.rating_now * 10) / 2) * 28) + 3) +
       "px";
+  };
+
+  var rating_set = function (pos) {
+    this.rating_now = pos;
+    this.rating_to = pos;
+    if (!this.rating_anim_id) {
+      this.rating_step(this.rating_started);
+    }
+  };
+
+  var rating_start = function (stopat) {
+    if (this.rating_to == stopat) return;
+    this.rating_started = performance.now();
+    this.rating_to = stopat;
+    this.rating_from = this.rating_now;
+    if (!this.rating_anim_id) {
+      this.rating_step(this.rating_started);
+    }
+  };
+
+  var add_effect = function (el) {
+    el.rating_to = 0;
+    el.rating_from = 0;
+    el.rating_now = 0;
+    el.rating_started = 0;
+    el.rating_anim_id = null;
+    // I have tested this and found it to not cause any memory leaks!
+    // I still feel dirty though.
+    el.rating_set = rating_set.bind(el);
+    el.rating_start = rating_start.bind(el);
+    el.rating_step = rating_step.bind(el);
   };
 
   var get_rating_from_mouse = function (evt) {
@@ -308,6 +293,7 @@ var Rating = (function () {
     touching_song.$t.rating.classList.remove("starting_touch");
     var t = RWTemplates.rating_mobile();
     var cancelling = false;
+    var now_number = 5;
     var remove = function (e) {
       if (
         !cancelling &&
@@ -328,7 +314,6 @@ var Rating = (function () {
       document.body.removeEventListener("touchend", remove);
       document.body.removeEventListener("touchcancel", remove);
     };
-    var now_number = 5;
     var highlight = function (rating, width) {
       t.number.style[Fx.transform] =
         "translateX(" + Math.max(15, width - 15) + "px)";
@@ -499,18 +484,44 @@ var Rating = (function () {
     // that refers to or uses "json" in any way.
   };
 
+  var register_album = function (json) {
+    json.$t.rating.setAttribute("name", "arate_" + json.id);
+    json.$t.rating.classList.add("album_rating");
+
+    if (!json.rating_complete) {
+      json.$t.rating.classList.add("rating_incomplete");
+    } else {
+      json.$t.rating.classList.remove("rating_incomplete");
+    }
+  };
+
   var register_song = function (json) {
     json.$t.rating.classList.add("song_rating");
     json.$t.rating.setAttribute("name", "srate_" + json.id);
 
     if (json.$t.rating_clear) {
       json.$t.rating_clear.addEventListener("click", function () {
-        API.async_get("clear_rating", { song_id: json.id }, function (newjson) {
+        API.async_get("clear_rating", { song_id: json.id }, function () {
           json.rating_user = null;
           json.$t.rating_clear.parentNode.classList.remove("capable");
         });
       });
     }
+
+    var on_mouse_move = function (evt) {
+      if (!json.rating_allowed && !User.rate_anything) return;
+      if (evt.target !== this) {
+        if (Prefs.get("r_noglbl")) {
+          json.$t.rating.rating_set(0);
+        }
+        return;
+      }
+      var tr = get_rating_from_mouse(evt);
+      if (tr) {
+        json.$t.rating.rating_set(tr);
+        json.$t.rating_hover_number.textContent = Formatting.rating(tr);
+      }
+    };
 
     var on_mouse_over = function (evt) {
       if (json.$t.rating._rating_user) {
@@ -529,22 +540,7 @@ var Rating = (function () {
       on_mouse_move(evt);
     };
 
-    var on_mouse_move = function (evt) {
-      if (!json.rating_allowed && !User.rate_anything) return;
-      if (evt.target !== this) {
-        if (Prefs.get("r_noglbl")) {
-          json.$t.rating.rating_set(0);
-        }
-        return;
-      }
-      var tr = get_rating_from_mouse(evt);
-      if (tr) {
-        json.$t.rating.rating_set(tr);
-        json.$t.rating_hover_number.textContent = Formatting.rating(tr);
-      }
-    };
-
-    var on_mouse_out = function (evt) {
+    var on_mouse_out = function () {
       this.rating_start(json.rating_user || json.rating);
       if (!Sizing.simple) {
         if (json.rating_user) {
@@ -588,16 +584,20 @@ var Rating = (function () {
     }
   };
 
-  var register_album = function (json) {
-    json.$t.rating.setAttribute("name", "arate_" + json.id);
-    json.$t.rating.classList.add("album_rating");
+  BOOTSTRAP.on_init.push(function () {
+    API.add_callback("rate_result", rating_api_callback);
 
-    if (!json.rating_complete) {
-      json.$t.rating.classList.add("rating_incomplete");
-    } else {
-      json.$t.rating.classList.remove("rating_incomplete");
-    }
-  };
+    Prefs.define("r_incmplt", [false, true], true);
+    Prefs.add_callback("r_incmplt", rating_complete_toggle);
+    Prefs.define("r_noglbl", [false, true], true);
+    Prefs.add_callback("r_noglbl", hide_global_rating_callback);
+    Prefs.define("r_clear", [false, true], true);
+    Prefs.add_callback("r_clear", rating_clear_toggle);
+
+    rating_complete_toggle(Prefs.get("r_incmplt"));
+    hide_global_rating_callback(Prefs.get("r_noglbl"));
+    rating_clear_toggle(Prefs.get("r_clear"));
+  });
 
   return self;
 })();

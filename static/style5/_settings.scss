@@ -1,181 +1,181 @@
 $yes_no_height: 23px;
 
 div.powertripped div.power_only {
-    display: block;
+  display: block;
 }
 
 div.setting_subheader {
-    color: $setting_subheader;
-    border-bottom: 1px solid $setting_subheader;
-    padding: 0;
-    margin: 5px 0;
+  color: $setting_subheader;
+  border-bottom: 1px solid $setting_subheader;
+  padding: 0;
+  margin: 5px 0;
 }
 
 div.setting_group {
-    clear: both;
-    padding: 2px 7px;
-    height: $yes_no_height;
-    border-bottom: 1px solid transparent;
-    @include transition(border-color, background, opacity);
+  clear: both;
+  padding: 2px 7px;
+  height: $yes_no_height;
+  border-bottom: 1px solid transparent;
+  @include transition(border-color, background, opacity);
 
-    &.setting_group_special {
-        margin: 5px 0;
-        padding-left: 0px;
+  &.setting_group_special {
+    margin: 5px 0;
+    padding-left: 0px;
 
-        label {
-            color: $setting_subheader;
-        }
+    label {
+      color: $setting_subheader;
     }
+  }
 
-    &:hover {
-        border-color: $hover_b;
-        background-color: $hover_bkg;
-        @include no-transition();
+  &:hover {
+    border-color: $hover_b;
+    background-color: $hover_bkg;
+    @include no-transition();
+  }
+
+  &.yes_no_group {
+    cursor: pointer;
+
+    label {
+      cursor: pointer;
     }
-
-    &.yes_no_group {
-        cursor: pointer;
-
-        label {
-            cursor: pointer;
-        }
-    }
+  }
 }
 
 div.yes_no_wrapper {
-    position: relative;
-    box-sizing: border-box;
-    float: right;
-    padding: 0;
-    margin: 0;
+  position: relative;
+  box-sizing: border-box;
+  float: right;
+  padding: 0;
+  margin: 0;
 
-    span {
-        box-sizing: border-box;
-        display: inline-block;
-        height: $yes_no_height;
-    }
+  span {
+    box-sizing: border-box;
+    display: inline-block;
+    height: $yes_no_height;
+  }
 }
 
 div.r_incmplt.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 span.yes_no_yes,
 span.yes_no_no {
-    position: relative;
-    z-index: 2;
-    width: 70px;
-    border: 1px solid $setting_yesno_b;
-    @include transition-wtime(350ms, color);
-    text-align: center;
+  position: relative;
+  z-index: 2;
+  width: 70px;
+  border: 1px solid $setting_yesno_b;
+  @include transition-wtime(350ms, color);
+  text-align: center;
 }
 
 span.yes_no_yes {
-    padding-right: 10px;
-    border-right: none;
-    color: $text_dd;
+  padding-right: 10px;
+  border-right: none;
+  color: $text_dd;
 }
 
 span.yes_no_no {
-    padding-left: 10px;
-    border-left: none;
+  padding-left: 10px;
+  border-left: none;
 }
 
 div.yes_no_wrapper {
-    &.yes {
-        span.yes_no_yes {
-            color: $text;
-        }
-        span.yes_no_no {
-            color: $text_d;
-        }
+  &.yes {
+    span.yes_no_yes {
+      color: $text;
     }
-
-    &.yes.no span.yes_no_yes {
-        color: $text_dd;
+    span.yes_no_no {
+      color: $text_d;
     }
+  }
 
-    &.no span.yes_no_no {
-        color: $text;
-    }
+  &.yes.no span.yes_no_yes {
+    color: $text_dd;
+  }
 
-    span.yes_no_bar {
-        position: absolute;
-        width: 70px;
-        background: $setting_yesno;
-        z-index: 1;
+  &.no span.yes_no_no {
+    color: $text;
+  }
 
-        @include transform(rotate(0deg));
-        -webkit-transform-origin: left center;
-        transform-origin: left center;
-    }
+  span.yes_no_bar {
+    position: absolute;
+    width: 70px;
+    background: $setting_yesno;
+    z-index: 1;
 
-    &.yes span.yes_no_bar {
-        background: $setting_yesno_b;
-        @include transition-wtime(350ms, transform, background-color);
-        @include transform(rotate(-180deg));
-    }
+    @include transform(rotate(0deg));
+    -webkit-transform-origin: left center;
+    transform-origin: left center;
+  }
 
-    &.no span.yes_no_bar {
-        background: $setting_yesno;
-        @include transition-wtime(350ms, transform, background-color);
-        @include transform(rotate(-360deg));
-    }
+  &.yes span.yes_no_bar {
+    background: $setting_yesno_b;
+    @include transition-wtime(350ms, transform, background-color);
+    @include transform(rotate(-180deg));
+  }
+
+  &.no span.yes_no_bar {
+    background: $setting_yesno;
+    @include transition-wtime(350ms, transform, background-color);
+    @include transform(rotate(-360deg));
+  }
 }
 
 span.yes_no_dot {
-    position: absolute;
-    border: solid 10px $text;
-    border-radius: 10px;
-    background: $text;
-    z-index: 1;
-    margin-left: -10px;
+  position: absolute;
+  border: solid 10px $text;
+  border-radius: 10px;
+  background: $text;
+  z-index: 1;
+  margin-left: -10px;
 }
 
 div.multi_select {
+  box-sizing: border-box;
+  float: right;
+  position: relative;
+  height: $yes_no_height;
+
+  span {
     box-sizing: border-box;
-    float: right;
     position: relative;
+    padding: 0 5px;
+    margin: 0 0.5em;
+    color: $text_dd;
+    @include transition-wtime(350ms, color);
+    border: 1px solid $blue;
+    cursor: pointer;
     height: $yes_no_height;
 
-    span {
-        box-sizing: border-box;
-        position: relative;
-        padding: 0 5px;
-        margin: 0 0.5em;
-        color: $text_dd;
-        @include transition-wtime(350ms, color);
-        border: 1px solid $blue;
-        cursor: pointer;
-        height: $yes_no_height;
-
-        &:last-child {
-            margin-right: 0;
-        }
-
-        &.selected {
-            color: $text;
-            // background: $blue;
-        }
-
-        a {
-            color: $text_dd;
-
-            &:hover {
-                color: $link_h;
-            }
-        }
+    &:last-child {
+      margin-right: 0;
     }
 
-    &.multi_select_special span a {
-        color: $text;
+    &.selected {
+      color: $text;
+      // background: $blue;
     }
 
-    div.floating_highlight {
-        box-sizing: border-box;
-        position: absolute;
-        background-color: $blue;
-        @include transition-wtime(350ms, transform, height, width);
+    a {
+      color: $text_dd;
+
+      &:hover {
+        color: $link_h;
+      }
     }
+  }
+
+  &.multi_select_special span a {
+    color: $text;
+  }
+
+  div.floating_highlight {
+    box-sizing: border-box;
+    position: absolute;
+    background-color: $blue;
+    @include transition-wtime(350ms, transform, height, width);
+  }
 }

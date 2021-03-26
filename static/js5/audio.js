@@ -67,7 +67,6 @@ var RWAudioConstructor = function () {
     volume_el = root_template.volume;
     volume_rect = root_template.volume_indicator;
     volume_container = root_template.volume_container;
-    mute_el = root_template.mute;
 
     var stream_query = "";
     if (User && User.listen_key) {
@@ -109,7 +108,7 @@ var RWAudioConstructor = function () {
     }
   };
 
-  var clear_audio_errors = function (e) {
+  var clear_audio_errors = function () {
     ErrorHandler.remove_permanent_error("m3u_hijack_right_click");
     ErrorHandler.remove_permanent_error("audio_error");
     ErrorHandler.remove_permanent_error("audio_connect_error");
@@ -148,7 +147,7 @@ var RWAudioConstructor = function () {
     clear_audio_errors();
   });
 
-  self.addEventListener("stall", function (evt) {
+  self.addEventListener("stall", function () {
     el.classList.add("working");
     // var append;
     // if (evt.detail) {
@@ -184,7 +183,6 @@ var RWAudioConstructor = function () {
         offset_left += node.offsetLeft;
       }
     }
-    console.log(offset_left);
     change_volume_from_mouse(evt);
     if (self.isMuted) {
       self.toggleMute();
@@ -193,7 +191,7 @@ var RWAudioConstructor = function () {
     document.addEventListener("mouseup", volume_control_mouseup);
   };
 
-  var volume_control_mouseup = function (evt) {
+  var volume_control_mouseup = function () {
     volume_el.removeEventListener("mousemove", change_volume_from_mouse);
     document.removeEventListener("mouseup", volume_control_mouseup);
   };

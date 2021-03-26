@@ -41,7 +41,7 @@ var SettingsWindow = function () {
         if (obj.$t.wrap.classList.contains("no")) {
           obj.$t.wrap.classList.remove("yes");
           obj.$t.wrap.classList.remove("no");
-          obj.$t.wrap.offsetWidth; // jshint ignore:line
+          obj.$t.wrap.offsetWidth; // eslint-disable-line no-unused-expressions
         }
         obj.$t.wrap.classList.add("yes");
       } else if (obj.$t.wrap.classList.contains("yes")) {

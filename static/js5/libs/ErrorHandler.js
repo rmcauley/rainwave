@@ -42,6 +42,10 @@ var ErrorHandler = (function () {
     }
   };
 
+  var redownload_m3u_message = function () {
+    self.nonpermanent_error(self.make_error("redownload_m3u", 200));
+  };
+
   BOOTSTRAP.on_init.push(function () {
     API.add_callback("station_offline", self.permanent_error);
     API.add_callback("redownload_m3u", redownload_m3u_message);
@@ -51,10 +55,6 @@ var ErrorHandler = (function () {
     var template = Modal($l("crash_happened"), "modal_error", null, true);
     if (!template) return;
     template._root.parentNode.classList.add("error");
-  };
-
-  var redownload_m3u_message = function () {
-    self.nonpermanent_error(self.make_error("redownload_m3u", 200));
   };
 
   self.make_error = function (tl_key, code) {

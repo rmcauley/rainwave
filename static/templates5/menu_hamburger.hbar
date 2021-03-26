@@ -8,12 +8,6 @@
 		</a>
 	</div>
 	<div class="pconly menu_group">
-		{{#if ^!MOBILE}}
-			<a class="link" bind="calendar_menu_item">
-				<div bind="calendar_dropdown" id="calendar_dropdown"></div>
-				<span>{{ $l("events_calendar_link") }}</span>
-			</a>
-		{{/if}}
 		<a href="/pages/playback_history" target="_blank">
 			{{ $l("playback_history_link") }}
 		</a>

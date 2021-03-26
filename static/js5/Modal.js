@@ -2,6 +2,8 @@ var Modal = (function () {
   "use strict";
 
   var stop_all = false;
+  var blocker = document.createElement("div");
+  blocker.className = "modal_blocker";
 
   var do_close = function (modal_to_close) {
     if (
@@ -9,7 +11,7 @@ var Modal = (function () {
       !modal_to_close.classList.contains("modal_closing")
     ) {
       modal_to_close.classList.add("modal_closing");
-      setTimeout(function (e) {
+      setTimeout(function () {
         modal_to_close.parentNode.removeChild(modal_to_close);
       }, 300);
     }
@@ -72,8 +74,6 @@ var Modal = (function () {
     return ct;
   };
 
-  var blocker = document.createElement("div");
-  blocker.className = "modal_blocker";
   blocker.addEventListener("click", close_modal);
 
   return modal_class;

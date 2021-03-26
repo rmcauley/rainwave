@@ -7,6 +7,18 @@ var SongList = function () {
   var scroller;
   var padder;
 
+  var dragging_song;
+  var dragging_index;
+  var order_changed = false;
+  var original_mouse_y;
+  var original_request_y;
+  var last_mouse_event;
+  var current_dragging_y;
+  var upper_normal_fold;
+  var lower_normal_fold;
+  var upper_fold;
+  var lower_fold;
+
   var songs = [];
 
   self.get_songs = function () {
@@ -60,9 +72,9 @@ var SongList = function () {
     Router.change();
   };
 
-  self.remove = function (song_id) {};
+  self.remove = function () {};
 
-  self.remove_event = function (e) {
+  self.remove_event = function () {
     if (!this._song_id) return;
     self.remove(this._song_id);
   };
@@ -182,72 +194,6 @@ var SongList = function () {
 
   // DRAG AND DROP *********************************************************
 
-  var dragging_song;
-  var dragging_index;
-  var order_changed = false;
-  var original_mouse_y;
-  var original_request_y;
-  var last_mouse_event;
-  var current_dragging_y;
-  var upper_normal_fold;
-  var lower_normal_fold;
-  var upper_fold;
-  var lower_fold;
-
-  var start_touch_drag = function (e) {
-    var fake_event = {
-      which: 1,
-      clientY: e.touches[0].pageY,
-      target: e.target,
-    };
-    e.preventDefault();
-    e.stopPropagation();
-    start_drag(fake_event);
-  };
-
-  var start_drag = function (e) {
-    if (!e.which || e.which !== 1) {
-      return;
-    }
-
-    var song_id = e.target._song_id || e.target.parentNode._song_id;
-    if (song_id) {
-      for (var i = 0; i < songs.length; i++) {
-        if (song_id == songs[i].id) {
-          dragging_song = songs[i];
-          dragging_index = i;
-          break;
-        }
-      }
-      if (!dragging_song) return;
-      if (dragging_song._deleted) return;
-      last_mouse_event = e;
-      original_mouse_y = e.clientY + scroller.scroll_top;
-      original_request_y = dragging_song._request_y;
-      upper_normal_fold =
-        Sizing.detail_header_size * 3 +
-        Sizing.menu_height +
-        Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
-      upper_fold = Math.min(e.clientY, upper_normal_fold);
-      lower_normal_fold = Math.ceil(
-        Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200))
-      );
-      lower_fold = Math.min(Sizing.height - e.clientY, lower_normal_fold);
-      container.classList.add("dragging");
-      dragging_song.el.classList.add("dragging");
-      document.body.classList.add("unselectable");
-      window.addEventListener("mousemove", capture_mouse_move);
-      window.addEventListener("mouseup", stop_drag);
-      window.addEventListener("touchmove", capture_touch_move);
-      window.addEventListener("touchend", stop_drag);
-      requestAnimationFrame(continue_drag);
-      if (e.preventDefault) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    }
-  };
-
   var capture_touch_move = function (e) {
     last_mouse_event = {
       clientY: e.touches[0].pageY,
@@ -313,7 +259,7 @@ var SongList = function () {
     requestAnimationFrame(continue_drag);
   };
 
-  var stop_drag = function (e) {
+  var stop_drag = function () {
     container.classList.remove("dragging");
     dragging_song.el.classList.remove("dragging");
     document.body.classList.remove("unselectable");
@@ -328,6 +274,60 @@ var SongList = function () {
       self.on_order_changed();
     }
     order_changed = false;
+  };
+
+  var start_drag = function (e) {
+    if (!e.which || e.which !== 1) {
+      return;
+    }
+
+    var song_id = e.target._song_id || e.target.parentNode._song_id;
+    if (song_id) {
+      for (var i = 0; i < songs.length; i++) {
+        if (song_id == songs[i].id) {
+          dragging_song = songs[i];
+          dragging_index = i;
+          break;
+        }
+      }
+      if (!dragging_song) return;
+      if (dragging_song._deleted) return;
+      last_mouse_event = e;
+      original_mouse_y = e.clientY + scroller.scroll_top;
+      original_request_y = dragging_song._request_y;
+      upper_normal_fold =
+        Sizing.detail_header_size * 3 +
+        Sizing.menu_height +
+        Math.ceil(Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200)));
+      upper_fold = Math.min(e.clientY, upper_normal_fold);
+      lower_normal_fold = Math.ceil(
+        Math.max(Sizing.song_size, Math.min(Sizing.height / 5, 200))
+      );
+      lower_fold = Math.min(Sizing.height - e.clientY, lower_normal_fold);
+      container.classList.add("dragging");
+      dragging_song.el.classList.add("dragging");
+      document.body.classList.add("unselectable");
+      window.addEventListener("mousemove", capture_mouse_move);
+      window.addEventListener("mouseup", stop_drag);
+      window.addEventListener("touchmove", capture_touch_move);
+      window.addEventListener("touchend", stop_drag);
+      requestAnimationFrame(continue_drag);
+      if (e.preventDefault) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  };
+
+  var start_touch_drag = function (e) {
+    var fake_event = {
+      which: 1,
+      clientY: e.touches[0].pageY,
+      target: e.target,
+    };
+    e.preventDefault();
+    e.stopPropagation();
+    start_drag(fake_event);
   };
 
   return self;
@@ -493,12 +493,7 @@ var Requests = (function () {
     });
   };
 
-  self.make_clickable = function (el, song_id) {
-    el._request_song_id = song_id;
-    el.addEventListener("click", clicked);
-  };
-
-  var clicked = function (e) {
+  var clicked = function () {
     if (!this._request_song_id) return;
     if (User.id === 1) {
       ErrorHandler.tooltip_error(
@@ -508,7 +503,12 @@ var Requests = (function () {
     self.add(this._request_song_id);
   };
 
-  self.on_order_changed = function (e) {
+  self.make_clickable = function (el, song_id) {
+    el._request_song_id = song_id;
+    el.addEventListener("click", clicked);
+  };
+
+  self.on_order_changed = function () {
     var songs = self.get_songs();
     var song_order = "";
     for (var i = 0; i < songs.length; i++) {

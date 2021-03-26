@@ -337,6 +337,15 @@ var KeyHandler = (function () {
   var hotkey_mode_timeout;
   var hotkey_mode_error_timeout;
 
+  var hotkey_mode_disable = function () {
+    if (hotkey_mode_timeout) {
+      clearTimeout(hotkey_mode_timeout);
+    }
+    hotkey_mode_on = false;
+    document.body.classList.remove("hotkey_on");
+    return true;
+  };
+
   var hotkey_mode_enable = function () {
     hotkey_mode_on = true;
     if (hotkey_mode_timeout) {
@@ -351,13 +360,13 @@ var KeyHandler = (function () {
     return true;
   };
 
-  var hotkey_mode_disable = function () {
-    if (hotkey_mode_timeout) {
-      clearTimeout(hotkey_mode_timeout);
-    }
-    hotkey_mode_on = false;
-    document.body.classList.remove("hotkey_on");
-    return true;
+  var hotkey_mode_error = function (tl_key) {
+    hotkey_mode_disable();
+    document.body.classList.add("hotkey_error");
+    document.getElementById("hotkey_error").textContent = $l(tl_key);
+    hotkey_mode_error_timeout = setTimeout(function () {
+      document.body.classList.remove("hotkey_error");
+    }, 3000);
   };
 
   var hotkey_mode_handle = function (key_code, character) {
@@ -403,15 +412,6 @@ var KeyHandler = (function () {
         throw err;
       }
     }
-  };
-
-  var hotkey_mode_error = function (tl_key) {
-    hotkey_mode_disable();
-    document.body.classList.add("hotkey_error");
-    document.getElementById("hotkey_error").textContent = $l(tl_key);
-    hotkey_mode_error_timeout = setTimeout(function () {
-      document.body.classList.remove("hotkey_error");
-    }, 3000);
   };
 
   window.addEventListener("keydown", self.on_key_down, true);

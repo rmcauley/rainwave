@@ -185,15 +185,6 @@ var RWAudio;
       BOOTSTRAP.websocket_host
     );
 
-    var add_javascript = function (src, callback) {
-      var s = document.createElement("script");
-      s.addEventListener("load", callback);
-      s.src = src;
-      // document.getElementsByTagName("head")[0].appendChild(s);
-      document.body.appendChild(s);
-      return s;
-    };
-
     Sizing.trigger_resize();
 
     if (!Router.detect_url_change()) {
@@ -207,27 +198,7 @@ var RWAudio;
     document.body.classList.remove("loading");
 
     BOOTSTRAP = null;
-
-    if (document.ontouchstart === null) {
-      add_javascript("/static/fastclick.min.js");
-    }
-
-    if (
-      navigator.userAgent.toLowerCase().indexOf("msie") !== -1 ||
-      navigator.userAgent.toLowerCase().indexOf("trident") !== -1
-    ) {
-      add_javascript("/static/svg4everybody.min.js", function () {
-        svg4everybody();
-      });
-    }
-
-    // 		if (service_worker_registration) {
-    // 			requestNextAnimationFrame(function() {
-    // 				service_worker_registration.update();
-    // 			});
-    // 		}
   };
 
-  //document.addEventListener("DOMContentLoaded", initialize);
   window.addEventListener("load", initialize);
 })();

@@ -2,127 +2,123 @@ $modal_trans_time: 300ms;
 $initial_height: 0.2;
 
 div.modal_blocker {
-    position: absolute;
-    z-index: 10000;
-    top: 0%;
-    left: 0%;
-    width: 100%;
-    height: 100%;
-    background: $bkg;
-    opacity: 0;
+  position: absolute;
+  z-index: 10000;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background: $bkg;
+  opacity: 0;
 
-    @include transition-wtime($modal_trans_time * 0.8, opacity);
+  @include transition-wtime($modal_trans_time * 0.8, opacity);
 
-    &.active {
-        opacity: 0.6;
-    }
+  &.active {
+    opacity: 0.6;
+  }
 }
 
 div.modal_container {
-    padding: 2px;
-    box-sizing: border-box;
-    position: absolute;
-    opacity: 0.3;
-    top: 50%;
-    left: 50%;
-    background: $bkg;
-    z-index: 10001;
-    width: 100%;
-    @include transform(translate(-50%, -50%) scaleX(0) scaleY($initial_height));
-    @include transition-wtime($modal_trans_time, opacity, transform);
+  padding: 2px;
+  box-sizing: border-box;
+  position: absolute;
+  opacity: 0.3;
+  top: 50%;
+  left: 50%;
+  background: $bkg;
+  z-index: 10001;
+  width: 100%;
+  @include transform(translate(-50%, -50%) scaleX(0) scaleY($initial_height));
+  @include transition-wtime($modal_trans_time, opacity, transform);
 
-    div.content {
-        max-width: 100%;
-        width: 800px;
-        margin: 0 auto;
-        opacity: 0;
-        padding: 0;
+  div.content {
+    max-width: 100%;
+    width: 800px;
+    margin: 0 auto;
+    opacity: 0;
+    padding: 0;
+  }
+
+  div.header_wrapper {
+    width: 100%;
+    padding-bottom: 2px;
+    border-bottom: 1px solid $blue;
+    overflow: hidden;
+
+    div.bkg {
+      background: $blue;
     }
 
+    div.content {
+      width: 850px;
+      @include transform(translateY(40px));
+      @include transition(transform, opacity);
+    }
+  }
+
+  div.bottom_border {
+    height: 2px;
+    width: 100%;
+    background: $blue;
+  }
+
+  &.error {
     div.header_wrapper {
-        width: 100%;
-        padding-bottom: 2px;
-        border-bottom: 1px solid $blue;
-        overflow: hidden;
+      border-bottom: 1px solid $error_b;
 
-        div.bkg {
-            background: $blue;
-        }
-
-        div.content {
-            width: 850px;
-            @include transform(translateY(40px));
-            @include transition(transform, opacity);
-        }
+      div.bkg {
+        background: $error_b;
+      }
     }
 
     div.bottom_border {
-        height: 2px;
-        width: 100%;
-        background: $blue;
+      background: $error_b;
     }
+  }
 
-    &.error {
-        div.header_wrapper {
-            border-bottom: 1px solid $error_b;
+  div.main {
+    opacity: 0;
+    max-height: 80vh;
+    margin: 5px auto;
+    padding: 5px;
+    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    @include transform(translate(0px, 30px));
+    @include transition-wtime($modal_trans_time * 1.5, opacity, transform);
+    -webkit-transition-delay: $modal_trans_time * 0.5;
+    transition-delay: $modal_trans_time * 0.5;
+  }
 
-            div.bkg {
-                background: $error_b;
-            }
-        }
+  &.open {
+    opacity: 1;
+    @include transform(translate(-50%, -50%) scaleX(1) scaleY($initial_height));
 
-        div.bottom_border {
-            background: $error_b;
-        }
-    }
+    &.full_open {
+      @include transform(translate(-50%, -50%) scaleX(1) scaleY(1));
 
-    div.main {
-        opacity: 0;
-        max-height: 80vh;
-        margin: 5px auto;
-        padding: 5px;
-        overflow: auto;
-        overflow-y: auto;
-        overflow-x: hidden;
-        @include transform(translate(0px, 30px));
-        @include transition-wtime($modal_trans_time * 1.5, opacity, transform);
-        -webkit-transition-delay: $modal_trans_time * 0.5;
-        transition-delay: $modal_trans_time * 0.5;
-    }
-
-    &.open {
+      div.main,
+      div.header_wrapper div.content {
         opacity: 1;
-        @include transform(
-            translate(-50%, -50%) scaleX(1) scaleY($initial_height)
-        );
-
-        &.full_open {
-            @include transform(translate(-50%, -50%) scaleX(1) scaleY(1));
-
-            div.main,
-            div.header_wrapper div.content {
-                opacity: 1;
-                @include transform(none);
-            }
-        }
-
-        &.modal_closing {
-            opacity: 0;
-            @include transform(
-                translate(-50%, -40%) scaleX(1) scaleY(1) !important
-            );
-        }
+        @include transform(none);
+      }
     }
 
-    div.modal_close {
-        float: right;
-        cursor: pointer;
-        top: 1px;
-        position: relative;
-
-        img {
-            width: 14px;
-            height: 14px;
-        }
+    &.modal_closing {
+      opacity: 0;
+      @include transform(translate(-50%, -40%) scaleX(1) scaleY(1) !important);
     }
+  }
+
+  div.modal_close {
+    float: right;
+    cursor: pointer;
+    top: 1px;
+    position: relative;
+
+    img {
+      width: 14px;
+      height: 14px;
+    }
+  }
 }
