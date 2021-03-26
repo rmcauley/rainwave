@@ -224,6 +224,7 @@ var SearchList = function (root_el, sort_key, search_key) {
       self.open_id(check_el._id);
     }
   };
+
   self.el.addEventListener("click", self.open_element);
 
   // SEARCHING ****************************
@@ -463,6 +464,7 @@ var SearchList = function (root_el, sort_key, search_key) {
     }
     ignore_original_scroll_top = false;
   };
+
   template.cancel.addEventListener("click", function () {
     self.clear_search();
     template.search_box.focus();
@@ -518,7 +520,9 @@ var SearchList = function (root_el, sort_key, search_key) {
     search_box.removeAttribute("disabled");
     self.recalculate();
     if (open_to_on_load) {
-      self.set_new_open(open_to_on_load);
+      if (!self.set_new_open(open_to_on_load)) {
+        self.reposition();
+      }
       open_to_on_load = null;
     } else if (scroll_to_on_load) {
       self.scroll_to_id(scroll_to_on_load);
