@@ -45,6 +45,7 @@ var GroupList = function (el) {
     item._el = document.createElement("div");
     item._el.className = "item";
     item._el.textContent = item.name;
+    item._el._id = item.id;
   };
 
   self.update_item_element = function () {
