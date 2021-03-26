@@ -11,7 +11,8 @@ var GroupList = function (el) {
       artist.name_searchable = Formatting.make_searchable_string(artist.name);
     });
     self.update(json.data);
-    self.$t.loading_bar.style.transform = "scaleX(" + json.progress / 100 + ")";
+    self.$t.loading_bar.style.transform =
+      "scaleX(" + (json.progress * 0.8) / 100 + ")";
     if (!json.has_more) {
       loading = false;
       self.loaded = true;
@@ -28,6 +29,9 @@ var GroupList = function (el) {
       self.$t.loading_bar.style.display = "block";
       self.$t.loading_bar.style.opacity = "1";
       self.$t.loading_bar.style.transform = "scaleX(0)";
+      requestNextAnimationFrame(function () {
+        self.$t.loading_bar.style.transform = "scaleX(0.2)";
+      });
       loading = true;
       API.async_get("all_groups_paginated");
     }
