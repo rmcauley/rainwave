@@ -41,13 +41,15 @@ class AdminIndex(api.web.HTMLRequest):
     admin_required = True
 
     def get(self):
+        sid = 5 if 5 in config.station_ids else self.sid
+
         self.render(
             "admin_frame.html",
             title="Rainwave Admin",
             api_url=config.get("api_external_url_prefix"),
             user_id=self.user.id,
             api_key=self.user.ensure_api_key(),
-            sid=self.sid,
+            sid=sid,
             tool_list_url="tool_list",
             station_list_url="station_list",
         )

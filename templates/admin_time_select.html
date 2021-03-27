@@ -1,58 +1,64 @@
 <script>
-function {{ html_id }}_set_time_from_server(epoch_time) {
-	var d = new Date((epoch_time * 1000) + new Date().getTimezoneOffset());
-	document.getElementById('{{ html_id }}_year').value = d.getYear() + 1900;
-	document.getElementById('{{ html_id }}_month').value = d.getMonth() + 1;
-	document.getElementById('{{ html_id }}_day').value = d.getDate();
-	document.getElementById('{{ html_id }}_hour').value = d.getHours();
-	document.getElementById('{{ html_id }}_minute').value = d.getMinutes() + 1;
-	{{ html_id }}_fix_time();
-}
+  function {{ html_id }}_set_time_from_server(epoch_time) {
+  	var d = new Date((epoch_time * 1000) + new Date().getTimezoneOffset());
+  	document.getElementById('{{ html_id }}_year').value = d.getYear() + 1900;
+  	document.getElementById('{{ html_id }}_month').value = d.getMonth() + 1;
+  	document.getElementById('{{ html_id }}_day').value = d.getDate();
+  	document.getElementById('{{ html_id }}_hour').value = d.getHours();
+  	document.getElementById('{{ html_id }}_minute').value = d.getMinutes() + 1;
+  	{{ html_id }}_fix_time();
+  }
 
-function {{ html_id }}_fix_time() {
-	var d = new Date();
-	d.setYear(parseInt(document.getElementById('{{ html_id }}_year').value));
-	d.setMonth(parseInt(document.getElementById('{{ html_id }}_month').value) - 1);
-	d.setDate(parseInt(document.getElementById('{{ html_id }}_day').value));
-	d.setHours(parseInt(document.getElementById('{{ html_id }}_hour').value));
-	d.setMinutes(parseInt(document.getElementById('{{ html_id }}_minute').value));
-	d.setSeconds(0);
-	d.setMilliseconds(0);
-	document.getElementById('{{ html_id }}_timestamp').value = Math.floor(d.getTime() / 1000);
-};
+  function {{ html_id }}_fix_time() {
+  	var d = new Date();
+  	d.setYear(parseInt(document.getElementById('{{ html_id }}_year').value));
+  	d.setMonth(parseInt(document.getElementById('{{ html_id }}_month').value) - 1);
+  	d.setDate(parseInt(document.getElementById('{{ html_id }}_day').value));
+  	d.setHours(parseInt(document.getElementById('{{ html_id }}_hour').value));
+  	d.setMinutes(parseInt(document.getElementById('{{ html_id }}_minute').value));
+  	d.setSeconds(0);
+  	d.setMilliseconds(0);
+  	document.getElementById('{{ html_id }}_timestamp').value = Math.floor(d.getTime() / 1000);
+  };
 </script>
 
-YY/MM/DD: <select id='{{ html_id }}_year' onchange='{{ html_id }}_fix_time();'>
-{% for m in range(year_range_start, year_range_end) %}
-	<option value='{{ m }}'>{{ m }}</option>
-{% end %}
+YY/MM/DD/HH:MM
+<select id="{{ html_id }}_year" onchange="{{ html_id }}_fix_time();">
+  {% for m in range(year_range_start, year_range_end) %}
+  <option value="{{ m }}">{{ m }}</option>
+  {% end %}
 </select>
 /
-<select id='{{ html_id }}_month' onchange='{{ html_id }}_fix_time();'>
-{% for m in range(1, 13) %}
-	<option value='{{ m }}'>{{ m }}</option>
-{% end %}
+<select id="{{ html_id }}_month" onchange="{{ html_id }}_fix_time();">
+  {% for m in range(1, 13) %}
+  <option value="{{ m }}">{{ m }}</option>
+  {% end %}
 </select>
 /
-<select id='{{ html_id }}_day' onchange='{{ html_id }}_fix_time();'>>
-{% for m in range(1, 32) %}
-	<option value='{{ m }}'>{{ m }}</option>
-{% end %}
+<select id="{{ html_id }}_day" onchange="{{ html_id }}_fix_time();">
+  > {% for m in range(0, 32) %}
+  <option value="{{ m }}">{{ m }}</option>
+  {% end %}
 </select>
-
-<br>
-Time: <select id='{{ html_id }}_hour' onchange='{{ html_id }}_fix_time();'>>
-{% for m in range(0, 24) %}
-	<option value='{{ m }}'>{{ m }}</option>
-{% end %}
+&nbsp;&nbsp;&nbsp;
+<select id="{{ html_id }}_hour" onchange="{{ html_id }}_fix_time();">
+  > {% for m in range(0, 24) %}
+  <option value="{{ m }}">{{ m }}</option>
+  {% end %}
 </select>
 :
-<select id='{{ html_id }}_minute' onchange='{{ html_id }}_fix_time();'>>
-{% for m in range(0, 60) %}
-	<option value='{{ m }}'>{{ m }}</option>
-{% end %}
+<select id="{{ html_id }}_minute" onchange="{{ html_id }}_fix_time();">
+  > {% for m in range(0, 60) %}
+  <option value="{{ m }}">{{ m }}</option>
+  {% end %}
 </select>
-<br>
-Epoch:
-<input type='text' id='{{ html_id }}_timestamp' size=12 disabled='disabled'/>
-<script>{{ html_id }}_set_time_from_server({{ at_time }});</script>
+<br />
+<input
+  type="hidden"
+  id="{{ html_id }}_timestamp"
+  size="12"
+  disabled="disabled"
+/>
+<script>
+  {{ html_id }}_set_time_from_server({{ at_time }});
+</script>

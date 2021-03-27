@@ -39,8 +39,6 @@ class WebCreateProducer(api.web.HTMLRequest):
             )
         self.write("</select><br>")
         self.write("Name: <input id='new_ph_name' type='text' /><br>")
-        self.write("URL: <input id='new_ph_url' type='text' /><br>")
-        self.write("DJ User ID: <input id='new_ph_user_id' type='text' /><br>")
         self.write(
             "<br>Input date and time in YOUR timezone.<br><u>Start Time</u>:<br> "
         )
@@ -51,7 +49,7 @@ class WebCreateProducer(api.web.HTMLRequest):
             "<br><br><button onclick=\"window.top.call_api('admin/create_producer', "
         )
         self.write(
-            "{ 'producer_type': document.getElementById('new_ph_type').value, 'end_utc_time': document.getElementById('new_ph_end_timestamp').value, 'start_utc_time': document.getElementById('new_ph_start_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value, 'dj_user_id': document.getElementById('new_ph_user_id').value });\""
+            "{ 'producer_type': document.getElementById('new_ph_type').value, 'end_utc_time': document.getElementById('new_ph_end_timestamp').value, 'start_utc_time': document.getElementById('new_ph_start_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url' '', 'dj_user_id': '' });\""
         )
         self.write(">Create new Producer</button></div>")
         self.write(self.render_string("basic_footer.html"))
@@ -125,13 +123,6 @@ class WebModifyProducer(api.web.HTMLRequest):
         )
         self.write(
             "<button onclick=\"window.top.call_api('admin/change_producer_name', { 'sched_id': %s, 'name': document.getElementById('new_ph_name').value });\">Change Name</button><br><hr>"
-            % p.id
-        )
-        self.write(
-            "URL: <input id='new_ph_url' type='text' value=\"%s\"/><br>" % (p.url or "")
-        )
-        self.write(
-            "<button onclick=\"window.top.call_api('admin/change_producer_url', { 'sched_id': %s, 'url': document.getElementById('new_ph_url').value });\">Change URL</button><br><hr>"
             % p.id
         )
         self.write(

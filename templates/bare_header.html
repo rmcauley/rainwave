@@ -1,141 +1,201 @@
 <!DOCTYPE html>
 <html lang="en_CA">
-<head>
-<title>{{ title }}</title>
-<link href='//fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
-<style type='text/css'>
-	body {
-		overflow: auto;
-		background: #000000;
-		color: #FFFFFF;
-		font-family: 'Roboto Condensed', 'Helvetica Neue', 'Helvetica', sans-serif;
-	}
+  <head>
+    <title>{{ title }}</title>
+    <link
+      href="//fonts.googleapis.com/css?family=Roboto+Condensed:400,300italic,400italic,700,700italic"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <style type="text/css">
+      body {
+        overflow: auto;
+        background: #000000;
+        color: #ffffff;
+        font-family: "Roboto Condensed", "Helvetica Neue", "Helvetica",
+          sans-serif;
+      }
 
-	h1, h2 {
-		border-bottom: solid 1px #CE8300;
-		color: #FFC96A;
-	}
+      h1,
+      h2 {
+        border-bottom: solid 1px #ce8300;
+        color: #ffc96a;
+      }
 
-	div.indexlink {
-		float: right;
-		font-size: 1.2em;
-		font-weight: bold;
-	}
+      div.indexlink {
+        float: right;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
 
-	a {
-		cursor: pointer;
-		color: #AAFFFF;
-		transition: background-color 300ms;
-		background-color: transparent;
-		text-decoration: none;
-	}
+      a {
+        cursor: pointer;
+        color: #aaffff;
+        transition: background-color 300ms;
+        background-color: transparent;
+        text-decoration: none;
+      }
 
-	a:hover {
-		background-color: #505;
-	}
+      a:hover {
+        background-color: #505;
+      }
 
-	pre, tt {
-		background: #225;
-	}
+      pre,
+      tt {
+        background: #225;
+      }
 
-	pre {
-		border: 1px dashed #55A;
-		padding: .3em .3em .3em 1em;
-	}
+      pre {
+        border: 1px dashed #55a;
+        padding: 0.3em 0.3em 0.3em 1em;
+      }
 
-	div.warn, p.warn, div.ok, p.ok {
-		padding: .3em .3em .3em 1em;
-	}
+      div.warn,
+      p.warn,
+      div.ok,
+      p.ok {
+        padding: 0.3em 0.3em 0.3em 1em;
+      }
 
-	.warn {
-		background: #300;
-		border: 1px dashed #800;
-	}
+      .warn {
+        background: #300;
+        border: 1px dashed #800;
+      }
 
-	.ok {
-		background: #030;
-		border: 1px dashed #080;
-	}
+      .ok {
+        background: #030;
+        border: 1px dashed #080;
+      }
 
-	dt {
-		font-weight: bold;
-		border-bottom: solid 1px #3F667C;
-	}
+      dt {
+        font-weight: bold;
+        border-bottom: solid 1px #3f667c;
+      }
 
-	dd {
-		margin-left: 2em;
-	}
+      dd {
+        margin-left: 2em;
+      }
 
-	dd.note {
-		margin-left: 3em;
-		font-style: italic;
-		color: #BBB;
-	}
+      dd.note {
+        margin-left: 3em;
+        font-style: italic;
+        color: #bbb;
+      }
 
-	dd.def {
-		margin-left: .8em;
-		border-bottom: 1px solid #444;
-	}
+      dd.def {
+        margin-left: 0.8em;
+        border-bottom: 1px solid #444;
+      }
 
-	dd.return {
-		margin-top: .5em;
-	}
+      dd.return {
+        margin-top: 0.5em;
+      }
 
-	tr:hover td {
-		background: #111144;
-	}
+      tr:hover td {
+        background: #111144;
+      }
 
-	th {
-		background: none repeat scroll 0 0 #4444AA;
-		color: #FFFFFF;
-		text-align: left;
-	}
+      th {
+        background: none repeat scroll 0 0 #4444aa;
+        color: #ffffff;
+        text-align: left;
+      }
 
-	td, th {
-		border-bottom: 1px solid #BBB;
-		border-left: 1px solid #444;
-		padding: 1px 5px;
-	}
+      td,
+      th {
+        border-bottom: 1px solid #bbb;
+        border-left: 1px solid #444;
+        padding: 1px 5px;
+      }
 
-	td.requirement {
-		text-align: center;
-	}
+      td.requirement {
+        text-align: center;
+      }
 
-	.json {
-		font-family: monospace;
-		white-space: pre;
-		white-space: pre-wrap;
-		background: none repeat scroll 0 0 #111144;
-		border: 1px dashed #4444AA;
-		padding: .2em .4em;
-	}
+      .json {
+        font-family: monospace;
+        white-space: pre;
+        white-space: pre-wrap;
+        background: none repeat scroll 0 0 #111144;
+        border: 1px dashed #4444aa;
+        padding: 0.2em 0.4em;
+      }
 
-	.qr {
-		border: solid 5px #FFFFFF;
-	}
+      .qr {
+        border: solid 5px #ffffff;
+      }
 
-	.admin_menu {
-		float: right;
-	}
+      .admin_menu {
+        float: right;
+      }
 
-	.group_name {
-		display: inline-block;
-		padding-left: 5px;
-		padding-right: 5px;
-		background: #2A2A2A;
-		border-radius: 4px;
-	}
+      .group_name {
+        display: inline-block;
+        padding-left: 5px;
+        padding-right: 5px;
+        background: #2a2a2a;
+        border-radius: 4px;
+      }
 
-	.group_name + .group_name {
-		margin-left: .5em;
-	}
+      .group_name + .group_name {
+        margin-left: 0.5em;
+      }
 
-	.group_delete {
-		background: #411;
-	}
+      .group_delete {
+        background: #411;
+      }
 
-	.group_delete:hover {
-		background: #A00;
-	}
-</style>
-<body>
+      .group_delete:hover {
+        background: #a00;
+      }
+
+      .power_hour--used {
+        pointer-events: none;
+      }
+
+      .power_hour {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        border-bottom: #444 1px solid;
+        margin-bottom: 8px;
+      }
+
+      .power_hour:hover {
+        background-color: #4444aa;
+      }
+
+      .power_hour__row {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        white-space: nowrap;
+        margin-bottom: 4px;
+      }
+
+      .power_hour__left {
+        flex-grow: 1;
+      }
+
+      .power_hour__album {
+        opacity: 0.7;
+      }
+
+      .power_hour__right {
+        margin-left: 8px;
+        flex-grow: 0;
+        white-space: nowrap;
+      }
+
+      .power_hour__button {
+        padding: 4px;
+      }
+
+      .power_hour__button:hover {
+        background: red;
+      }
+    </style>
+    <body></body>
+  </head>
+</html>

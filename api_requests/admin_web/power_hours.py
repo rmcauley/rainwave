@@ -1,4 +1,5 @@
 import datetime
+import math
 from pytz import timezone
 
 from libs import log
@@ -38,13 +39,12 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
 
         self.write("<div>Input date and time in YOUR timezone.<br>")
         self.write("Name: <input id='new_ph_name' type='text' /><br>")
-        self.write("URL: <input id='new_ph_url' type='text' /><br>")
         index.write_html_time_form(self, "new_ph")
         self.write(
             "<br><button onclick=\"window.top.call_api('admin/create_producer', "
         )
         self.write(
-            "{ 'producer_type': 'OneUpProducer', 'end_utc_time': document.getElementById('new_ph_timestamp').value, 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\""
+            "{ 'producer_type': 'OneUpProducer', 'end_utc_time': document.getElementById('new_ph_timestamp').value, 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': '' });\""
         )
         self.write(">Create new, empty Power Hour</button></div>")
         self.write("<div>(based on above form with...)<br>")
@@ -55,7 +55,7 @@ class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours)
             "<br><button onclick=\"window.top.call_api('admin/create_producer', "
         )
         self.write(
-            "{ 'fill_unrated': true, 'producer_type': 'OneUpProducer', 'end_utc_time': parseInt(document.getElementById('new_ph_timestamp').value) + parseInt(document.getElementById('unrated_length').value), 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': document.getElementById('new_ph_url').value });\""
+            "{ 'fill_unrated': true, 'producer_type': 'OneUpProducer', 'end_utc_time': parseInt(document.getElementById('new_ph_timestamp').value) + parseInt(document.getElementById('unrated_length').value), 'start_utc_time': document.getElementById('new_ph_timestamp').value, 'name': document.getElementById('new_ph_name').value, 'url': '' });\""
         )
         self.write(">Create new PH w/unrated songs</button></div><hr>")
 
@@ -112,7 +112,22 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
         ph = self._output[self.return_name]
         self.write(self.render_string("bare_header.html", title="%s" % ph["name"]))
         self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
-        self.write("<h2>%s</h2>" % ph["name"])
+        self.write("<h2>")
+        self.write("<div style=\"float: right; position: relative; top: -4px; \">")
+        self.write(
+            "<a onclick=\"window.top.call_api('admin/delete_producer', { 'sched_id': %s });\">🚮</a>"
+            % ph["id"]
+        )
+        self.write("</div>")
+        self.write(ph["name"])
+        self.write("</h2>")
+
+        ######
+
+        self.write(f"<div class=\"power_hour\">")
+        self.write(f"<div class=\"power_hour__row\">")
+
+        self.write("<div class=\"power_hour__left\">")
         self.write("<span>Times from the server:</span><br>")
         self.write(
             "<div style='font-family: monospace;'>%s</div>"
@@ -126,77 +141,137 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
             "<div style='font-family: monospace;'>%s</div>"
             % get_ph_formatted_time(ph["start"], ph["end"], "Europe/London")
         )
-        self.write(
-            "<div style='font-family: monospace;'>%s</div>"
-            % get_ph_formatted_time(ph["start"], ph["end"], "Asia/Tokyo")
-        )
+        self.write("</div>")
 
+        self.write("<div class=\"power_hour__right\">")
         total_len = 0
         for song in ph["songs"]:
             total_len += song["length"]
         self.write(
-            "<br><div>Total length of songs: <b>%d:%02d</b></div>"
+            "<div>Total length of songs: <b>%d:%02d</b></div>"
             % (int(total_len / 3600), (total_len / 60) % 60)
         )
+        self.write("</div>")
 
-        self.write("<br><span>Change time.  Use YOUR timezone.</span><br>")
+        self.write("</div>")
+
+        self.write("</div>")
+
+        ####
+
+        self.write(f"<div class=\"power_hour\">")
+        self.write(f"<div class=\"power_hour__row\">")
+
+        self.write("<div class=\"power_hour__left\">")
+        self.write("<span>Your TZ:</span>")
         index.write_html_time_form(self, "power_hour", ph["start"])
+        self.write("</div>")
+
+        self.write("<div class=\"power_hour__right\">")
         self.write(
-            "<br><button onclick=\"window.top.call_api('admin/change_producer_start_time', "
+            "<button onclick=\"window.top.call_api('admin/change_producer_start_time', "
         )
         self.write(
             "{ 'utc_time': document.getElementById('power_hour_timestamp').value, 'sched_id': %s });\""
             % ph["id"]
         )
-        self.write(">Change Time</button></div><hr>")
+        self.write(">Change Time</button></div>")
 
+        self.write("</div>")
+        self.write("</div>")
+
+        ######
+
+        self.write(f"<div class=\"power_hour\">")
+        self.write(f"<div class=\"power_hour__row\">")
+
+        self.write("<div class=\"power_hour__left\">")
         self.write(
-            "<button onclick=\"window.top.call_api('admin/delete_producer', { 'sched_id': %s });\">Delete This Power Hour</button><hr>"
+            "Name: <input type='text' id='new_ph_name' value='%s'>" % ph["name"]
+        )
+        self.write("</div>")
+
+        self.write("<div class=\"power_hour__right\">")
+        self.write(
+            "<button onclick=\"window.top.call_api('admin/change_producer_name', { 'sched_id': %s, 'name': document.getElementById('new_ph_name').value });\">Change Name</button>"
             % ph["id"]
         )
+        self.write("</div>")
+        self.write("</div>")
+        self.write("</div>")
 
+        #####
+
+        self.write(f"<div class=\"power_hour\" style=\"margin-bottom: 24px;\">")
+        self.write(f"<div class=\"power_hour__row\">")
+        self.write("<div class=\"power_hour__left\">")
         self.write(
-            "Name: <input type='text' id='new_ph_name' value='%s'><br>" % ph["name"]
-        )
-        self.write(
-            "<button onclick=\"window.top.call_api('admin/change_producer_name', { 'sched_id': %s, 'name': document.getElementById('new_ph_name').value });\">Change Name</button><hr>"
+            "<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Shuffle the Song Order</button>\n\n"
             % ph["id"]
         )
-
-        self.write(
-            "URL: <input type='text' id='new_ph_url' value='%s'><br>"
-            % (ph["url"] or "")
-        )
-        self.write(
-            "<button onclick=\"window.top.call_api('admin/change_producer_url', { 'sched_id': %s, 'url': document.getElementById('new_ph_url').value });\">Change URL</button><hr>"
-            % ph["id"]
-        )
-
-        self.write(
-            "<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Shuffle the Song Order</button><hr>\n\n"
-            % ph["id"]
-        )
+        self.write("</div>")
+        # self.write("<div class=\"power_hour__right\">")
+        # self.write(
+        #     "<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Europify 🇪🇺</button>\n\n"
+        #     % ph["id"]
+        # )
+        # self.write("</div>")
+        self.write("</div>")
+        self.write("</div>")
+        #####
 
         try:
-            self.write("<ol>")
-            for song in ph["songs"]:
-                self.write("<li><div>%s" % song["title"])
+            for song_index, song in enumerate(ph["songs"]):
+                song_origin = config.station_id_friendly[song["origin_sid"]]
+                song_class_modifiers = []
                 if song["one_up_used"]:
-                    self.write(" <b>(PLAYED)</b>")
-                elif song["one_up_queued"]:
-                    self.write(" (queued)")
-                self.write("</div><div>%s</div>\n" % song["albums"][0]["name"])
-                self.write("<div>")
+                    song_class_modifiers.append("used")
+                song_classes = "power_hour--".join(song_class_modifiers)
+                length_seconds = "{:02d}".format(song["length"] % 60)
+                length_minutes = math.floor(song["length"] / 60)
+                length = f"{length_minutes}:{length_seconds}"
+
+                ## Totality
+
+                self.write(f"<div class=\"power_hour {song_classes}\">")
+
+                ## First row
+
+                self.write(f"<div class=\"power_hour__row\">")
+
+                self.write(f"<div class=\"power_hour__left\">{song_index + 1}. {song['title']}</div>")
+
+                self.write(f"<div class=\"power_hour__right\">({song['rating']})</div>")
+
+                self.write(f"<div class=\"power_hour__right\">{length}</div>")
+
+                self.write(f"<div class=\"power_hour__right\">{song_origin}</div>")
+
+                self.write("</div>")
+
+                ## Second row
+
+                self.write(f"<div class=\"power_hour__row\">")
+
+                self.write(f"<div class=\"power_hour__left power_hour__album\">{song['albums'][0]['name']}</div>")
+
+                self.write("<div class=\"power_hour__right\">")
                 self.write(
-                    "<a onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">Delete</a> - "
+                    "<a class=\"power_hour__button\" onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">🚮</a>"
                     % song["one_up_id"]
                 )
                 self.write(
-                    "<a onclick=\"window.top.call_api('admin/move_up_in_power_hour', { 'one_up_id': %s });\">Move Up</a>"
+                    "<a class=\"power_hour__button\" onclick=\"window.top.call_api('admin/move_up_in_power_hour', { 'one_up_id': %s });\">🔼</a>"
                     % song["one_up_id"]
                 )
-                self.write("</div></li>\n")
-            self.write("</ol>\n")
+                self.write("</div>")
+
+                self.write("</div>")
+
+                ## Totality
+
+                self.write("</div>")
+
             self.write(
                 "<script>window.top.current_sched_id = %s;</script>\n\n" % ph["id"]
             )
