@@ -210,12 +210,6 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
             % ph["id"]
         )
         self.write("</div>")
-        # self.write("<div class=\"power_hour__right\">")
-        # self.write(
-        #     "<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Europify 🇪🇺</button>\n\n"
-        #     % ph["id"]
-        # )
-        # self.write("</div>")
         self.write("</div>")
         self.write("</div>")
         #####

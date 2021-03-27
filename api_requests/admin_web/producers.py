@@ -58,7 +58,7 @@ class WebCreateProducer(api.web.HTMLRequest):
 class WebListProducersBase:
     # pylint: disable=E1101
     def header_special(self):
-        self.write("<th>Time</th><th></th><th></th><th></th>")
+        self.write("<th>Time</th><th></th><th></th><th></th><th></th>")
 
     def row_special(self, row):
         self.write(
@@ -77,6 +77,11 @@ class WebListProducersBase:
             "<td><a onclick=\"window.top.call_api('admin/duplicate_producer', { 'sched_id': %s });\">Duplicate</a></td>"
             % row["id"]
         )
+        self.write(
+            "<td><a onclick=\"window.top.call_api('admin/europify_producer', { 'sched_id': %s });\">Europify</a></td>"
+            % row["id"]
+        )
+
 
     def sort_keys(self, keys):
         return ["sid", "name", "type", "sched_length_minutes", "url", "username"]
