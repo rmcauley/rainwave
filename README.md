@@ -14,21 +14,19 @@ The software stack and data flow for broadcasting:
 -   Icecast distributes audio to users
 -   Icecast tells Rainwave API when users tune in/out
 
-Rainwave only supports MP3 files.
+Rainwave only supports reading tags from MP3 files.
 
 ## Prerequisites
 
-Authentication for Rainwave users is dependant on Google, Facebook, Twitter, or Twitch.
+Authentication for Rainwave users is dependant on Discord.
 
 -   Enable external auth by placing your app keys in the config file
--   If you're just running Rainwave for streaming audio, you do not need phpBB.
--   If you are just testing/developing locally, you do not need phpBB.
+-   If you're just running Rainwave for streaming audio, you do not need Discord.
+-   If you are just testing/developing locally, you do not need Discord.
 
 If using Icecast, Icecast 2.3.3 or above is required.
 
-If using LiquidSoap, LiquidSoap 1.1 or above is required. If you want
-to use the built-in web DJ functionality of Rainwave, LiquidSoap 1.3
-or above is required.
+If using LiquidSoap, LiquidSoap 1.1 or above is required.
 
 ### Prerequisites on Debian/Ubuntu
 
@@ -45,6 +43,7 @@ sudo apt-get install gir1.2-gstreamer-1.0 \
      libcairo2-dev \
      libgirepository1.0-dev
 cp rainwave/etc/rainwave_reference.conf rainwave/etc/$USER.conf
+pipenv install
 ```
 
 ## Postgres Setup
@@ -64,7 +63,7 @@ Tips:
 
 -   Until you're ready to deploy a production version, it's best to leave development mode
     on and keep Rainwave single-processed.
--   Do not create a station with ID 0 - ID 0 is reseved.
+-   Do not create a station with ID 0 - ID 0 is reserved.
 
 Potential gotcha:
 
@@ -144,19 +143,13 @@ to emulate being logged in, open `/api4/test/login_tuned_in/1`.
 
 Before running `install.py`:
 
-With an existing phpBB install already ready, copy your Rainwave
-configuration file to `/etc/rainwave.conf` and tune for production.
-e.g. Turn off development modes, turn down logging, increase
-number of processes to the number of CPUs you
-have.
+Copy your Rainwave configuration file to `/etc/rainwave.conf`
+and tune for production. e.g. Turn off development modes,
+turn down logging, increase number of processes to the
+number of CPUs you have.
 
-Rudimentary init scripts are included for sysvinit but are not
-installed for you by default. You can install
-our initscripts with `sudo cp initscript /etc/init.d/rainwave`.
-
-If use systemd and create scripts for systemd,
-please contribute back to us!
-([GitHub Issue](https://github.com/rmcauley/rainwave/issues/99))
+Init scripts are included for systemd but are not
+installed for you by default.
 
 `install.py` will attempt to automatically run
 `/etc/init.d/rainwave` with `start` and `stop` arguments if
@@ -190,9 +183,6 @@ included in Rainwave's `etc/` directory.
 A sample LiquidSoap configuration is included in `etc/`.
 
 ## Developing The Front-End
-
-By this point in the documentation, you've already got a working
-Rainwave! Open it up and start poking around with developer tools!
 
 To edit the site:
 
