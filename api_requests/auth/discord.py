@@ -18,13 +18,14 @@ from .errors import OAuthNetworkError, OAuthRejectedError
 DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=2)
 
 
-REDIRECT_URI = urllib.parse.urlunsplit(
-    (
-        "https" if config.get("enforce_ssl") else "http",
-        config.get("hostname"),
-        "/oauth/discord",
-    )
-)
+REDIRECT_URI = "under progress"
+# urllib.parse.urlunsplit(
+#     (
+#         "https" if config.get("enforce_ssl") else "http",
+#         config.get("hostname"),
+#         "/oauth/discord",
+#     )
+# )
 
 
 @handle_url("/oauth/discord")
