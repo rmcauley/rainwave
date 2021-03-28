@@ -5,6 +5,7 @@ var RequestLineList = function (el) {
   self.auto_trim = true;
   self.loaded = true;
   self.list_item_height = 65;
+  self.scroll_after_load();
 
   API.add_callback("request_line", function (json) {
     for (var i = 0; i < json.length; i++) {
