@@ -24,6 +24,7 @@ var RequestLineList = function (el) {
   self.draw_entry = function (item) {
     item.id = item.user_id;
     item._el = document.createElement("div");
+    item._el._id = item.id;
     item._el.className = "item";
     item._user = document.createElement("div");
     item._song_title = document.createElement("div");
