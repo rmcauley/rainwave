@@ -12,5 +12,6 @@
   "python.linting.enabled": true,
   "python.venvPath": "~/.local/share/virtualenvs",
   "python.formatting.blackArgs": ["-t py38"],
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
+  "python.pythonPath": "/home/robert.mcauley/.local/share/virtualenvs/rainwave-yQbCkaaZ/bin/python"
 }

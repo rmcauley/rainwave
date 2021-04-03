@@ -18,14 +18,15 @@ from .errors import OAuthNetworkError, OAuthRejectedError
 DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=2)
 
 
-REDIRECT_URI = "under progress"
-# urllib.parse.urlunsplit(
-#     (
-#         "https" if config.get("enforce_ssl") else "http",
-#         config.get("hostname"),
-#         "/oauth/discord",
-#     )
-# )
+REDIRECT_URI = urllib.parse.urlunsplit(
+    (
+        "https" if config.get("enforce_ssl") else "http",
+        config.get("hostname"),
+        "/oauth/discord",
+        '',
+        ''
+    )
+)
 
 
 @handle_url("/oauth/discord")
@@ -35,9 +36,13 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin):
 
     async def get(self):
         if self.get_argument("code", False):
+            # step 2 - we've come back from Discord with a unique auth code, get
+            # token that we can use to act on behalf of user with discord
             token = await self.get_token(self.get_argument("code"))
+            # step 3 - get user info from Discord and login to Rainwave
             await self.register_and_login(token)
         else:
+            # step 1 - go to Discord login page
             self.authorize_redirect(
                 redirect_uri=REDIRECT_URI,
                 client_id=config.get("discord_client_id"),
