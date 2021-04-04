@@ -5,7 +5,7 @@ import uuid
 import aiohttp
 from api.urls import handle_url
 from api.web import HTMLRequest
-from libs import config, db
+from libs import config, db, log
 from tornado.auth import OAuth2Mixin
 
 from .errors import OAuthNetworkError, OAuthRejectedError
@@ -21,16 +21,17 @@ DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=2)
 REDIRECT_URI = urllib.parse.urlunsplit(
     (
         "https" if config.get("enforce_ssl") else "http",
-        config.get("hostname"),
+        config.get("hostname") + ":20000",
         "/oauth/discord",
         '',
         ''
     )
 )
 
-
 @handle_url("/oauth/discord")
 class DiscordAuth(HTMLRequest, OAuth2Mixin):
+    auth_required = False
+
     _OAUTH_AUTHORIZE_URL = "https://discord.com/api/oauth2/authorize"
     _OAUTH_ACCESS_TOKEN_URL = "https://discord.com/api/oauth2/token"
 
@@ -68,61 +69,113 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin):
                 timeout=DEFAULT_TIMEOUT,
             ) as session:
                 async with session.post(
-                    "http://discord.com/api/users/@me", data=data
+                    self._OAUTH_ACCESS_TOKEN_URL, data=data
                 ) as response:
+                    response_json = await response.json()
                     if response.status != 200:
-                        raise OAuthRejectedError()
-                    return (await response.json())["access_token"]
+                        raise OAuthRejectedError(response_json)
+                    return response_json["token_type"] + " " + response_json["access_token"]
         except aiohttp.ClientConnectionError:
             raise OAuthNetworkError()
 
-    def get_user_by_discord_user_id(self, discord_user_id: str):
-        return db.c.fetch_row(
-            "SELECT user_id, user_password, username FROM phpbb_users WHERE discord_user_id = %s",
+    def get_user_id_by_discord_user_id(self, discord_user_id: str):
+        return db.c.fetch_value(
+            "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
             (discord_user_id,),
-        )
+        ) or 1
+
+    async def oauth2_request(
+        self,
+        url,
+        access_token,
+        data = None,
+        **args
+    ):
+        async with aiohttp.ClientSession(
+            headers={"authorization": access_token},
+            loop=asyncio.get_running_loop(),
+            timeout=DEFAULT_TIMEOUT,
+        ) as session:
+            async with session.get(
+                url, data=data, **args
+            ) as response:
+                if response.status != 200:
+                    raise OAuthRejectedError()
+                return await response.json()
 
     async def register_and_login(self, token: str):
         discord_user = await self.oauth2_request(
             "https://discord.com/api/users/@me", access_token=token
         )
-        user = self.get_user_by_discord_user_id(discord_user["id"]) or {}
-        mapped_user_data = {
-            "discord_user_id": discord_user["id"],
-            "radio_username": discord_user["username"],
-            "username": user.get("username", str(uuid.uuid4())),
-            "user_avatar_type": "avatar.driver.remote",
-            "user_avatar": f"https://cdn.discordapp.com/avatars/{discord_user['user_id']}/{discord_user['avatar_hash']}.jpg?size=320",
-        }
-        if user.get("user_id"):
+
+        radio_username = discord_user['username']
+        discord_user_id = discord_user['id']
+        user_avatar = f"https://cdn.discordapp.com/avatars/{discord_user_id}/{discord_user['avatar']}.jpg?size=320"
+        user_avatar_type = "avatar.driver.remote"
+        user_id = 1
+        username = str(uuid.uuid4())
+        if self.user.id > 1:
+            user_id = self.user.id
+            radio_username = self.user.data['name']
+            username = self.user.data['name']
+            log.debug("discord", f"Connected legacy phpBB {user_id} to Discord {discord_user_id}")
+        else:
+            user_id = self.get_user_id_by_discord_user_id(discord_user_id)
+            if user_id > 1:
+                log.debug("discord", f"Connected linked phpBB {user_id} to Discord {discord_user_id}")
+            else:
+                log.debug("discord", f"Could not find existing user for Discord {discord_user_id}")
+
+        if user_id > 1:
+            log.info("discord", f"Updating exising user {user_id} from Discord {discord_user_id}")
+            print(user_avatar)
+            print(discord_user_id)
+            print(user_avatar_type)
+            print(radio_username)
             db.c.update(
                 (
                     "UPDATE phpbb_users SET "
-                    "  radio_username = %(radio_username), "
-                    "  user_avatar_type = %(user_avatar_type), "
-                    "  user_avatar = %(user_avatar) "
-                    "WHERE user_id = %(user_id)"
+                    "  discord_user_id = %s, "
+                    "  radio_username = %s, "
+                    "  user_avatar_type = %s, "
+                    "  user_avatar = %s "
+                    # "  user_password = '' "
+                    "WHERE user_id = %s"
                 ),
-                mapped_user_data,
+                (
+                    discord_user_id,
+                    radio_username,
+                    user_avatar_type,
+                    user_avatar,
+                    user_id,
+                ),
             )
         else:
+            log.debug("discord", f"Creating new user from Discord {discord_user_id}")
             db.c.update(
                 (
                     "INSERT INTO phpbb_users "
-                    "  (username   , discord_user_id   , radio_username   , user_avatar_type   , user_avatar) "
+                    "  (username, discord_user_id, radio_username, user_avatar_type, user_avatar) "
                     "  VALUES "
-                    "  (%(username), %(discord_user_id), %(radio_username), %(user_avatar_type), %(user_avatar))"
+                    "  (%s      , %s             , %s            , %s              , %s)"
                 ),
-                mapped_user_data,
+                (
+                    username,
+                    discord_user_id,
+                    radio_username,
+                    user_avatar_type,
+                    user_avatar,
+                ),
             )
-            user = self.get_user_by_discord_user_id(discord_user["id"])
+            user_id = self.get_user_id_by_discord_user_id(discord_user_id)
+            log.info("discord", f"Created new user {user_id} from Discord {discord_user_id}")
 
         session_id = str(uuid.uuid4())
         db.c.update(
-            "INSERT INTO r4_sessions (session_id, user_id) VALUES (%(session_id), %(user_id))",
-            {"session_id": session_id, "user_id": user["user_id"]},
+            "INSERT INTO r4_sessions (session_id, user_id) VALUES (%s, %s)",
+            (session_id, user_id,)
         )
-        self.set_secure_cookie("r4_session_id", session_id)
+        self.set_cookie("r4_session_id", session_id)
 
         self.redirect("/")
 

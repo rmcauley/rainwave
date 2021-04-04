@@ -107,6 +107,8 @@
 
    "forums"                                          : "Forums",
    "login"                                           : "Login",
+   "login_discord"                                   : "Login via Discord (beta)",
+   "oauth_rejected"                                  : "Authorization Rejected :(",
    "signup"                                          : "Sign Up",
    "chat"                                            : "Mibbit IRC",
    "search"                                          : "Search",

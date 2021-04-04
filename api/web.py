@@ -21,6 +21,7 @@ from libs import config
 from libs import log
 from libs import db
 from libs import cache
+from api_requests.auth.errors import OAuthRejectedError
 
 # Add support for the SameSite attribute (obsolete when PY37 is unsupported).
 cookies.Morsel._reserved.setdefault('samesite', 'SameSite')
@@ -316,7 +317,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
             self.set_cookie("r4_sid", str(self.sid), expires_days=365)
 
         if self.phpbb_auth:
-            self.do_phpbb_auth()
+            if not self.do_rw_session_auth():
+                self.do_phpbb_auth()
         else:
             self.rainwave_auth()
 
@@ -402,6 +404,17 @@ class RainwaveHandler(tornado.web.RequestHandler):
             "UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s",
             (int(timestamp()), "rainwave", session_id),
         )
+
+    def do_rw_session_auth(self):
+        rw_session_id = self.get_cookie("r4_session_id")
+        if rw_session_id:
+            user_id = db.c.fetch_var("SELECT user_id FROM r4_sessions WHERE session_id = %s", (rw_session_id,))
+            if user_id:
+                self.user = User(user_id)
+                self.user.ip_address = self.request.remote_ip
+                self.user.authorize(self.sid, None, bypass=True)
+                return True
+        return False
 
     def rainwave_auth(self):
         user_id_present = "user_id" in self.request.arguments
@@ -612,7 +625,14 @@ def _html_write_error(self, status_code, **kwargs):
                 exc.localize(locale.RainwaveLocale.get("en_CA"))
             else:
                 exc.localize(self.locale)
-        if isinstance(exc, (APIException, tornado.web.HTTPError)) and exc.reason:
+
+        if isinstance(exc, OAuthRejectedError):
+            self.write(
+                self.render_string(
+                    "basic_header.html", title=self.locale.translate("oauth_rejected")
+                )
+            )
+        elif isinstance(exc, (APIException, tornado.web.HTTPError)) and exc.reason:
             self.write(
                 self.render_string(
                     "basic_header.html", title="%s - %s" % (status_code, exc.reason)
@@ -629,6 +649,7 @@ def _html_write_error(self, status_code, **kwargs):
                     ),
                 )
             )
+
         if status_code == 500 or config.get("developer_mode"):
             self.write("<p>")
             self.write(self.locale.translate("unknown_error_message"))
@@ -640,6 +661,7 @@ def _html_write_error(self, status_code, **kwargs):
             ):
                 self.write(line)
             self.write("</div>")
+
     self.finish()
 
 
