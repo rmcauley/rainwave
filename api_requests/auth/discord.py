@@ -69,7 +69,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin):
             raise OAuthNetworkError()
 
     def get_user_id_by_discord_user_id(self, discord_user_id: str):
-        return db.c.fetch_value(
+        return db.c.fetch_var(
             "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
             (discord_user_id,),
         ) or 1
