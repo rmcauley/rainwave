@@ -7,6 +7,7 @@ class DiscordAuth(HTMLRequest):
     auth_required = False
     phpbb_auth = False
     auth_required = False
+    sid_required = False
 
     async def get(self):
         self.write(

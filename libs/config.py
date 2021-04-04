@@ -124,7 +124,7 @@ def load(filename=None, testmode=False):
             f"font-src 'self' {hostname} data: https://fonts.googleapis.com https://fonts.gstatic.com/",
             f"connect-src wss://{websocket_host}",
             f"style-src 'self' {hostname} 'unsafe-inline' https://fonts.googleapis.com",
-            f"img-src 'self' {hostname} *.{hostname}",
+            f"img-src 'self' {hostname} *.{hostname} https://cdn.discordapp.com",
         ]
     )
 

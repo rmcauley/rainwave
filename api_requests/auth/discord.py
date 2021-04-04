@@ -20,6 +20,7 @@ REDIRECT_URI = config.get("base_site_url") + "oauth/discord"
 @handle_url("/oauth/discord")
 class DiscordAuth(HTMLRequest, OAuth2Mixin):
     auth_required = False
+    sid_required = False
 
     _OAUTH_AUTHORIZE_URL = "https://discord.com/api/oauth2/authorize"
     _OAUTH_ACCESS_TOKEN_URL = "https://discord.com/api/oauth2/token"
