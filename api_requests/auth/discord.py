@@ -1,5 +1,4 @@
 import asyncio
-import urllib.parse
 import uuid
 
 import aiohttp
@@ -11,22 +10,12 @@ from tornado.auth import OAuth2Mixin
 from .errors import OAuthNetworkError, OAuthRejectedError
 
 # use state in a secure cookie: https://discord.com/developers/docs/topics/oauth2#state-and-security
-# update api.web to read secure cookie
 # remove old fields from user
 # add discord bot to react to role changes/logins
 
 DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=2)
 
-
-REDIRECT_URI = urllib.parse.urlunsplit(
-    (
-        "https" if config.get("enforce_ssl") else "http",
-        config.get("hostname") + ":20000",
-        "/oauth/discord",
-        '',
-        ''
-    )
-)
+REDIRECT_URI = config.get("base_site_url") + "oauth/discord"
 
 @handle_url("/oauth/discord")
 class DiscordAuth(HTMLRequest, OAuth2Mixin):
