@@ -164,7 +164,7 @@ class User:
         if "sid" in self.data and self.data["sid"]:
             return self.data["sid"]
         lrecord = self.get_listener_record()
-        if "sid" in lrecord:
+        if lrecord and "sid" in lrecord:
             return lrecord["sid"]
         return None
 
