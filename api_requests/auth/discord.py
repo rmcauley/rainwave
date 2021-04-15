@@ -8,17 +8,19 @@ from libs import config, db, log
 from tornado.auth import OAuth2Mixin
 
 from .errors import OAuthNetworkError, OAuthRejectedError
+from .r4_mixin import R4SetupSessionMixin
 
 # use state in a secure cookie: https://discord.com/developers/docs/topics/oauth2#state-and-security
 # remove old fields from user
 # add discord bot to react to role changes/logins
+# need account merging because people don't know they're logged in
 
 DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=2)
 
 REDIRECT_URI = config.get("base_site_url") + "oauth/discord"
 
 @handle_url("/oauth/discord")
-class DiscordAuth(HTMLRequest, OAuth2Mixin):
+class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
     auth_required = False
     sid_required = False
 
@@ -118,10 +120,6 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin):
 
         if user_id > 1:
             log.info("discord", f"Updating exising user {user_id} from Discord {discord_user_id}")
-            print(user_avatar)
-            print(discord_user_id)
-            print(user_avatar_type)
-            print(radio_username)
             db.c.update(
                 (
                     "UPDATE phpbb_users SET "
@@ -160,12 +158,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin):
             user_id = self.get_user_id_by_discord_user_id(discord_user_id)
             log.info("discord", f"Created new user {user_id} from Discord {discord_user_id}")
 
-        session_id = str(uuid.uuid4())
-        db.c.update(
-            "INSERT INTO r4_sessions (session_id, user_id) VALUES (%s, %s)",
-            (session_id, user_id,)
-        )
-        self.set_cookie("r4_session_id", session_id)
+        self.setup_rainwave_session(user_id)
 
         self.redirect("/")
 
