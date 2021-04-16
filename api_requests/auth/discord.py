@@ -143,9 +143,9 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             db.c.update(
                 (
                     "INSERT INTO phpbb_users "
-                    "  (username, discord_user_id, radio_username, user_avatar_type, user_avatar) "
+                    "  (username, username_clean, discord_user_id, radio_username, user_avatar_type, user_avatar) "
                     "  VALUES "
-                    "  (%s      , %s             , %s            , %s              , %s)"
+                    "  (%s      , %s,             %s             , %s            , %s              , %s)"
                 ),
                 (
                     username,
