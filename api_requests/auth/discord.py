@@ -149,6 +149,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 ),
                 (
                     username,
+                    username,
                     discord_user_id,
                     radio_username,
                     user_avatar_type,
