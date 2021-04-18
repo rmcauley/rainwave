@@ -1,5 +1,7 @@
 import asyncio
 import uuid
+import secrets
+import bcrypt
 
 import aiohttp
 from api.urls import handle_url
@@ -10,14 +12,13 @@ from tornado.auth import OAuth2Mixin
 from .errors import OAuthNetworkError, OAuthRejectedError
 from .r4_mixin import R4SetupSessionMixin
 
-# use state in a secure cookie: https://discord.com/developers/docs/topics/oauth2#state-and-security
-# remove old fields from user
 # add discord bot to react to role changes/logins
 # need account merging because people don't know they're logged in
 
 DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=2)
 
 REDIRECT_URI = config.get("base_site_url") + "oauth/discord"
+OAUTH_STATE_SALT = bcrypt.gensalt()
 
 @handle_url("/oauth/discord")
 class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
@@ -29,19 +30,31 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
 
     async def get(self):
         if self.get_argument("code", False):
-            # step 2 - we've come back from Discord with a unique auth code, get
+            # step 2 - we've come back from Discord with a state parameter
+            # that needs to be verified against the user's cookie.
+            oauth_secret = self.get_cookie("r4_oauth_secret")
+            oauth_expected_state = bcrypt.hashpw(oauth_secret.encode(), OAUTH_STATE_SALT).decode("utf-8")
+            self.set_cookie("r4_oauth_secret", "")
+            destination, oauth_state = self.get_argument("state").split("$", maxsplit=1)
+            if oauth_expected_state != oauth_state:
+                raise OAuthRejectedError
+            # step 3 - we've come back from Discord with a unique auth code, get
             # token that we can use to act on behalf of user with discord
             token = await self.get_token(self.get_argument("code"))
-            # step 3 - get user info from Discord and login to Rainwave
-            await self.register_and_login(token)
+            # step 4 - get user info from Discord and login to Rainwave
+            await self.register_and_login(token, destination)
         else:
             # step 1 - go to Discord login page
+            destination = self.get_argument("destination", "web")
+            oauth_secret = secrets.token_hex()
+            self.set_cookie("r4_oauth_secret", oauth_secret)
+            oauth_state = destination + "$" + bcrypt.hashpw(oauth_secret.encode(), OAUTH_STATE_SALT).decode("utf-8")
             self.authorize_redirect(
                 redirect_uri=REDIRECT_URI,
                 client_id=config.get("discord_client_id"),
                 scope=["identify"],
                 response_type="code",
-                extra_params={"prompt": "none",},
+                extra_params={"prompt": "none", "state": oauth_state},
             )
 
     async def get_token(self, code: str):
@@ -95,7 +108,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                     raise OAuthRejectedError()
                 return await response.json()
 
-    async def register_and_login(self, token: str):
+    async def register_and_login(self, token: str, destination: str):
         discord_user = await self.oauth2_request(
             "https://discord.com/api/users/@me", access_token=token
         )
@@ -161,7 +174,5 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             user_id = self.get_user_id_by_discord_user_id(discord_user_id)
             log.info("discord", f"Created new user {user_id} from Discord {discord_user_id}")
 
-        self.setup_rainwave_session(user_id)
-
-        self.redirect("/")
+        self.setup_rainwave_session_and_redirect(user_id, destination)
 
