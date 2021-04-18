@@ -5,13 +5,19 @@ from libs import db
 from api_requests.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 
-@handle_url("/oauth/phpbb")
+@handle_url("/oauth/login")
 class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
     auth_required = False
     sid_required = False
 
     def get(self):
-        pass
+        destination = self.request.query_arguments.get("destination", [])[-1]
+        self.render(
+            "login.html",
+            request=self,
+            locale=self.locale,
+            destination="app" if destination == b"app" else "web",
+        )
 
     def post(self):
         self.locale.translate("login_limit")
@@ -37,4 +43,11 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
         # setup/save r4 session
         self.setup_rainwave_session(db_entry['user_id'])
 
-        self.redirect("/")
+        if self.request.arguments.get("destination") == "app":
+            key = db.c.fetch_var(
+                "SELECT api_key FROM r4_api_keys WHERE user_id = %s LIMIT 1",
+                (db_entry['user_id'],),
+            )
+            self.redirect("rw://%s:%s@rainwave.cc" % (self.user.id, key),)
+        else:
+            self.redirect("/")

@@ -102,7 +102,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
 
         radio_username = discord_user['username']
         discord_user_id = discord_user['id']
-        user_avatar = f"https://cdn.discordapp.com/avatars/{discord_user_id}/{discord_user['avatar']}.jpg?size=320"
+        user_avatar = f"https://cdn.discordapp.com/avatars/{discord_user_id}/{discord_user['avatar']}.png?size=320"
         user_avatar_type = "avatar.driver.remote"
         user_id = 1
         username = str(uuid.uuid4())

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.code }}">
+  <head>
+    <title>Rainwave {{ locale.translate("login") }}</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+
+    <meta name="msapplication-TileColor" content="#1978B7" />
+    <meta
+      name="msapplication-TileImage"
+      content="/static/images4/logo_white.png"
+    />
+
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <link
+      rel="icon"
+      sizes="16x16 32x32 48x48 256x256"
+      href="/static/favicon.ico"
+    />
+
+    <meta name="theme-color" content="#1978B7" />
+    <meta name="msapplication-navbutton-color" content="#1978B7" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />
+
+    <style>
+      html {
+        background-color: #000;
+        background-image: url("/static/images4/auth_background.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-position: top center;
+      }
+
+      html,
+      body {
+        font-family: "Roboto Condensed", Roboto, -apple-system,
+          BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,
+          "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-size: 24px;
+        margin: 0;
+        padding: 0;
+        color: #fff;
+      }
+
+      #width-restrict {
+        margin: 20px auto;
+        max-width: 320px;
+      }
+
+      #logo {
+        height: 54px;
+        width: auto;
+        vertical-align: middle;
+        transform: translateY(-5px);
+        margin-right: 4px;
+      }
+
+      header {
+        display: inline-block;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin-top: 5px;
+        padding: 5px 0;
+        text-align: center;
+      }
+
+      h1 img {
+        width: 64px;
+        vertical-align: middle;
+      }
+
+      #app_would_like_to {
+        font-size: smaller;
+        font-weight: bold;
+      }
+
+      ul {
+        margin: 20px 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      li {
+        padding: 5px 5px 5px 0px;
+      }
+
+      li::before {
+        content: "•";
+        margin-right: 10px;
+      }
+
+      .padding {
+        padding: 0px 16px;
+      }
+
+      .padding + .padding {
+        margin-top: 64px;
+      }
+
+      footer {
+        display: block;
+        margin-top: 60px;
+        text-align: center;
+      }
+
+      button {
+        background: #1f95e5;
+        color: #fff;
+        border: none;
+        padding: 15px 30px;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        font-family: inherit;
+        font-size: 18px;
+      }
+
+      button:active {
+        transform: translate(2px, 2px);
+        color: #eee;
+        background: #1055d5;
+      }
+
+      #arrow {
+        float: right;
+      }
+
+      #accept {
+        text-transform: uppercase;
+      }
+
+      input {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 16px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="width-restrict">
+      <h1>
+        <img id="logo" src="/static/images4/logo_droplet.png" />
+        {{ locale.translate("login") }}
+      </h1>
+
+      <div class="padding">
+        <a href="/oauth/discord?destination={{ destination }}">
+          <button>
+            {{ locale.translate("register_with_discord") }}
+          </button>
+        </a>
+      </div>
+
+      <div class="padding">
+        <form action="POST">
+          <input type="hidden" name="destination" value="{{ destination }}" />
+          <input type="text" name="username" placeholder="{{ locale.translate('legacy_username') }}" />
+          <input type="password" name="password" placeholder="{{ locale.translate('password') }}" />
+          <button type="submit">
+            {{ locale.translate("login_with_legacy")}}
+          </button>
+      </div>
+    </div>
+
+  </body>
+</html>
