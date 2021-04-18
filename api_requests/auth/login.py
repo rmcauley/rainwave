@@ -11,12 +11,18 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
     sid_required = False
 
     def get(self):
-        destination = self.request.query_arguments.get("destination", [])[-1]
+        destination = "web"
+        try:
+            request_destination = self.request.query_arguments.get("destination", [])[0]
+            if request_destination == b"app":
+                destination = "app"
+        except IndexError:
+            pass
         self.render(
             "login.html",
             request=self,
             locale=self.locale,
-            destination="app" if destination == b"app" else "web",
+            destination=destination
         )
 
     def post(self):
