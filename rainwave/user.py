@@ -112,7 +112,7 @@ class User:
         if not user_data:
             user_data = db.c.fetch_row(
                 "SELECT user_id AS id, COALESCE(radio_username, username) AS name, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
-                "user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
+                "user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings, discord_user_id AS _discord_user_id "
                 "FROM phpbb_users WHERE user_id = %s",
                 (self.id,),
             )
@@ -141,6 +141,9 @@ class User:
 
         if not self.data["listen_key"]:
             self.generate_listen_key()
+
+        self.data["uses_oauth"] = True if self.data["_discord_user_id"] else False
+        self.data.pop("_discord_user_id")
 
     def _auth_anon_user(self, api_key, bypass=False):
         if not bypass:

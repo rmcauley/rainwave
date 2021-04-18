@@ -3,9 +3,16 @@
 		<a href="https://discord.gg/rNCBhSz" target="_blank">
 			Discord
 		</a>
-		<a href="/forums" target="_blank">
-			{{ $l("forums") }}
-		</a>
+		{{#if ^BOOTSTRAP.user.id == 1 || !BOOTSTRAP.user.uses_oauth }}
+			<a href="/oauth/discord">
+				{{ $l("link_discord") }}
+			</a>
+		{{/if}}
+		{{#if ^BOOTSTRAP.user.id != 1 }}
+			<a href="/oauth/logout">
+				{{ $l("logout") }}
+			</a>
+		{{/if}}
 	</div>
 	<div class="pconly menu_group">
 		<a href="/pages/playback_history" target="_blank">
