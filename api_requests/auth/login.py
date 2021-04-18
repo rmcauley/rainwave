@@ -28,7 +28,7 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
         if not password:
             raise APIException("password_required")
 
-        db_entry = db.c.fetch_row("SELECT user_id, user_password, user_login_attempts FROM phpbb_users WHERE lower(username) = %s", (username.lower(),))
+        db_entry = db.c.fetch_row("SELECT user_id, user_password, user_login_attempts FROM phpbb_users WHERE username_clean = %s", (username.lower(),))
         if not db_entry:
             raise APIException("login_failed")
         db_password = db_entry['user_password']
@@ -36,7 +36,7 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             raise APIException("login_too_old")
         if db_entry["user_login_attempts"] >= 5:
             raise APIException("login_limit")
-        hashed_password = bcrypt.hashpw(password.encode(), db_password[:29].encode())
+        hashed_password = bcrypt.hashpw(password.encode(), db_password[:29].encode()).decode("utf-8")
         if db_password != hashed_password:
             db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
             raise APIException("login_failed")
