@@ -11,31 +11,26 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
     sid_required = False
 
     def get(self):
-        destination = "web"
-        try:
-            request_destination = self.request.query_arguments.get("destination", [])[0]
-            if request_destination == b"app":
-                destination = "app"
-        except IndexError:
-            pass
         self.render(
             "login.html",
             request=self,
             locale=self.locale,
-            destination=destination
+            destination=self.get_argument("destination", "web")
         )
 
     def post(self):
         self.locale.translate("login_limit")
 
-        username = self.request.arguments.get("username")
-        password = self.request.arguments.get("password")
+        username = self.get_argument("username")
+        password = self.get_argument("password")
         if not username:
             raise APIException("username_required")
         if not password:
             raise APIException("password_required")
 
-        db_entry = db.c.fetch_var("SELECT user_id, user_password, user_login_attempts FROM phpbb_users WHERE username = %s", (username,))
+        db_entry = db.c.fetch_row("SELECT user_id, user_password, user_login_attempts FROM phpbb_users WHERE lower(username) = %s", (username.lower(),))
+        if not db_entry:
+            raise APIException("login_failed")
         db_password = db_entry['user_password']
         if not db_password.startswith("$2y$"):
             raise APIException("login_too_old")

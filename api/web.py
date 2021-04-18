@@ -177,7 +177,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
         elif name in self.request.arguments:
             arg = self.request.arguments[name]
             if isinstance(arg, list):
-                arg = arg[-1]
+                try:
+                    arg = arg[-1]
+                except IndexError:
+                    arg = default
         if isinstance(arg, bytes):
             arg = arg.decode("utf-8")
         if isinstance(arg, str):
