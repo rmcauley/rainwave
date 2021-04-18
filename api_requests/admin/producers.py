@@ -20,7 +20,7 @@ class ListProducers(api.web.APIHandler):
         self.append(
             self.return_name,
             db.c.fetch_all(
-                "SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
+                "SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, COALESCE(radio_username, username) AS username "
                 "FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id) "
                 "WHERE sched_used = FALSE AND sid = %s AND sched_start >= %s ORDER BY sched_start",
                 (self.sid, timestamp()),
@@ -30,7 +30,7 @@ class ListProducers(api.web.APIHandler):
         self.append(
             self.return_name + "_past",
             db.c.fetch_all(
-                "SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
+                "SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, COALESCE(radio_username, username) AS username "
                 "FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id) "
                 "WHERE sched_type != 'PVPElectionProducer' AND sid = %s AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
                 (self.sid, timestamp() - (86400 * 60), timestamp()),
@@ -48,7 +48,7 @@ class ListProducersAll(api.web.APIHandler):
         self.append(
             self.return_name,
             db.c.fetch_all(
-                "SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
+                "SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, COALESCE(radio_username, username) AS username "
                 "FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id)  "
                 "WHERE sched_used = FALSE AND sched_start >= %s ORDER BY sched_start",
                 (timestamp(),),
@@ -58,7 +58,7 @@ class ListProducersAll(api.web.APIHandler):
         self.append(
             self.return_name + "_past",
             db.c.fetch_all(
-                "SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, username "
+                "SELECT sched_type as type, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url, sid, ROUND((sched_end - sched_start) / 60) AS sched_length_minutes, COALESCE(radio_username, username) AS username "
                 "FROM r4_schedule LEFT JOIN phpbb_users ON (sched_dj_user_id = user_id)  "
                 "WHERE sched_type != 'PVPElectionProducer' AND sched_start > %s AND sched_start < %s ORDER BY sched_start DESC",
                 (timestamp() - (86400 * 26), timestamp()),

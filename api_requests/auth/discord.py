@@ -127,7 +127,9 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                     "  radio_username = %s, "
                     "  user_avatar_type = %s, "
                     "  user_avatar = %s "
-                    # "  user_password = '' "
+                    # "  user_password = '', "
+                    # "  user_email = '', "
+                    # "  user_email_hash = '' "
                     "WHERE user_id = %s"
                 ),
                 (

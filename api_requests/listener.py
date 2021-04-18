@@ -17,7 +17,7 @@ class ListenerDetailRequest(APIHandler):
 
     def post(self):
         user = db.c.fetch_row(
-            "SELECT user_id, username AS name, user_avatar AS avatar, user_avatar_type AS avatar_type, user_colour AS colour, rank_title AS rank, "
+            "SELECT user_id, COALESCE(radio_username, username) AS name, user_avatar AS avatar, user_avatar_type AS avatar_type, user_colour AS colour, rank_title AS rank, "
             "0 AS total_votes, 0 AS total_ratings, 0 AS mind_changes, "
             "0 AS total_requests, 0 AS winning_votes, 0 AS losing_votes, "
             "0 AS winning_requests, 0 AS losing_requests, user_regdate AS regdate "

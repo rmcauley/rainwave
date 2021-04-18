@@ -13,8 +13,8 @@ class UserSearchRequest(api.web.APIHandler):
 
     def post(self):
         possible_id = db.c.fetch_var(
-            "SELECT user_id FROM phpbb_users WHERE username = %s",
-            (self.get_argument("username"),),
+            "SELECT user_id FROM phpbb_users WHERE username = %s OR radio_username = %s",
+            (self.get_argument("username"), self.get_argument("username")),
         )
         if possible_id:
             possible_sid = db.c.fetch_var(

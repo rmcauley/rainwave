@@ -64,6 +64,7 @@ class User:
         self.data["listen_key"] = None
         self.data["id"] = 1
         self.data["name"] = "Anonymous"
+        self.data["display_name"] = self.data["name"]
         self.data["sid"] = 0
         self.data["lock"] = False
         self.data["lock_in_effect"] = False
@@ -110,7 +111,7 @@ class User:
         user_data = None
         if not user_data:
             user_data = db.c.fetch_row(
-                "SELECT user_id AS id, username AS name, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
+                "SELECT user_id AS id, COALESCE(radio_username, username) AS name, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
                 "user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings "
                 "FROM phpbb_users WHERE user_id = %s",
                 (self.id,),
@@ -628,11 +629,11 @@ class User:
                         (prefs_json_string, ip_addr, self.id),
                     )
         except Exception as e:
-            if "username" in self.data:
+            if "name" in self.data:
                 log.exception(
                     "store_prefs",
                     "Could not store user preferences for %s (ID %s)"
-                    % (self.data["username"], self.id),
+                    % (self.data["name"], self.id),
                     e,
                 )
             else:

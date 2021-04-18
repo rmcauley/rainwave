@@ -21,7 +21,7 @@ class TipJarContents(APIHandler):
             self.return_name,
             db.c.fetch_all(
                 "SELECT donation_id AS id, donation_amount AS amount, donation_message AS message, "
-                "CASE WHEN donation_private IS TRUE THEN 'Anonymous' ELSE username END AS name "
+                "CASE WHEN donation_private IS TRUE THEN 'Anonymous' ELSE COALESCE(radio_username, username) END AS name "
                 "FROM r4_donations LEFT JOIN phpbb_users USING (user_id) "
                 "ORDER BY donation_id DESC " + self.get_sql_limit_string()
             ),
