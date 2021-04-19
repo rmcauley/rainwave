@@ -245,6 +245,14 @@ var AlbumList = function (el) {
   };
 
   self.sort_by_alpha = function (a, b) {
+    if (!self.data[a] && self.data[b]) {
+      return 1;
+    } else if (self.data[a] && !self.data[b]) {
+      return -1;
+    } else if (!self.data[a] && !self.data[b]) {
+      return 0;
+    }
+
     if (
       prioritize_faves &&
       sort_faves_first &&
