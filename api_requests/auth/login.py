@@ -23,7 +23,6 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
 
         username = self.get_argument("username")
         password = self.get_argument("password")
-        destination = self.get_argument("destination", "web")
         if not username:
             raise APIException("username_required")
         if not password:
@@ -43,4 +42,4 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             raise APIException("login_failed")
 
         # setup/save r4 session
-        self.setup_rainwave_session_and_redirect(db_entry['user_id'], destination)
+        self.setup_rainwave_session_and_redirect(db_entry['user_id'], self.get_destination())

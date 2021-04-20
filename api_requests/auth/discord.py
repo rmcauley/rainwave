@@ -44,8 +44,8 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             # step 4 - get user info from Discord and login to Rainwave
             await self.register_and_login(token, destination)
         else:
-            # step 1 - go to Discord login page
-            destination = self.get_argument("destination", "web")
+            # step 1 - redirect to Discord login page
+            destination = self.get_destination()
             oauth_secret = secrets.token_hex()
             self.set_cookie("r4_oauth_secret", oauth_secret)
             oauth_state = destination + "$" + bcrypt.hashpw(oauth_secret.encode(), OAUTH_STATE_SALT).decode("utf-8")
