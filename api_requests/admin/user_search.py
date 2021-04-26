@@ -3,6 +3,7 @@ import api.web
 from api.urls import handle_api_url
 from api import fieldtypes
 from api.exceptions import APIException
+from libs import config
 
 
 @handle_api_url("user_search")
@@ -14,7 +15,7 @@ class UserSearchRequest(api.web.APIHandler):
     help_hidden = True
 
     def post(self):
-        if self.request.remote_ip != "127.0.0.1" and self.request.remote_ip != "::1":
+        if self.request.remote_ip not in config.get("api_trusted_ip_addresses"):
             raise APIException("auth_failed", f"{self.request.remote_ip} is not allowed to access this endpoint.")
 
         possible_id = db.c.fetch_var(
@@ -38,7 +39,7 @@ class UserSearchByDiscordUserIdRequest(api.web.APIHandler):
     fields = {"discord_user_id": (fieldtypes.string, True)}
 
     def post(self):
-        if self.request.remote_ip != "127.0.0.1" and self.request.remote_ip != "::1":
+        if self.request.remote_ip not in config.get("api_trusted_ip_addresses"):
             raise APIException("auth_failed", f"{self.request.remote_ip} is not allowed to access this endpoint.")
 
         possible_id = db.c.fetch_var(
