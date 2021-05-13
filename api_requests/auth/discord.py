@@ -1,3 +1,4 @@
+from api.exceptions import APIException
 import asyncio
 import uuid
 import secrets
@@ -119,13 +120,18 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
         user_avatar_type = "avatar.driver.remote"
         user_id = 1
         username = str(uuid.uuid4())
+
+        discord_id_used_user_id = self.get_user_id_by_discord_user_id(discord_user_id)
+
         if self.user.id > 1:
+            if discord_id_used_user_id != self.user.id:
+                raise APIException("discord_already_associated")
             user_id = self.user.id
             radio_username = self.user.data['name']
             username = self.user.data['name']
             log.debug("discord", f"Connected legacy phpBB {user_id} to Discord {discord_user_id}")
         else:
-            user_id = self.get_user_id_by_discord_user_id(discord_user_id)
+            user_id = discord_id_used_user_id
             if user_id > 1:
                 log.debug("discord", f"Connected linked phpBB {user_id} to Discord {discord_user_id}")
             else:

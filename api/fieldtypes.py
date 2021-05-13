@@ -296,6 +296,18 @@ def integer_list(s, request=None):
     return l
 
 
+string_list_error = "must be a comma-separated list of strings."
+
+
+def string_list(s, request=None):
+    if isinstance(s, list):
+        for i in s:
+            if not isinstance(i, string):
+                return None
+        return s
+    return None
+
+
 # Careful, this one could get expensive with all the song ID queries
 song_id_list_error = "must be a comma-separated list of valid song IDs."
 

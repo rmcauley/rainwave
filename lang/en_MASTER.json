@@ -108,6 +108,7 @@
    "forums"                                          : "Forums",
    "login"                                           : "Login",
    "register_with_discord"                           : "Login/Register with Discord",
+   "discord_already_associated"                      : "Another account is already using this Discord login.",
    "login_with_legacy"                               : "Legacy Login",
    "link_discord"                                    : "Link Discord Account",
    "logout"                                          : "Logout",
@@ -119,6 +120,7 @@
    "login_failed"                                    : "Username or password incorrect.",
    "login_limit"                                     : "Number of login attempts exceeded.",
    "login_too_old"                                   : "Your login is too old to be recovered by password.  Please talk to staff on Discord.",
+   "login_password_disabled"                         : "Password login disabled for this account.",
    "signup"                                          : "Sign Up",
    "chat"                                            : "Mibbit IRC",
    "search"                                          : "Search",
@@ -422,5 +424,8 @@
    "user_requested_history"                          : "Your Request History",
    "song_id"                                         : "Song ID",
    "user_id"                                         : "User ID",
-   "cool_end"                                        : "Cooldown End"
+   "cool_end"                                        : "Cooldown End",
+   "power_hours"                                     : "Power Hours",
+   "start"                                           : "Start",
+   "end"                                             : "End"
 }

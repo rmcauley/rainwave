@@ -19,8 +19,6 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
         )
 
     def post(self):
-        self.locale.translate("login_limit")
-
         username = self.get_argument("username")
         password = self.get_argument("password")
         if not username:
@@ -28,9 +26,11 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
         if not password:
             raise APIException("password_required")
 
-        db_entry = db.c.fetch_row("SELECT user_id, user_password, user_login_attempts FROM phpbb_users WHERE username_clean = %s", (username.lower(),))
+        db_entry = db.c.fetch_row("SELECT user_id, user_password, user_login_attempts, discord_user_id FROM phpbb_users WHERE username_clean = %s", (username.lower(),))
         if not db_entry:
             raise APIException("login_failed")
+        if db_entry["discord_user_id"]:
+            raise APIException("login_password_disabled")
         db_password = db_entry['user_password']
         if not db_password.startswith("$2y$"):
             raise APIException("login_too_old")
