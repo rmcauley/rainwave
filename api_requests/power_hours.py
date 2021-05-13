@@ -11,6 +11,7 @@ from api_requests.admin_web.power_hours import get_ph_formatted_time
 
 @handle_api_url("power_hours")
 class ListPowerHours(api.web.APIHandler):
+    return_name = "power_hours"
     admin_required = False
 
     def post(self):
