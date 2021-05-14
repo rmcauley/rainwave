@@ -124,7 +124,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
         discord_id_used_user_id = self.get_user_id_by_discord_user_id(discord_user_id)
 
         if self.user.id > 1:
-            if discord_id_used_user_id != self.user.id:
+            if discord_id_used_user_id and discord_id_used_user_id != self.user.id:
                 raise APIException("discord_already_associated")
             user_id = self.user.id
             radio_username = self.user.data['name']
