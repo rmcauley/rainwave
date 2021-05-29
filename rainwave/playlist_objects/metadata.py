@@ -110,8 +110,6 @@ class AssociatedMetadata:
             self.cool_time = d["cool_time"]
         if d.get("cool_override") is not None:
             self.cool_time = d["cool_override"]
-        if "name_searchable" in d:
-            self.data["name_searchable"] = d["name_searchable"]
         if "order" in d:
             self.data["order"] = d["order"]
 

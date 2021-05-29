@@ -39,11 +39,7 @@ def get_updated_albums_dict(sid):
     for album_id in updated_album_ids[sid]:
         album = Album.load_from_id_sid(album_id, sid)
         album.solve_cool_lowest(sid)
-        tmp = album.to_dict_full()
-        # Remove user-related stuff since this gets stuffed straight down the pipe
-        tmp.pop("rating_user", None)
-        tmp.pop("fave", None)
-        album_diff.append(tmp)
+        album_diff.append(album.to_album_diff())
     return album_diff
 
 
@@ -114,7 +110,6 @@ class Album(AssociatedMetadata):
         requestable = bool(user)
         sql = (
             "SELECT r4_song_sid.song_id AS id, song_length AS length, song_origin_sid AS origin_sid, song_title AS title, song_added_on AS added_on, "
-            "song_track_number AS track_number, song_disc_number as disc_number, "
             "song_url AS url, song_link_text AS link_text, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_cool_multiply AS cool_multiply, "
             "song_cool_override AS cool_override, %s AS requestable, song_cool AS cool, song_cool_end AS cool_end, "
             "song_request_only_end AS request_only_end, song_request_only AS request_only, song_artist_parseable AS artist_parseable, "
@@ -127,7 +122,7 @@ class Album(AssociatedMetadata):
         if sort and sort == "added_on":
             sql += "ORDER BY song_added_on DESC, r4_songs.song_id DESC "
         else:
-            sql += "ORDER BY song_disc_number NULLS FIRST, song_track_number NULLS FIRST, song_title "
+            sql += "ORDER BY song_title "
         instance.data["songs"] = db.c.fetch_all(
             sql, (requestable, user_id, instance.id, sid)
         )
@@ -191,11 +186,9 @@ class Album(AssociatedMetadata):
         self._dict_check_assign(d, "album_song_count", 0)
         self._dict_check_assign(d, "album_request_count", 0)
         self._dict_check_assign(d, "album_cool", False)
-        self._dict_check_assign(d, "album_name_searchable", self.data["name"])
         if "sid" in d:
             self.sid = d["sid"]
         self.data["art"] = Album.get_art_url(self.id, sid)
-        self._dict_check_assign(d, "album_year", None)
 
     def _dict_check_assign(self, d, key, default=None, new_key=None):
         if not new_key and key.find("album_") == 0:
@@ -280,10 +273,6 @@ class Album(AssociatedMetadata):
                 (num_songs, self.id, sid),
             )
         self.update_all_user_ratings()
-        db.c.update(
-            "UPDATE r4_albums SET album_year = (SELECT MAX(song_year) FROM r4_songs WHERE album_id = %s AND song_verified = TRUE) WHERE album_id = %s"
-            % (self.id, self.id)
-        )
         return new_sids
 
     def start_cooldown(self, sid, cool_time=False):
@@ -629,3 +618,11 @@ class Album(AssociatedMetadata):
             d["rating_user"] = None
             d["fave"] = None
         return d
+
+    def to_album_diff(self):
+        return {
+            "id": self.id,
+            "cool": self.data["cool"],
+            "cool_lowest": self.data["cool_lowest"],
+            "newest_song_time": self.data["newest_song_time"],
+        }

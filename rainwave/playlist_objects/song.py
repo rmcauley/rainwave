@@ -8,7 +8,6 @@ except ImportError:
 
 from time import time as timestamp
 
-from api import fieldtypes
 from libs import cache, config, db, log, replaygain
 from mutagen.mp3 import MP3
 from rainwave import rating
@@ -208,9 +207,6 @@ class Song:
         self.album_tag = None
         self.genre_tag = None
         self.data = {}
-        self.data["track_number"] = None
-        self.data["disc_number"] = None
-        self.data["year"] = None
         self.data["url"] = None
         self.data["link_text"] = None
         self.data["rating_allowed"] = False
@@ -244,19 +240,7 @@ class Song:
                 self.album_tag = str(w[0]).strip()
             else:
                 raise PassableScanError('Song filename "%s" has no album tag.' % filename)
-            if config.get("scanner_use_tracknumbers"):
-                w = f.tags.getall("TRCK")
-                if w is not None and len(w) > 0:
-                    try:
-                        self.data["track_number"] = fieldtypes.integer(str(w[0]))
-                    except ValueError:
-                        pass
-                w = f.tags.getall("TPOS")
-                if w is not None and len(w) > 0:
-                    try:
-                        self.data["disc_number"] = fieldtypes.integer(str(w[0]))
-                    except ValueError:
-                        pass
+
             w = f.tags.getall("TCON")
             if len(w) > 0 and len(str(w[0])) > 0:
                 self.genre_tag = str(w[0])
@@ -268,18 +252,6 @@ class Song:
                 self.data["url"] = str(w[0]).strip()
             else:
                 self.data["url"] = None
-            w = f.tags.getall("TYER")
-            if w is not None and len(w) > 0:
-                try:
-                    self.data["year"] = fieldtypes.integer(str(w[0]))
-                except ValueError:
-                    pass
-            w = f.tags.getall("TDRC")
-            if self.data["year"] is None and w is not None and len(w) > 0:
-                try:
-                    self.data["year"] = fieldtypes.integer(str(w[0]))
-                except ValueError:
-                    pass
 
             self.data["length"] = int(f.info.length)
 
@@ -361,9 +333,6 @@ class Song:
 					song_url = %s, \
 					song_link_text = %s, \
 					song_length = %s, \
-					song_track_number = %s, \
-					song_disc_number = %s, \
-					song_year = %s, \
 					song_scanned = TRUE, \
 					song_verified = TRUE, \
 					song_file_mtime = %s, \
@@ -377,9 +346,6 @@ class Song:
                     self.data["url"],
                     self.data["link_text"],
                     self.data["length"],
-                    self.data["track_number"],
-                    self.data["disc_number"],
-                    self.data["year"],
                     file_mtime,
                     self.replay_gain,
                     self.data["origin_sid"],
@@ -396,9 +362,9 @@ class Song:
             log.debug("playlist", "inserting a new song with id {}".format(self.id))
             db.c.update(
                 "INSERT INTO r4_songs \
-				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_track_number, song_disc_number, song_year, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
+				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
 				VALUES \
-				(%s     , %s           , %s        , %s                   , %s       , %s           , %s         , %s               , %s              , %s       , %s             , %s             , %s           , %s          , %s             , %s)",
+				(%s     , %s           , %s        , %s                   , %s       , %s           , %s         , %s             , %s             , %s           , %s          , %s             , %s)",
                 (
                     self.id,
                     self.filename,
@@ -407,9 +373,6 @@ class Song:
                     self.data["url"],
                     self.data["link_text"],
                     self.data["length"],
-                    self.data["track_number"],
-                    self.data["disc_number"],
-                    self.data["year"],
                     self.data["origin_sid"],
                     file_mtime,
                     True,
@@ -720,12 +683,6 @@ class Song:
         d["elec_blocked"] = self.data["elec_blocked"]
         d["elec_blocked_by"] = self.data["elec_blocked_by"]
         d["length"] = self.data["length"]
-        if "track_number" in self.data:
-            d["track_number"] = self.data["track_number"]
-        if "disc_number" in self.data:
-            d["disc_number"] = self.data["disc_number"]
-        if "year" in self.data:
-            d["year"] = self.data["year"]
 
         d["artists"] = []
         d["albums"] = []

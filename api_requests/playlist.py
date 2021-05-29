@@ -22,38 +22,23 @@ from api.exceptions import APIException
 PAGE_LIMIT = 1000
 
 
-def get_all_albums(sid, user=None, with_searchable=True):
-    if with_searchable:
-        if not user or user.is_anonymous():
-            return cache.get_station(sid, "all_albums")
-        else:
-            return playlist.get_all_albums_list(sid, user)
+def get_all_albums(sid, user=None):
+    if not user or user.is_anonymous():
+        return cache.get_station(sid, "all_albums")
     else:
-        if not user or user.is_anonymous():
-            return cache.get_station(sid, "all_albums_no_searchable")
-        else:
-            return playlist.get_all_albums_list(sid, user, with_searchable=False)
+        return playlist.get_all_albums_list(sid, user)
 
 
-def get_all_artists(sid, with_searchable=True):
-    if with_searchable:
-        return cache.get_station(sid, "all_artists")
-    else:
-        return cache.get_station(sid, "all_artists_no_searchable")
+def get_all_artists(sid):
+    return cache.get_station(sid, "all_artists")
 
 
-def get_all_groups(sid, with_searchable=True):
-    if with_searchable:
-        return cache.get_station(sid, "all_groups")
-    else:
-        return cache.get_station(sid, "all_groups_no_searchable")
+def get_all_groups(sid):
+    return cache.get_station(sid, "all_groups")
 
 
-def get_all_groups_power(sid, with_searchable=True):
-    if with_searchable:
-        return cache.get_station(sid, "all_groups_power")
-    else:
-        return cache.get_station(sid, "all_groups_power_no_searchable")
+def get_all_groups_power(sid):
+    return cache.get_station(sid, "all_groups_power")
 
 
 @handle_api_url("all_albums")
@@ -68,7 +53,6 @@ class AllAlbumsHandler(APIHandler):
             get_all_albums(
                 self.sid,
                 self.user,
-                with_searchable=not self.get_argument("no_searchable"),
             ),
         )
 
@@ -79,7 +63,7 @@ class AllAlbumsPaginatedHandler(APIHandler):
     fields = {"after": (fieldtypes.integer, False)}
 
     def post(self):
-        sql, args = playlist.get_all_albums_list_sql(self.sid, self.user, False)
+        sql, args = playlist.get_all_albums_list_sql(self.sid, self.user)
         offset = self.get_argument("after", 0) or 0
         args = args + (offset,)
         albums = db.c.fetch_all(sql + f" ORDER BY album_name LIMIT {PAGE_LIMIT} OFFSET %s", args)
@@ -103,7 +87,7 @@ class AllArtistsHandler(APIHandler):
         self.append(
             self.return_name,
             get_all_artists(
-                self.sid, with_searchable=not self.get_argument("no_searchable")
+                self.sid
             ),
         )
 
@@ -116,7 +100,6 @@ class AllArtistsPaginatedHandler(APIHandler):
     def post(self):
         all_artists = get_all_artists(
             sid=self.sid,
-            with_searchable=False,
         )
         offset = self.get_argument("after", 0) or 0
         page = all_artists[offset: offset + PAGE_LIMIT]
@@ -145,14 +128,14 @@ class AllGroupsHandler(APIHandler):
             self.append(
                 self.return_name,
                 get_all_groups_power(
-                    self.sid, with_searchable=not self.get_argument("no_searchable")
+                    self.sid
                 ),
             )
         else:
             self.append(
                 self.return_name,
                 get_all_groups(
-                    self.sid, with_searchable=not self.get_argument("no_searchable")
+                    self.sid
                 ),
             )
 
@@ -165,7 +148,6 @@ class AllGroupsPaginatedHandler(APIHandler):
     def post(self):
         all_groups = get_all_groups(
             sid=self.sid,
-            with_searchable=False,
         )
         offset = self.get_argument("after", 0) or 0
         page = all_groups[offset: offset + PAGE_LIMIT]

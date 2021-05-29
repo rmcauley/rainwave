@@ -45,9 +45,6 @@ def scan_file(args, filename):
             "%s:%02u"
             % (int(math.floor(s.data["length"] / 60)), (s.data["length"] % 60)),
         )
-        print("Track".ljust(10), ":", s.data["track_number"])
-        print("Disc #".ljust(10), ":", s.data["disc_number"])
-        print("Year".ljust(10), ":", s.data["year"])
 
 
 def scan_directory(args, dirname):

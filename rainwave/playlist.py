@@ -250,15 +250,11 @@ def remove_all_locks(sid):
     )
 
 
-def get_all_albums_list_sql(sid, user, with_searchable):
-    searchable_sql = ""
-    if with_searchable:
-        searchable_sql = "album_name_searchable AS name_searchable, "
+def get_all_albums_list_sql(sid, user):
     if not user or user.id == 1:
         return (
             (
                 "SELECT r4_albums.album_id AS id, album_name AS name, "
-                f"{searchable_sql} "
                 "CAST(ROUND(CAST(album_rating AS NUMERIC), 1) AS REAL) AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, FALSE AS fave, 0 AS rating_user, FALSE AS rating_complete, album_newest_song_time AS newest_song_time "
                 "FROM r4_albums "
                 "JOIN r4_album_sid USING (album_id) "
@@ -270,7 +266,6 @@ def get_all_albums_list_sql(sid, user, with_searchable):
         return (
             (
                 "SELECT r4_albums.album_id AS id, album_name AS name, "
-                f"{searchable_sql} "
                 "CAST(ROUND(CAST(album_rating AS NUMERIC), 1) AS REAL) AS rating, album_cool AS cool, album_cool_lowest AS cool_lowest, COALESCE(album_fave, FALSE) AS fave, COALESCE(album_rating_user, 0) AS rating_user, COALESCE(album_rating_complete, FALSE) AS rating_complete, album_newest_song_time AS newest_song_time "
                 "FROM r4_albums "
                 "JOIN r4_album_sid USING (album_id) "
@@ -281,18 +276,13 @@ def get_all_albums_list_sql(sid, user, with_searchable):
             (user.id, sid, user.id, sid),
         )
 
-def get_all_albums_list(sid, user=None, with_searchable=True):
-    sql, args = get_all_albums_list_sql(sid, user, with_searchable)
+def get_all_albums_list(sid, user=None):
+    sql, args = get_all_albums_list_sql(sid, user)
     return db.c.fetch_all(sql + " ORDER BY album_name", args)
 
-def get_all_artists_list(sid, with_searchable=True):
-    searchable_sql = ""
-    if with_searchable:
-        searchable_sql = "artist_name_searchable AS name_searchable, "
+def get_all_artists_list(sid):
     return db.c.fetch_all(
-        "SELECT artist_name AS name, "
-        + searchable_sql
-        + " artist_id AS id, COUNT(*) AS song_count "
+        "SELECT artist_name AS name, artist_id AS id, COUNT(*) AS song_count "
         "FROM r4_artists JOIN r4_song_artist USING (artist_id) JOIN r4_song_sid using (song_id) "
         "WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
         "GROUP BY artist_id, artist_name "
@@ -301,12 +291,9 @@ def get_all_artists_list(sid, with_searchable=True):
     )
 
 
-def get_all_groups_list(sid, with_searchable=True):
-    searchable_sql = ""
-    if with_searchable:
-        searchable_sql = "group_name_searchable AS name_searchable, "
+def get_all_groups_list(sid):
     return db.c.fetch_all(
-        "SELECT group_name AS name, " + searchable_sql + " r4_groups.group_id AS id "
+        "SELECT group_name AS name, r4_groups.group_id AS id "
         "FROM r4_group_sid "
         "JOIN r4_groups USING (group_id) "
         "WHERE sid = %s AND group_display = TRUE "
@@ -315,27 +302,22 @@ def get_all_groups_list(sid, with_searchable=True):
     )
 
 
-def get_all_groups_for_power(sid, with_searchable=True):
-    searchable_sql = ""
-    if with_searchable:
-        searchable_sql = "group_name_searchable AS name_searchable, "
+def get_all_groups_for_power(sid):
     return db.c.fetch_all(
-        "SELECT group_name AS name, "
-        + searchable_sql
-        + " group_id AS id, COUNT(*) AS song_count "
+        "SELECT group_name AS name, group_id AS id, COUNT(*) AS song_count "
         "FROM ("
-        "SELECT group_name, group_name_searchable, group_id, COUNT(DISTINCT(album_id)) "
+        "SELECT group_name, group_id, COUNT(DISTINCT(album_id)) "
         "FROM r4_groups "
         "JOIN r4_song_group USING (group_id) "
         "JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE) "
         "JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id AND r4_songs.song_verified = TRUE) "
         "JOIN r4_albums USING (album_id) "
-        "GROUP BY group_id, group_name_searchable, group_name "
+        "GROUP BY group_id, group_name "
         ") AS multi_album_groups "
         "JOIN r4_song_group USING (group_id) "
         "JOIN r4_song_sid using (song_id) "
         "WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
-        "GROUP BY group_id, group_name, group_name_searchable "
+        "GROUP BY group_id, group_name "
         "ORDER BY group_name",
         (sid, sid,),
     )

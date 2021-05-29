@@ -9,9 +9,9 @@ from rainwave.playlist_objects.metadata import make_searchable_string
 
 
 class SongGroup(AssociatedMetadata):
-    select_by_name_query = "SELECT group_id AS id, group_name AS name, group_name_searchable AS name_searchable, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE lower(group_name) = lower(%s)"
-    select_by_id_query = "SELECT group_id AS id, group_name AS name, group_name_searchable AS name_searchable, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE group_id = %s"
-    select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, r4_groups.group_name_searchable AS name_searchable, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s ORDER BY group_name"
+    select_by_name_query = "SELECT group_id AS id, group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE lower(group_name) = lower(%s)"
+    select_by_id_query = "SELECT group_id AS id, group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE group_id = %s"
+    select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s ORDER BY group_name"
     disassociate_song_id_query = (
         "DELETE FROM r4_song_group WHERE song_id = %s AND group_id = %s"
     )
@@ -32,7 +32,7 @@ class SongGroup(AssociatedMetadata):
         )
 
         rows = db.c.fetch_all(
-            "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, r4_groups.group_name_searchable AS name_searchable, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag "
+            "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag "
             "FROM r4_song_sid "
             "JOIN r4_song_group USING (song_id) "
             "JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s "
@@ -159,15 +159,13 @@ class SongGroup(AssociatedMetadata):
             "CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, "
             "TRUE AS requestable, "
             "song_length AS length, "
-            "song_disc_number AS disc_number, "
-            "song_track_number AS track_number, "
             "song_cool AS cool, "
             "song_cool_end AS cool_end, "
             "song_url as url, song_link_text as link_text, "
             "song_artist_parseable AS artist_parseable, "
             "COALESCE(song_rating_user, 0) AS rating_user, "
             "COALESCE(song_fave, FALSE) AS fave, "
-            "album_name, r4_albums.album_id, album_year "
+            "album_name, r4_albums.album_id "
             "FROM r4_song_group "
             "JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
             "JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id) "
@@ -175,7 +173,7 @@ class SongGroup(AssociatedMetadata):
             "LEFT JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) "
             "LEFT JOIN r4_song_ratings ON (r4_song_group.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
             "WHERE r4_song_group.group_id = %s AND r4_songs.song_verified = TRUE AND r4_song_sid.song_exists = TRUE "
-            "ORDER BY album_year NULLS FIRST, album_name, song_disc_number NULLS FIRST, song_track_number NULLS FIRST, song_title",
+            "ORDER BY album_name, song_title",
             (sid, sid, user_id, self.id),
         )
         # And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data
@@ -191,6 +189,5 @@ class SongGroup(AssociatedMetadata):
                 {
                     "name": song.pop("album_name"),
                     "id": song.pop("album_id"),
-                    "year": song.pop("album_year"),
                 }
             ]
