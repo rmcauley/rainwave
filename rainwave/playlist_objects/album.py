@@ -183,6 +183,8 @@ class Album(AssociatedMetadata):
         self._dict_check_assign(d, "album_played_last", 0)
         self._dict_check_assign(d, "album_fave_count", 0)
         self._dict_check_assign(d, "album_song_count", 0)
+        self._dict_check_assign(d, "album_vote_count", 0)
+        self._dict_check_assign(d, "album_request_count", 0)
         self._dict_check_assign(d, "album_cool", False)
         if "sid" in d:
             self.sid = d["sid"]
