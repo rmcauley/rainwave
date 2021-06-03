@@ -12,7 +12,7 @@ var GroupList = function (el) {
     });
     self.update(json.data);
     self.$t.loading_bar.style.transform =
-      "scaleX(" + (json.progress * 0.8) / 100 + ")";
+      "scaleX(" + ((json.progress * 0.8) / 100 + 0.2) + ")";
     if (!json.has_more) {
       loading = false;
       self.loaded = true;
