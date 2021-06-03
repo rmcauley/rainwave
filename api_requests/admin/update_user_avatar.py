@@ -31,7 +31,7 @@ class UpdateUserAvatarByDiscordId(api.web.APIHandler):
                 (
                     "UPDATE phpbb_users SET "
                     "  user_avatar_type = %s, "
-                    "  user_avatar = %s, "
+                    "  user_avatar = %s "
                     "WHERE user_id = %s"
                 ),
                 (

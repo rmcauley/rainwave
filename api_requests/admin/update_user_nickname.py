@@ -28,7 +28,7 @@ class UpdateUserNicknameByDiscordId(api.web.APIHandler):
             db.c.update(
                 (
                     "UPDATE phpbb_users SET "
-                    "  radio_username = %s, "
+                    "  radio_username = %s "
                     "WHERE user_id = %s"
                 ),
                 (
