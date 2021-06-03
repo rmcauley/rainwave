@@ -305,7 +305,10 @@ def string_list(s, request=None):
             if not isinstance(i, string):
                 return None
         return s
-    return None
+    l = []
+    for entry in s.split(","):
+        l.append(entry)
+    return l
 
 
 # Careful, this one could get expensive with all the song ID queries
