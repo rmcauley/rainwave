@@ -182,9 +182,7 @@ class Album(AssociatedMetadata):
         self._dict_check_assign(d, "album_cool_lowest", 0)
         self._dict_check_assign(d, "album_played_last", 0)
         self._dict_check_assign(d, "album_fave_count", 0)
-        self._dict_check_assign(d, "album_vote_count", 0)
         self._dict_check_assign(d, "album_song_count", 0)
-        self._dict_check_assign(d, "album_request_count", 0)
         self._dict_check_assign(d, "album_cool", False)
         if "sid" in d:
             self.sid = d["sid"]
@@ -624,5 +622,5 @@ class Album(AssociatedMetadata):
             "id": self.id,
             "cool": self.data["cool"],
             "cool_lowest": self.data["cool_lowest"],
-            "newest_song_time": self.data["newest_song_time"],
+            "newest_song_time": self.data.get("newest_song_time", 0),
         }
