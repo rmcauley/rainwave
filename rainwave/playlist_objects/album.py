@@ -625,4 +625,6 @@ class Album(AssociatedMetadata):
             "cool": self.data["cool"],
             "cool_lowest": self.data["cool_lowest"],
             "newest_song_time": self.data.get("newest_song_time", 0),
+            "rating": self.data["rating"],
+            "name": self.data["name"],
         }

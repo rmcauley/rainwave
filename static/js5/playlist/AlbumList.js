@@ -81,7 +81,12 @@ var AlbumList = function (el) {
   });
 
   API.add_callback("album_diff", function (json) {
-    if (self.loaded) self.update(json);
+    if (self.loaded) {
+      json.data.forEach(function (album) {
+        album.name_searchable = Formatting.make_searchable_string(album.name);
+      });
+      self.update(json);
+    }
   });
 
   API.add_callback("outdated_data_warning", function () {
@@ -286,7 +291,7 @@ var AlbumList = function (el) {
         return 1;
     }
 
-    return self.data[a].name.localeCompare(self.data[b].name_searchable);
+    return self.data[a].name.localeCompare(self.data[b].name);
   };
 
   self.sort_by_rating_user = function (a, b) {
@@ -326,7 +331,7 @@ var AlbumList = function (el) {
     if (self.data[a].rating_user < self.data[b].rating_user) return 1;
     if (self.data[a].rating_user > self.data[b].rating_user) return -1;
 
-    return self.data[a].name.localeCompare(self.data[b].name_searchable);
+    return self.data[a].name.localeCompare(self.data[b].name);
   };
 
   prefs_update(null, null, true);
