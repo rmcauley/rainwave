@@ -82,7 +82,7 @@ var AlbumList = function (el) {
 
   API.add_callback("album_diff", function (json) {
     if (self.loaded) {
-      json.data.forEach(function (album) {
+      json.forEach(function (album) {
         album.name_searchable = Formatting.make_searchable_string(album.name);
       });
       self.update(json);
