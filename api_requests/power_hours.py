@@ -15,6 +15,7 @@ class ListPowerHours(api.web.APIHandler):
     return_name = "power_hours"
     admin_required = False
     sid_required = False
+    auth_required = False
 
     def post(self):
         self.append(
