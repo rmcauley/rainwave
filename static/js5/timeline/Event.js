@@ -189,6 +189,7 @@ var RWEvent = function (self) {
       self.$t.header.textContent = default_text;
     }
     self.header_text = self.$t.header.textContent;
+    self.$t.header.setAttribute("title", self.header_text);
   };
 
   self.hide_header = function () {
