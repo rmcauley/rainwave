@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-import time
 import math
 import sys
 from datetime import datetime, timedelta
@@ -17,7 +16,9 @@ from rainwave.events import oneup
 TARGET_SID = 5
 TARGET_LENGTH = 120 * 60
 MIN_LENGTH = 20 * 60
-SONGS_ADDED_SINCE_WHEN = 86400
+
+# mon/tue/thu
+ALLOWED_DAYS_OF_WEEK = [ 1, 2, 4 ]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -35,15 +36,18 @@ if __name__ == "__main__":
         "SELECT r4_songs.song_id, r4_songs.song_length "
         "FROM r4_song_sid "
         "JOIN r4_songs ON (r4_song_sid.song_id = r4_songs.song_id) "
-        "WHERE song_added_on > %s "
+        "WHERE song_new_played = FALSE "
         "AND song_verified = TRUE "
         "AND sid = %s "
         "AND song_origin_sid != 2 "  # no ocremix per request of jf
         "ORDER BY random() ",
-        (int(time.time() - SONGS_ADDED_SINCE_WHEN), TARGET_SID),
+        (TARGET_SID,),
     )
 
-    if len(songs_today) > 0:
+    day_of_week = datetime.now().isoweekday()
+    if day_of_week not in ALLOWED_DAYS_OF_WEEK:
+        log.debug("auto_ph", "Not running any new music PHs today.")
+    elif len(songs_today) > 0:
         total_seconds = 0
         for song_row in songs_today:
             total_seconds = total_seconds + song_row["song_length"]
@@ -61,6 +65,9 @@ if __name__ == "__main__":
         log.debug("auto_ph", "Total minutes    : %s" % (total_seconds / 60))
         log.debug("auto_ph", "Number of PH:    : %s" % number_of_ph)
         log.debug("auto_ph", "Length of each PH: %s" % (length_of_each_ph / 60))
+
+        # hack - plan only one day
+        number_of_ph = 1
 
         original_start = start = datetime.now(timezone("US/Eastern")).replace(
             hour=14, minute=0, second=0, microsecond=0
@@ -88,6 +95,7 @@ if __name__ == "__main__":
             length = 0
             while length < length_of_each_ph and len(songs_today):
                 song_row = songs_today.pop()
+                db.c.update("UPDATE r4_songs SET song_new_played = TRUE WHERE song_id = %s", (song_row["song_id"],))
                 p.add_song_id(song_row["song_id"], TARGET_SID)
                 length += song_row["song_length"]
                 if length > TARGET_LENGTH:
