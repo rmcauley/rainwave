@@ -86,7 +86,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
 
     def get_user_id_by_discord_user_id(self, discord_user_id: str):
         return db.c.fetch_var(
-            "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
+            "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s ORDER BY user_id ASC",
             (discord_user_id,),
         ) or 1
 
@@ -125,7 +125,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
 
         if self.user.id > 1:
             if discord_id_used_user_id > 1 and discord_id_used_user_id != self.user.id:
-                raise APIException("discord_already_associated")
+                db.c.update("UPDATE phpbb_users SET discord_user_id = '' WHERE discord_user_id = %s", (discord_user_id,))
             user_id = self.user.id
             radio_username = self.user.data['name']
             username = self.user.data['name']
