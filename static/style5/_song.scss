@@ -161,7 +161,7 @@ div.song {
       padding-bottom: 2px;
       -webkit-transform-origin: top left;
       transform-origin: top left;
-      @include transform(rotate(90deg) translateX(-50%) translateY(-50%));
+      @include transform(rotate(-90deg) translateX(-50%) translateY(-50%));
 
       html[lang="ko_KO"] & {
         @include transform(translateX(-50%) translateY(-50%));
@@ -183,7 +183,7 @@ div.song {
 
       span.vote_button_rotate {
         @include transform(
-          rotate(90deg) translateX(-50%) translateY(-50%) translateX(2px)
+          rotate(-90deg) translateX(-50%) translateY(-50%) translateX(2px)
             translateY(-2px)
         );
       }
