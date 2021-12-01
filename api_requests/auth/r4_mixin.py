@@ -17,7 +17,7 @@ class R4SetupSessionMixin:
       "INSERT INTO r4_sessions (session_id, user_id) VALUES (%s, %s)",
       (session_id, user_id,)
     )
-    self.set_cookie("r4_session_id", session_id)
+    self.set_cookie("r4_session_id", session_id, expires_days=365)
 
     if destination == "app" or destination == "rw":
       user = User(user_id)
