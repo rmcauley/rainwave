@@ -38,7 +38,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             self.set_cookie("r4_oauth_secret", "")
             destination, oauth_state = self.get_argument("state").split("$", maxsplit=1)
             if oauth_expected_state != oauth_state:
-                raise OAuthRejectedError
+                raise OAuthRejectedError('oAuth State Mismatch')
             # step 3 - we've come back from Discord with a unique auth code, get
             # token that we can use to act on behalf of user with discord
             token = await self.get_token(self.get_argument("code"))
@@ -106,7 +106,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 url, data=data, **args
             ) as response:
                 if response.status != 200:
-                    raise OAuthRejectedError()
+                    raise OAuthRejectedError('Discord response was not HTTP 200')
                 return await response.json()
 
     async def register_and_login(self, token: str, destination: str):
