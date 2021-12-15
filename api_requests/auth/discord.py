@@ -16,7 +16,7 @@ from .r4_mixin import R4SetupSessionMixin
 # add discord bot to react to role changes/logins
 # need account merging because people don't know they're logged in
 
-DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=2)
+DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=10)
 
 REDIRECT_URI = config.get("base_site_url") + "oauth/discord"
 OAUTH_STATE_SALT = bcrypt.gensalt()
