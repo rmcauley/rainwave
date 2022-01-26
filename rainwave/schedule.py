@@ -424,7 +424,7 @@ def _trim(sid):
     # Deletes any events in the schedule and elections tables that are old, according to the config
     current_time = int(timestamp())
     db.c.update(
-        "DELETE FROM r4_schedule WHERE sched_start_actual <= %s",
+        "DELETE FROM r4_schedule WHERE sched_start_actual <= %s AND sched_type != 'OneUpProducer'",
         (current_time - config.get("trim_event_age"),),
     )
     db.c.update(
