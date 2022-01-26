@@ -221,6 +221,7 @@ class StationsRequest(APIHandler):
                     ),
                     "stream": api_requests.tune_in.get_round_robin_url(station_id, user=self.user),
                     "relays": config.public_relays[self.sid],
+                    "key": config.get_station(sid, "stream_filename")
                 }
             )
         self.append(self.return_name, station_list)
