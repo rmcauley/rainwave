@@ -118,7 +118,7 @@ def load(filename=None, testmode=False):
     relay_hosts = " ".join(relay_hostnames)
     csp_header = ";".join(
         [
-            f"default-src 'self' {hostname} *.{hostname} https://www.google.com  https://js.sentry-cdn.com",
+            f"default-src 'self' {hostname} *.{hostname} https://www.google.com  https://js.sentry-cdn.com https://browser.sentry-cdn.com",
             "object-src 'none'",
             f"media-src {relay_hosts}",
             f"font-src 'self' {hostname} data: https://fonts.googleapis.com https://fonts.gstatic.com/",
