@@ -1,5 +1,8 @@
 import os
 
+import sentry_sdk
+from sentry_sdk.integrations.tornado import TornadoIntegration
+
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -50,6 +53,12 @@ class APIServer:
 
         api.locale.load_translations()
         api.locale.compile_static_language_files()
+
+        if config.get("sentry_dsn"):
+            sentry_sdk.init(
+                dsn=config.get("sentry_dsn"),
+                integrations=[TornadoIntegration()]
+            )
 
         if config.get("developer_mode"):
             for station_id in config.station_ids:

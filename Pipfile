@@ -25,6 +25,7 @@ Unidecode = "*"
 pyscss = "*"
 aiohttp = "*"
 bcrypt = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 
