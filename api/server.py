@@ -54,7 +54,7 @@ class APIServer:
         api.locale.load_translations()
         api.locale.compile_static_language_files()
 
-        if config.get("sentry_dsn"):
+        if config.has("sentry_dsn") and config.get("sentry_dsn"):
             sentry_sdk.init(
                 dsn=config.get("sentry_dsn"),
                 integrations=[TornadoIntegration()]

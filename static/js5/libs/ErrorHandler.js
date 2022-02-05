@@ -37,6 +37,9 @@ var ErrorHandler = (function () {
           API.sync_stop();
         }
       );
+      if (Sentry) {
+        Sentry.captureException(exception);
+      }
     } catch (e) {
       // don't complain, we've already crashed
     }
