@@ -11,32 +11,6 @@ var ErrorHandler = (function () {
     template._root.parentNode.classList.add("error");
 
     try {
-      var submit_obj = {
-        name: exception.name,
-        message: exception.message,
-        lineNumber: exception.lineNumber || "(no line)",
-        columnNumber: exception.columnNumber || "(no char number)",
-        stack:
-          exception.stack ||
-          exception.backtrace ||
-          exception.stacktrace ||
-          "(no stack)",
-        location: window.location.href,
-        user_agent: navigator.userAgent,
-        browser_language: navigator.language || navigator.userLanguage,
-      };
-      API.async_get(
-        "error_report",
-        submit_obj,
-        function () {
-          template.sending_report.textContent = $l("report_sent");
-          API.sync_stop();
-        },
-        function () {
-          template.sending_report.textContent = $l("report_error");
-          API.sync_stop();
-        }
-      );
       if (window.Sentry) {
         window.Sentry.captureException(exception);
       }

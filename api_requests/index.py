@@ -136,6 +136,7 @@ class MainIndex(api.web.HTMLRequest):
                 self.locale.translate("page_title_on_google"),
                 self.locale.translate("station_name_%s" % self.sid),
             )
+        sentry_dsn = config.get("sentry_frontend_dsn") if config.has("sentry_frontend_dsn") else None
         self.render(
             self.page_template,
             request=self,
@@ -147,6 +148,7 @@ class MainIndex(api.web.HTMLRequest):
             mobile=self.mobile,
             station_name=page_title,
             dj=self.user.is_dj(),
+            sentry_dsn=sentry_dsn,
         )
 
 
