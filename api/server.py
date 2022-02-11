@@ -7,7 +7,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.process
-import tornado.options
+import tornado.websocket
 
 import api.web
 import api.help
@@ -24,8 +24,18 @@ from rainwave import schedule
 import rainwave.request
 
 from .urls import request_classes
+from .exceptions import APIException
 
 app = None
+
+def sentry_before_send(event, hint):
+    if 'exc_info' in hint:
+        exc_type, exc_value, tb = hint['exc_info']
+        if isinstance(exc_value, APIException) and exc_value.code != 500:
+            return None
+        if isinstance(exc_value, tornado.websocket.WebSocketClosedError):
+            return None
+    return event
 
 
 class APIServer:
@@ -57,7 +67,8 @@ class APIServer:
         if config.has("sentry_dsn") and config.get("sentry_dsn"):
             sentry_sdk.init(
                 dsn=config.get("sentry_dsn"),
-                integrations=[TornadoIntegration()]
+                integrations=[TornadoIntegration()],
+                before_send=sentry_before_send,
             )
 
         if config.get("developer_mode"):
