@@ -41,6 +41,14 @@ div.fave {
     }
   }
 
+  body.full.small & {
+    margin-top: 0px;
+  }
+
+  body.full.small div.detail & {
+    margin-top: 3px;
+  }
+
   // this only appears in lists for mobile versions
   // and the CSS for album lists and song lists has slightly different CSS :/
   body.logged_in.mobile & {
@@ -69,5 +77,10 @@ div.fave {
 
   body.logged_in.mobile div.list & {
     top: 3px;
+  }
+
+  body.full.small div.item & {
+    position: relative;
+    top: 2px;
   }
 }

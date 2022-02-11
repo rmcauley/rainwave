@@ -106,7 +106,7 @@ var Sizing = (function () {
         if (self.dj_area) {
           self.dj_area.style.left = null;
         }
-        if (self.width < 1366) {
+        if (self.width < 1600) {
           document.body.classList.add("small");
           document.body.classList.remove("normal");
         } else {

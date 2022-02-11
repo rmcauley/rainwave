@@ -271,10 +271,14 @@ div.list {
     word-break: break-all;
     white-space: nowrap;
     text-overflow: ellipsis;
-    min-height: 21px;
+    height: 26px;
 
     &.album_fave_highlight {
       color: $fave;
+    }
+
+    body.full.small & {
+      line-height: 20px;
     }
 
     body.desktop &:hover,

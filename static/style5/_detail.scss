@@ -131,6 +131,10 @@ div.row {
     transform
   );
 
+  body.full.small & {
+    line-height: 20px;
+  }
+
   &.unrequestable {
     display: none;
 

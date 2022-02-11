@@ -203,11 +203,11 @@ var RWAudioConstructor = function () {
     if (hPos < 0.05) hPos = 0;
     if (hPos > 0.95) hPos = 1;
     if (!hPos || isNaN(hPos)) hPos = 0;
-    self.setVolume(Math.pow(hPos, 2.2));
+    self.setVolume(Math.pow(hPos, 4));
   };
 
   var draw_volume = function (v) {
-    volume_rect.setAttribute("width", 100 * Math.sqrt(v, 2.2));
+    volume_rect.setAttribute("width", 100 * Math.sqrt(v, 4));
   };
 
   self.detect_hijack = function () {
