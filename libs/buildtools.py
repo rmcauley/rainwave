@@ -8,6 +8,7 @@ from calmjs.parse.unparsers.es5 import minify_print
 
 from libs import RWTemplates
 from libs.config import get_build_number
+from libs import config
 
 
 def create_baked_directory():
@@ -111,6 +112,18 @@ def bake_js(source_dir="js5", dest_file="script5.js"):
         o = open(fn, "w")
         # Pylint disabled for next line because pylint is buggy about the es5 function
         o.write(minify_print(es5(js_content))) # pylint: disable=not-callable
+        if config.has("sentry_frontend_dsn"):
+            sentry_frontend_dsn = config.get("sentry_frontend_dsn")
+            o.write(
+                '<script type="text/javascript">'
+                    'if (window.Sentry) {'
+                        'window.Sentry.init({'
+                            f'dsn: "{ sentry_frontend_dsn }",'
+                            'tunnel: "/sentry_tunnel",'
+                        '});'
+                    '}'
+                '</script>'
+            )
         o.close()
 
 
