@@ -115,14 +115,12 @@ def bake_js(source_dir="js5", dest_file="script5.js"):
         if config.has("sentry_frontend_dsn"):
             sentry_frontend_dsn = config.get("sentry_frontend_dsn")
             o.write(
-                '<script type="text/javascript">'
-                    'if (window.Sentry) {'
-                        'window.Sentry.init({'
-                            f'dsn: "{ sentry_frontend_dsn }",'
-                            'tunnel: "/sentry_tunnel",'
-                        '});'
-                    '}'
-                '</script>'
+                'if (window.Sentry) {'
+                    'window.Sentry.init({'
+                        f'dsn: "{ sentry_frontend_dsn }",'
+                        'tunnel: "/sentry_tunnel",'
+                    '});'
+                '}'
             )
         o.close()
 
