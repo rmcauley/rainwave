@@ -199,15 +199,15 @@ var RWAudioConstructor = function () {
   var change_volume_from_mouse = function (evt) {
     var x = evt.pageX ? evt.pageX : evt.clientX;
     x = x - 5;
-    var v = Math.min(Math.max((x - offset_left) / offset_width, 0), 1);
-    if (v < 0.05) v = 0;
-    if (v > 0.95) v = 1;
-    if (!v || isNaN(v)) v = 0;
-    self.setVolume(v);
+    var hPos = Math.min(Math.max((x - offset_left) / offset_width, 0), 1);
+    if (hPos < 0.05) hPos = 0;
+    if (hPos > 0.95) hPos = 1;
+    if (!hPos || isNaN(hPos)) hPos = 0;
+    self.setVolume(Math.pow(hPos, 2.2));
   };
 
   var draw_volume = function (v) {
-    volume_rect.setAttribute("width", 100 * v);
+    volume_rect.setAttribute("width", 100 * Math.sqrt(v, 2.2));
   };
 
   self.detect_hijack = function () {
