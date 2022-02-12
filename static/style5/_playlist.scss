@@ -271,7 +271,6 @@ div.list {
     word-break: break-all;
     white-space: nowrap;
     text-overflow: ellipsis;
-    height: 26px;
 
     &.album_fave_highlight {
       color: $fave;
@@ -345,6 +344,12 @@ div.list {
         color: transparent;
       }
     }
+  }
+
+  &.album_list div.item,
+  &.artist_list div.item,
+  &.group_list div.item {
+    height: 26px;
   }
 
   &.album_list div.item {
