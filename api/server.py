@@ -25,6 +25,7 @@ import rainwave.request
 
 from .urls import request_classes
 from .exceptions import APIException
+from api_requests.auth.errors import OAuthNetworkError, OAuthRejectedError
 
 app = None
 
@@ -34,6 +35,8 @@ def sentry_before_send(event, hint):
         if isinstance(exc_value, APIException) and exc_value.code != 500:
             return None
         if isinstance(exc_value, tornado.websocket.WebSocketClosedError):
+            return None
+        if isinstance(exc_value, (OAuthNetworkError, OAuthRejectedError)):
             return None
     return event
 

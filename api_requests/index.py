@@ -124,10 +124,13 @@ class MainIndex(api.web.HTMLRequest):
                         )
 
     def get(self, station=None):
-        self.mobile = (
-            self.request.headers.get("User-Agent").lower().find("mobile") != -1
-            or self.request.headers.get("User-Agent").lower().find("android") != -1
-        )
+        self.mobile = False
+        ua = self.request.headers.get("User-Agent") or ''
+        if ua:
+            self.mobile = (
+                ua.lower().find("mobile") != -1
+                or ua.lower().find("android") != -1
+            )
         page_title = None
         if self.sid == config.get("default_station"):
             page_title = self.locale.translate("page_title_on_google")
@@ -161,7 +164,6 @@ class BetaRedirect(tornado.web.RequestHandler):
 
     def prepare(self):
         self.redirect("/beta/", permanent=True)
-
 
 @handle_url("/(?P<station>{})/beta/".format(STATION_REGEX))
 class BetaIndex(MainIndex):
