@@ -460,10 +460,19 @@ class Album(AssociatedMetadata):
         return all_ratings
 
     def update_all_user_ratings(self):
-        for sid in config.station_ids:
-            for row in db.c.fetch_all("SELECT user_id, MIN(song_id) AS song_id FROM r4_song_ratings GROUP BY user_id"):
+        q = db.c.fetch_all("SELECT user_id, MIN(song_id) AS song_id FROM r4_song_ratings GROUP BY user_id")
+        l = len(q)
+        i = 0
+        for row in q:
+            txt = "User %s / %s" % (i, l)
+            txt += " " * (80 - len(txt))
+            print("\r" + txt, end="")
+            i += 1
+            for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,)):
                 rating.update_album_ratings(sid, row['song_id'], row['user_id'])
+
         self.update_rating()
+        print()
 
     def reset_user_completed_flags(self):
         db.c.update(
