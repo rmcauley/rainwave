@@ -396,9 +396,8 @@ def create_tables():
 			user_id					INTEGER		NOT NULL, \
 			album_rating_user		REAL		, \
 			album_rating_complete	BOOLEAN		DEFAULT FALSE \
-		)"
+            ) PRIMARY KEY (user_id, album_id, sid) "
     )
-    # 			PRIMARY KEY (user_id, album_id, sid) \
     c.create_idx(
         "r4_album_ratings", "user_id", "album_id", "sid"
     )  # Should be handled by primary key.
@@ -412,9 +411,8 @@ def create_tables():
 			album_id				INTEGER		NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
 			album_fave				BOOLEAN \
-		)"
+		) PRIMARY KEY (user_id, album_id, sid) "
     )
-    # 			PRIMARY KEY (user_id, album_id, sid) \
     c.create_idx(
         "r4_album_faves", "user_id", "album_id"
     )  # Should be handled by primary key.

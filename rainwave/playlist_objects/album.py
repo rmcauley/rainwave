@@ -461,27 +461,28 @@ class Album(AssociatedMetadata):
         return all_ratings
 
     def update_all_user_ratings(self):
-        for sid in config.station_ids:
-            num_songs = self.get_num_songs(sid)
-            db.c.update(
-                "WITH "
-                "deleted AS ( "
-                "DELETE FROM r4_album_ratings WHERE album_id = %s AND sid = %s RETURNING *"
-                "), "
-                "ratings AS ( "
-                "SELECT album_id, sid, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user, COUNT(song_rating_user) AS song_rating_user_count "
-                "FROM ("
-                "SELECT song_id, sid, r4_songs.album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
-                ") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) WHERE r4_song_ratings.song_rating_user IS NOT NULL "
-                "GROUP BY album_id, sid, user_id "
-                ") "
-                "INSERT INTO r4_album_ratings (sid, album_id, user_id, album_rating_user, album_rating_complete) "
-                "SELECT sid, album_id, user_id, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
-                "FROM (SELECT * FROM ratings) AS result "
-                "GROUP BY sid, album_id, user_id "
-                "HAVING NULLIF(MAX(album_rating_user), 0) IS NOT NULL ",
-                (self.id, sid, self.id, sid, num_songs),
-            )
+        pass
+        # for sid in config.station_ids:
+        #     num_songs = self.get_num_songs(sid)
+        #     db.c.update(
+        #         "WITH "
+        #         "deleted AS ( "
+        #         "DELETE FROM r4_album_ratings WHERE album_id = %s AND sid = %s RETURNING *"
+        #         "), "
+        #         "ratings AS ( "
+        #         "SELECT album_id, sid, user_id, ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS album_rating_user, COUNT(song_rating_user) AS song_rating_user_count "
+        #         "FROM ("
+        #         "SELECT song_id, sid, r4_songs.album_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
+        #         ") AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) WHERE r4_song_ratings.song_rating_user IS NOT NULL "
+        #         "GROUP BY album_id, sid, user_id "
+        #         ") "
+        #         "INSERT INTO r4_album_ratings (sid, album_id, user_id, album_rating_user, album_rating_complete) "
+        #         "SELECT sid, album_id, user_id, NULLIF(MAX(album_rating_user), 0) AS album_rating_user, CASE WHEN MAX(song_rating_user_count) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
+        #         "FROM (SELECT * FROM ratings) AS result "
+        #         "GROUP BY sid, album_id, user_id "
+        #         "HAVING NULLIF(MAX(album_rating_user), 0) IS NOT NULL ",
+        #         (self.id, sid, self.id, sid, num_songs),
+        #     )
 
     def reset_user_completed_flags(self):
         db.c.update(
