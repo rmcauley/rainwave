@@ -463,6 +463,7 @@ class Album(AssociatedMetadata):
         for sid in config.station_ids:
             for row in db.c.fetch_all("SELECT user_id, MIN(song_id) AS song_id FROM r4_song_ratings GROUP BY user_id"):
                 rating.update_album_ratings(sid, row['song_id'], row['user_id'])
+        self.update_rating()
 
     def reset_user_completed_flags(self):
         db.c.update(
