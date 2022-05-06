@@ -461,7 +461,7 @@ class Album(AssociatedMetadata):
 
     def update_all_user_ratings(self):
         db.c.update("DELETE FROM r4_album_ratings WHERE album_id = %s", (self.id,))
-        for sid in config.station_ids:
+        for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,)):
             num_songs = self.get_num_songs(sid)
             db.c.update(
                 "INSERT "
