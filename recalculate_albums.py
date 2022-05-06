@@ -32,3 +32,5 @@ if __name__ == "__main__":
         a.reconcile_sids()
         a.update_all_user_ratings()
         a.update_rating()
+    print()
+    print("Done")

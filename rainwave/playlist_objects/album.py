@@ -392,7 +392,7 @@ class Album(AssociatedMetadata):
 
     def update_rating(self):
         for sid in db.c.fetch_list(
-            "SELECT sid FROM r4_album_sid WHERE album_id = %s", (self.id,)
+            "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,)
         ):
             ratings = db.c.fetch_all(
                 "SELECT r4_song_ratings.song_rating_user AS rating, COUNT(r4_song_ratings.user_id) AS count "
@@ -467,7 +467,7 @@ class Album(AssociatedMetadata):
                 "INSERT "
                 "  INTO r4_album_ratings (sid, album_id, user_id, album_rating_user, album_rating_complete) "
                 "  SELECT "
-                "     sid, album_id, r4_song_ratings.user_id, "
+                "     sid, album_id, user_id, "
                 "     NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) AS album_rating_user, "
                 "     CASE WHEN COUNT(song_rating_user) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
                 "   FROM ("
@@ -476,9 +476,8 @@ class Album(AssociatedMetadata):
                 "      WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
                 "    ) AS r4_song_sid "
                 "    LEFT JOIN r4_song_ratings USING (song_id) "
-                "    JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE)"
                 "    WHERE r4_song_ratings.song_rating_user IS NOT NULL "
-                "    GROUP BY album_id, sid, r4_song_ratings.user_id "
+                "    GROUP BY album_id, sid, user_id "
                 "    HAVING NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) IS NOT NULL "
                 "  ON CONFLICT DO NOTHING"
                 ,
