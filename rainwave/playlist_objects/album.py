@@ -476,7 +476,7 @@ class Album(AssociatedMetadata):
                 "      WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
                 "    ) AS r4_song_sid LEFT JOIN r4_song_ratings USING (song_id) WHERE r4_song_ratings.song_rating_user IS NOT NULL "
                 "    GROUP BY album_id, sid, user_id "
-                "    HAVING album_rating_user > 0 "
+                "    HAVING NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) IS NOT NULL "
                 "  ON CONFLICT DO NOTHING"
                 ,
                 (num_songs, self.id, sid),
