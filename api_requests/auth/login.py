@@ -1,7 +1,7 @@
 import bcrypt
 from api.urls import handle_url
 from api.web import HTMLRequest
-from libs import db, log
+from libs import db
 from api_requests.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 
@@ -36,20 +36,10 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             raise APIException("login_too_old")
         if db_entry["user_login_attempts"] >= 5:
             raise APIException("login_limit")
-        
-        # python bcrypted passwords
-        if db_password.startswith('$2b$'):
-            log.debug("login", f"{username} attempting Python login")
-            if not bcrypt.checkpw(password.encode(), db_password.encode()):
-                db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
-                raise APIException("login_failed")
-        # ye olde phpbb passwords
-        else:    
-            log.debug("login", f"{username} attempting legacy login")
-            hashed_password = bcrypt.hashpw(password.encode(), db_password[:29].encode()).decode("utf-8")
-            if db_password != hashed_password:
-                db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
-                raise APIException("login_failed")
+        hashed_password = bcrypt.hashpw(password.encode(), db_password[:29].encode()).decode("utf-8")
+        if db_password != hashed_password:
+            db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
+            raise APIException("login_failed")
 
         # setup/save r4 session
         self.setup_rainwave_session_and_redirect(db_entry['user_id'], self.get_destination())
