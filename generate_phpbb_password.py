@@ -1,6 +1,8 @@
 import bcrypt
 
 pw = input("Password: ")
+h = bcrypt.hashpw(pw.encode(), bcrypt.gensalt())
+h = '$2y$' + h[4:]
 
-print(bcrypt.hashpw(pw.encode(), bcrypt.gensalt()))
+print(h)
 print()
