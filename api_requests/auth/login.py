@@ -6,6 +6,8 @@ from api_requests.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 
 def phpbb_passwd_compare(password: str, db_password:str):
+    print(repr(password))
+    print(repr(db_password))
     hashed_password = bcrypt.hashpw(password.encode(), db_password[:29].encode()).decode("utf-8")
     return db_password == hashed_password
 
