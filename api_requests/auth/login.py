@@ -1,13 +1,11 @@
 import bcrypt
 from api.urls import handle_url
 from api.web import HTMLRequest
-from libs import db
+from libs import db, log
 from api_requests.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 
 def phpbb_passwd_compare(password: str, db_password:str):
-    print(repr(password))
-    print(repr(db_password))
     hashed_password = bcrypt.hashpw(password.encode(), db_password[:29].encode()).decode("utf-8")
     return db_password == hashed_password
 
@@ -42,6 +40,9 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             raise APIException("login_too_old")
         if db_entry["user_login_attempts"] >= 5:
             raise APIException("login_limit")
+        if username == "Google":
+            log.debug("LOGIN", repr(password), type(password))
+            log.debug("LOGIN", repr(db_password), type(db_password))
         if not phpbb_passwd_compare(password, db_password):
             # db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
             raise APIException("login_failed")
