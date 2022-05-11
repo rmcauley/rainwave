@@ -5,6 +5,10 @@ from libs import db
 from api_requests.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 
+def phpbb_passwd_compare(password: str, db_password:str):
+    hashed_password = bcrypt.hashpw(password.encode(), db_password[:29].encode()).decode("utf-8")
+    return db_password == hashed_password
+
 @handle_url("/oauth/login")
 class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
     auth_required = False
@@ -36,9 +40,8 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             raise APIException("login_too_old")
         if db_entry["user_login_attempts"] >= 5:
             raise APIException("login_limit")
-        hashed_password = bcrypt.hashpw(password.encode(), db_password[:29].encode()).decode("utf-8")
-        if db_password != hashed_password:
-            db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
+        if not phpbb_passwd_compare(password, db_password):
+            # db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
             raise APIException("login_failed")
 
         # setup/save r4 session
