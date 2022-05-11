@@ -1,7 +1,7 @@
 import bcrypt
 from api.urls import handle_url
 from api.web import HTMLRequest
-from libs import db, log
+from libs import db
 from api_requests.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 
@@ -30,7 +30,7 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
         if not password:
             raise APIException("password_required")
 
-        db_entry = db.c.fetch_row("SELECT user_id, user_password, user_login_attempts, discord_user_id FROM phpbb_users WHERE username_clean = %s", (username.lower(),))
+        db_entry = db.c.fetch_row("SELECT user_id, user_password, user_login_attempts, discord_user_id FROM phpbb_users WHERE LOWER(username) = %s", (username.lower(),))
         if not db_entry:
             raise APIException("login_failed")
         if db_entry["discord_user_id"]:
@@ -40,11 +40,8 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             raise APIException("login_too_old")
         if db_entry["user_login_attempts"] >= 5:
             raise APIException("login_limit")
-        if username == "Google":
-            log.debug("LOGIN", repr(password), type(password))
-            log.debug("LOGIN", repr(db_password), type(db_password))
         if not phpbb_passwd_compare(password, db_password):
-            # db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
+            db.c.update("UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s", (username,))
             raise APIException("login_failed")
 
         # setup/save r4 session
