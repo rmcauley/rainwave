@@ -79,10 +79,6 @@
    "report_sending"                                  : "We sturen een formulier hierover naar onze servers.",
    "report_sent"                                     : "De error is gerapporteerd en we zullen het bekijken!",
    "report_error"                                    : "We konden zelfs geen formulier sturen naar onze servers! :(",
-   "you_can_yell"                                    : "U kan ons hierover aanspreken",
-   "yell_on_twitter"                                 : "op Twitter op @Rainwavecc",
-   "yell_or"                                         : "of",
-   "yell_on_forums"                                  : "onze Discord.",
    "please_refresh"                                  : "Gelieve de pagina te verversen.",
    "report_submitted"                                : "Rapport Verzonden",
 
@@ -143,7 +139,6 @@
 
    "api_docs"                                        : "API Docs",
    "github_repo"                                     : "GitHub",
-   "twitter"                                         : "Twitter",
 
    "__comment__"                 : "Timeline Headers",
 

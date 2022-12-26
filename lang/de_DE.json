@@ -76,10 +76,6 @@
    "report_sending"                                  : "Versuche einen Fehlerbericht zu senden...",
    "report_sent"                                     : "Der Fehler wurde gemeldet! Wir werden ihn untersuchen!",
    "report_error"                                    : "... und wir konnten nicht einmal einen Fehlerbericht senden :(",
-   "you_can_yell"                                    : "Du kennst uns deswegen anmeckern",
-   "yell_on_twitter"                                 : "auf Twitter unter @Rainwavecc",
-   "yell_or"                                         : "oder",
-   "yell_on_forums"                                  : "in unserem Discord.",
    "please_refresh"                                  : "Lade die Seite neu um es erneut zu versuchen.",
    "report_submitted"                                : "Bericht gesendet",
 
@@ -127,7 +123,6 @@
 
    "api_docs"                                        : "API Dokumentation",
    "github_repo"                                     : "GitHub",
-   "twitter"                                         : "Twitter",
 
    "__comment__"                 : "Timeline Headers",
 

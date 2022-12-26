@@ -79,10 +79,6 @@
    "report_sending"                                  : "Trying to send a report about it...",
    "report_sent"                                     : "Error's been reported!  We'll take a look at it!",
    "report_error"                                    : "... and we couldn't even send a report about it! :(",
-   "you_can_yell"                                    : "You can yell at us about this",
-   "yell_on_twitter"                                 : "on Twitter at @Rainwavecc",
-   "yell_or"                                         : "or",
-   "yell_on_forums"                                  : "our Discord.",
    "please_refresh"                                  : "Refresh the page to bring Rainwave back.",
    "report_submitted"                                : "Report Submitted",
 
@@ -143,7 +139,6 @@
 
    "api_docs"                                        : "API Docs",
    "github_repo"                                     : "GitHub",
-   "twitter"                                         : "Twitter",
 
    "__comment__"                 : "Timeline Headers",
 

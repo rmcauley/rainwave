@@ -2,15 +2,5 @@
 	{{ $l("report_sending") }}
 </p>
 <p>
-	<span>{{ $l("you_can_yell") }}</span>
-	<a style="margin-left: 0.3em;" class="link obvious" href="https://twitter.com/Rainwavecc">
-		{{ $l("yell_on_twitter") }}
-	</a>
-	<span style="margin-left: 0.3em;">{{ $l("yell_or") }}</span>
-	<a style="margin-left: 0.3em;" class="link obvious" href="https://discord.gg/rNCBhSz">
-		{{ $l("yell_on_forums") }}
-	</a>
-</p>
-<p>
 	<a class="link obvious" onclick="window.location.reload();">{{ $l("please_refresh") }}</a>
 </p>

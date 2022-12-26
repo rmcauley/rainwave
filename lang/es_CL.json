@@ -75,10 +75,6 @@
    "report_sending"                                  : "Tratando de enviar un reporte al respecto...",
    "report_sent"                                     : "¡El error ha sido reportado! ¡Le echaremos un vistazo!",
    "report_error"                                    : "¡...Ni siquiera hemos podido enviar el reporte! :(",
-   "you_can_yell"                                    : "Nos puedes reclamar sobre esto",
-   "yell_on_twitter"                                 : "por Twitter, en @Rainwavecc",
-   "yell_or"                                         : "o",
-   "yell_on_forums"                                  : "en los Discord.",
    "please_refresh"                                  : "Recarga la página para traer a Rainwave de vuelta.",
    "report_submitted"                                : "Reporte Enviado",
 
@@ -125,7 +121,6 @@
 
    "api_docs"                                        : "Documentación de la API",
    "github_repo"                                     : "GitHub",
-   "twitter"                                         : "Twitter",
 
    "__comment__"                 : "Timeline Headers",
 

@@ -66,10 +66,6 @@
    "report_sending"                                  : "서버로 리포트를 보내고 있습니다.",
    "report_sent"                                     : "문제에 대한 보고를 받았으며, 확인해보도록 하겠습니다!",
    "report_error"                                    : "에러 리포트 전송조차 실패했습니다! :(",
-   "you_can_yell"                                    : "여기에서 노여움을 풀어주세요:",
-   "yell_on_twitter"                                 : "트위터 @Rainwavecc",
-   "yell_or"                                         : "혹은",
-   "yell_on_forums"                                  : "Rainwave Discord",
    "please_refresh"                                  : "새로고침하여 페이지를 다시 불러오세요.",
    "report_submitted"                                : "리포트 등록됨",
 
@@ -114,7 +110,6 @@
 
    "api_docs"                                        : "API 문서",
    "github_repo"                                     : "GitHub",
-   "twitter"                                         : "Twitter",
 
    "__comment__"                 : "Timeline Headers",
 

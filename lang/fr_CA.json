@@ -72,10 +72,6 @@
    "report_sending"                                  : "Soumission d'un rapport concernant l'erreur...",
    "report_sent"                                     : "L'erreur a été soumise! Nous allons y jeter un coup d'oeil!",
    "report_error"                                    : "... et nous y sommes même pas parvenus! :(",
-   "you_can_yell"                                    : "Vous pouvez nous chicaner",
-   "yell_on_twitter"                                 : "Sur Twitter @Rainwavecc",
-   "yell_or"                                         : "ou",
-   "yell_on_forums"                                  : "notre Discord.",
    "please_refresh"                                  : "Actualisez la page pour ressusciter Rainwave.",
    "report_submitted"                                : "Rapport soumis",
 
@@ -120,7 +116,6 @@
 
    "api_docs"                                        : "Documentation de l'API",
    "github_repo"                                     : "GitHub",
-   "twitter"                                         : "Twitter",
 
    "__comment__"                 : "Timeline Headers",
 

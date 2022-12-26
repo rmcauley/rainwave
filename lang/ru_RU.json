@@ -67,10 +67,6 @@
    "report_sending"                                  : "Мы отсылаем отчет об этом на наш сервер.",
    "report_sent"                                     : "Нам сообщили об ошибке и мы ей обязательно займемся!",
    "report_error"                                    : "Мы даже не смогли отправить на наш сервер отчет об этом! :(",
-   "you_can_yell"                                    : "Можете ругаться на нас",
-   "yell_on_twitter"                                 : "в Twitter'е на @Rainwavecc",
-   "yell_or"                                         : "или",
-   "yell_on_forums"                                  : "на нашем Discord сервере.",
    "please_refresh"                                  : "Перегрузите страницу, чтобы вернуться на Rainwave.",
    "report_submitted"                                : "Отчет отправлен",
 
@@ -116,7 +112,6 @@
 
    "api_docs"                                        : "Документация API",
    "github_repo"                                     : "GitHub",
-   "twitter"                                         : "Twitter",
    
    "__comment__"                 : "Timeline Headers",
 

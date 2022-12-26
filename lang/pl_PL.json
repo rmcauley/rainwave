@@ -429,16 +429,11 @@
   "station_paused": "Stacja jest aktualnia zatrzymana przez DJ'a.",
   "top_rated_albums": "Najwyżej Oceniane Albumy",
   "top_requested_albums": "Najczęściej Głosowane Albumy",
-  "twitter": "Twitter",
   "unpause_request_queue": "Wznów",
   "user_id": "ID Użytkownika",
   "vote": "Głosuj",
   "voted": "Zagłosowano",
   "waiting_for_hotkey": "Oczekiwanie Na Klawisz",
   "websocket_throttle": "Zwooolnij!",
-  "yell_on_forums": "nasze Discord.",
-  "yell_on_twitter": "na Twitterze pod @Rainwavecc",
-  "yell_or": "lub",
-  "you_can_yell": "Możesz na nas za to nakrzyczeć",
   "your_album_rating": "Oceniłeś ten album %(rating_user)."
 }
