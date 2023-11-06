@@ -331,7 +331,7 @@ def song_id_list(s, request=None):
     return l
 
 
-# Returns a set of (mount, user_id, listen_key)
+# Returns a set of (mount, user_id, listen_key, listener_ip)
 icecast_mount_error = "invalid Icecast mount."
 
 
@@ -348,13 +348,15 @@ def icecast_mount(s, request=None):
 
     uid = 1
     listen_key = None
-    match = re.search(r"^(?P<user>\d+):(?P<key>[\d\w]+)$", parsed.query)
+    listener_ip = None
+    match = re.search(r"^(?P<user>\d+):(?P<key>[\d\w]+)(&(?P<ip>(\d+\.){3}\d+))?$", parsed.query)
     if match:
         args = match.groupdict()
         if args.get("user") and args.get("key"):
             uid = int(args["user"])
             listen_key = args["key"]
-    return (mount, uid, listen_key)
+            listener_ip = args["ip"]
+    return (mount, uid, listen_key, listener_ip)
 
 
 ip_address_error = "invalid IP address."
