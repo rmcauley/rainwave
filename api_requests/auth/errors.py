@@ -1,5 +1,6 @@
 class OAuthRejectedError(Exception):
-  pass
+    pass
+
 
 class OAuthNetworkError(Exception):
-  pass
+    pass

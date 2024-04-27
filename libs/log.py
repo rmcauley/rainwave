@@ -4,6 +4,7 @@ import datetime
 
 log = None
 
+
 class LogNotInitializedError(Exception):
     pass
 

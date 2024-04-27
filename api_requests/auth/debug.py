@@ -2,6 +2,7 @@ from api.urls import handle_url
 from api.web import HTMLRequest
 from libs import db
 
+
 @handle_url("/oauth/debug")
 class DiscordAuth(HTMLRequest):
     auth_required = False
@@ -10,16 +11,19 @@ class DiscordAuth(HTMLRequest):
     sid_required = False
 
     async def get(self):
-        self.write(
-            self.render_string(
-                "basic_header.html", title="RW Auth Debug Page"
-            )
-        )
+        self.write(self.render_string("basic_header.html", title="RW Auth Debug Page"))
         has_phpbb_auth = self.do_phpbb_auth()
         has_session_auth = self.do_rw_session_auth()
-        discord_id = db.c.fetch_var("SELECT discord_user_id FROM phpbb_users WHERE user_id = %s", (self.user.id,))
-        username = db.c.fetch_var("SELECT username FROM phpbb_users WHERE user_id = %s", (self.user.id,))
-        radio_username = db.c.fetch_var("SELECT radio_username FROM phpbb_users WHERE user_id = %s", (self.user.id,))
+        discord_id = db.c.fetch_var(
+            "SELECT discord_user_id FROM phpbb_users WHERE user_id = %s",
+            (self.user.id,),
+        )
+        username = db.c.fetch_var(
+            "SELECT username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
+        )
+        radio_username = db.c.fetch_var(
+            "SELECT radio_username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
+        )
 
         self.write(f"User ID: {self.user.id}<br />")
         self.write(f"phpBB Auth: {has_phpbb_auth}<br />")
@@ -29,4 +33,3 @@ class DiscordAuth(HTMLRequest):
         self.write(f"Display Username: {radio_username}<br />")
 
         self.write(self.render_string("basic_footer.html"))
-

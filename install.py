@@ -59,7 +59,10 @@ if __name__ == "__main__":
 
     for service in services:
         service_file = f"{service}.service"
-        copy_file(path.join("systemd", service_file), path.join(root, "etc", "systemd", "system", service_file))
+        copy_file(
+            path.join("systemd", service_file),
+            path.join(root, "etc", "systemd", "system", service_file),
+        )
 
     subprocess.call(["sudo", "systemctl", "daemon-reload"])
 

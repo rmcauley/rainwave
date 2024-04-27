@@ -126,7 +126,9 @@ class BackendServer:
 
         # (r"/refresh/([0-9]+)", RefreshScheduleRequest)
         app = tornado.web.Application(
-            [(r"/advance/([0-9]+)", AdvanceScheduleRequest),],
+            [
+                (r"/advance/([0-9]+)", AdvanceScheduleRequest),
+            ],
             debug=config.get("developer_mode"),
         )
 

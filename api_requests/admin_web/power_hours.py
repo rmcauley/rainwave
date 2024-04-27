@@ -113,7 +113,7 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
         self.write(self.render_string("bare_header.html", title="%s" % ph["name"]))
         self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
         self.write("<h2>")
-        self.write("<div style=\"float: right; position: relative; top: -4px; \">")
+        self.write('<div style="float: right; position: relative; top: -4px; ">')
         self.write(
             "<a onclick=\"window.top.call_api('admin/delete_producer', { 'sched_id': %s });\">🚮</a>"
             % ph["id"]
@@ -124,10 +124,10 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
         ######
 
-        self.write(f"<div class=\"power_hour\">")
-        self.write(f"<div class=\"power_hour__row\">")
+        self.write(f'<div class="power_hour">')
+        self.write(f'<div class="power_hour__row">')
 
-        self.write("<div class=\"power_hour__left\">")
+        self.write('<div class="power_hour__left">')
         self.write("<span>Times from the server:</span><br>")
         self.write(
             "<div style='font-family: monospace;'>%s</div>"
@@ -143,7 +143,7 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
         )
         self.write("</div>")
 
-        self.write("<div class=\"power_hour__right\">")
+        self.write('<div class="power_hour__right">')
         total_len = 0
         for song in ph["songs"]:
             total_len += song["length"]
@@ -159,15 +159,15 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
         ####
 
-        self.write(f"<div class=\"power_hour\">")
-        self.write(f"<div class=\"power_hour__row\">")
+        self.write(f'<div class="power_hour">')
+        self.write(f'<div class="power_hour__row">')
 
-        self.write("<div class=\"power_hour__left\">")
+        self.write('<div class="power_hour__left">')
         self.write("<span>Your TZ:</span>")
         index.write_html_time_form(self, "power_hour", ph["start"])
         self.write("</div>")
 
-        self.write("<div class=\"power_hour__right\">")
+        self.write('<div class="power_hour__right">')
         self.write(
             "<button onclick=\"window.top.call_api('admin/change_producer_start_time', "
         )
@@ -182,16 +182,14 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
         ######
 
-        self.write(f"<div class=\"power_hour\">")
-        self.write(f"<div class=\"power_hour__row\">")
+        self.write(f'<div class="power_hour">')
+        self.write(f'<div class="power_hour__row">')
 
-        self.write("<div class=\"power_hour__left\">")
-        self.write(
-            "Name: <input type='text' id='new_ph_name' value='%s'>" % ph["name"]
-        )
+        self.write('<div class="power_hour__left">')
+        self.write("Name: <input type='text' id='new_ph_name' value='%s'>" % ph["name"])
         self.write("</div>")
 
-        self.write("<div class=\"power_hour__right\">")
+        self.write('<div class="power_hour__right">')
         self.write(
             "<button onclick=\"window.top.call_api('admin/change_producer_name', { 'sched_id': %s, 'name': document.getElementById('new_ph_name').value });\">Change Name</button>"
             % ph["id"]
@@ -202,9 +200,9 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
         #####
 
-        self.write(f"<div class=\"power_hour\" style=\"margin-bottom: 24px;\">")
-        self.write(f"<div class=\"power_hour__row\">")
-        self.write("<div class=\"power_hour__left\">")
+        self.write(f'<div class="power_hour" style="margin-bottom: 24px;">')
+        self.write(f'<div class="power_hour__row">')
+        self.write('<div class="power_hour__left">')
         self.write(
             "<button onclick=\"window.top.call_api('admin/shuffle_power_hour', { 'sched_id': %s });\">Shuffle the Song Order</button>\n\n"
             % ph["id"]
@@ -227,29 +225,33 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
 
                 ## Totality
 
-                self.write(f"<div class=\"power_hour {song_classes}\">")
+                self.write(f'<div class="power_hour {song_classes}">')
 
                 ## First row
 
-                self.write(f"<div class=\"power_hour__row\">")
+                self.write(f'<div class="power_hour__row">')
 
-                self.write(f"<div class=\"power_hour__left\">{song_index + 1}. {song['title']}</div>")
+                self.write(
+                    f"<div class=\"power_hour__left\">{song_index + 1}. {song['title']}</div>"
+                )
 
                 self.write(f"<div class=\"power_hour__right\">({song['rating']})</div>")
 
-                self.write(f"<div class=\"power_hour__right\">{length}</div>")
+                self.write(f'<div class="power_hour__right">{length}</div>')
 
-                self.write(f"<div class=\"power_hour__right\">{song_origin}</div>")
+                self.write(f'<div class="power_hour__right">{song_origin}</div>')
 
                 self.write("</div>")
 
                 ## Second row
 
-                self.write(f"<div class=\"power_hour__row\">")
+                self.write(f'<div class="power_hour__row">')
 
-                self.write(f"<div class=\"power_hour__left power_hour__album\">{song['albums'][0]['name']}</div>")
+                self.write(
+                    f"<div class=\"power_hour__left power_hour__album\">{song['albums'][0]['name']}</div>"
+                )
 
-                self.write("<div class=\"power_hour__right\">")
+                self.write('<div class="power_hour__right">')
                 self.write(
                     "<a class=\"power_hour__button\" onclick=\"window.top.call_api('admin/remove_from_power_hour', { 'one_up_id': %s });\">🚮</a>"
                     % song["one_up_id"]

@@ -31,6 +31,7 @@ def get_build_number():
     except:
         return 0
 
+
 def get_and_bump_build_number():
     buildnum = get_build_number() + 1
     with open(buildnum_file, "w") as bnf:

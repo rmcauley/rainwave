@@ -24,7 +24,7 @@ from libs import cache
 from api_requests.auth.errors import OAuthRejectedError
 
 # Add support for the SameSite attribute (obsolete when PY37 is unsupported).
-cookies.Morsel._reserved.setdefault('samesite', 'SameSite')
+cookies.Morsel._reserved.setdefault("samesite", "SameSite")
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -72,8 +72,8 @@ class HTMLError404Handler(tornado.web.RequestHandler):
 def get_browser_locale(handler, default="en_CA"):
     """Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
 
-	See https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
-	"""
+    See https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+    """
     if "rw_lang" in handler.cookies:
         if locale.RainwaveLocale.exists(handler.cookies["rw_lang"].value):
             return locale.RainwaveLocale.get(handler.cookies["rw_lang"].value)
@@ -168,7 +168,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
     def set_cookie(self, name, value, *args, **kwargs):
         if isinstance(value, int):
             value = repr(value)
-        super(RainwaveHandler, self).set_cookie(name, value, *args, secure=True, samesite="lax", **kwargs)
+        super(RainwaveHandler, self).set_cookie(
+            name, value, *args, secure=True, samesite="lax", **kwargs
+        )
 
     def get_argument(self, name, default=None, **kwargs):
         arg = default
@@ -368,7 +370,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
                     "SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s",
                     (
                         hashlib.md5(
-                            bytes(str(self.get_cookie(phpbb_cookie_name + "k")), "utf-8")
+                            bytes(
+                                str(self.get_cookie(phpbb_cookie_name + "k")), "utf-8"
+                            )
                         ).hexdigest(),
                         user_id,
                     ),
@@ -411,7 +415,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
     def do_rw_session_auth(self):
         rw_session_id = self.get_cookie("r4_session_id")
         if rw_session_id:
-            user_id = db.c.fetch_var("SELECT user_id FROM r4_sessions WHERE session_id = %s", (rw_session_id,))
+            user_id = db.c.fetch_var(
+                "SELECT user_id FROM r4_sessions WHERE session_id = %s",
+                (rw_session_id,),
+            )
             if user_id:
                 self.user = User(user_id)
                 self.user.ip_address = self.request.remote_ip

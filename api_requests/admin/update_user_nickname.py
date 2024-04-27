@@ -5,17 +5,24 @@ from api import fieldtypes
 from api.exceptions import APIException
 from libs import config
 
+
 @handle_api_url("update_user_nickname_by_discord_id")
 class UpdateUserNicknameByDiscordId(api.web.APIHandler):
     auth_required = False
     sid_required = False
     description = "Accessible only to localhost connections, for wormgas."
     help_hidden = True
-    fields = {"discord_user_id": (fieldtypes.string, True), "nickname": (fieldtypes.string, True)}
+    fields = {
+        "discord_user_id": (fieldtypes.string, True),
+        "nickname": (fieldtypes.string, True),
+    }
 
     def post(self):
         if self.request.remote_ip not in config.get("api_trusted_ip_addresses"):
-            raise APIException("auth_failed", f"{self.request.remote_ip} is not allowed to access this endpoint.")
+            raise APIException(
+                "auth_failed",
+                f"{self.request.remote_ip} is not allowed to access this endpoint.",
+            )
 
         discord_user_id = self.get_argument("discord_user_id")
         nickname = self.get_argument("nickname")

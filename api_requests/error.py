@@ -76,6 +76,7 @@ class ErrorReport(APIHandler):
 
         self.append_standard("report_submitted", "Error report submitted.")
 
+
 @handle_api_url("sentry_tunnel")
 class SentryTunnel(tornado.web.RequestHandler):
     help_hidden = True

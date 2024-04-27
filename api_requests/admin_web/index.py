@@ -23,7 +23,11 @@ def write_html_time_form(request, html_id, at_time=None):
     year_range_end = datetime.datetime.now().year + 3
     request.write(
         request.render_string(
-            "admin_time_select.html", at_time=at_time, html_id=html_id, year_range_start=year_range_start, year_range_end=year_range_end
+            "admin_time_select.html",
+            at_time=at_time,
+            html_id=html_id,
+            year_range_start=year_range_start,
+            year_range_end=year_range_end,
         )
     )
 

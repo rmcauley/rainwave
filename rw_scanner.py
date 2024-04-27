@@ -20,7 +20,7 @@ if __name__ == "__main__":
     libs.config.load(args.config)
     libs.log.init(
         "%s/rw_scanner.log" % libs.config.get_directory("log_dir"),
-        "debug" if (args.art or args.full) else libs.config.get("log_level")
+        "debug" if (args.art or args.full) else libs.config.get("log_level"),
     )
 
     for sid in libs.config.station_ids:

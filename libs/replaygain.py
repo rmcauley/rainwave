@@ -1,4 +1,5 @@
 import subprocess
+
 # from gi.repository import GLib
 # from rgain3 import rgcalc, util
 # from rgain3.script import init_gstreamer
@@ -8,14 +9,15 @@ from libs import config
 ref_level = 89
 # init_gstreamer()
 
+
 def get_gain_for_song(file):
     if config.has("disable_replaygain") and config.get("disable_replaygain"):
         return "0.0 dB"
 
     output = subprocess.run(
-        ["replaygain", "-d", f"-r {ref_level}", f'{file}'],
+        ["replaygain", "-d", f"-r {ref_level}", f"{file}"],
         capture_output=True,
-        check=True
+        check=True,
     )
     gain_line = next(line for line in str(output.stdout).split("\\n") if "dB" in line)
     gain = gain_line.split(":")[-1].strip()
@@ -50,4 +52,3 @@ def get_gain_for_song(file):
     #     raise exceptions[0]
 
     # return "%0.2f dB" % rg.track_data.popitem()[1].gain
-

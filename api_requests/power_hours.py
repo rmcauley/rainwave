@@ -28,7 +28,15 @@ class ListPowerHours(api.web.APIHandler):
             ),
         )
 
-SHOW_TIMEZONES = ["US/Pacific", "US/Eastern", "Europe/London", "Europe/Berlin", "Asia/Tokyo"]
+
+SHOW_TIMEZONES = [
+    "US/Pacific",
+    "US/Eastern",
+    "Europe/London",
+    "Europe/Berlin",
+    "Asia/Tokyo",
+]
+
 
 @handle_api_html_url("power_hours")
 class AllRequestedSongsHTML(PrettyPrintAPIMixin, ListPowerHours):
@@ -37,14 +45,12 @@ class AllRequestedSongsHTML(PrettyPrintAPIMixin, ListPowerHours):
         self.write("<th>Date and Time</th>")
 
     def row_special(self, row):
-        station_friendly = config.station_id_friendly[row['sid']],
+        station_friendly = (config.station_id_friendly[row["sid"]],)
         self.write(f"<td>{station_friendly}</td>")
         self.write("<td><ul>")
         for tz in SHOW_TIMEZONES:
-          self.write(
-                  "<div style='font-family: monospace;'>%s</div>"
-                  % get_ph_formatted_time(
-                      row["start"], row["end"], tz
-                  )
-              )
+            self.write(
+                "<div style='font-family: monospace;'>%s</div>"
+                % get_ph_formatted_time(row["start"], row["end"], tz)
+            )
         self.write("</ul></td>")

@@ -18,7 +18,7 @@ TARGET_LENGTH = 120 * 60
 MIN_LENGTH = 20 * 60
 
 # mon/tue/thu
-ALLOWED_DAYS_OF_WEEK = [ 1, 2, 4 ]
+ALLOWED_DAYS_OF_WEEK = [1, 2, 4]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -95,7 +95,10 @@ if __name__ == "__main__":
             length = 0
             while length < length_of_each_ph and len(songs_today):
                 song_row = songs_today.pop()
-                db.c.update("UPDATE r4_songs SET song_new_played = TRUE WHERE song_id = %s", (song_row["song_id"],))
+                db.c.update(
+                    "UPDATE r4_songs SET song_new_played = TRUE WHERE song_id = %s",
+                    (song_row["song_id"],),
+                )
                 p.add_song_id(song_row["song_id"], TARGET_SID)
                 length += song_row["song_length"]
                 if length > TARGET_LENGTH:

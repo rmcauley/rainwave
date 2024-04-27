@@ -9,8 +9,10 @@ c = None
 connection = None
 connection_errors = (psycopg2.OperationalError, psycopg2.InterfaceError)
 
+
 class DatabaseDisconnectedError(Exception):
     pass
+
 
 class PostgresCursor(psycopg2.extras.RealDictCursor):
     in_tx = False
@@ -152,8 +154,12 @@ def connect(auto_retry=True, retry_only_this_time=False):
     connected = False
     while not connected:
         try:
-            connection = psycopg2.connect(base_connstr + ("dbname=%s" % name), connect_timeout=1)
-            connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+            connection = psycopg2.connect(
+                base_connstr + ("dbname=%s" % name), connect_timeout=1
+            )
+            connection.set_isolation_level(
+                psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT
+            )
             connection.autocommit = True
             c = connection.cursor(cursor_factory=PostgresCursor)
             c.auto_retry = auto_retry
@@ -184,6 +190,7 @@ def close():
 
     return True
 
+
 def connection_keepalive():
     if c.disconnected:
         connect(auto_retry=False)
@@ -193,6 +200,7 @@ def connection_keepalive():
     except connection_errors:
         c.disconnected = True
         connect(auto_retry=False)
+
 
 def create_tables():
     trgrm_exists = c.fetch_var(

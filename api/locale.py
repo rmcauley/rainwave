@@ -126,7 +126,7 @@ def compile_static_language_files():
             "w",
             encoding="utf-8",
         )
-        f.write(u"\u4500")
+        f.write("\u4500")
         f.seek(0)
         f.write(
             'var LOCALE = "'

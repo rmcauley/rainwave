@@ -402,8 +402,8 @@ def icecast_mount(s, request=None):
 
     if len(params) > 1:
         id_param = params[0][0]
-        if ':' in id_param:
-            parsed_uid, parsed_listen_key = id_param.split(':', maxsplit=1)
+        if ":" in id_param:
+            parsed_uid, parsed_listen_key = id_param.split(":", maxsplit=1)
             try:
                 uid = int(parsed_uid)
             except ValueError:

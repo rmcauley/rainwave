@@ -56,6 +56,7 @@ class AllAlbumsHandler(APIHandler):
             ),
         )
 
+
 @handle_api_url("all_albums_paginated")
 class AllAlbumsPaginatedHandler(APIHandler):
     description = "Returns chunks of a list of all albums on the station playlist."
@@ -66,16 +67,24 @@ class AllAlbumsPaginatedHandler(APIHandler):
         sql, args = playlist.get_all_albums_list_sql(self.sid, self.user)
         offset = self.get_argument("after", 0) or 0
         args = args + (offset,)
-        albums = db.c.fetch_all(sql + f" ORDER BY album_name LIMIT {PAGE_LIMIT} OFFSET %s", args)
+        albums = db.c.fetch_all(
+            sql + f" ORDER BY album_name LIMIT {PAGE_LIMIT} OFFSET %s", args
+        )
         self.append(
             self.return_name,
             {
                 "data": albums,
                 "has_more": albums and len(albums) == PAGE_LIMIT,
-                "progress": min(math.ceil((offset + len(albums)) / playlist.num_albums[self.sid] * 100), 100),
-                "next": offset + PAGE_LIMIT
-            }
+                "progress": min(
+                    math.ceil(
+                        (offset + len(albums)) / playlist.num_albums[self.sid] * 100
+                    ),
+                    100,
+                ),
+                "next": offset + PAGE_LIMIT,
+            },
         )
+
 
 @handle_api_url("all_artists")
 class AllArtistsHandler(APIHandler):
@@ -86,10 +95,9 @@ class AllArtistsHandler(APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            get_all_artists(
-                self.sid
-            ),
+            get_all_artists(self.sid),
         )
+
 
 @handle_api_url("all_artists_paginated")
 class AllArtistsPaginatedHandler(APIHandler):
@@ -102,15 +110,17 @@ class AllArtistsPaginatedHandler(APIHandler):
             sid=self.sid,
         )
         offset = self.get_argument("after", 0) or 0
-        page = all_artists[offset: offset + PAGE_LIMIT]
+        page = all_artists[offset : offset + PAGE_LIMIT]
         self.append(
             self.return_name,
             {
                 "data": page,
                 "has_more": page[-1] != all_artists[-1],
-                "progress": min(math.ceil((offset + len(page)) / len(all_artists) * 100), 100),
-                "next": offset + PAGE_LIMIT
-            }
+                "progress": min(
+                    math.ceil((offset + len(page)) / len(all_artists) * 100), 100
+                ),
+                "next": offset + PAGE_LIMIT,
+            },
         )
 
 
@@ -127,17 +137,14 @@ class AllGroupsHandler(APIHandler):
         if self.get_argument("all"):
             self.append(
                 self.return_name,
-                get_all_groups_power(
-                    self.sid
-                ),
+                get_all_groups_power(self.sid),
             )
         else:
             self.append(
                 self.return_name,
-                get_all_groups(
-                    self.sid
-                ),
+                get_all_groups(self.sid),
             )
+
 
 @handle_api_url("all_groups_paginated")
 class AllGroupsPaginatedHandler(APIHandler):
@@ -150,16 +157,19 @@ class AllGroupsPaginatedHandler(APIHandler):
             sid=self.sid,
         )
         offset = self.get_argument("after", 0) or 0
-        page = all_groups[offset: offset + PAGE_LIMIT]
+        page = all_groups[offset : offset + PAGE_LIMIT]
         self.append(
             self.return_name,
             {
                 "data": page,
                 "has_more": page[-1] != all_groups[-1],
-                "progress": min(math.ceil((offset + len(page)) / len(all_groups) * 100), 100),
-                "next": offset + PAGE_LIMIT
-            }
+                "progress": min(
+                    math.ceil((offset + len(page)) / len(all_groups) * 100), 100
+                ),
+                "next": offset + PAGE_LIMIT,
+            },
         )
+
 
 @handle_api_url("artist")
 class ArtistHandler(APIHandler):

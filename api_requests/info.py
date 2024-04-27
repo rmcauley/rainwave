@@ -219,9 +219,11 @@ class StationsRequest(APIHandler):
                     "description": self.locale.translate(
                         "station_description_id_%s" % station_id
                     ),
-                    "stream": api_requests.tune_in.get_round_robin_url(station_id, user=self.user),
+                    "stream": api_requests.tune_in.get_round_robin_url(
+                        station_id, user=self.user
+                    ),
                     "relays": config.public_relays[station_id],
-                    "key": config.get_station(station_id, "stream_filename")
+                    "key": config.get_station(station_id, "stream_filename"),
                 }
             )
         self.append(self.return_name, station_list)

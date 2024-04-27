@@ -29,9 +29,10 @@ from api_requests.auth.errors import OAuthNetworkError, OAuthRejectedError
 
 app = None
 
+
 def sentry_before_send(event, hint):
-    if 'exc_info' in hint:
-        exc_type, exc_value, tb = hint['exc_info']
+    if "exc_info" in hint:
+        exc_type, exc_value, tb = hint["exc_info"]
         if isinstance(exc_value, APIException) and exc_value.code != 500:
             return None
         if isinstance(exc_value, tornado.websocket.WebSocketClosedError):
@@ -128,7 +129,7 @@ class APIServer:
             log.debug("start", "   Handler: %s" % str(request))
         log.info("start", "API server on port %s ready to go." % port_no)
         self.ioloop = tornado.ioloop.IOLoop.instance()
-        
+
         db_keepalive = tornado.ioloop.PeriodicCallback(db.connection_keepalive, 10000)
         db_keepalive.start()
 

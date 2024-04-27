@@ -10,7 +10,7 @@ cache.connect()
 log.init()
 db.connect()
 
-db.c.update("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
+db.c.update('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
 
 db.c.update("ALTER TABLE phpbb_users ADD discord_user_id TEXT")
 db.c.update("ALTER TABLE phpbb_users ADD radio_username TEXT")

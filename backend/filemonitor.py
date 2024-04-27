@@ -27,11 +27,15 @@ _on_screen = False
 class AlbumArtNoAlbumFoundError(PassableScanError):
     pass
 
+
 def write_unmatched_art_log():
-    with open(os.path.join(config.get_directory("log_dir"), "rw_unmatched_art.log"), "w") as unmatched_log:
+    with open(
+        os.path.join(config.get_directory("log_dir"), "rw_unmatched_art.log"), "w"
+    ) as unmatched_log:
         for album_art_tuple in _found_album_art:
             unmatched_log.write(album_art_tuple[0])
             unmatched_log.write("\n")
+
 
 def set_on_screen(on_screen):
     global _on_screen
@@ -89,6 +93,7 @@ def full_art_update():
     _process_found_album_art()
     write_unmatched_art_log()
     print()
+
 
 def _print_to_screen_inline(txt):
     if _on_screen:
@@ -166,7 +171,7 @@ def _scan_file(filename, sids):
             _add_scan_error(filename, e)
             _disable_file(filename)
         try:
-            log.debug("scan", u"sids: {} Scanning file: {}".format(sids, filename))
+            log.debug("scan", "sids: {} Scanning file: {}".format(sids, filename))
             # Only scan the file if we don't have a previous mtime for it, or the mtime is different
             old_mtime = db.c.fetch_var(
                 "SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE",
@@ -254,7 +259,10 @@ def _process_found_album_art(dirname=None):
             except:
                 pass
             if not dirname:
-                _print_to_screen_inline("Matched album art: %s/%s" % (matched_count, len(_found_album_art) - 1))
+                _print_to_screen_inline(
+                    "Matched album art: %s/%s"
+                    % (matched_count, len(_found_album_art) - 1)
+                )
             else:
                 print(f"Found album art for {dirname}")
     if not dirname:
@@ -323,21 +331,25 @@ def _process_album_art(filename, sids):
                     config.get("album_art_file_path"), "a_%s_120.jpg" % (album_id)
                 )
                 # sids[0] is the origin SID
-                if sids[0] == config.get("album_art_master_sid") or not os.path.exists(a_120_path):
-                    im_120.save(
-                        a_120_path
-                    )
+                if sids[0] == config.get("album_art_master_sid") or not os.path.exists(
+                    a_120_path
+                ):
+                    im_120.save(a_120_path)
                     im_240.save(
                         os.path.join(
-                            config.get("album_art_file_path"), "a_%s_240.jpg" % (album_id)
+                            config.get("album_art_file_path"),
+                            "a_%s_240.jpg" % (album_id),
                         )
                     )
                     im_320.save(
                         os.path.join(
-                            config.get("album_art_file_path"), "a_%s_320.jpg" % (album_id)
+                            config.get("album_art_file_path"),
+                            "a_%s_320.jpg" % (album_id),
                         )
                     )
-            log.debug("album_art", "Scanned %s for album ID %s." % (filename, album_ids))
+            log.debug(
+                "album_art", "Scanned %s for album ID %s." % (filename, album_ids)
+            )
             return True
     except (IOError, OSError) as err:
         _add_scan_error(

@@ -24,6 +24,7 @@ class BlankPage(api.web.HTMLRequest):
 
 station_colors = {1: "#1f95e5", 2: "#de641b", 3: "#b7000f", 4: "#6e439d", 5: "#a8cb2b"}
 
+
 # pylint: disable=E1101
 class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
     def get(self):
@@ -99,7 +100,9 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
             datetime.datetime.now() - datetime.timedelta(weeks=1)
         )
         dt_end = self.get_argument("date_end") or datetime.datetime.now()
-        for i in range(datetime.datetime.now().year - 1, datetime.datetime.now().year + 1):
+        for i in range(
+            datetime.datetime.now().year - 1, datetime.datetime.now().year + 1
+        ):
             self.write(
                 "<option value='%s' %s>%s</option>"
                 % (
@@ -133,7 +136,9 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
         self.write("</select>")
         self.write(" to ")
         self.write("<select id='date_end_year'>")
-        for i in range(datetime.datetime.now().year -1, datetime.datetime.now().year + 1):
+        for i in range(
+            datetime.datetime.now().year - 1, datetime.datetime.now().year + 1
+        ):
             self.write(
                 "<option value='%s' %s>%s</option>"
                 % (

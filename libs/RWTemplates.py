@@ -416,9 +416,14 @@ class RainwaveParser(HTMLParser):
                 raise Exception(
                     "%s is a reserved word for binding. (%s)" % (bind_name, self.name)
                 )
-            self.buffers[self._current_stack_point()] += (
-                "if(_c.$t.%s)_c.$t.%s.unshift(%s);else _c.$t.%s=[%s];"
-                % (bind_name, bind_name, uid, bind_name, uid)
+            self.buffers[
+                self._current_stack_point()
+            ] += "if(_c.$t.%s)_c.$t.%s.unshift(%s);else _c.$t.%s=[%s];" % (
+                bind_name,
+                bind_name,
+                uid,
+                bind_name,
+                uid,
             )
             if bind_name != "item_root":
                 self.buffers[
@@ -496,7 +501,10 @@ class RainwaveParser(HTMLParser):
                     else:
                         txt = self._parse_val(data)
                         if txt[0] == '"' and txt[-1] == '"':
-                            txt = '"%s"' % txt[1:-1].replace(r'"', r"\"",)
+                            txt = '"%s"' % txt[1:-1].replace(
+                                r'"',
+                                r"\"",
+                            )
                         self.buffers[self._current_stack_point()] += "%s;" % txt
                     text_content_used = True
         self.input_buffer = ""
@@ -581,9 +589,13 @@ class RainwaveParser(HTMLParser):
         context_key = self.parse_context_key(context_key)
         if not self.helpers_on:
             looper_var = _get_id()
-            self.buffers[self._current_stack_point()] += (
-                "for(var %s=0;%s<%s.length;%s++){"
-                % (looper_var, looper_var, context_key, looper_var)
+            self.buffers[
+                self._current_stack_point()
+            ] += "for(var %s=0;%s<%s.length;%s++){" % (
+                looper_var,
+                looper_var,
+                context_key,
+                looper_var,
             )
             self.buffers[self._current_stack_point()] += "%s(%s[%s], %s);" % (
                 function_id,
@@ -593,9 +605,12 @@ class RainwaveParser(HTMLParser):
             )
             self.buffers[self._current_stack_point()] += "}"
         else:
-            self.buffers[self._current_stack_point()] += (
-                "_h.array_render(%s,%s,%s,_c);"
-                % (context_key, function_id, self._current_tree_point())
+            self.buffers[
+                self._current_stack_point()
+            ] += "_h.array_render(%s,%s,%s,_c);" % (
+                context_key,
+                function_id,
+                self._current_tree_point(),
             )
 
     def handle_subtemplate(self, template_name):

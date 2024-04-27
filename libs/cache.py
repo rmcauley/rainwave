@@ -35,7 +35,9 @@ def connect():
     global _memcache
     global _memcache_ratings
 
-    _memcache_behaviors["ketama"] = config.has("memcached_ketama") and config.get("memcache_ketama")
+    _memcache_behaviors["ketama"] = config.has("memcached_ketama") and config.get(
+        "memcache_ketama"
+    )
 
     if _memcache:
         return

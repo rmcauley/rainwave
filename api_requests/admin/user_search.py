@@ -16,7 +16,10 @@ class UserSearchRequest(api.web.APIHandler):
 
     def post(self):
         if self.request.remote_ip not in config.get("api_trusted_ip_addresses"):
-            raise APIException("auth_failed", f"{self.request.remote_ip} is not allowed to access this endpoint.")
+            raise APIException(
+                "auth_failed",
+                f"{self.request.remote_ip} is not allowed to access this endpoint.",
+            )
 
         possible_id = db.c.fetch_var(
             "SELECT user_id FROM phpbb_users WHERE username = %s OR radio_username = %s",
@@ -30,6 +33,7 @@ class UserSearchRequest(api.web.APIHandler):
         else:
             self.append("user", {"user_id": None, "sid": None})
 
+
 @handle_api_url("user_search_by_discord_user_id")
 class UserSearchByDiscordUserIdRequest(api.web.APIHandler):
     auth_required = False
@@ -40,7 +44,10 @@ class UserSearchByDiscordUserIdRequest(api.web.APIHandler):
 
     def post(self):
         if self.request.remote_ip not in config.get("api_trusted_ip_addresses"):
-            raise APIException("auth_failed", f"{self.request.remote_ip} is not allowed to access this endpoint.")
+            raise APIException(
+                "auth_failed",
+                f"{self.request.remote_ip} is not allowed to access this endpoint.",
+            )
 
         possible_id = db.c.fetch_var(
             "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",

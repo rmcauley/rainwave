@@ -82,7 +82,6 @@ class WebListProducersBase:
             % row["id"]
         )
 
-
     def sort_keys(self, keys):
         return ["sid", "name", "type", "sched_length_minutes", "url", "username"]
 

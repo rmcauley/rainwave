@@ -80,7 +80,9 @@ class AddListener(IcecastHandler):
     listener_ip = None
 
     def post(self, sid):
-        (self.mount, self.user_id, self.listen_key, self.listener_ip) = self.get_argument("mount")
+        (self.mount, self.user_id, self.listen_key, self.listener_ip) = (
+            self.get_argument("mount")
+        )
         self.agent = self.get_argument("agent")
         if self.listener_ip is None:
             self.listener_ip = self.get_argument("ip")
