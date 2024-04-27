@@ -4,14 +4,9 @@
     "static/baked/**": true
   },
   "editor.formatOnSave": true,
-  "prettier.endOfLine": "lf",
-  "prettier.printWidth": 120,
-  "python.formatting.provider": "black",
-  "python.linting.flake8Enabled": false,
-  "python.linting.pylintEnabled": true,
-  "python.linting.enabled": true,
-  "python.venvPath": "~/.local/share/virtualenvs",
-  "python.formatting.blackArgs": ["-t py38"],
   "files.insertFinalNewline": true,
-  "python.pythonPath": "/home/robert.mcauley/.local/share/virtualenvs/rainwave-yQbCkaaZ/bin/python"
+  "python.analysis.typeCheckingMode": "basic",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
 }
