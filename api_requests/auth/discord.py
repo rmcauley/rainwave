@@ -34,6 +34,8 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             # step 2 - we've come back from Discord with a state parameter
             # that needs to be verified against the user's cookie.
             oauth_secret = self.get_cookie("r4_oauth_secret")
+            if not oauth_secret:
+                raise OAuthRejectedError("OAuth 1st party cookie not found - have you disabled cookies for Rainwave?  1st party cookies are required for Discord login to work on Rainwave.")
             oauth_expected_state = bcrypt.hashpw(oauth_secret.encode(), OAUTH_STATE_SALT).decode("utf-8")
             self.set_cookie("r4_oauth_secret", "")
             destination, oauth_state = self.get_argument("state").split("$", maxsplit=1)
