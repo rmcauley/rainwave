@@ -36,13 +36,9 @@ def attach_info_to_request(
     # doesn't have to take place during the first few frames.
 
     if request.user:
-        if request.mega_debug:
-            request.write("User ID during info attach: %s\n" % request.user.id)
         request.append("user", request.user.to_private_dict())
         if request.user.is_dj():
             attach_dj_info_to_request(request)
-        if request.mega_debug:
-            request.write("Wrote to user: %s\n" % request.user.to_private_dict()["id"])
 
     if not request.mobile:
         if (
@@ -171,9 +167,6 @@ def attach_info_to_request(
 
     if live_voting:
         request.append("live_voting", cache.get_station(request.sid, "live_voting"))
-
-    if request.mega_debug:
-        request.write("User ID after info attach: %s\n" % request.user.id)
 
 
 def check_sync_status(sid, offline_ack: bool | None = False):

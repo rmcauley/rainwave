@@ -152,8 +152,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
     user: User
     _output: dict[Any, Any] | list[Any]
 
-    mega_debug = False
-
     def __init__(self, *args, **kwargs):
         if "websocket" not in kwargs:
             super(RainwaveHandler, self).__init__(*args, **kwargs)
@@ -378,13 +376,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
         if not self.user and self.auth_required:
             raise APIException("auth_required", http_code=403)
         elif not self.user and not self.auth_required:
-            if self.mega_debug:
-                self.write("Auth not required, setting to anon.")
             self.user = User(1)
             self.user.ip_address = self.request.remote_ip
-
-        if self.mega_debug:
-            self.write("User ID after auth: %s\n" % self.user.id)
 
         self.user.refresh(self.sid)
 
@@ -394,9 +387,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
             )
 
         self.permission_checks()
-
-        if self.mega_debug:
-            self.write("User ID after preparation: %s\n" % self.user.id)
 
     # works without touching cookies or headers, primarily used for websocket requests
     def prepare_standalone(self, message_id=None):
@@ -409,8 +399,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
         self.permission_checks()
 
     def do_phpbb_auth(self):
-        if self.mega_debug:
-            self.write("Doing phpBB Auth")
         phpbb_cookie_name = config.get("phpbb_cookie_name") + "_"
         user_id = fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", ""))
         if not user_id:
@@ -418,8 +406,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
         else:
             if self._verify_phpbb_session(user_id):
                 # update_phpbb_session is done by verify_phpbb_session if successful
-                if self.mega_debug:
-                    self.write("PHPBB authorized by session")
                 self.user = User(user_id)
                 self.user.ip_address = self.request.remote_ip
                 self.user.authorize(self.sid, None, bypass=True)
@@ -439,8 +425,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
                 )
                 if can_login == 1:
                     self._update_phpbb_session(self._get_phpbb_session(user_id))
-                    if self.mega_debug:
-                        self.write("PHPBB authorized by session key")
                     self.user = User(user_id)
                     self.user.ip_address = self.request.remote_ip
                     self.user.authorize(self.sid, None, bypass=True)
@@ -448,8 +432,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
         return False
 
     def _verify_phpbb_session(self, user_id=None):
-        if self.mega_debug:
-            self.write("Verifying phpBB session")
         if not user_id and not self.user:
             return None
         if not user_id:
@@ -477,8 +459,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
         )
 
     def do_rw_session_auth(self):
-        if self.mega_debug:
-            self.write("Attempting RW session auth\n")
         rw_session_id = self.get_cookie("r4_session_id")
         if rw_session_id:
             user_id = db.c.fetch_var(
@@ -486,19 +466,13 @@ class RainwaveHandler(tornado.web.RequestHandler):
                 (rw_session_id,),
             )
             if user_id:
-                if self.mega_debug:
-                    self.write("RW user found, authorizing\n")
                 self.user = User(user_id)
                 self.user.ip_address = self.request.remote_ip
                 self.user.authorize(self.sid, None, bypass=True)
-                if self.mega_debug:
-                    self.write("Was user authorized? %s \n" % self.user.authorized)
                 return True
         return False
 
     def rainwave_auth(self):
-        if self.mega_debug:
-            self.write("Attempting Rainwave Auth")
         user_id_present = "user_id" in self.request.arguments
 
         if self.auth_required and not user_id_present:
@@ -517,16 +491,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
             raise APIException("missing_argument", argument="key", http_code=400)
 
         if user_id_present:
-            if self.mega_debug:
-                self.write("Loading Rainwave user")
             self.user = User(int(self.get_argument_int_required("user_id")))
             self.user.ip_address = self.request.remote_ip
             self.user.authorize(self.sid, self.get_argument("key"))
             if not self.user.authorized:
                 raise APIException("auth_failed", http_code=403)
             else:
-                if self.mega_debug:
-                    self.write("User authorized")
                 self._update_phpbb_session(self._get_phpbb_session(self.user.id))
 
     # Handles adding dictionaries for JSON output

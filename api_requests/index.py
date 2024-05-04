@@ -198,39 +198,23 @@ class Bootstrap(api.web.APIHandler):
 
     def prepare(self):
         super(Bootstrap, self).prepare()
-        if self.mega_debug:
-            self.write("User ID in request prepare: %s\n" % self.user.id)
         if not self.user:
             self.user = User(1)
-        if self.mega_debug:
-            self.write("User ID after user check: %s\n" % self.user.id)
         self.user.ensure_api_key()
-        if self.mega_debug:
-            self.write("User ID after ensure API key: %s\n" % self.user.id)
         ua = self.request.headers.get("User-Agent") or ""
         self.is_mobile = (
             ua.lower().find("mobile") != -1 or ua.lower().find("android") != -1
         )
-        if self.mega_debug:
-            self.write("User ID after request preparation: %s\n" % self.user.id)
 
     def get(self):  # pylint: disable=method-hidden
-        if self.mega_debug:
-            self.write("User ID before POST: %s\n" % self.user.id)
         self.post()
-        if self.mega_debug:
-            self.write("User ID after POST: %s\n" % self.user.id)
         if self.is_mobile:
             self.write("window.MOBILE = true;")
         else:
             self.write("window.MOBILE = false;")
         self.write("var BOOTSTRAP=")
-        if self.mega_debug:
-            self.write("User ID after GET: %s\n" % self.user.id)
 
     def post(self):
-        if self.mega_debug:
-            self.write("User ID before attachment: %s\n" % self.user.id)
         info.attach_info_to_request(self, live_voting=True)
         self.append("build_version", config.build_number)
         self.append("locale", self.locale.code)

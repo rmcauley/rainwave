@@ -34,8 +34,3 @@ class DebugAuth(HTMLRequest):
         self.write(f"Display Username: {radio_username}<br />")
 
         self.write(self.render_string("basic_footer.html"))
-
-
-@handle_url("/oauth/debug_bootstrap")
-class DebugBootstrap(Bootstrap):
-    mega_debug = True
