@@ -15,8 +15,8 @@ string_error = "must be a string."
 def string(in_string, request=None):
     if not in_string:
         return None
-    if not isinstance(in_string, str):
-        return None
+    if isinstance(in_string, bytes):
+        in_string = in_string.decode()
     if isinstance(in_string, str):
         return in_string
     try:
@@ -33,6 +33,8 @@ numeric_error = "must be a number."
 def numeric(s, request=None):
     if isinstance(s, (int, float)):
         return s
+    if isinstance(s, bytes):
+        s = s.decode()
     if not s:
         return None
     if not isinstance(s, str):
@@ -50,6 +52,8 @@ def integer(s, request=None):
         return s
     if isinstance(s, float):
         return int(s)
+    if isinstance(s, bytes):
+        s = s.decode()
     if not s:
         return None
     if not isinstance(s, str):
@@ -286,6 +290,8 @@ def integer_list(s, request=None):
                 return None
         return s
 
+    if isinstance(s, bytes):
+        s = s.decode()
     if not s:
         return None
     try:
@@ -341,6 +347,8 @@ icecast_mount_error = "invalid Icecast mount."
 def icecast_mount(s, request=None):
     if not s:
         return None
+    if isinstance(s, bytes):
+        s = s.decode()
     parsed = urlparse(s)
     path = parsed.path
     if path[0] == "/":
@@ -515,6 +523,8 @@ date_error = "must be valid ISO 8601 date. (YYYY-MM-DD)"
 def date(s, request=None) -> datetime | None:
     if not s:
         return None
+    if isinstance(s, bytes):
+        s = s.decode()
     try:
         return datetime.strptime(s, "%Y-%m-%d")
     except Exception:
