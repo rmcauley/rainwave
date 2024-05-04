@@ -74,10 +74,14 @@ class User:
         self.data["listener_id"] = 0
         self.data["_group_id"] = None
 
-    def authorize(self, sid, api_key, bypass=False):
+    def authorize(self, sid, api_key: str | None, bypass=False):
         self.api_key = api_key
 
-        if not bypass and not re.match(r"^[\w\d]+$", api_key):
+        if (
+            not bypass
+            or not isinstance(api_key, str)
+            or not re.match(r"^[\w\d]+$", api_key)
+        ):
             return
 
         if self.id > 1:
@@ -94,7 +98,7 @@ class User:
             return keys
         return []
 
-    def _auth_registered_user(self, api_key, bypass=False):
+    def _auth_registered_user(self, api_key: str, bypass=False):
         if not bypass:
             keys = cache.get_user(self, "api_keys")
             if keys and api_key in keys:
@@ -150,7 +154,7 @@ class User:
         self.data["uses_oauth"] = True if self.data["_discord_user_id"] else False
         self.data.pop("_discord_user_id")
 
-    def _auth_anon_user(self, api_key, bypass=False):
+    def _auth_anon_user(self, api_key: str, bypass=False):
         if not bypass:
             cache_key = unicodedata.normalize(
                 "NFKD", "api_key_listen_key_%s" % api_key
