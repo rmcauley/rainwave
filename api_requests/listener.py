@@ -2,7 +2,7 @@ import math
 
 from api import fieldtypes
 from api.urls import handle_api_html_url, handle_api_url
-from api.web import APIHandler, PrettyPrintAPIMixin
+from api.web import APIHandler, PrettyPrintAPIMixin, APIException
 from libs import cache, db
 from rainwave import playlist
 from rainwave import user as UserLib
@@ -24,6 +24,9 @@ class ListenerDetailRequest(APIHandler):
             "FROM phpbb_users LEFT JOIN phpbb_ranks ON (user_rank = rank_id) WHERE user_id = %s",
             (self.get_argument("id"),),
         )
+
+        if not user:
+            raise APIException("404", None, 404)
 
         user["avatar"] = UserLib.solve_avatar(user["avatar_type"], user["avatar"])
         user.pop("avatar_type")

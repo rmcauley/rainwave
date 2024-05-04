@@ -25,6 +25,9 @@ import rainwave.events.pvpelection_no_cooldown
 import rainwave.events.shortest_election
 import rainwave.events.singlesong
 
+from rainwave.events.singlesong import SingleSong
+from rainwave.events.event import BaseProducer, BaseEvent
+
 # Events for each station
 current = {}
 upnext = {}
@@ -32,6 +35,10 @@ history = {}
 
 
 class ScheduleIsEmpty(Exception):
+    pass
+
+
+class NoNextEventFound(Exception):
     pass
 
 
@@ -56,15 +63,13 @@ def load():
                 "SELECT song_id FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) WHERE sid = %s AND song_exists = TRUE AND song_verified = TRUE ORDER BY songhist_time DESC LIMIT 5",
                 (sid,),
             ):
-                history[sid].insert(0, events.singlesong.SingleSong(song_id, sid))
+                history[sid].insert(0, SingleSong(song_id, sid))
             # create a fake history in case clients expect it without checking
             if not history[sid]:
                 for i in range(1, 5):
                     history[sid].insert(
                         0,
-                        events.singlesong.SingleSong(
-                            playlist.get_random_song_ignore_all(sid), sid
-                        ),
+                        SingleSong(playlist.get_random_song_ignore_all(sid), sid),
                     )
 
 
@@ -94,7 +99,7 @@ def get_producer_at_time(sid, at_time):
         (sid, at_time + 20, at_time),
     )
     try:
-        to_ret = events.event.BaseProducer.load_producer_by_id(sched_id)
+        to_ret = BaseProducer.load_producer_by_id(sched_id)
         if to_ret:
             to_ret.start_producer()
     except Exception as e:
@@ -198,8 +203,9 @@ def post_process(sid):
             "SELECT sched_id FROM r4_schedule WHERE sched_end < %s AND sched_used = FALSE",
             (timestamp(),),
         ):
-            t_evt = events.event.BaseProducer.load_producer_by_id(sched_id)
-            t_evt.finish()
+            t_evt = BaseProducer.load_producer_by_id(sched_id)
+            if t_evt:
+                t_evt.finish()
         log.debug("post", "Current finish time: %.6f" % (timestamp() - start_time,))
 
         start_time = timestamp()
@@ -306,7 +312,7 @@ def _get_schedule_stats(sid):
     global current
 
     max_sched_id = 0
-    max_elec_id = None
+    max_elec_id = 0
     end_time = int(timestamp())
     if sid in current and current[sid]:
         max_sched_id = current[sid].id
@@ -329,8 +335,11 @@ def _get_schedule_stats(sid):
             end_time += e.length()
 
     if not max_elec_id:
-        max_elec_id = db.c.fetch_var(
-            "SELECT elec_id FROM r4_elections WHERE elec_used = TRUE ORDER BY elec_id DESC LIMIT 1"
+        max_elec_id = (
+            db.c.fetch_var(
+                "SELECT elec_id FROM r4_elections WHERE elec_used = TRUE ORDER BY elec_id DESC LIMIT 1"
+            )
+            or 0
         )
 
     return (max_sched_id, max_elec_id, num_elections, end_time)
@@ -382,7 +391,7 @@ def manage_next(sid):
                 "SID %s has an upcoming event, timing to %s seconds long."
                 % (sid, target_length),
             )
-        next_event = next_producer.load_next_event(target_length, max_elec_id)
+        next_event = next_producer.load_next_event(target_length, max_elec_id or 0)
         if not next_event:
             log.info(
                 "manage_next",
@@ -390,8 +399,10 @@ def manage_next(sid):
                 % (next_producer.id, next_producer.type),
             )
             next_producer = election.ElectionProducer(sid)
-            next_event = next_producer.load_next_event(target_length, max_elec_id)
+            next_event = next_producer.load_next_event(target_length, max_elec_id or 0)
         upnext[sid].append(next_event)
+        if not next_event:
+            raise NoNextEventFound
         if next_event.is_election:
             num_elections += 1
         if next_event.is_election and next_event.id > max_elec_id:
@@ -521,7 +532,9 @@ def update_live_voting(sid):
 
 
 def get_elec_id_for_entry(sid, entry_id):
-    for event in cache.get_station(sid, "sched_next"):
-        if event.is_election and event.has_entry_id(entry_id):
-            return event.id
+    sched_next = cache.get_station(sid, "sched_next")
+    if sched_next:
+        for event in sched_next:
+            if event.is_election and event.has_entry_id(entry_id):
+                return event.id
     return 0

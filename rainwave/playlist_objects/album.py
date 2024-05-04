@@ -5,9 +5,11 @@ from time import time as timestamp
 from libs import cache, config, db, log
 from rainwave import rating
 from rainwave.playlist_objects import cooldown
-from rainwave.playlist_objects.metadata import (AssociatedMetadata,
-                                                MetadataNotFoundError,
-                                                make_searchable_string)
+from rainwave.playlist_objects.metadata import (
+    AssociatedMetadata,
+    MetadataNotFoundError,
+    make_searchable_string,
+)
 
 num_albums = {}
 updated_album_ids = {}
@@ -209,6 +211,8 @@ class Album(AssociatedMetadata):
             "SELECT album_id, song_added_on FROM r4_songs WHERE song_id = %s",
             (song_id,),
         )
+        if not row:
+            raise Exception("Song %s not found" % song_id)
         existing_album = row["album_id"]
         if not existing_album or existing_album != self.id:
             db.c.update(
@@ -376,9 +380,12 @@ class Album(AssociatedMetadata):
         )
 
     def solve_cool_lowest(self, sid):
-        self.data["cool_lowest"] = db.c.fetch_var(
-            "SELECT MIN(song_cool_end) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE",
-            (self.id, sid),
+        self.data["cool_lowest"] = (
+            db.c.fetch_var(
+                "SELECT MIN(song_cool_end) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE",
+                (self.id, sid),
+            )
+            or 0
         )
         if self.data["cool_lowest"] > timestamp():
             self.data["cool"] = True
@@ -392,7 +399,8 @@ class Album(AssociatedMetadata):
 
     def update_rating(self):
         for sid in db.c.fetch_list(
-            "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,)
+            "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE",
+            (self.id,),
         ):
             ratings = db.c.fetch_all(
                 "SELECT r4_song_ratings.song_rating_user AS rating, COUNT(r4_song_ratings.user_id) AS count "
@@ -461,7 +469,10 @@ class Album(AssociatedMetadata):
 
     def update_all_user_ratings(self):
         db.c.update("DELETE FROM r4_album_ratings WHERE album_id = %s", (self.id,))
-        for sid in db.c.fetch_list("SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE", (self.id,)):
+        for sid in db.c.fetch_list(
+            "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE",
+            (self.id,),
+        ):
             num_songs = self.get_num_songs(sid)
             db.c.update(
                 "INSERT "
@@ -479,8 +490,7 @@ class Album(AssociatedMetadata):
                 "    WHERE r4_song_ratings.song_rating_user IS NOT NULL "
                 "    GROUP BY album_id, sid, user_id "
                 "    HAVING NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) IS NOT NULL "
-                "  ON CONFLICT DO NOTHING"
-                ,
+                "  ON CONFLICT DO NOTHING",
                 (num_songs, self.id, sid),
             )
 
@@ -512,12 +522,12 @@ class Album(AssociatedMetadata):
     def load_extra_detail(self, sid, get_all_groups=False):
         global num_albums
 
-        self.data["rating_rank"] = 1 + db.c.fetch_var(
-            "SELECT COUNT(album_id) FROM r4_album_sid WHERE album_exists = TRUE AND album_rating > %s AND sid = %s",
+        self.data["rating_rank"] = db.c.fetch_var(
+            "SELECT COUNT(album_id) + 1 FROM r4_album_sid WHERE album_exists = TRUE AND album_rating > %s AND sid = %s",
             (self.rating_precise, sid),
         )
-        self.data["request_rank"] = 1 + db.c.fetch_var(
-            "SELECT COUNT(album_id) FROM r4_album_sid WHERE album_exists = TRUE AND album_request_count > %s AND sid = %s",
+        self.data["request_rank"] = db.c.fetch_var(
+            "SELECT COUNT(album_id) + 1 FROM r4_album_sid WHERE album_exists = TRUE AND album_request_count > %s AND sid = %s",
             (self.data["request_count"], sid),
         )
         self.data["rating_rank_percentile"] = (

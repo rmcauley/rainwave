@@ -10,10 +10,10 @@ cooldown_config = {}
 
 def prepare_cooldown_algorithm(sid):
     """
-	Prepares pre-calculated variables that relate to calculating cooldown.
-	Should pull all variables fresh from the DB, for algorithm
-	refer to jfinalfunk.
-	"""
+    Prepares pre-calculated variables that relate to calculating cooldown.
+    Should pull all variables fresh from the DB, for algorithm
+    refer to jfinalfunk.
+    """
     global cooldown_config
 
     if not sid in cooldown_config:
@@ -92,9 +92,12 @@ def prepare_cooldown_algorithm(sid):
     cooldown_config[sid]["max_album_cool"] = int(max_album_cool)
     cooldown_config[sid]["time"] = int(timestamp())
 
-    average_song_length = db.c.fetch_var(
-        "SELECT AVG(song_length) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_exists = TRUE AND sid = %s",
-        (sid,),
+    average_song_length = (
+        db.c.fetch_var(
+            "SELECT AVG(song_length) FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE song_exists = TRUE AND sid = %s",
+            (sid,),
+        )
+        or 0
     )
     log.debug(
         "cooldown", "SID %s: average_song_length: %s" % (sid, average_song_length)

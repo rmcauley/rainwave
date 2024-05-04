@@ -148,6 +148,6 @@ class CreateLoginTunedOut(TestUserRequest):
             db.c.fetch_var(
                 "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (user_id,)
             )
-            > 0
-        ):
+            or 0
+        ) > 0:
             db.c.update("DELETE FROM r4_listeners WHERE user_id = %s ", (user_id,))

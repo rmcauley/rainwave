@@ -8,10 +8,10 @@ from libs import config
 
 def rating_calculator(ratings):
     """
-	Send in an SQL cursor that's the entire result of a query that has 2 columns: 'rating' and 'count'.
-	Uses "rating_map" from config to map each rating tier's to the fraction of point(s) it should get.
-	Returns a set: (points, potential_points)
-	"""
+    Send in an SQL cursor that's the entire result of a query that has 2 columns: 'rating' and 'count'.
+    Uses "rating_map" from config to map each rating tier's to the fraction of point(s) it should get.
+    Returns a set: (points, potential_points)
+    """
     point_map = config.get("rating_map")
     points = 0.0
     potential_points = 0.0
@@ -61,7 +61,9 @@ def get_album_rating(sid, album_id, user_id):
     cache.set_album_rating(sid, album_id, user_id, rating)
     return rating
 
+
 CLEAR_RATING_FLAG = "__clear_rating__"
+
 
 def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
     db.c.start_transaction()
@@ -70,8 +72,11 @@ def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
             "SELECT song_rating_user, song_fave FROM r4_song_ratings WHERE song_id = %s AND user_id = %s",
             (song_id, user_id),
         )
-        count = db.c.fetch_var(
-            "SELECT COUNT(*) FROM r4_song_ratings WHERE user_id = %s", (user_id,)
+        count = (
+            db.c.fetch_var(
+                "SELECT COUNT(*) FROM r4_song_ratings WHERE user_id = %s", (user_id,)
+            )
+            or 0
         )
         if not existing_rating:
             count += 1
@@ -247,10 +252,10 @@ def update_album_ratings(target_sid, song_id, user_id):
             (album_id, sid, user_id),
         )
         rating_complete = False
-        if user_data["rating_user_count"] >= num_songs:
+        if user_data and user_data["rating_user_count"] >= num_songs:
             rating_complete = True
         album_rating = None
-        if user_data["rating_user"]:
+        if user_data and user_data["rating_user"]:
             album_rating = float(user_data["rating_user"])
 
         existing_rating = db.c.fetch_row(

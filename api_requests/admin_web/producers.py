@@ -56,6 +56,8 @@ class WebCreateProducer(api.web.HTMLRequest):
 
 
 class WebListProducersBase(api.web.PrettyPrintAPIMixin):
+    sid: int
+
     # pylint: disable=E1101
     def header_special(self):
         self.write("<th>Time</th><th></th><th></th><th></th><th></th>")

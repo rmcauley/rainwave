@@ -236,7 +236,7 @@ class BaseEvent:
     name: str | None
 
     def __init__(self, sid=None):
-        self.id = None
+        self.id = 0
         self.type = self.__class__.__name__
         self.start = None
         self.start_actual = None

@@ -50,7 +50,7 @@ def update_num_songs():
         )
         max_album_ids[sid] = db.c.fetch_var(
             "SELECT MAX(album_id) FROM r4_album_sid WHERE sid = %s AND album_exists = TRUE",
-            (sid,)
+            (sid,),
         )
 
 
@@ -60,10 +60,10 @@ def get_average_song_length(sid):
 
 def get_random_song_timed(sid, target_seconds=None, target_delta=None):
     """
-	Fetch a random song abiding by all election block, request block, and
-	availability rules, but giving priority to the target song length
-	provided.  Falls back to get_random_song on failure.
-	"""
+    Fetch a random song abiding by all election block, request block, and
+    availability rules, but giving priority to the target song length
+    provided.  Falls back to get_random_song on failure.
+    """
     if not target_seconds:
         return get_random_song(sid)
     if not target_delta:
@@ -92,7 +92,7 @@ def get_random_song_timed(sid, target_seconds=None, target_delta=None):
         "Song pool size (cooldown, blocks, requests, timed) [target %s delta %s]: %s"
         % (target_seconds, target_delta, num_available),
     )
-    if num_available == 0:
+    if not num_available or num_available == 0:
         log.warn(
             "song_select",
             "No songs available with target_seconds %s and target_delta %s."
@@ -115,9 +115,9 @@ def get_random_song_timed(sid, target_seconds=None, target_delta=None):
 
 def get_random_song(sid):
     """
-	Fetch a random song, abiding by all election block, request block, and
-	availability rules.  Falls back to get_random_ignore_requests on failure.
-	"""
+    Fetch a random song, abiding by all election block, request block, and
+    availability rules.  Falls back to get_random_ignore_requests on failure.
+    """
 
     sql_query = (
         "FROM r4_song_sid "
@@ -135,7 +135,7 @@ def get_random_song(sid):
         "song_select", "Song pool size (cooldown, blocks, requests): %s" % num_available
     )
     offset = 0
-    if num_available == 0:
+    if not num_available or num_available == 0:
         log.warn("song_select", "No songs available despite no timing rules.")
         log.debug(
             "song_select",
@@ -152,8 +152,8 @@ def get_random_song(sid):
 
 def get_shortest_song(sid):
     """
-	Fetch the shortest song available abiding by election block and availability rules.
-	"""
+    Fetch the shortest song available abiding by election block and availability rules.
+    """
     sql_query = (
         "FROM r4_song_sid "
         "JOIN r4_songs USING (song_id) "
@@ -170,9 +170,9 @@ def get_shortest_song(sid):
 
 def get_random_song_ignore_requests(sid):
     """
-	Fetch a random song abiding by election block and availability rules,
-	but ignoring request blocking rules.
-	"""
+    Fetch a random song abiding by election block and availability rules,
+    but ignoring request blocking rules.
+    """
     sql_query = (
         "FROM r4_song_sid "
         "WHERE r4_song_sid.sid = %s "
@@ -184,7 +184,7 @@ def get_random_song_ignore_requests(sid):
     num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
     log.debug("song_select", "Song pool size (cooldown, blocks): %s" % num_available)
     offset = 0
-    if num_available == 0:
+    if not num_available or num_available == 0:
         log.warn("song_select", "No songs available while ignoring pending requests.")
         log.debug(
             "song_select",
@@ -201,13 +201,13 @@ def get_random_song_ignore_requests(sid):
 
 def get_random_song_ignore_all(sid):
     """
-	Fetches the most stale song (longest time since it's been played) in the db,
-	ignoring all availability and election block rules.
-	"""
+    Fetches the most stale song (longest time since it's been played) in the db,
+    ignoring all availability and election block rules.
+    """
     sql_query = "FROM r4_song_sid WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
     num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
     offset = 0
-    if num_available == 0:
+    if not num_available or num_available == 0:
         log.critical("song_select", "No songs exist.")
         log.debug(
             "song_select",
@@ -224,8 +224,8 @@ def get_random_song_ignore_all(sid):
 
 def warm_cooled_songs(sid):
     """
-	Makes songs whose cooldowns have expired available again.
-	"""
+    Makes songs whose cooldowns have expired available again.
+    """
     db.c.update(
         "UPDATE r4_song_sid SET song_cool = FALSE WHERE sid = %s AND song_cool_end < %s AND song_cool = TRUE",
         (sid, int(timestamp())),
@@ -238,8 +238,8 @@ def warm_cooled_songs(sid):
 
 def remove_all_locks(sid):
     """
-	Removes all cooldown & election locks on songs.
-	"""
+    Removes all cooldown & election locks on songs.
+    """
     db.c.update(
         "UPDATE r4_song_sid SET song_elec_blocked = FALSE, song_elec_blocked_num = 0, song_cool = FALSE, song_cool_end = 0 WHERE sid = %s",
         (sid,),
@@ -276,9 +276,11 @@ def get_all_albums_list_sql(sid, user):
             (user.id, sid, user.id, sid),
         )
 
+
 def get_all_albums_list(sid, user=None):
     sql, args = get_all_albums_list_sql(sid, user)
     return db.c.fetch_all(sql + " ORDER BY album_name", args)
+
 
 def get_all_artists_list(sid):
     return db.c.fetch_all(
@@ -319,7 +321,10 @@ def get_all_groups_for_power(sid):
         "WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
         "GROUP BY group_id, group_name "
         "ORDER BY group_name",
-        (sid, sid,),
+        (
+            sid,
+            sid,
+        ),
     )
 
 

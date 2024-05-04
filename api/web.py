@@ -488,10 +488,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
         if user_id_present:
             user_id_arg = self.get_argument_int("user_id")
-            self.user = User(user_id_arg) if user_id_arg else self.user
-            if self.user:
-                self.user.ip_address = self.request.remote_ip
-                self.user.authorize(self.sid, self.get_argument("key"))
+            self.user = User(user_id_arg or 0)
+            self.user.ip_address = self.request.remote_ip
+            self.user.authorize(self.sid, self.get_argument("key"))
             if not self.user or not self.user.authorized:
                 raise APIException("auth_failed", http_code=403)
             else:
