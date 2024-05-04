@@ -256,14 +256,22 @@ class RainwaveHandler(tornado.web.RequestHandler):
             elif field in self.request.arguments:
                 parsed = type_cast(self.get_argument(field), self)
                 if parsed == None and required != None:
+                    log.debug(
+                        "web",
+                        "Invalid argument for %s: %s (%s)"
+                        % (
+                            field,
+                            self.get_argument(field),
+                            type(self.get_argument(field)),
+                        ),
+                    )
                     raise APIException(
                         "invalid_argument",
                         argument=field,
-                        reason="%s %s (%s)"
+                        reason="%s %s"
                         % (
                             field,
                             getattr(fieldtypes, "%s_error" % type_cast.__name__),
-                            type(self.get_argument(field)),
                         ),
                         http_code=400,
                     )
