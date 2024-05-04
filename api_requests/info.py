@@ -1,3 +1,4 @@
+from typing import cast
 from api.web import APIHandler
 from api.exceptions import APIException
 from api import fieldtypes
@@ -5,6 +6,7 @@ from api.urls import handle_api_url
 import api_requests.vote
 import api_requests.playlist
 import api_requests.tune_in
+from rainwave.events.event import BaseEvent
 
 from libs import cache
 from libs import config
@@ -84,7 +86,7 @@ def attach_info_to_request(
 
         request.append("request_line", cache.get_station(request.sid, "request_line"))
 
-    sched_next = None
+    sched_next = []
     sched_history = None
     sched_current = None
     if request.user and not request.user.is_anonymous():
@@ -100,7 +102,9 @@ def attach_info_to_request(
             sched_current.get_song().data["rating_allowed"] = True
         sched_current = sched_current.to_dict(request.user)
         sched_next = []
-        sched_next_objects = cache.get_station(request.sid, "sched_next")
+        sched_next_objects = cast(
+            list[BaseEvent], cache.get_station(request.sid, "sched_next")
+        )
         for evt in sched_next_objects:
             sched_next.append(evt.to_dict(request.user))
         if (
@@ -118,7 +122,9 @@ def attach_info_to_request(
                 ):
                     sched_next[i]["voting_allowed"] = True
         sched_history = []
-        for evt in cache.get_station(request.sid, "sched_history"):
+        for evt in cast(
+            list[BaseEvent], cache.get_station(request.sid, "sched_history")
+        ):
             sched_history.append(evt.to_dict(request.user, check_rating_acl=True))
     elif request.user:
         sched_current = cache.get_station(request.sid, "sched_current_dict")
@@ -128,7 +134,7 @@ def attach_info_to_request(
                 "Rainwave is Rebooting, Please Try Again in a Few Minutes",
                 http_code=500,
             )
-        sched_next = cache.get_station(request.sid, "sched_next_dict")
+        sched_next = cast(list[dict], cache.get_station(request.sid, "sched_next_dict"))
         sched_history = cache.get_station(request.sid, "sched_history_dict")
         if (
             len(sched_next) > 0
@@ -163,7 +169,7 @@ def attach_info_to_request(
         request.append("live_voting", cache.get_station(request.sid, "live_voting"))
 
 
-def check_sync_status(sid, offline_ack=False):
+def check_sync_status(sid, offline_ack: bool | None = False):
     if not cache.get_station(sid, "backend_ok") and not offline_ack:
         raise APIException("station_offline")
     if cache.get_station(sid, "backend_paused") and not offline_ack:

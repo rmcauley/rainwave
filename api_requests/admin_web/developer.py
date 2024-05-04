@@ -65,7 +65,7 @@ class CreateAnonTunedIn(APIHandler):
             )
             return
         raise APIException(
-            500, "internal_error", "Anonymous user tune in record already exists."
+            "internal_error", "Anonymous user tune in record already exists.", 500
         )
 
 

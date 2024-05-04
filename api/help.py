@@ -1,8 +1,12 @@
+from typing import Union
 import tornado.web
 import api.web
 from libs import config
 
-help_classes = {}
+help_classes: dict[
+    str,
+    api.web.APIHandler | api.web.RainwaveHandler | api.web.HTMLRequest,
+] = {}
 url_properties = (
     ("allow_get", "GET", "Allows HTTP GET requests in addition to POST requests."),
     (
@@ -56,17 +60,17 @@ def sectionize_requests():
         elif handler.local_only:
             if config.get("developer_mode"):
                 sections["Other"][url] = handler
-        elif issubclass(handler, api.web.PrettyPrintAPIMixin):
+        elif isinstance(handler, api.web.PrettyPrintAPIMixin):
             if handler.admin_required or handler.dj_required or handler.dj_preparation:
                 sections["Admin HTML"][url] = handler
             else:
                 sections["Statistic HTML"][url] = handler
-        elif issubclass(handler, api.web.HTMLRequest):
+        elif isinstance(handler, api.web.HTMLRequest):
             if handler.admin_required or handler.dj_required or handler.dj_preparation:
                 sections["Admin HTML"][url] = handler
             else:
                 sections["HTML Pages"][url] = handler
-        elif issubclass(handler, api.web.APIHandler):
+        elif isinstance(handler, api.web.APIHandler):
             if handler.admin_required or handler.dj_required or handler.dj_preparation:
                 sections["Admin JSON"][url] = handler
             else:
@@ -114,8 +118,8 @@ class IndexRequest(api.web.HTMLRequest):
         display_url = url
         self.write("<td><a href='/api4/help%s'>%s</a></td>" % (url, display_url))
         if (
-            issubclass(handler, api.web.HTMLRequest)
-            or issubclass(handler, api.web.PrettyPrintAPIMixin)
+            isinstance(handler, api.web.HTMLRequest)
+            or isinstance(handler, api.web.PrettyPrintAPIMixin)
         ) and url.find("(") == -1:
             self.write("<td><a href='%s'>Link</a></td>" % url)
         else:
@@ -131,7 +135,11 @@ class IndexRequest(api.web.HTMLRequest):
 
         self.write("<h2>Requests</h2>")
         self.write("<table class='help_legend'>")
-        order = section_order if self.user.is_admin() else section_order_normal
+        order = (
+            section_order
+            if self.user and self.user.is_admin()
+            else section_order_normal
+        )
         for section in order:
             self.write("<tr><th colspan='11'>%s</th></tr>" % section)
             self.write(

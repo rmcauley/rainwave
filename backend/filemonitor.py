@@ -6,7 +6,6 @@ import sys
 import psutil
 import traceback
 from PIL import Image
-
 import pyinotify
 from pyinotify import ProcessEvent, IN_DELETE, IN_MOVED_FROM
 
@@ -292,13 +291,13 @@ def _process_album_art(filename, sids):
             im_120 = im_original
             if im_original.size[0] > 420 or im_original.size[1] > 420:
                 im_320 = im_original.copy()
-                im_320.thumbnail((320, 320), Image.ANTIALIAS)
+                im_320.thumbnail((320, 320), Image.Resampling.LANCZOS)
             if im_original.size[0] > 240 or im_original.size[1] > 240:
                 im_240 = im_original.copy()
-                im_240.thumbnail((240, 240), Image.ANTIALIAS)
+                im_240.thumbnail((240, 240), Image.Resampling.LANCZOS)
             if im_original.size[0] > 160 or im_original.size[1] > 160:
                 im_120 = im_original.copy()
-                im_120.thumbnail((120, 120), Image.ANTIALIAS)
+                im_120.thumbnail((120, 120), Image.Resampling.LANCZOS)
             if im_original.size[0] < 320 or im_original.size[1] < 320:
                 _add_scan_error(
                     filename,

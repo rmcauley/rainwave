@@ -1,3 +1,4 @@
+from typing import cast
 from libs import db
 import api.web
 from api.urls import handle_api_url
@@ -23,7 +24,7 @@ class UserSearchByDiscordUserIdRequest(api.web.APIHandler):
                 f"{self.request.remote_ip} is not allowed to access this endpoint.",
             )
 
-        list_as_tuple = tuple(self.get_argument("discord_user_ids"))
+        list_as_tuple = tuple(cast(list[str], self.get_argument("discord_user_ids")))
 
         db.c.update(
             "UPDATE phpbb_users SET group_id = 8 WHERE discord_user_id IN %s AND group_id NOT IN %s AND group_id != 8",

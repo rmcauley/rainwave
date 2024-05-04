@@ -1,3 +1,4 @@
+import typing
 from time import time as timestamp
 
 from api import fieldtypes
@@ -5,6 +6,8 @@ from api.web import APIHandler
 from api.exceptions import APIException
 from api.urls import handle_api_url
 import rainwave.schedule
+from rainwave.events.event import BaseEvent
+from rainwave.events.election import Election
 
 from libs import cache
 from libs import config
@@ -31,11 +34,15 @@ class SubmitVote(APIHandler):
         lock_count = 0
         voted = False
         elec_id = None
-        for event in cache.get_station(self.sid, "sched_next"):
+        for event in typing.cast(
+            list[BaseEvent], cache.get_station(self.sid, "sched_next")
+        ):
             lock_count += 1
             if (
                 event.is_election
-                and event.has_entry_id(self.get_argument("entry_id"))
+                and typing.cast(Election, event).has_entry_id(
+                    self.get_argument("entry_id")
+                )
                 and len(event.songs) > 1
             ):
                 elec_id = event.id

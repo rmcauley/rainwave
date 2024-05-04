@@ -2,6 +2,7 @@
 
 import argparse
 
+import libs.config
 import libs.cache
 
 parser = argparse.ArgumentParser(

@@ -4,7 +4,7 @@ from api.urls import handle_api_url
 from api.exceptions import APIException
 from api import fieldtypes
 from rainwave import playlist
-from rainwave import events
+from rainwave.events import election
 
 
 class GetCachedSongList(api.web.APIHandler):
@@ -95,7 +95,7 @@ class CommitDJElection(api.web.APIHandler):
                 (self.get_argument("sched_id"),),
             ):
                 raise APIException("auth_required", http_code=403)
-        elec = events.election.Election.create(self.sid, self.get_argument("sched_id"))
+        elec = election.Election.create(self.sid, self.get_argument("sched_id"))
         for song in songs:
             elec.add_song(song)
         cache.set_user(self.user.id, "dj_election", None)
@@ -109,7 +109,7 @@ class DeleteElection(api.web.APIHandler):
     fields = {"elec_id": (fieldtypes.elec_id, True)}
 
     def post(self):
-        elec = events.election.Election.load_by_id(self.get_argument("elec_id"))
+        elec = election.Election.load_by_id(self.get_argument("elec_id"))
         can_delete = self.user.is_admin()
         if not can_delete:
             if not self.user.id == db.c.fetch_var(

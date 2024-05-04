@@ -22,19 +22,27 @@ class ListenerStats(api.web.APIHandler):
     date_start = time.time()
     date_end = time.time()
 
-    def post(self):
-        if self.get_argument("date_start"):
-            self.date_start = time.mktime(self.get_argument("date_start").timetuple())
+    def _set_start_end(self):
+        date_start = self.get_argument_date("date_start")
+        if date_start:
+            self.date_start = time.mktime(date_start.timetuple())
         else:
             self.date_start = timestamp() - (7 * 86400) + 1
-        if self.get_argument("date_end"):
-            self.date_end = time.mktime(self.get_argument("date_end").timetuple())
+
+        date_end = self.get_argument_date("date_end")
+        if date_end:
+            self.date_end = time.mktime(date_end.timetuple())
         else:
             self.date_end = timestamp()
+
+    def post(self):
+        self._set_start_end()
+
         if self.date_start >= self.date_end:
             raise APIException(
                 "invalid_argument", text="Start date cannot be after end date."
             )
+
         timespan = self.date_end - self.date_start
         if timespan <= (86400 * 2):
             sql = "SELECT (lc_time - (lc_time %% 3600)) AS lc_time, ROUND(CAST(AVG(lc_guests) AS NUMERIC), 1) AS lc_listeners FROM r4_listener_counts WHERE lc_time > %s AND lc_time < %s AND sid = %s GROUP BY (lc_time - (lc_time %% 3600)) ORDER BY lc_time"
@@ -63,14 +71,8 @@ class ListenerStatsAggregate(ListenerStats):
     description = "Get listener stats aggregated by 4 hour chunks, in order to see listener trends."
 
     def post(self):
-        if self.get_argument("date_start"):
-            self.date_start = time.mktime(self.get_argument("date_start").timetuple())
-        else:
-            self.date_start = timestamp() - (7 * 86400) + 1
-        if self.get_argument("date_end"):
-            self.date_end = time.mktime(self.get_argument("date_end").timetuple())
-        else:
-            self.date_end = timestamp()
+        self._set_start_end()
+
         sql = (
             "SELECT aggr_time AS lc_time, ROUND(CAST(AVG(lc_guests) AS NUMERIC), 1) AS lc_listeners "
             "FROM ( "

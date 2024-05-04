@@ -1,6 +1,11 @@
+# type: ignore
+
+### Typing ignored for whole file
+
 import uuid
 from libs import db
 from rainwave.user import User
+from api.web import RainwaveHandler
 
 ALLOWED_DESTINATIONS = ("web", "rw", "app", "rwpath")
 

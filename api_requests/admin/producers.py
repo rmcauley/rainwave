@@ -101,9 +101,13 @@ class CreateProducer(api.web.APIHandler):
             dj_user_id=self.get_argument("dj_user_id"),
         )
         if self.get_argument("fill_unrated") and getattr(p, "fill_unrated", False):
+            end_time = self.get_argument_int("end_utc_time")
+            start_time = self.get_argument_int("start_utc_time")
+            if not end_time or not start_time:
+                raise APIException(400, http_code=400)
             p.fill_unrated(
                 self.sid,
-                self.get_argument("end_utc_time") - self.get_argument("start_utc_time"),
+                end_time - start_time,
             )
         self.append(self.return_name, p.to_dict())
 
@@ -218,6 +222,8 @@ class ChangeProducerStartTime(api.web.APIHandler):
 
     def post(self):
         producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+        if not producer:
+            raise APIException("404", http_code=404)
         producer.change_start(self.get_argument("utc_time"))
         self.append(self.return_name, producer.to_dict())
 
@@ -234,6 +240,8 @@ class ChangeProducerEndTime(api.web.APIHandler):
 
     def post(self):
         producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+        if not producer:
+            raise APIException("404", http_code=404)
         producer.change_end(self.get_argument("utc_time"))
         self.append(self.return_name, producer.to_dict())
 

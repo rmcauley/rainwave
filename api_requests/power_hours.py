@@ -3,6 +3,7 @@ import api
 
 from api.urls import handle_api_url
 from api.urls import handle_api_html_url
+import api.web
 from api.web import PrettyPrintAPIMixin
 from libs import db
 from libs import config

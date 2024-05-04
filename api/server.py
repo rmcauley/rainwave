@@ -1,4 +1,5 @@
 import os
+import resource
 
 import sentry_sdk
 from sentry_sdk.integrations.tornado import TornadoIntegration
@@ -127,6 +128,7 @@ class APIServer:
 
         for request in request_classes:
             log.debug("start", "   Handler: %s" % str(request))
+        log.info("start", "Max open files: %s" % resource.RLIMIT_NOFILE)
         log.info("start", "API server on port %s ready to go." % port_no)
         self.ioloop = tornado.ioloop.IOLoop.instance()
 

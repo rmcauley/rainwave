@@ -1,3 +1,7 @@
+# type: ignore
+
+### Typing ignored for the whole file
+
 try:
     import ujson as json
 except ImportError:
@@ -27,7 +31,14 @@ station_colors = {1: "#1f95e5", 2: "#de641b", 3: "#b7000f", 4: "#6e439d", 5: "#a
 
 # pylint: disable=E1101
 class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
+    header_text: str
+    date_start: float
+    date_end: float
+
     def get(self):
+        if not isinstance(self._output, dict):
+            raise api.web.APIException("internal_error", http_code=500)
+
         self.write(self.render_string("bare_header.html", title="Listener Stats"))
         self.write(
             "<style type='text/css'>span.indicator { display: inline-block; height: 1em; width: 1em; margin-right: 5px; margin-left: 1em; }</style>"
@@ -96,10 +107,10 @@ class ListenerStatsBase(api.web.PrettyPrintAPIMixin):
         self.write("</h2>")
         self.write("<div style='width: 800px; text-align: center;'>")
         self.write("<select id='date_start_year'>")
-        dt_start = self.get_argument("date_start") or (
+        dt_start = self.get_argument_date("date_start") or (
             datetime.datetime.now() - datetime.timedelta(weeks=1)
         )
-        dt_end = self.get_argument("date_end") or datetime.datetime.now()
+        dt_end = self.get_argument_date("date_end") or datetime.datetime.now()
         for i in range(
             datetime.datetime.now().year - 1, datetime.datetime.now().year + 1
         ):

@@ -27,6 +27,9 @@ def get_ph_formatted_time(start_time, end_time, timezone_name):
 @handle_url("/admin/tools/power_hours")
 class WebListPowerHours(api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours):
     def get(self):  # pylint: disable=E0202
+        if not isinstance(self._output, dict):
+            raise api.web.APIException("internal_error", http_code=500)
+
         self.write(
             self.render_string(
                 "bare_header.html",
@@ -109,6 +112,9 @@ class WebPowerHourDetail(api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
         self.write(self.render_string("basic_footer.html"))
 
     def get(self):  # pylint: disable=E0202
+        if not isinstance(self._output, dict):
+            raise api.web.APIException("internal_error", http_code=500)
+
         ph = self._output[self.return_name]
         self.write(self.render_string("bare_header.html", title="%s" % ph["name"]))
         self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")

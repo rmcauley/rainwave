@@ -55,6 +55,8 @@ class AddSongToPowerHour(api.web.APIHandler):
 
     def post(self):
         ph = OneUpProducer.load_producer_by_id(self.get_argument("sched_id"))
+        if not ph:
+            raise APIException("404", http_code=404)
         ph.add_song_id(self.get_argument("song_id"), self.get_argument("song_sid"))
         self.append(self.return_name, ph.to_dict())
 
@@ -73,6 +75,8 @@ class AddAlbumToPowerHour(api.web.APIHandler):
 
     def post(self):
         ph = OneUpProducer.load_producer_by_id(self.get_argument("sched_id"))
+        if not ph:
+            raise APIException("404", http_code=404)
         ph.add_album_id(self.get_argument("album_id"), self.get_argument("album_sid"))
         self.append(self.return_name, ph.to_dict())
 
@@ -92,6 +96,8 @@ class RemoveFromPowerHour(api.web.APIHandler):
         if not ph_id:
             raise APIException("invalid_argument", "Invalid One Up ID.")
         ph = OneUpProducer.load_producer_by_id(ph_id)
+        if not ph:
+            raise APIException("404", http_code=404)
         ph.remove_one_up(self.get_argument("one_up_id"))
         self.append(self.return_name, ph.to_dict())
 
@@ -105,6 +111,8 @@ class ShufflePowerHour(api.web.APIHandler):
 
     def post(self):
         ph = OneUpProducer.load_producer_by_id(self.get_argument("sched_id"))
+        if not ph:
+            raise APIException("404", http_code=404)
         ph.shuffle_songs()
         self.append(self.return_name, ph.to_dict())
 
@@ -124,5 +132,7 @@ class MoveUpInPowerHour(api.web.APIHandler):
         if not ph_id:
             raise APIException("invalid_argument", "Invalid One Up ID.")
         ph = OneUpProducer.load_producer_by_id(ph_id)
+        if not ph:
+            raise APIException("404", http_code=404)
         ph.move_song_up(self.get_argument("one_up_id"))
         self.append(self.return_name, ph.to_dict())

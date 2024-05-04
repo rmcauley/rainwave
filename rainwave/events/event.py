@@ -1,4 +1,6 @@
+from typing import TypeVar, Type
 from time import time as timestamp
+from rainwave.playlist_objects.song import Song
 
 from libs import db
 from libs import log
@@ -32,9 +34,14 @@ class EventAlreadyUsed(Exception):
     pass
 
 
+T = TypeVar("T", bound="BaseProducer")
+
+
 class BaseProducer:
+    name: str
+
     @classmethod
-    def load_producer_by_id(cls, sched_id):
+    def load_producer_by_id(cls: Type[T], sched_id) -> T | None:
         global all_producers
         row = db.c.fetch_row(
             "SELECT * FROM r4_schedule WHERE sched_id = %s", (sched_id,)
@@ -69,7 +76,7 @@ class BaseProducer:
         sid,
         start,
         end,
-        name=None,
+        name="",
         public=True,
         timed=True,
         url=None,
@@ -115,10 +122,10 @@ class BaseProducer:
         self.id = None
         self.start = 0
         self.start_actual = None
-        self.end = None
+        self.end = 0
         self.end_actual = None
         self.type = self.__class__.__name__
-        self.name = None
+        self.name = ""
         self.public = True
         self.timed = True
         self.url = None
@@ -127,7 +134,7 @@ class BaseProducer:
         self.use_crossfade = True
         self.use_tag_suffix = True
         self.plan_ahead_limit = 1
-        self.songs = None
+        self.songs = []
         self.dj_user_id = None
 
     def duplicate(self):
@@ -226,6 +233,8 @@ class BaseProducer:
 
 
 class BaseEvent:
+    name: str | None
+
     def __init__(self, sid=None):
         self.id = None
         self.type = self.__class__.__name__
@@ -242,7 +251,7 @@ class BaseEvent:
         self.replay_gain = None
         self.name = None
         self.sid = sid
-        self.songs = None
+        self.songs = []
         self.core_event_id = None
 
     def _update_from_dict(self, dct):
@@ -253,7 +262,7 @@ class BaseEvent:
             return self.songs[0].filename
         return None
 
-    def get_song(self):
+    def get_song(self) -> Song | None:
         if hasattr(self, "songs"):
             return self.songs[0]
         return None
@@ -263,7 +272,8 @@ class BaseEvent:
             return
         elif self.used:
             raise EventAlreadyUsed
-        self.replay_gain = self.get_song().replay_gain
+        song = self.get_song()
+        self.replay_gain = song.replay_gain if song else None
 
     def start_event(self):
         self.start_actual = int(timestamp())
@@ -283,7 +293,7 @@ class BaseEvent:
         # These go in descending order of accuracy
         if not self.used and hasattr(self, "songs"):
             return self.songs[0].data["length"]
-        elif self.start_actual:
+        elif self.start_actual and self.end:
             return self.start_actual - self.end
         elif self.start and self.end:
             return self.start - self.end

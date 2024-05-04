@@ -31,7 +31,7 @@ numeric_error = "must be a number."
 
 
 def numeric(s, request=None):
-    if isinstance(s, numbers.Number):
+    if isinstance(s, (int, float)):
         return s
     if not s:
         return None
@@ -46,8 +46,10 @@ integer_error = "must be a number."
 
 
 def integer(s, request=None):
-    if isinstance(s, numbers.Number):
+    if isinstance(s, (int)):
         return s
+    if isinstance(s, float):
+        return int(s)
     if not s:
         return None
     if not isinstance(s, str):
@@ -303,7 +305,7 @@ string_list_error = "must be a comma-separated list of strings."
 def string_list(s, request=None):
     if isinstance(s, list):
         for i in s:
-            if not isinstance(i, string):
+            if not isinstance(i, str):
                 return None
         return s
     l = []
@@ -510,7 +512,7 @@ def group_id(s, request=None):
 date_error = "must be valid ISO 8601 date. (YYYY-MM-DD)"
 
 
-def date(s, request=None):
+def date(s, request=None) -> datetime | None:
     if not s:
         return None
     try:

@@ -21,9 +21,9 @@ class KeyIndex(api.web.HTMLRequest):
         global qr_service
         global mini_qr_service
 
-        if self.request.headers.get("User-Agent").lower().find(
-            "android"
-        ) != -1 and not self.get_argument("noredirect"):
+        ua = self.request.headers.get("User-Agent") or ""
+
+        if ua.lower().find("android") != -1 and not self.get_argument("noredirect"):
             self.redirect("/keys/app")
             return
 

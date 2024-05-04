@@ -65,7 +65,7 @@ if __name__ == "__main__":
             os.sep,
             row["song_origin_sid"],
             os.sep,
-            song.albums[0].data["name"],
+            song.album.data["name"] if song.album else None,
         )
 
         if args.execute:

@@ -1,6 +1,7 @@
 from libs import config
 from libs import db
 import pylibmc as libmc
+from api.web import APIException
 
 _memcache = None
 _memcache_ratings = None
@@ -59,12 +60,16 @@ def connect():
 
 
 def set_global(key, value, save_local=False):
+    if not _memcache:
+        raise APIException("internal_error", "No memcache connection.", http_code=500)
     if save_local or key in local:
         local[key] = value
     _memcache.set(key, value)
 
 
 def get(key):
+    if not _memcache:
+        raise APIException("internal_error", "No memcache connection.", http_code=500)
     if key in local:
         return local[key]
     return _memcache.get(key)
@@ -93,14 +98,20 @@ def get_station(sid, key):
 
 
 def set_song_rating(song_id, user_id, rating):
+    if not _memcache_ratings:
+        raise APIException("internal_error", "No memcache connection.", http_code=500)
     _memcache_ratings.set("rating_song_%s_%s" % (song_id, user_id), rating)
 
 
 def get_song_rating(song_id, user_id):
+    if not _memcache_ratings:
+        raise APIException("internal_error", "No memcache connection.", http_code=500)
     return _memcache_ratings.get("rating_song_%s_%s" % (song_id, user_id))
 
 
 def set_album_rating(sid, album_id, user_id, rating):
+    if not _memcache_ratings:
+        raise APIException("internal_error", "No memcache connection.", http_code=500)
     _memcache_ratings.set("rating_album_%s_%s_%s" % (sid, album_id, user_id), rating)
 
 
@@ -112,6 +123,8 @@ def set_album_faves(sid, album_id, user_id, fave):
 
 
 def get_album_rating(sid, album_id, user_id):
+    if not _memcache_ratings:
+        raise APIException("internal_error", "No memcache connection.", http_code=500)
     return _memcache_ratings.get("rating_album_%s_%s_%s" % (sid, album_id, user_id))
 
 
@@ -133,10 +146,14 @@ def prime_rating_cache_for_song(song, sid):
 
 
 def refresh_local(key):
+    if not _memcache:
+        raise APIException("internal_error", "No memcache connection.", http_code=500)
     local[key] = _memcache.get(key)
 
 
 def refresh_local_station(sid, key):
+    if not _memcache:
+        raise APIException("internal_error", "No memcache connection.", http_code=500)
     # we can't use the normal get functions here since they'll ping what's already in local
     local["sid%s_%s" % (sid, key)] = _memcache.get("sid%s_%s" % (sid, key))
 

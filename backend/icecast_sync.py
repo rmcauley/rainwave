@@ -20,10 +20,10 @@ class IcecastSyncCall:
         if not self.response:
             return 0
         listeners = []
-        for listener in (
-            ElementTree.fromstring(self.response).find("source").iter("listener")
-        ):
-            listeners.append(listener)
+        sources = ElementTree.fromstring(self.response).find("source")
+        if sources:
+            for listener in sources.iter("listener"):
+                listeners.append(listener)
         log.debug(
             "icecast_sync",
             "%s %s %s count: %s"

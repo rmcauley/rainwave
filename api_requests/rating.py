@@ -28,11 +28,9 @@ class SubmitRatingRequest(APIHandler):
     def rate(self, song_id, rating):
         if not self.user.data["rate_anything"]:
             acl = cache.get_station(self.sid, "user_rating_acl")
-            if (
-                not cache.get_station(self.sid, "sched_current").get_song().id
-                == song_id
-            ):
-                if not song_id in acl or not self.user.id in acl[song_id]:
+            sched_current = cache.get_station(self.sid, "sched_current")
+            if not sched_current or not sched_current.get_song().id == song_id:
+                if not acl or not song_id in acl or not self.user.id in acl[song_id]:
                     raise APIException("cannot_rate_now")
             elif not self.user.is_tunedin():
                 raise APIException("tunein_to_rate_current_song")

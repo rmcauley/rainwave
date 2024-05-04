@@ -515,7 +515,9 @@ class RainwaveParser(HTMLParser):
         if len(args) > 1:
             entry["argument"] = args[1]
         elif entry["name"] == "if":
-            raise "Tried to use an 'if' without an argument. (%s)" % self.name
+            raise Exception(
+                "Tried to use an 'if' without an argument. (%s)" % self.name
+            )
 
         # This quickly closes the 'if' tag itself and copies the arguments over to 'else'
         if (

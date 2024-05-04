@@ -14,8 +14,10 @@ from rainwave import rating
 from rainwave.playlist_objects import cooldown
 from rainwave.playlist_objects.album import Album
 from rainwave.playlist_objects.artist import Artist
-from rainwave.playlist_objects.metadata import (MetadataUpdateError,
-                                                make_searchable_string)
+from rainwave.playlist_objects.metadata import (
+    MetadataUpdateError,
+    make_searchable_string,
+)
 from rainwave.playlist_objects.songgroup import SongGroup
 
 num_songs = {}
@@ -59,6 +61,21 @@ class SongMetadataUnremovable(Exception):
 
 class Song:
     sid = 0
+    id: None | int
+    filename: None | str
+    album: None | Album
+    artists: list[Artist] = []
+    groups: list[SongGroup] = []
+    verified = False
+    artist_tag: None | str = None
+    album_tag: None | str = None
+    genre_tag: None | str = None
+    data = {}
+    data["url"] = None
+    data["link_text"] = None
+    data["rating_allowed"] = False
+    replay_gain: None | str = None
+    fake = False
 
     @classmethod
     def load_from_id(cls, song_id, sid=None, all_categories=False):
@@ -88,7 +105,7 @@ class Song:
             s._assign_from_dict(d)
 
             if "album_id" in d and d["album_id"]:
-                s.albums = [Album.load_from_id_sid(d["album_id"], sid)]
+                s.album = Album.load_from_id_sid(d["album_id"], sid)
             s.artists = Artist.load_list_from_song_id(song_id)
             s.groups = SongGroup.load_list_from_song_id(
                 song_id, sid, all_categories=all_categories
@@ -105,9 +122,9 @@ class Song:
     @classmethod
     def load_from_file(cls, filename, sids):
         """
-		Produces an instance of the Song class with all album, group, and artist IDs loaded from only a filename.
-		All metadata is saved to the database and updated where necessary.
-		"""
+        Produces an instance of the Song class with all album, group, and artist IDs loaded from only a filename.
+        All metadata is saved to the database and updated where necessary.
+        """
 
         kept_artists = []
         kept_groups = []
@@ -157,16 +174,24 @@ class Song:
         for metadata in s.groups:
             metadata.associate_song_id(s.id)
 
-        s.albums = [Album.load_from_name(s.album_tag)]
-        s.albums[0].associate_song_id(s.id)
+        s.album = Album.load_from_name(s.album_tag)
+        s.album.associate_song_id(s.id)
 
         s.update_artist_parseable()
 
         # do not get replay gain earlier in case an exception is thrown above
         # it means a lot of wasted CPU time in that scenario
-        if db.c.fetch_var("SELECT song_replay_gain FROM r4_songs WHERE song_id = %s", (s.id,)) is None:
+        if (
+            db.c.fetch_var(
+                "SELECT song_replay_gain FROM r4_songs WHERE song_id = %s", (s.id,)
+            )
+            is None
+        ):
             s.replay_gain = s.get_replay_gain()
-            db.c.update("UPDATE r4_songs SET song_replay_gain = %s WHERE song_id = %s", (s.replay_gain, s.id))
+            db.c.update(
+                "UPDATE r4_songs SET song_replay_gain = %s WHERE song_id = %s",
+                (s.replay_gain, s.id),
+            )
 
         return s
 
@@ -195,13 +220,13 @@ class Song:
 
     def __init__(self):
         """
-		A blank Song object.  Please use one of the load functions to get a filled instance.
-		"""
+        A blank Song object.  Please use one of the load functions to get a filled instance.
+        """
         self.id = None
         self.filename = None
-        self.albums = None
-        self.artists = None
-        self.groups = None
+        self.album = None
+        self.artists = []
+        self.groups = []
         self.verified = False
         self.artist_tag = None
         self.album_tag = None
@@ -215,8 +240,8 @@ class Song:
 
     def load_tag_from_file(self, filename):
         """
-		Reads ID3 tags and sets object-level variables.
-		"""
+        Reads ID3 tags and sets object-level variables.
+        """
 
         with open(filename, "rb") as mp3file:
             f = MP3(mp3file, translate=False)
@@ -229,17 +254,23 @@ class Song:
             if len(w) > 0 and len(str(w[0])) > 0:
                 self.data["title"] = str(w[0]).strip()
             else:
-                raise PassableScanError('Song filename "%s" has no title tag.' % filename)
+                raise PassableScanError(
+                    'Song filename "%s" has no title tag.' % filename
+                )
             w = f.tags.getall("TPE1")
             if len(w) > 0 and len(str(w[0])) > 0:
                 self.artist_tag = str(w[0])
             else:
-                raise PassableScanError('Song filename "%s" has no artist tag.' % filename)
+                raise PassableScanError(
+                    'Song filename "%s" has no artist tag.' % filename
+                )
             w = f.tags.getall("TALB")
             if len(w) > 0 and len(str(w[0]).strip()) > 0:
                 self.album_tag = str(w[0]).strip()
             else:
-                raise PassableScanError('Song filename "%s" has no album tag.' % filename)
+                raise PassableScanError(
+                    'Song filename "%s" has no album tag.' % filename
+                )
 
             w = f.tags.getall("TCON")
             if len(w) > 0 and len(str(w[0])) > 0:
@@ -260,13 +291,13 @@ class Song:
 
     def is_valid(self):
         """
-		Lets callee know if this MP3 is valid or not.
-		"""
+        Lets callee know if this MP3 is valid or not.
+        """
         if self.fake:
             self.verified = True
             return True
 
-        if os.path.exists(self.filename):
+        if self.filename and os.path.exists(self.filename):
             self.verified = True
             return True
         else:
@@ -285,10 +316,10 @@ class Song:
             (artist_parseable, self.id),
         )
 
-    def save(self, sids_override=False):
+    def save(self, sids_override: list[int] | None = None):
         """
-		Save song to the database.  Does NOT associate metadata.
-		"""
+        Save song to the database.  Does NOT associate metadata.
+        """
 
         log.debug(
             "playlist", "saving song to database; manual sids? {}".format(sids_override)
@@ -320,7 +351,7 @@ class Song:
         self.data["origin_sid"] = self.data["sids"][0]
 
         file_mtime = 0
-        if not self.fake:
+        if not self.fake and self.filename:
             file_mtime = os.stat(self.filename)[8]
 
         if update:
@@ -423,9 +454,8 @@ class Song:
             "UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s", (self.id,)
         )
         db.c.update("DELETE FROM r4_request_store WHERE song_id = %s", (self.id,))
-        if self.albums:
-            for metadata in self.albums:
-                metadata.reconcile_sids()
+        if self.album:
+            self.album.reconcile_sids()
         if self.groups:
             for metadata in self.groups:
                 metadata.reconcile_sids()
@@ -442,10 +472,10 @@ class Song:
 
     def start_cooldown(self, sid):
         """
-		Calculates cooldown based on jfinalfunk's crazy algorithms.
-		Cooldown may be overriden by song_cool_* rules found in database.
-		Cooldown is only applied if the song exists on the given station
-		"""
+        Calculates cooldown based on jfinalfunk's crazy algorithms.
+        Cooldown may be overriden by song_cool_* rules found in database.
+        Cooldown is only applied if the song exists on the given station
+        """
 
         if (self.sid != sid) or (not self.sid in self.data["sids"]) or sid == 0:
             return
@@ -456,11 +486,11 @@ class Song:
             )
             metadata.start_cooldown(sid)
         # Albums always have to go last since album records in the DB store cached cooldown values
-        for metadata in self.albums:
+        if self.album:
             log.debug(
                 "song_cooldown", "Starting album cooldown on album %s" % metadata.id
             )
-            metadata.start_cooldown(sid)
+            self.album.start_cooldown(sid)
 
         cool_time = cooldown.cooldown_config[sid]["max_song_cool"]
         if self.data["cool_override"]:
@@ -511,8 +541,8 @@ class Song:
 
         for metadata in self.groups:
             metadata.start_election_block(sid, num_elections)
-        for metadata in self.albums:
-            metadata.start_election_block(sid, num_elections)
+        if self.album:
+            self.album.start_election_block(sid, num_elections)
         self.set_election_block(sid, "in_election", num_elections)
 
     def set_election_block(self, sid, blocked_by, block_length):
@@ -546,9 +576,8 @@ class Song:
                 (self.data["rating"], potential_points, self.id),
             )
 
-        if not skip_album_update:
-            for album in self.albums:
-                album.update_rating()
+        if not skip_album_update and self.album:
+            self.album.update_rating()
 
     def add_artist(self, name):
         to_ret = self._add_metadata(self.artists, name, Artist)
@@ -562,14 +591,11 @@ class Song:
             )
         elif not sids:
             sids = self.data["sids"]
-        if len(self.albums) >= 1:
+        if self.album:
             raise Exception("Cannot add more than 1 album association to a song.")
-        for metadata in self.albums:
-            if metadata.data["name"] == name:
-                return True
         new_md = Album.load_from_name(name)
         new_md.associate_song_id(self.id, sids)
-        self.albums.append(new_md)
+        self.album = new_md
         return True
 
     def add_group(self, name):
@@ -590,7 +616,12 @@ class Song:
         return toret
 
     def remove_album_id(self, metadata_id):
-        return self._remove_metadata_id(self.albums, metadata_id)
+        if self.album and self.album.id == metadata_id:
+            self.album.disassociate_song_id(self.id)
+            return True
+        raise SongMetadataUnremovable(
+            "Found no tag by ID %s that wasn't assigned by ID3." % metadata_id
+        )
 
     def remove_group_id(self, metadata_id):
         return self._remove_metadata_id(self.groups, metadata_id)
@@ -610,7 +641,12 @@ class Song:
         return toret
 
     def remove_album(self, name):
-        return self._remove_metadata(self.albums, name)
+        if self.album and self.album.data["name"] == name and not self.album.is_tag:
+            self.album.disassociate_song_id(self.id)
+            return True
+        raise SongMetadataUnremovable(
+            "Found no tag by name %s that wasn't assigned by ID3." % name
+        )
 
     def remove_group(self, name):
         return self._remove_metadata(self.groups, name)
@@ -687,9 +723,8 @@ class Song:
         d["artists"] = []
         d["albums"] = []
         d["groups"] = []
-        if self.albums:
-            for metadata in self.albums:
-                d["albums"].append(metadata.to_dict(user))
+        if self.album:
+            d["albums"] = [self.album.to_dict(user)]
         if self.artists:
             for metadata in self.artists:
                 d["artists"].append(metadata.to_dict(user))
@@ -743,8 +778,8 @@ class Song:
         return all_ratings
 
     def update_last_played(self, sid):
-        for album in self.albums:
-            album.update_last_played(sid)
+        if self.album:
+            self.album.update_last_played(sid)
         return db.c.update(
             "UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s",
             (timestamp(), self.id, sid),
@@ -779,12 +814,14 @@ class Song:
         )
         db.c.update(
             "UPDATE r4_songs SET song_request_count = %s WHERE song_id = %s",
-            (count, self.id,),
+            (
+                count,
+                self.id,
+            ),
         )
 
-        if update_albums:
-            for album in self.albums:
-                album.update_request_count(sid)
+        if update_albums and self.album:
+            self.album.update_request_count(sid)
 
     def update_fave_count(self, sid, update_albums=True):
         count = db.c.fetch_var(
@@ -793,12 +830,14 @@ class Song:
         )
         db.c.update(
             "UPDATE r4_songs SET song_fave_count = %s WHERE song_id = %s",
-            (count, self.id,),
+            (
+                count,
+                self.id,
+            ),
         )
 
-        if update_albums:
-            for album in self.albums:
-                album.update_fave_count()
+        if update_albums and self.album:
+            self.album.update_fave_count()
 
     def update_vote_count(self, sid, update_albums=True):
         count = db.c.fetch_var(
@@ -806,12 +845,14 @@ class Song:
         )
         db.c.update(
             "UPDATE r4_songs SET song_vote_count = %s WHERE song_id = %s",
-            (count, self.id,),
+            (
+                count,
+                self.id,
+            ),
         )
 
-        if update_albums:
-            for album in self.albums:
-                album.update_vote_count(sid)
+        if update_albums and self.album:
+            self.album.update_vote_count(sid)
 
     def length(self):
         return self.data["length"]

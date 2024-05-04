@@ -43,17 +43,23 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 oauth_secret.encode(), OAUTH_STATE_SALT
             ).decode("utf-8")
             self.set_cookie("r4_oauth_secret", "")
-            destination, oauth_state = self.get_argument("state").split("$", maxsplit=1)
+            destination, oauth_state = self.get_argument_required("state").split(
+                "$", maxsplit=1
+            )
             if oauth_expected_state != oauth_state:
                 raise OAuthRejectedError("oAuth State Mismatch")
             # step 3 - we've come back from Discord with a unique auth code, get
             # token that we can use to act on behalf of user with discord
-            token = await self.get_token(self.get_argument("code"))
+            token = await self.get_token(self.get_argument_required("code"))
             # step 4 - get user info from Discord and login to Rainwave
             await self.register_and_login(token, destination)
         else:
             # step 1 - redirect to Discord login page
             destination = self.get_destination()
+            if not destination:
+                raise APIException(
+                    "missing_argument", "No destination for OAuth2.", 400
+                )
             oauth_secret = secrets.token_hex()
             self.set_cookie("r4_oauth_secret", oauth_secret)
             oauth_state = (

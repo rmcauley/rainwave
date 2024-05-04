@@ -52,7 +52,7 @@ class IcecastHandler(RainwaveHandler):
             exc = kwargs["exc_info"][1]
             if isinstance(exc, APIException):
                 exc.localize(self.locale)
-                self.set_header("icecast-auth-message", exc.reason)
+                self.set_header("icecast-auth-message", exc.reason or "No reason.")
             log.debug("ldetect", "Relay command failed: %s" % exc.reason)
             log.exception(
                 "ldetect", "Exception encountered handling relay command.", exc
@@ -81,7 +81,7 @@ class AddListener(IcecastHandler):
 
     def post(self, sid):
         (self.mount, self.user_id, self.listen_key, self.listener_ip) = (
-            self.get_argument("mount")
+            self.get_argument_required("mount")
         )
         self.agent = self.get_argument("agent")
         if self.listener_ip is None:

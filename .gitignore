@@ -48,3 +48,9 @@ out.json
 .vagrant
 *.sublime-workspace
 node_modules
+
+### venv files
+
+rainwave/bin
+rainwave/lib
+rainwave/pyvenv.cfg

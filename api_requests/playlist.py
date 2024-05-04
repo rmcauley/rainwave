@@ -1,3 +1,4 @@
+from typing import cast
 import math
 
 from api.web import APIHandler
@@ -30,15 +31,15 @@ def get_all_albums(sid, user=None):
 
 
 def get_all_artists(sid):
-    return cache.get_station(sid, "all_artists")
+    return cast(list[playlist.Artist], cache.get_station(sid, "all_artists"))
 
 
 def get_all_groups(sid):
-    return cache.get_station(sid, "all_groups")
+    return cast(list[playlist.SongGroup], cache.get_station(sid, "all_groups"))
 
 
 def get_all_groups_power(sid):
-    return cache.get_station(sid, "all_groups_power")
+    return cast(list[playlist.SongGroup], cache.get_station(sid, "all_groups_power"))
 
 
 @handle_api_url("all_albums")
@@ -213,7 +214,9 @@ class AlbumHandler(APIHandler):
                 self.user,
                 sort=self.get_argument("sort"),
             )
-            album.load_extra_detail(self.sid, self.get_argument("all_categories"))
+            album.load_extra_detail(
+                self.sid, self.get_argument_required("all_categories")
+            )
         except MetadataNotFoundError:
             self.return_name = "album_error"
             valid_sids = db.c.fetch_list(
@@ -252,7 +255,7 @@ class SongHandler(APIHandler):
         song = playlist.Song.load_from_id(
             self.get_argument("id"),
             self.sid,
-            all_categories=self.get_argument("all_categories"),
+            all_categories=self.get_argument_required("all_categories"),
         )
         song.load_extra_detail(self.sid)
         self.append("song", song.to_dict(self.user))

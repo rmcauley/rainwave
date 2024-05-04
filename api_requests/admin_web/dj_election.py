@@ -60,7 +60,7 @@ class DJElectionTool(HTMLRequest):
             for song in songs:
                 self.write(
                     "<li>%s<br>%s<br><a onclick=\"window.top.call_api('admin/remove_from_dj_election', { 'song_id': %s });\">Remove</a></li>"
-                    % (song.data["title"], song.albums[0].data["name"], song.id)
+                    % (song.data["title"], song.album.data["name"], song.id)
                 )
             self.write("</ul>")
             if not self.get_argument("sched_id", None):
@@ -88,7 +88,7 @@ class DJElectionTool(HTMLRequest):
                         "<li>%s (%s - %s)</li>"
                         % (
                             song.data["title"],
-                            song.albums[0].data["name"],
+                            song.album.data["name"],
                             song.artists[0].data["name"],
                         )
                     )

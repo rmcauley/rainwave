@@ -38,10 +38,10 @@ def _send_command(sid, cmd):
     cmd += "\n"
     client.send(cmd)
     to_ret = client.recv(1024)
-    client.send("exit")
+    client.send(b"exit")
     client.close()
-    to_ret = to_ret.strip().strip("END").strip()
-    return to_ret
+    to_ret = to_ret.strip().strip(b"END").strip()
+    return str(to_ret)
 
 
 def skip(sid):

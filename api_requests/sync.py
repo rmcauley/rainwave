@@ -1,3 +1,4 @@
+import typing
 import datetime
 import numbers
 import sys
@@ -15,6 +16,8 @@ import tornado.web
 import tornado.websocket
 import tornado.ioloop
 import tornado.locks
+import tornado.httputil
+import tornado.concurrent
 
 from api import fieldtypes
 from api.exceptions import APIException
@@ -23,6 +26,7 @@ from api.web import get_browser_locale
 from api.urls import api_endpoints
 from api.urls import handle_api_url
 from rainwave.user import User
+import api.locale
 import api_requests.info
 import rainwave.playlist
 import rainwave.schedule
@@ -358,23 +362,27 @@ class Sync(APIHandler):
         else:
             self.dj = False
 
-        api_requests.info.check_sync_status(self.sid, self.get_argument("offline_ack"))
+        api_requests.info.check_sync_status(
+            self.sid, self.get_argument_bool("offline_ack")
+        )
 
         self.set_header("Content-Type", "application/json")
 
         if not self.get_argument("resync"):
+            sched_current_dict = cache.get_station(self.sid, "sched_current_dict")
             if (
                 self.get_argument("known_event_id")
-                and cache.get_station(self.sid, "sched_current_dict")
-                and (
-                    cache.get_station(self.sid, "sched_current_dict")["id"]
-                    != self.get_argument("known_event_id")
-                )
+                and sched_current_dict
+                and (sched_current_dict["id"] != self.get_argument("known_event_id"))
             ):
                 self.update()
             else:
                 sessions[self.sid].append(self)
-                self.wait_future = tornado.locks.Condition().wait()
+                # This returns a Future but pylance thinks it isn't, so I'm casting it so
+                # we don't see the type errors.
+                self.wait_future = typing.cast(
+                    tornado.concurrent.Future, tornado.locks.Condition().wait()
+                )
                 try:
                     await self.wait_future
                 except asyncio.CancelledError:
@@ -496,9 +504,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     is_websocket = True
     local_only = False
     help_hidden = False
-    locale = None
-    sid = None
-    uuid = None
+    locale: api.locale.RainwaveLocale
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -507,7 +513,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.throttled = False
         self.throttled_msgs = []
         self.votes_by_key = ""
-        self.user = None
+        self.user = User(0)
+        self.sid = config.get("default_station")
+        self.uuid = str(uuid.uuid4())
 
     def check_origin(self, origin):
         if websocket_allow_from == "*":
@@ -844,7 +852,10 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     def update(self):
         handler = APIHandler(websocket=True)
         handler.locale = self.locale
-        handler.request = FakeRequestObject({}, self.request.cookies)
+        handler.request = typing.cast(
+            tornado.httputil.HTTPServerRequest,
+            FakeRequestObject({}, self.request.cookies),
+        )
         handler.sid = self.sid
         handler.user = self.user
         handler.return_name = "sync_result"
@@ -862,7 +873,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             handler.append("user", self.user.to_private_dict())
             handler.append(
                 "api_info",
-                {"exectime": timestamp() - startclock, "time": round(timestamp())},
+                {"exectime": timestamp() - startclock, "time": round(timestamp(), 0)},
             )
         except Exception as e:
             if handler:
@@ -995,9 +1006,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
         self._station_offline_check()
 
-        if cache.get_station(self.sid, "sched_current_dict") and (
-            cache.get_station(self.sid, "sched_current_dict")["id"]
-            != message["sched_id"]
-        ):
+        sched_current_dict = cache.get_station(self.sid, "sched_current_dict")
+        if sched_current_dict and (sched_current_dict["id"] != message["sched_id"]):
             self.update()
             self.write_message({"outdated_data_warning": {"outdated": True}})

@@ -29,6 +29,7 @@ class Blank(api.web.HTMLRequest):
 
 @handle_url("/(?P<station>{})?/?(?:index.html)?".format(STATION_REGEX))
 class MainIndex(api.web.HTMLRequest):
+    sid: int = config.get("default_station")
     description = "Main Rainwave page."
     auth_required = config.has("index_requires_login") and config.get(
         "index_requires_login"
@@ -53,11 +54,13 @@ class MainIndex(api.web.HTMLRequest):
             self.set_header("Strict-Transport-Security", "max-age=63072000; preload")
 
     def prepare(self):
-        if self.path_kwargs.get("station"):
-            self.sid = config.stream_filename_to_sid.get(self.path_kwargs["station"])
-            if not self.sid:
+        station_kwarg = self.path_kwargs.get("station")
+        if station_kwarg:
+            potential_sid = config.stream_filename_to_sid.get(station_kwarg)
+            if not potential_sid:
                 self.redirect(config.get("base_site_url"))
                 return
+            self.sid = potential_sid
 
         super(MainIndex, self).prepare()
 
@@ -198,9 +201,9 @@ class Bootstrap(api.web.APIHandler):
         if not self.user:
             self.user = User(1)
         self.user.ensure_api_key()
+        ua = self.request.headers.get("User-Agent") or ""
         self.is_mobile = (
-            self.request.headers.get("User-Agent").lower().find("mobile") != -1
-            or self.request.headers.get("User-Agent").lower().find("android") != -1
+            ua.lower().find("mobile") != -1 or ua.lower().find("android") != -1
         )
 
     def get(self):  # pylint: disable=method-hidden

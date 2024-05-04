@@ -1,7 +1,9 @@
-from http import cookies
+from typing import Any, cast
 import traceback
 import hashlib
 from time import time as timestamp
+from http.client import responses
+from datetime import datetime
 
 try:
     import ujson as json
@@ -22,9 +24,7 @@ from libs import log
 from libs import db
 from libs import cache
 from api_requests.auth.errors import OAuthRejectedError
-
-# Add support for the SameSite attribute (obsolete when PY37 is unsupported).
-cookies.Morsel._reserved.setdefault("samesite", "SameSite")
+from api.pretty_print_api import PrettyPrintAPIMixin
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -110,7 +110,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
     auth_required = True
     # return_name is used for documentation, can be an array.
     # If not inherited, return_key automatically turns into url + "_result".  Useful for simple requests like rate, vote, etc.
-    return_name = None
+    return_name: str = "result"
     # Validate user's tuned in status first.
     tunein_required = False
     # Validate user's logged in status first.
@@ -148,15 +148,18 @@ class RainwaveHandler(tornado.web.RequestHandler):
     # sync result across all user's websocket sessions
     sync_across_sessions = False
 
+    user: User
+    _output: dict[Any, Any] | list[Any]
+
     def __init__(self, *args, **kwargs):
         if "websocket" not in kwargs:
             super(RainwaveHandler, self).__init__(*args, **kwargs)
         self.cleaned_args = {}
-        self.sid = None
+        self.sid: int = config.get("default_station")
         self._startclock = timestamp()
-        self.user = None
-        self._output = None
-        self._output_array = False
+        self.user = User(0)
+        self._output: dict[Any, Any] | list[Any] = {}
+        self._output_array: bool = False
         self.mobile = False
 
     def initialize(self, **kwargs):
@@ -172,22 +175,57 @@ class RainwaveHandler(tornado.web.RequestHandler):
             name, value, *args, secure=True, samesite="lax", **kwargs
         )
 
-    def get_argument(self, name, default=None, **kwargs):
-        arg = default
+    def get_argument(self, name, default=None, **kwargs) -> Any | None:
+        arg: str | None = default
         if name in self.cleaned_args:
             arg = self.cleaned_args[name]
         elif name in self.request.arguments:
-            arg = self.request.arguments[name]
-            if isinstance(arg, list):
-                try:
-                    arg = arg[-1]
-                except IndexError:
-                    arg = default
+            if (
+                isinstance(self.request.arguments[name], list)
+                and len(self.request.arguments[name]) > 0
+            ):
+                arg = str(self.request.arguments[name][-1])
         if isinstance(arg, bytes):
             arg = arg.decode("utf-8")
         if isinstance(arg, str):
             return arg.strip()
         return arg
+
+    def get_argument_required(self, name, default=None, **kwargs) -> Any:
+        result = self.get_argument(name, default, **kwargs)
+        if result is None:
+            raise APIException("internal_error", http_code=500)
+        return result
+
+    def get_argument_int(self, name, default=None, **kwargs) -> int | None:
+        str_arg = self.get_argument(name, default, **kwargs)
+        if not str_arg:
+            return None
+        return int(str_arg)
+
+    def get_argument_int_required(self, name, default=None, **kwargs) -> int:
+        result = self.get_argument_int(name, default, **kwargs)
+        if result is None:
+            raise APIException("internal_error", http_code=500)
+        return result
+
+    def get_argument_date(self, name, default=None, **kwargs) -> datetime | None:
+        dt_arg = self.get_argument(name, default, **kwargs)
+        if not dt_arg:
+            return None
+        return cast(datetime, dt_arg)
+
+    def get_argument_date_required(self, name, default=None, **kwargs) -> datetime:
+        result = self.get_argument_date(name, default, **kwargs)
+        if result is None:
+            raise APIException("internal_error", http_code=500)
+        return result
+
+    def get_argument_bool(self, name, default=None, **kwargs) -> bool | None:
+        arg = self.get_argument(name, default, **kwargs)
+        if arg == True or arg == False:
+            return arg
+        return None
 
     def set_argument(self, name, value):
         self.cleaned_args[name] = value
@@ -239,34 +277,32 @@ class RainwaveHandler(tornado.web.RequestHandler):
         if self.perks_required and (not self.user or not self.user.has_perks()):
             raise APIException("perks_required", http_code=403)
 
-        if self.unlocked_listener_only and not self.user:
-            raise APIException("auth_required", http_code=403)
-        elif (
-            self.unlocked_listener_only
-            and self.user.data["lock"]
-            and self.user.data["lock_sid"] != self.sid
-        ):
-            raise APIException(
-                "unlocked_only",
-                station=config.station_id_friendly[self.user.data["lock_sid"]],
-                lock_counter=self.user.data["lock_counter"],
-                http_code=403,
-            )
+        if self.unlocked_listener_only:
+            if not self.user:
+                raise APIException("auth_required", http_code=403)
+            if self.user.data["lock"] and self.user.data["lock_sid"] != self.sid:
+                raise APIException(
+                    "unlocked_only",
+                    station=config.station_id_friendly[self.user.data["lock_sid"]],
+                    lock_counter=self.user.data["lock_counter"],
+                    http_code=403,
+                )
 
         is_dj = False
-        if self.dj_required and not self.user:
-            raise APIException("dj_required", http_code=403)
-        if self.dj_required and not self.user.is_admin():
-            potential_djs = cache.get_station(self.sid, "dj_user_ids")
-            if not potential_djs or not self.user.id in potential_djs:
+        if self.dj_required:
+            if not self.user:
                 raise APIException("dj_required", http_code=403)
-            is_dj = True
-            self.user.data["dj"] = True
-        elif self.dj_required and self.user.is_admin():
-            is_dj = True
-            self.user.data["dj"] = True
+            elif self.user.is_admin():
+                is_dj = True
+                self.user.data["dj"] = True
+            else:
+                potential_djs = cache.get_station(self.sid, "dj_user_ids")
+                if not potential_djs or not self.user.id in potential_djs:
+                    raise APIException("dj_required", http_code=403)
+                is_dj = True
+                self.user.data["dj"] = True
 
-        if self.dj_preparation and not is_dj and not self.user.is_admin():
+        if self.dj_preparation and not is_dj and self.user and not self.user.is_admin():
             if not db.c.fetch_var(
                 "SELECT COUNT(*) FROM r4_schedule WHERE sched_used = 0 AND sched_dj_user_id = %s",
                 (self.user.id,),
@@ -304,7 +340,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
             self._output = {}
 
         if not self.sid:
-            self.sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
             hostname = self.request.headers.get("Host", None)
             if hostname:
                 hostname = str(hostname).split(":")[0]
@@ -333,7 +368,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
             self.user = User(1)
             self.user.ip_address = self.request.remote_ip
 
-        self.user.refresh(self.sid)
+        if self.user:
+            self.user.refresh(self.sid)
 
         if self.user and config.get("store_prefs"):
             self.user.save_preferences(
@@ -388,8 +424,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
     def _verify_phpbb_session(self, user_id=None):
         if not user_id and not self.user:
             return None
-        if not user_id:
+        if not user_id and self.user:
             user_id = self.user.id
+        if not user_id:
+            return None
         cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "_sid")
         if cookie_session:
             if cookie_session == db.c.fetch_var(
@@ -445,10 +483,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
             raise APIException("missing_argument", argument="key", http_code=400)
 
         if user_id_present:
-            self.user = User(int(self.get_argument("user_id")))
-            self.user.ip_address = self.request.remote_ip
-            self.user.authorize(self.sid, self.get_argument("key"))
-            if not self.user.authorized:
+            user_id_arg = self.get_argument_int("user_id")
+            self.user = User(user_id_arg) if user_id_arg else self.user
+            if self.user:
+                self.user.ip_address = self.request.remote_ip
+                self.user.authorize(self.sid, self.get_argument("key"))
+            if not self.user or not self.user.authorized:
                 raise APIException("auth_failed", http_code=403)
             else:
                 self._update_phpbb_session(self._get_phpbb_session(self.user.id))
@@ -459,6 +499,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
         if dct == None:
             return None
         if self._output_array:
+            if not isinstance(self._output, list):
+                self._output = [self._output]
             self._output.append({key: dct})
         else:
             self._output[key] = dct
@@ -530,7 +572,11 @@ class APIHandler(RainwaveHandler):
         if self._output_array:
             self._output = []
         else:
-            if self._output and "message_id" in self._output:
+            if (
+                self._output
+                and isinstance(self._output, dict)
+                and "message_id" in self._output
+            ):
                 self._output = {
                     "message_id": self._output["message_id"],
                 }
@@ -655,7 +701,7 @@ def _html_write_error(self, status_code, **kwargs):
                     title="HTTP %s - %s"
                     % (
                         status_code,
-                        tornado.httputil.responses.get(status_code, "Unknown"),
+                        responses.get(status_code, "Unknown"),
                     ),
                 )
             )
@@ -679,152 +725,3 @@ class HTMLRequest(RainwaveHandler):
     phpbb_auth = True
     allow_get = True
     write_error = _html_write_error
-
-
-# this mixin will overwrite anything in APIHandler and RainwaveHandler so be careful wielding it
-class PrettyPrintAPIMixin:
-    phpbb_auth = True
-    allow_get = True
-    write_error = _html_write_error
-
-    # reset the initialize to ignore overwriting self.get with anything
-    def initialize(self, *args, **kwargs):
-        super().initialize(*args, **kwargs)
-        self._real_post = self.post
-        self.post = self.post_reject
-
-    def prepare(self):
-        super().prepare()
-        self._real_post()
-
-    def get(self, write_header=True):
-        if write_header:
-            self.write(
-                self.render_string(
-                    "basic_header.html", title=self.locale.translate(self.return_name)
-                )
-            )
-        per_page = None
-        per_page_link = None
-        previous_page_start = None
-        next_page_start = None
-        if (
-            self.pagination
-            and "per_page" in self.fields
-            and self.get_argument("per_page") != 0
-        ):
-            per_page = self.get_argument("per_page")
-            if not per_page:
-                per_page = 100
-            if self.get_argument("page_start"):
-                previous_page_start = self.get_argument("page_start") - per_page
-                next_page_start = self.get_argument("page_start") + per_page
-            else:
-                next_page_start = per_page
-
-            per_page_link = "%s?" % self.url
-            for field in self.fields.keys():
-                if field == "page_start":
-                    pass
-                elif field == "per_page":
-                    per_page_link += "%s=%s&" % (field, per_page)
-                else:
-                    per_page_link += "%s=%s&" % (field, self.get_argument(field))
-
-            if self.get_argument("page_start") and self.get_argument("page_start") > 0:
-                self.write(
-                    "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
-                    % (per_page_link, previous_page_start)
-                )
-            if (
-                self.return_name in self._output
-                and len(self._output[self.return_name]) >= per_page
-            ):
-                self.write(
-                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
-                    % (per_page_link, next_page_start)
-                )
-            elif not self.return_name in self._output:
-                self.write(
-                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
-                    % (per_page_link, next_page_start)
-                )
-
-        for json_out in self._output.values():
-            if not isinstance(json_out, list):
-                continue
-            if len(json_out) > 0:
-                self.write("<table class='%s'><th>#</th>" % self.return_name)
-                keys = getattr(self, "columns", self.sort_keys(json_out[0].keys()))
-                for key in keys:
-                    self.write("<th>%s</th>" % self.locale.translate(key))
-                self.header_special()
-                self.write("</th>")
-                i = 1
-                if "page_start" in self.request.arguments:
-                    i += self.get_argument("page_start")
-                for row in json_out:
-                    self.write("<tr><td>%s</td>" % i)
-                    for key in keys:
-                        if key == "sid":
-                            self.write(
-                                "<td>%s</td>" % config.station_id_friendly[row[key]]
-                            )
-                        else:
-                            self.write("<td>%s</td>" % row[key])
-                    self.row_special(row)
-                    self.write("</tr>")
-                    i = i + 1
-                self.write("</table>")
-            else:
-                self.write("<p>%s</p>" % self.locale.translate("no_results"))
-
-        if (
-            self.pagination
-            and "per_page" in self.fields
-            and self.get_argument("per_page") != 0
-        ):
-            if self.get_argument("page_start") and self.get_argument("page_start") > 0:
-                self.write(
-                    "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
-                    % (per_page_link, previous_page_start)
-                )
-            if (
-                self.return_name in self._output
-                and len(self._output[self.return_name]) >= per_page
-            ):
-                self.write(
-                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
-                    % (per_page_link, next_page_start)
-                )
-            elif not self.return_name in self._output:
-                self.write(
-                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
-                    % (per_page_link, next_page_start)
-                )
-        self.write(self.render_string("basic_footer.html"))
-
-    def header_special(self):
-        pass
-
-    def row_special(self, row):
-        pass
-
-    def sort_keys(self, keys):
-        new_keys = []
-        for key in ["rating_user", "fave", "title", "album_rating_user", "album_name"]:
-            if key in keys:
-                new_keys.append(key)
-        new_keys.extend(key for key in keys if key not in new_keys)
-        return new_keys
-
-    # pylint: disable=E1003
-    # no JSON output!!
-    def finish(self, *args, **kwargs):
-        super(APIHandler, self).finish(*args, **kwargs)
-
-    # pylint: enable=E1003
-
-    # see initialize, this will override the JSON POST function
-    def post_reject(self):
-        return None
