@@ -490,7 +490,7 @@ class Song:
         # Albums always have to go last since album records in the DB store cached cooldown values
         if self.album:
             log.debug(
-                "song_cooldown", "Starting album cooldown on album %s" % metadata.id
+                "song_cooldown", "Starting album cooldown on album %s" % self.album.id
             )
             self.album.start_cooldown(sid)
 
