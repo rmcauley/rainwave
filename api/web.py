@@ -250,8 +250,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
                     raise APIException(
                         "invalid_argument",
                         argument=field,
-                        reason="%s %s"
-                        % (field, getattr(fieldtypes, "%s_error" % type_cast.__name__)),
+                        reason="%s %s (got %s)"
+                        % (
+                            field,
+                            getattr(fieldtypes, "%s_error" % type_cast.__name__),
+                            self.get_argument(field),
+                        ),
                         http_code=400,
                     )
             self.cleaned_args[field] = parsed
@@ -815,7 +819,7 @@ class PrettyPrintAPIMixin:
     # pylint: disable=E1003
     # no JSON output!!
     def finish(self, *args, **kwargs):
-        super(APIHandler, self).finish(*args, **kwargs) # type: ignore
+        super(APIHandler, self).finish(*args, **kwargs)  # type: ignore
 
     # pylint: enable=E1003
 
