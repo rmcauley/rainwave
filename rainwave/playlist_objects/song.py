@@ -86,6 +86,8 @@ class Song:
             )
         else:
             d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (song_id,))
+            if not d:
+                raise SongNonExistent
             sid = d["song_origin_sid"]
         if not d:
             raise SongNonExistent
@@ -666,12 +668,12 @@ class Song:
         )
 
     def load_extra_detail(self, sid):
-        self.data["rating_rank"] = 1 + db.c.fetch_var(
-            "SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_rating > %s",
+        self.data["rating_rank"] = db.c.fetch_var(
+            "SELECT COUNT(song_id) + 1 FROM r4_songs WHERE song_verified = TRUE AND song_rating > %s",
             (self.data["rating"],),
         )
-        self.data["request_rank"] = 1 + db.c.fetch_var(
-            "SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE AND song_request_count > %s",
+        self.data["request_rank"] = db.c.fetch_var(
+            "SELECT COUNT(song_id) + 1 FROM r4_songs WHERE song_verified = TRUE AND song_request_count > %s",
             (self.data["request_count"],),
         )
         self.data["rating_rank_percentile"] = (

@@ -116,6 +116,11 @@ class User:
                 "FROM phpbb_users WHERE user_id = %s",
                 (self.id,),
             )
+
+        if not user_data:
+            log.debug("auth", "Invalid user ID %s not found in DB." % (self.id,))
+            return
+
         self.data.update(user_data)
 
         self.data["avatar"] = solve_avatar(
@@ -249,17 +254,24 @@ class User:
     def is_anonymous(self):
         return self.id <= 1
 
-    def has_requests(self, sid=False):
+    def has_requests(self, sid=False) -> bool | int:
         if self.id <= 1:
             return False
         elif sid:
-            return db.c.fetch_var(
-                "SELECT COUNT(*) FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND sid = %s",
-                (self.id, sid),
+            return (
+                db.c.fetch_var(
+                    "SELECT COUNT(*) FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND sid = %s",
+                    (self.id, sid),
+                )
+                or 0
             )
         else:
-            return db.c.fetch_var(
-                "SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s", (self.id,)
+            return (
+                db.c.fetch_var(
+                    "SELECT COUNT(*) FROM r4_request_store WHERE user_id = %s",
+                    (self.id,),
+                )
+                or 0
             )
 
     def _check_too_many_requests(self):
@@ -427,8 +439,8 @@ class User:
             db.c.fetch_var(
                 "SELECT COUNT(*) FROM r4_request_line WHERE user_id = %s", (self.id,)
             )
-            > 0
-        )
+            or 0
+        ) > 0
 
     def get_top_request_song_id(self, sid):
         return db.c.fetch_var(
@@ -551,6 +563,7 @@ class User:
         self.update({"radio_listen_key": listen_key})
 
     def ensure_api_key(self):
+        api_key = None
         if self.id == 1:
             if self.data.get("api_key") and self.data["listen_key"]:
                 return self.data["api_key"]
