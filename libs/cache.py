@@ -1,7 +1,7 @@
 from libs import config
 from libs import db
 import pylibmc as libmc
-from api.web import APIException
+from api.exceptions import APIException
 
 _memcache = None
 _memcache_ratings = None

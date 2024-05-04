@@ -5,12 +5,6 @@ import time
 from libs import config
 from libs import log
 
-# Ignoring type because we expect a crash if these don't exist anyway.
-# App won't run without the cursor and connection established.
-c: PostgresCursor = None  # type: ignore
-connection: psycopg2.extensions.connection = None  # type: ignore
-connection_errors = (psycopg2.OperationalError, psycopg2.InterfaceError)
-
 
 class DatabaseDisconnectedError(Exception):
     pass
@@ -64,14 +58,14 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
             return []
         return self.fetchall()
 
-    def fetch_list(self, query, params=None):
+    def fetch_list(self, query, params=None) -> list:
         self.execute(query, params)
         if self.rowcount <= 0 or not self.rowcount:
             return []
         arr = []
         row = self.fetchone()
         if not row:
-            return None
+            return []
         col = next(iter(row.keys()))
         arr.append(row[col])
         for row in self.fetchall():
@@ -133,6 +127,13 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
         self.in_tx = False
 
 
+# Ignoring type because we expect a crash if these don't exist anyway.
+# App won't run without the cursor and connection established.
+c: PostgresCursor = None  # type: ignore
+connection: psycopg2.extensions.connection = None  # type: ignore
+connection_errors = (psycopg2.OperationalError, psycopg2.InterfaceError)
+
+
 def connect(auto_retry=True, retry_only_this_time=False):
     global connection
     global c
@@ -191,7 +192,7 @@ def close():
         c.close()
     if connection:
         connection.close()
-    c = None
+    c = None  # type: ignore
     connection = None  # type: ignore
 
     return True

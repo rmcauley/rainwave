@@ -1,8 +1,7 @@
-from typing import Any, cast
+from typing import Any, cast, Callable
 import traceback
 import hashlib
 from time import time as timestamp
-from http.client import responses
 from datetime import datetime
 
 try:
@@ -23,8 +22,8 @@ from libs import config
 from libs import log
 from libs import db
 from libs import cache
-from api_requests.auth.errors import OAuthRejectedError
-from api.pretty_print_api import PrettyPrintAPIMixin
+
+from api.html import html_write_error
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -653,75 +652,179 @@ class APIHandler(RainwaveHandler):
             self.finish()
 
 
-def _html_write_error(self, status_code, **kwargs):
-    if "exc_info" in kwargs:
-        exc = kwargs["exc_info"][1]
+# this mixin will overwrite anything in APIHandler and RainwaveHandler so be careful wielding it
+class PrettyPrintAPIMixin:
+    phpbb_auth = True
+    allow_get = True
+    write_error = html_write_error
 
-        if isinstance(exc, db.connection_errors):
-            try:
-                self.append(
-                    "error",
-                    {
-                        "code": 500,
-                        "tl_key": "db_error_retry",
-                        "text": self.locale.translate("db_error_retry"),
-                    },
+    # Vars here be filled by the base class, not the mixin
+    _output: dict[Any, Any] | list[Any]
+    write: Callable
+    render_string: Callable
+    locale: locale.RainwaveLocale
+    return_name: str
+    pagination: bool
+    fields: dict
+    get_argument_int: Callable
+    url: str
+    get_argument: Callable
+
+    # reset the initialize to ignore overwriting self.get with anything
+    def initialize(self, *args, **kwargs):
+        super().initialize(*args, **kwargs)  # type: ignore
+        self._real_post = self.post
+        self.post = self.post_reject
+
+    def prepare(self):
+        super().prepare()  # type: ignore
+        self._real_post()
+
+    def get(self, write_header=True):
+        if not isinstance(self._output, dict):
+            raise APIException(
+                "internal_error", "This API call is not supported.", http_code=500
+            )
+
+        if write_header:
+            self.write(
+                self.render_string(
+                    "basic_header.html", title=self.locale.translate(self.return_name)
                 )
-            except Exception:
-                self.append(
-                    "error",
-                    {
-                        "code": 500,
-                        "tl_key": "db_error_permanent",
-                        "text": self.locale.translate("db_error_permanent"),
-                    },
-                )
-        elif isinstance(exc, APIException):
-            if not isinstance(self.locale, locale.RainwaveLocale):
-                exc.localize(locale.RainwaveLocale.get("en_CA"))
+            )
+        per_page: int = 100
+        page_start: int = 0
+        per_page_link = None
+        previous_page_start = 0
+        next_page_start = per_page
+        if (
+            self.pagination
+            and "per_page" in self.fields
+            and self.get_argument_int("per_page") != 0
+        ):
+            per_page_arg = self.get_argument_int("per_page")
+            if per_page_arg:
+                per_page = per_page_arg
+            page_start_arg = self.get_argument_int("page_start")
+            if page_start_arg:
+                page_start = page_start_arg
+                previous_page_start = page_start - per_page
+                next_page_start = page_start + per_page
             else:
-                exc.localize(self.locale)
+                next_page_start = per_page
 
-        if isinstance(exc, OAuthRejectedError):
-            self.write(
-                self.render_string(
-                    "basic_header.html", title=self.locale.translate("oauth_rejected")
-                )
-            )
-        elif isinstance(exc, (APIException, tornado.web.HTTPError)) and exc.reason:
-            self.write(
-                self.render_string(
-                    "basic_header.html", title="%s - %s" % (status_code, exc.reason)
-                )
-            )
-        else:
-            self.write(
-                self.render_string(
-                    "basic_header.html",
-                    title="HTTP %s - %s"
-                    % (
-                        status_code,
-                        responses.get(status_code, "Unknown"),
-                    ),
-                )
-            )
+            per_page_link = "%s?" % self.url
+            for field in self.fields.keys():
+                if field == "page_start":
+                    pass
+                elif field == "per_page":
+                    per_page_link += "%s=%s&" % (field, per_page)
+                else:
+                    per_page_link += "%s=%s&" % (field, self.get_argument(field))
 
-        if status_code == 500 or config.get("developer_mode"):
-            self.write("<p>")
-            self.write(self.locale.translate("unknown_error_message"))
-            self.write("</p><p>")
-            self.write(self.locale.translate("debug_information"))
-            self.write("</p><div class='json'>")
-            for line in traceback.format_exception(
-                kwargs["exc_info"][0], kwargs["exc_info"][1], kwargs["exc_info"][2]
+            if page_start and page_start > 0:
+                self.write(
+                    "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
+                    % (per_page_link, previous_page_start)
+                )
+            if (
+                isinstance(self._output, dict)
+                and self.return_name in self._output
+                and len(self._output[self.return_name]) >= per_page
             ):
-                self.write(line)
-            self.write("</div>")
+                self.write(
+                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
+                    % (per_page_link, next_page_start)
+                )
+            elif not self.return_name in self._output:
+                self.write(
+                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
+                    % (per_page_link, next_page_start)
+                )
 
-    self.finish()
+        for json_out in self._output.values():
+            if not isinstance(json_out, list):
+                continue
+            if len(json_out) > 0:
+                self.write("<table class='%s'><th>#</th>" % self.return_name)
+                keys = getattr(self, "columns", self.sort_keys(json_out[0].keys()))
+                for key in keys:
+                    self.write("<th>%s</th>" % self.locale.translate(key))
+                self.header_special()
+                self.write("</th>")
+                i = 1
+                if page_start:
+                    i += page_start
+                for row in json_out:
+                    self.write("<tr><td>%s</td>" % i)
+                    for key in keys:
+                        if key == "sid":
+                            self.write(
+                                "<td>%s</td>" % config.station_id_friendly[row[key]]
+                            )
+                        else:
+                            self.write("<td>%s</td>" % row[key])
+                    self.row_special(row)
+                    self.write("</tr>")
+                    i = i + 1
+                self.write("</table>")
+            else:
+                self.write("<p>%s</p>" % self.locale.translate("no_results"))
+
+        if (
+            self.pagination
+            and "per_page" in self.fields
+            and self.get_argument("per_page") != 0
+        ):
+            if page_start and page_start > 0:
+                self.write(
+                    "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
+                    % (per_page_link, previous_page_start)
+                )
+            if (
+                per_page
+                and self.return_name in self._output
+                and isinstance(self._output[self.return_name], list)
+                and len(self._output[self.return_name]) >= per_page
+            ):
+                self.write(
+                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
+                    % (per_page_link, next_page_start)
+                )
+            elif not self.return_name in self._output:
+                self.write(
+                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
+                    % (per_page_link, next_page_start)
+                )
+        self.write(self.render_string("basic_footer.html"))
+
+    def header_special(self):
+        pass
+
+    def row_special(self, row):
+        pass
+
+    def sort_keys(self, keys):
+        new_keys = []
+        for key in ["rating_user", "fave", "title", "album_rating_user", "album_name"]:
+            if key in keys:
+                new_keys.append(key)
+        new_keys.extend(key for key in keys if key not in new_keys)
+        return new_keys
+
+    # pylint: disable=E1003
+    # no JSON output!!
+    def finish(self, *args, **kwargs):
+        super(APIHandler, self).finish(*args, **kwargs) # type: ignore
+
+    # pylint: enable=E1003
+
+    # see initialize, this will override the JSON POST function
+    def post_reject(self):
+        return None
 
 
 class HTMLRequest(RainwaveHandler):
     phpbb_auth = True
     allow_get = True
-    write_error = _html_write_error
+    write_error = html_write_error
