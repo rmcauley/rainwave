@@ -76,38 +76,3 @@ class ErrorReport(APIHandler):
         cache.set_global("error_reports", reports)
 
         self.append_standard("report_submitted", "Error report submitted.")
-
-
-@handle_api_url("sentry_tunnel")
-class SentryTunnel(tornado.web.RequestHandler):
-    help_hidden = True
-
-    async def post(self):
-        if not config.has("sentry_dsn"):
-            return
-
-        try:
-            sentry_host = config.get("sentry_host")
-            envelope = self.request.body.decode("utf-8")
-            piece = envelope.split("\n")[0]
-            header = json.loads(piece)
-            dsn = urllib.parse.urlparse(header.get("dsn"))
-
-            if dsn.hostname != sentry_host:
-                raise Exception(f"Invalid Sentry host: {dsn.hostname}")
-
-            project_id = dsn.path.strip("/")
-            if project_id != config.get("sentry_frontend_project_id"):
-                raise Exception(f"Invalid Project ID: {project_id}")
-
-            tunneled = HTTPRequest(
-                url=f"https://{sentry_host}/api/{project_id}/envelope/",
-                method="POST",
-                body=envelope,
-            )
-            http_client = AsyncHTTPClient()
-            await http_client.fetch(tunneled)
-        except Exception as e:
-            log.exception("sentry", "Error tunneling Sentry", e)
-
-        return {}

@@ -116,16 +116,6 @@ def bake_js(source_dir="js5", dest_file="script5.js"):
         o = open(fn, "w")
         # Pylint disabled for next line because pylint is buggy about the es5 function
         o.write(minify_print(es5(js_content)))  # pylint: disable=not-callable
-        if config.has("sentry_frontend_dsn"):
-            sentry_frontend_dsn = config.get("sentry_frontend_dsn")
-            o.write(
-                "if (window.Sentry) {"
-                "window.Sentry.init({"
-                f'dsn: "{ sentry_frontend_dsn }",'
-                'tunnel: "/sentry_tunnel",'
-                "});"
-                "}"
-            )
         o.close()
 
 

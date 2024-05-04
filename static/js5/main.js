@@ -125,10 +125,6 @@ var RWAudio;
 
     template = RWTemplates.index({ stations: Stations });
     User = BOOTSTRAP.user;
-    
-    if (window.Sentry && User.id > 1) {
-      window.Sentry.setUser({ id: User.id, username: User.name });
-    }
 
     API.add_callback("user", function (json) {
       if (json.dj) {
