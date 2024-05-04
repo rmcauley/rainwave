@@ -1,5 +1,6 @@
 from api.urls import handle_url
 from api.web import HTMLRequest
+from api_requests.index import Bootstrap
 from libs import db
 
 
@@ -35,57 +36,6 @@ class DebugAuth(HTMLRequest):
         self.write(self.render_string("basic_footer.html"))
 
 
-@handle_url("/oauth/phpbb_debug")
-class DebugPhpbbAuth(HTMLRequest):
-    auth_required = False
-    phpbb_auth = True
-    auth_required = False
-    sid_required = False
-
-    async def get(self):
-        self.write(self.render_string("basic_header.html", title="RW Auth Debug Page"))
-        discord_id = db.c.fetch_var(
-            "SELECT discord_user_id FROM phpbb_users WHERE user_id = %s",
-            (self.user.id,),
-        )
-        username = db.c.fetch_var(
-            "SELECT username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
-        )
-        radio_username = db.c.fetch_var(
-            "SELECT radio_username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
-        )
-
-        self.write(f"User ID: {self.user.id}<br />")
-        self.write(f"Discord ID: {discord_id}<br />")
-        self.write(f"phpBB Username: {username}<br />")
-        self.write(f"Display Username: {radio_username}<br />")
-
-        self.write(self.render_string("basic_footer.html"))
-
-
-@handle_url("/oauth/rw_debug")
-class DebugRwAuth(HTMLRequest):
-    auth_required = True
-    phpbb_auth = False
-    auth_required = False
-    sid_required = False
-
-    async def get(self):
-        self.write(self.render_string("basic_header.html", title="RW Auth Debug Page"))
-        discord_id = db.c.fetch_var(
-            "SELECT discord_user_id FROM phpbb_users WHERE user_id = %s",
-            (self.user.id,),
-        )
-        username = db.c.fetch_var(
-            "SELECT username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
-        )
-        radio_username = db.c.fetch_var(
-            "SELECT radio_username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
-        )
-
-        self.write(f"User ID: {self.user.id}<br />")
-        self.write(f"Discord ID: {discord_id}<br />")
-        self.write(f"phpBB Username: {username}<br />")
-        self.write(f"Display Username: {radio_username}<br />")
-
-        self.write(self.render_string("basic_footer.html"))
+@handle_url("/oauth/debug_bootstrap")
+class DebugBootstrap(Bootstrap):
+    mega_debug = True
