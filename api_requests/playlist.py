@@ -255,7 +255,7 @@ class SongHandler(APIHandler):
         song = playlist.Song.load_from_id(
             self.get_argument("id"),
             self.sid,
-            all_categories=self.get_argument_required("all_categories"),
+            all_categories=self.get_argument_bool("all_categories") or False,
         )
         song.load_extra_detail(self.sid)
         self.append("song", song.to_dict(self.user))

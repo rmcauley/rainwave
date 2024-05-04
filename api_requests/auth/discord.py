@@ -43,14 +43,26 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 oauth_secret.encode(), OAUTH_STATE_SALT
             ).decode("utf-8")
             self.set_cookie("r4_oauth_secret", "")
-            destination, oauth_state = self.get_argument_required("state").split(
-                "$", maxsplit=1
-            )
+            state_argument = self.get_argument("state")
+            if isinstance(state_argument, bytes):
+                state_argument = state_argument.decode()
+            if not isinstance(state_argument, str):
+                raise OAuthRejectedError(
+                    "State argument was not passed back to Rainwave from Discord."
+                )
+            destination, oauth_state = state_argument.split("$", maxsplit=1)
             if oauth_expected_state != oauth_state:
                 raise OAuthRejectedError("oAuth State Mismatch")
             # step 3 - we've come back from Discord with a unique auth code, get
             # token that we can use to act on behalf of user with discord
-            token = await self.get_token(self.get_argument_required("code"))
+            token_argument = self.get_argument("code")
+            if isinstance(token_argument, bytes):
+                token_argument = token_argument.decode()
+            if not isinstance(token_argument, str):
+                raise OAuthRejectedError(
+                    "Token argument was not passed back to Rainwave from Discord."
+                )
+            token = await self.get_token(token_argument)
             # step 4 - get user info from Discord and login to Rainwave
             await self.register_and_login(token, destination)
         else:
