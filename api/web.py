@@ -383,6 +383,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
             self.user = User(1)
             self.user.ip_address = self.request.remote_ip
 
+        if self.mega_debug:
+            self.write("User ID after auth: %s\n" % self.user.id)
+
         self.user.refresh(self.sid)
 
         if self.user and config.get("store_prefs"):
@@ -391,6 +394,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
             )
 
         self.permission_checks()
+
+        if self.mega_debug:
+            self.write("User ID after preparation: %s\n" % self.user.id)
 
     # works without touching cookies or headers, primarily used for websocket requests
     def prepare_standalone(self, message_id=None):
@@ -472,7 +478,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
     def do_rw_session_auth(self):
         if self.mega_debug:
-            self.write("Attempting RW session auth")
+            self.write("Attempting RW session auth\n")
         rw_session_id = self.get_cookie("r4_session_id")
         if rw_session_id:
             user_id = db.c.fetch_var(
@@ -481,10 +487,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
             )
             if user_id:
                 if self.mega_debug:
-                    self.write("RW user found, authorizing")
+                    self.write("RW user found, authorizing\n")
                 self.user = User(user_id)
                 self.user.ip_address = self.request.remote_ip
                 self.user.authorize(self.sid, None, bypass=True)
+                if self.mega_debug:
+                    self.write("Was user authorized? %s \n" % self.user.authorized)
                 return True
         return False
 
