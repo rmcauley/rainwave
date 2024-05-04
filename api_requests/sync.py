@@ -843,6 +843,10 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                             "data": {"live_voting": live_voting},
                         }
                     )
+        except APIException as e:
+            if e.code != 200:
+                endpoint.write_error(e.code, exc_info=sys.exc_info(), no_finish=True)
+                log.exception("websocket", "API Exception during operation.", e)
         except Exception as e:
             endpoint.write_error(500, exc_info=sys.exc_info(), no_finish=True)
             log.exception("websocket", "API Exception during operation.", e)
