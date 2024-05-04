@@ -111,7 +111,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
     auth_required = True
     # return_name is used for documentation, can be an array.
     # If not inherited, return_key automatically turns into url + "_result".  Useful for simple requests like rate, vote, etc.
-    return_name: str = "result"
+    return_name: str | None = None
     # Validate user's tuned in status first.
     tunein_required = False
     # Validate user's logged in status first.
