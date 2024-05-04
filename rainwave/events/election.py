@@ -353,7 +353,7 @@ class Election(event.BaseEvent):
                             song.id,
                         ),
                     )
-                    for album in song.album:
+                    if song.album:
                         db.c.update(
                             "UPDATE r4_album_sid SET "
                             "album_vote_share = ((album_vote_count + %s) / (album_votes_seen + %s)), "
@@ -365,7 +365,7 @@ class Election(event.BaseEvent):
                                 total_votes,
                                 song.data["entry_votes"],
                                 total_votes,
-                                album.id,
+                                song.album.id,
                                 self.sid,
                             ),
                         )
