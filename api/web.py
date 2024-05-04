@@ -1,3 +1,4 @@
+from http import cookies
 from typing import Any, cast, Callable
 import traceback
 import hashlib
@@ -469,26 +470,24 @@ class RainwaveHandler(tornado.web.RequestHandler):
         return False
 
     def rainwave_auth(self):
-        user_id_present = "user_id" in self.request.arguments
+        user_id_arg = self.request.arguments.get("user_id")
+        user_id = fieldtypes.integer(user_id_arg)
 
-        if self.auth_required and not user_id_present:
+        if self.auth_required and not user_id_arg:
             raise APIException("missing_argument", argument="user_id", http_code=400)
-        if user_id_present and not fieldtypes.numeric(self.get_argument("user_id")):
+        if user_id_arg and not user_id:
             # do not spit out the user ID back at them, that would create a potential XSS hack
             raise APIException(
                 "invalid_argument",
                 argument="user_id",
-                reason="not numeric.",
+                reason="not integer.",
                 http_code=400,
             )
-        if (
-            self.auth_required or user_id_present
-        ) and not "key" in self.request.arguments:
+        if (self.auth_required or user_id_arg) and not "key" in self.request.arguments:
             raise APIException("missing_argument", argument="key", http_code=400)
 
-        if user_id_present:
-            user_id_arg = self.get_argument_int("user_id")
-            self.user = User(user_id_arg or 0)
+        if user_id:
+            self.user = User(user_id)
             self.user.ip_address = self.request.remote_ip
             self.user.authorize(self.sid, self.get_argument("key"))
             if not self.user or not self.user.authorized:

@@ -44,7 +44,7 @@ def solve_avatar(avatar_type, avatar):
 
 
 class User:
-    def __init__(self, user_id):
+    def __init__(self, user_id: int):
         self.id = user_id
         self.authorized = False
         self.ip_address = None
