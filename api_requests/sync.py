@@ -513,7 +513,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.throttled = False
         self.throttled_msgs = []
         self.votes_by_key = ""
-        self.user = User(0)
+        self.user = User(1)
         self.sid = config.get("default_station")
         self.uuid = str(uuid.uuid4())
 

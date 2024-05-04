@@ -157,7 +157,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
         self.cleaned_args = {}
         self.sid: int = config.get("default_station")
         self._startclock = timestamp()
-        self.user = User(0)
+        self.user = None  # type: ignore
         self._output: dict[Any, Any] | list[Any] = {}
         self._output_array: bool = False
         self.mobile = False
