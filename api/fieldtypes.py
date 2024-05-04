@@ -232,9 +232,9 @@ def boolean(s, request=None):
         return True
     elif s == False:
         return False
-    elif s == "true":
+    elif s == "true" or s == "True":
         return True
-    elif s == "false":
+    elif s == "false" or s == "False":
         return False
     return None
 
