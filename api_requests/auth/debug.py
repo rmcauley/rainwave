@@ -33,4 +33,8 @@ class DebugAuth(HTMLRequest):
         self.write(f"phpBB Username: {username}<br />")
         self.write(f"Display Username: {radio_username}<br />")
 
+        self.write("<pre>")
+        self.write(self.user.to_private_dict())
+        self.write("</pre>")
+
         self.write(self.render_string("basic_footer.html"))
