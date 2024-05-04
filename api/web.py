@@ -250,11 +250,12 @@ class RainwaveHandler(tornado.web.RequestHandler):
                     raise APIException(
                         "invalid_argument",
                         argument=field,
-                        reason="%s %s (got %s)"
+                        reason="%s %s (got %s - %s)"
                         % (
                             field,
                             getattr(fieldtypes, "%s_error" % type_cast.__name__),
                             self.get_argument(field),
+                            type(self.get_argument(field)),
                         ),
                         http_code=400,
                     )

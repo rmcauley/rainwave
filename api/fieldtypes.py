@@ -48,26 +48,18 @@ integer_error = "must be a number."
 
 
 def integer(s, request=None):
-    print("***")
     if isinstance(s, (int)):
-        print("is int")
         return s
     if isinstance(s, float):
-        print("is float")
         return int(s)
     if isinstance(s, bytes):
-        print("was bytes")
         s = s.decode()
     if not s:
-        print("not anything")
         return None
     if not isinstance(s, str):
-        print("not a str")
         return None
     if not re.match(r"^-?\d+$", s):
-        print("no regex match")
         return None
-    print("yay")
     return int(s)
 
 
