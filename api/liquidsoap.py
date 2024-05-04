@@ -41,7 +41,7 @@ def _send_command(sid, cmd):
     client.send(b"exit")
     client.close()
     to_ret = to_ret.strip().strip(b"END").strip()
-    return str(to_ret)
+    return to_ret.decode()
 
 
 def skip(sid):

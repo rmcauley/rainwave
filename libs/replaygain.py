@@ -19,7 +19,9 @@ def get_gain_for_song(file):
         capture_output=True,
         check=True,
     )
-    gain_line = next(line for line in str(output.stdout).split("\\n") if "dB" in line)
+    gain_line = next(
+        line for line in output.stdout.decode().split("\\n") if "dB" in line
+    )
     gain = gain_line.split(":")[-1].strip()
     return gain
 

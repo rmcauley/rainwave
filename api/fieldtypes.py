@@ -20,10 +20,9 @@ def string(in_string, request=None):
     if isinstance(in_string, str):
         return in_string
     try:
-        return str(in_string, "utf-8").strip()
+        return in_string.decode("utf-8").strip()
     except UnicodeDecodeError:
-        return str(in_string).strip()
-    return None
+        return None
 
 
 # All _error variables start with no capital letter and end with a period.

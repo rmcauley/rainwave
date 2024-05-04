@@ -200,11 +200,8 @@ def mark_request_filled(sid, user, song, entry, line):
         (user.id, song.id),
     )
     user.remove_from_request_line()
-    request_count = (
-        db.c.fetch_var(
-            "SELECT COUNT(*) FROM r4_request_history WHERE user_id = %s", (user.id,)
-        )
-        + 1
+    request_count = db.c.fetch_var(
+        "SELECT COUNT(*) + 1 FROM r4_request_history WHERE user_id = %s", (user.id,)
     )
     db.c.update(
         "DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s",

@@ -183,7 +183,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
                 isinstance(self.request.arguments[name], list)
                 and len(self.request.arguments[name]) > 0
             ):
-                arg = str(self.request.arguments[name][-1])
+                arg = self.request.arguments[name][-1].decode()
         if isinstance(arg, bytes):
             arg = arg.decode("utf-8")
         if isinstance(arg, str):
@@ -346,7 +346,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
         if not self.sid:
             hostname = self.request.headers.get("Host", None)
             if hostname:
-                hostname = str(hostname).split(":")[0]
+                hostname = hostname.decode().split(":")[0]
             sid_arg = fieldtypes.integer(self.get_argument("sid", None))
             if sid_arg is not None:
                 self.sid = sid_arg

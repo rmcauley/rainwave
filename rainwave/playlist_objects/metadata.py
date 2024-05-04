@@ -4,6 +4,8 @@ from unidecode import unidecode
 
 
 def make_searchable_string(s):
+    if isinstance(s, bytes):
+        s = s.decode()
     if not isinstance(s, str):
         s = str(s)
     s = unidecode(s).lower()
@@ -172,7 +174,7 @@ class AssociatedMetadata:
             is_tag = self.is_tag
         else:
             self.is_tag = is_tag
-        if db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) > 0:
+        if (db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) or 0) > 0:
             pass
         else:
             if not db.c.update(
