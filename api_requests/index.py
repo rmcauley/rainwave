@@ -229,6 +229,8 @@ class Bootstrap(api.web.APIHandler):
             self.write("User ID after GET: %s\n" % self.user.id)
 
     def post(self):
+        if self.mega_debug:
+            self.write("User ID before attachment: %s\n" % self.user.id)
         info.attach_info_to_request(self, live_voting=True)
         self.append("build_version", config.build_number)
         self.append("locale", self.locale.code)

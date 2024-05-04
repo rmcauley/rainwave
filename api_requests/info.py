@@ -28,7 +28,7 @@ def attach_dj_info_to_request(request):
 
 
 def attach_info_to_request(
-    request, extra_list=None, all_lists=False, live_voting=False
+    request: APIHandler, extra_list=None, all_lists=False, live_voting=False
 ):
     # Front-load all non-animated content ahead of the schedule content
     # Since the schedule content is the most animated on R3, setting this content to load
@@ -36,6 +36,8 @@ def attach_info_to_request(
     # doesn't have to take place during the first few frames.
 
     if request.user:
+        if request.mega_debug:
+            request.write("User ID during info attach: %s\n" % request.user.id)
         request.append("user", request.user.to_private_dict())
         if request.user.is_dj():
             attach_dj_info_to_request(request)
@@ -155,7 +157,7 @@ def attach_info_to_request(
             if (
                 len(sched_next) > 0
                 and request.user.data.get("voted_entry")
-                and request.user.data.get("voted_entry") > 0
+                and request.user.data.get("voted_entry") > 0  # type: ignore
                 and request.user.data["lock_sid"] == request.sid
             ):
                 request.append(
