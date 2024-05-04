@@ -265,6 +265,10 @@ class RainwaveHandler(tornado.web.RequestHandler):
                     )
             self.cleaned_args[field] = parsed
 
+        if self.pagination:
+            self.cleaned_args["per_page"] = self.cleaned_args["per_page"] or 100
+            self.cleaned_args["page_start"] = self.cleaned_args["per_page"] or 0
+
     def sid_check(self):
         if self.sid is None and not self.sid_required:
             self.sid = config.get("default_station")
@@ -706,21 +710,16 @@ class PrettyPrintAPIMixin:
                     "basic_header.html", title=self.locale.translate(self.return_name)
                 )
             )
-        per_page = None
+
+        page_start = self.get_argument("page_start")
+        per_page = self.get_argument("per_page")
         per_page_link = None
         previous_page_start = None
         next_page_start = None
-        if (
-            self.pagination
-            and "per_page" in self.fields
-            and self.get_argument("per_page") != 0
-        ):
-            per_page = self.get_argument("per_page")
-            if not per_page:
-                per_page = 100
-            if self.get_argument("page_start"):
-                previous_page_start = self.get_argument("page_start") - per_page
-                next_page_start = self.get_argument("page_start") + per_page
+        if self.pagination:
+            if self.get_argument_int("page_start"):
+                previous_page_start = min(page_start - per_page, 0)
+                next_page_start = page_start + per_page
             else:
                 next_page_start = per_page
 
@@ -733,7 +732,7 @@ class PrettyPrintAPIMixin:
                 else:
                     per_page_link += "%s=%s&" % (field, self.get_argument(field))
 
-            if self.get_argument("page_start") and self.get_argument("page_start") > 0:
+            if page_start > 0:
                 self.write(
                     "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
                     % (per_page_link, previous_page_start)
@@ -781,12 +780,8 @@ class PrettyPrintAPIMixin:
             else:
                 self.write("<p>%s</p>" % self.locale.translate("no_results"))
 
-        if (
-            self.pagination
-            and "per_page" in self.fields
-            and self.get_argument_int("per_page") != 0
-        ):
-            if self.get_argument("page_start") and self.get_argument("page_start") > 0:
+        if self.pagination:
+            if page_start > 0:
                 self.write(
                     "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
                     % (per_page_link, previous_page_start)
