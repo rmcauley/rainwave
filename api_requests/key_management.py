@@ -76,7 +76,7 @@ class AppLogin(api.web.HTMLRequest):
 
     def get(self):
         if not self.user or self.user.is_anonymous():
-            self.redirect("/forums/ucp.php?mode=login&redirect=%s" % self.url)
+            self.redirect("/oauth/login&redirect=%s" % self.url)
             return
 
         self.user.ensure_api_key()

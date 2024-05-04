@@ -2,7 +2,17 @@
 	{{ $l("auth_failed_message") }}
 </p>
 <p>
-	<a class="link obvious" href="https://rainwave.cc/forums">
-		https://rainwave.cc/forums/
+	<a class="link obvious" href="/oauth/login">
+		Login Page
+	</a>
+</p>
+<p>
+	<a class="link obvious" href="/oauth/logout">
+		Logout
+	</a>
+</p>
+<p>
+	<a class="link obvious" href="https://discord.gg/fdb2cs7puS">
+		Discord
 	</a>
 </p>

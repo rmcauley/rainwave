@@ -210,4 +210,4 @@ or watchers.
 You can get help for deployment and development through the main
 developer, Rob, on the Rainwave discord:
 
--   https://discord.gg/rNCBhSz
+-   https://discord.gg/fdb2cs7puS

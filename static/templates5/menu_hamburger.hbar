@@ -1,6 +1,6 @@
 <div class="hamburgered menu_dropdown">
 	<div>
-		<a href="https://discord.gg/rNCBhSz" target="_blank">
+		<a href="https://discord.gg/fdb2cs7puS" target="_blank">
 			Discord
 		</a>
 		{{#if ^BOOTSTRAP.user.id > 1 && !BOOTSTRAP.user.uses_oauth }}

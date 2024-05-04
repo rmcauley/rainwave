@@ -65,7 +65,6 @@
    "station_name_4"                                  : "Chiptune",
    "station_name_5"                                  : "Kaikki",
 
-   "forums"                                          : "Keskustelualue",
    "login"                                           : "Sisäänkirjautuminen",
    "chat"                                            : "Chat",
    "previouslyplayed"                                : "Aiemmin soineet",
@@ -125,7 +124,6 @@
 
    "your_mobile_app_qr"                              : "Android-sovelluksesi QR-koodi",
    "manage_your_api_keys"                            : "Hallinnoi API-avaimiasi.",
-   "logout_in_forums"                                : "Kirjaudu ulos keskustelualueen kautta.",
    "view_your"                                       : "Katso: ",
    "recent_votes"                                    : "viimeaikaiset äänesi",
    "request_history"                                 : "toivehistoriasi",

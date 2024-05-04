@@ -66,7 +66,6 @@
   "station_name_4": "Chiptune",
   "station_name_5": "All",
 
-  "forums": "Forum",
   "login": "Login",
   "chat": "Czat",
   "previouslyplayed": "Historia Odtwarzania",
@@ -126,7 +125,6 @@
 
   "your_mobile_app_qr": "Kod QR Twojej Aplikacji Android",
   "manage_your_api_keys": "Zarządzaj Twoimi Kluczami API.",
-  "logout_in_forums": "Proszę odwiedzić nasze Forum, aby się wylogować.",
   "view_your": "Zobacz Swoje: ",
   "recent_votes": "ostatnie głosy",
   "request_history": "historię propozycji",
