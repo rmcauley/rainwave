@@ -20,7 +20,7 @@ class SubmitSongFave(APIHandler):
 
     def post(self):
         object_id = self.get_argument(self._fave_type + "_id")
-        fave = self.get_argument("fave")
+        fave = self.get_argument_bool("fave") or False
         result = False
 
         if self._fave_type == "song_batched":
