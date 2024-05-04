@@ -215,7 +215,7 @@ class AlbumHandler(APIHandler):
                 sort=self.get_argument("sort"),
             )
             album.load_extra_detail(
-                self.sid, self.get_argument_required("all_categories")
+                self.sid, self.get_argument_bool("all_categories") or False
             )
         except MetadataNotFoundError:
             self.return_name = "album_error"
