@@ -272,7 +272,7 @@ def post_process(sid):
         ti_song = current[sid].get_song()
         if ti_song:
             ti_title = ti_song.data["title"]
-            ti_album = ti_song.albums[0].data["name"]
+            ti_album = ti_song.album.data["name"]
             ti_artist = ", ".join([a.data["name"] for a in ti_song.artists])
 
             params = {
@@ -461,7 +461,9 @@ def _update_schedule_memcache(sid):
         all_station["title"] = sched_current_dict["songs"][0]["title"]
         all_station["album"] = sched_current_dict["songs"][0]["albums"][0]["name"]
         all_station["art"] = sched_current_dict["songs"][0]["albums"][0]["art"]
-        all_station["artists"] = ", ".join(artist['name'] for artist in sched_current_dict["songs"][0]["artists"])
+        all_station["artists"] = ", ".join(
+            artist["name"] for artist in sched_current_dict["songs"][0]["artists"]
+        )
     else:
         all_station["title"] = None
         all_station["album"] = None
@@ -484,7 +486,9 @@ def update_memcache(sid):
     cache.set_station(sid, "all_albums", playlist.get_all_albums_list(sid), True)
     cache.set_station(sid, "all_artists", playlist.get_all_artists_list(sid), True)
     cache.set_station(sid, "all_groups", playlist.get_all_groups_list(sid), True)
-    cache.set_station(sid, "all_groups_power", playlist.get_all_groups_for_power(sid), True)
+    cache.set_station(
+        sid, "all_groups_power", playlist.get_all_groups_for_power(sid), True
+    )
 
     potential_dj_ids = []
     if getattr(current[sid], "dj_user_id", None):
