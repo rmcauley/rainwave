@@ -2,7 +2,6 @@ from libs import config
 from libs import db
 import pylibmc as libmc
 from api.exceptions import APIException
-from rainwave.playlist_objects.song import Song
 
 _memcache = None
 _memcache_ratings = None
@@ -138,7 +137,7 @@ def prime_rating_cache_for_events(sid, events, songs=None):
             prime_rating_cache_for_song(song, sid)
 
 
-def prime_rating_cache_for_song(song: Song, sid):
+def prime_rating_cache_for_song(song, sid):
     for user_id, rating in song.get_all_ratings().items():
         set_song_rating(song.id, user_id, rating)
     if song.album:
