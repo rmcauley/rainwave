@@ -789,9 +789,10 @@ class PrettyPrintAPIMixin:
                     "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
                     % (per_page_link, previous_page_start)
                 )
-            if self.return_name in self._output and len(
-                self._output[self.return_name]
-            ) >= self.get_argument(per_page):
+            if (
+                self.return_name in self._output
+                and len(self._output[self.return_name]) >= per_page
+            ):
                 self.write(
                     "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
                     % (per_page_link, next_page_start)
