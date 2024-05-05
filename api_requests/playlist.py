@@ -66,7 +66,7 @@ class AllAlbumsPaginatedHandler(APIHandler):
 
     def post(self):
         sql, args = playlist.get_all_albums_list_sql(self.sid, self.user)
-        offset = self.get_argument("after", 0) or 0
+        offset = self.get_argument_int("after", 0) or 0
         args = args + (offset,)
         albums = db.c.fetch_all(
             sql + f" ORDER BY album_name LIMIT {PAGE_LIMIT} OFFSET %s", args
@@ -110,7 +110,7 @@ class AllArtistsPaginatedHandler(APIHandler):
         all_artists = get_all_artists(
             sid=self.sid,
         )
-        offset = self.get_argument("after", 0) or 0
+        offset = self.get_argument_int("after", 0) or 0
         page = all_artists[offset : offset + PAGE_LIMIT]
         self.append(
             self.return_name,
@@ -157,7 +157,7 @@ class AllGroupsPaginatedHandler(APIHandler):
         all_groups = get_all_groups(
             sid=self.sid,
         )
-        offset = self.get_argument("after", 0) or 0
+        offset = self.get_argument_int("after", 0) or 0
         page = all_groups[offset : offset + PAGE_LIMIT]
         self.append(
             self.return_name,
