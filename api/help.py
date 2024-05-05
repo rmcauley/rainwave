@@ -54,17 +54,17 @@ sections = {
 
 def sectionize_requests():
     for url, handler in help_classes.items():
-        if getattr(handler, "help_hidden"):
+        if getattr(handler, "help_hidden", False):
             pass
-        elif getattr(handler, "local_only"):
+        elif getattr(handler, "local_only", False):
             if config.get("developer_mode"):
                 sections["Other"][url] = handler
-        elif getattr(handler, "is_pretty_print_html"):
+        elif getattr(handler, "is_pretty_print_html", False):
             if handler.admin_required or handler.dj_required or handler.dj_preparation:
                 sections["Admin HTML"][url] = handler
             else:
                 sections["Statistic HTML"][url] = handler
-        elif getattr(handler, "is_html"):
+        elif getattr(handler, "is_html", False):
             if handler.admin_required or handler.dj_required or handler.dj_preparation:
                 sections["Admin HTML"][url] = handler
             else:
@@ -116,7 +116,7 @@ class IndexRequest(api.web.HTMLRequest):
                 self.write_property(prop[0], handler, prop[1])
         display_url = url
         self.write("<td><a href='/api4/help%s'>%s</a></td>" % (url, display_url))
-        if getattr(handler, "is_html") and url.find("(") == -1:
+        if getattr(handler, "is_html", False) and url.find("(") == -1:
             self.write("<td><a href='%s'>Link</a></td>" % url)
         else:
             self.write("<td>&nbsp;</td>")
