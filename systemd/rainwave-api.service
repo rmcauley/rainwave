@@ -9,6 +9,7 @@ User=rainwave
 Group=www-data
 WorkingDirectory=/opt/rainwave
 ExecStart=/usr/bin/env pipenv run ./rw_api.py
+LimitNOFILE=32767
 
 [Install]
 WantedBy=multi-user.target
