@@ -270,7 +270,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
         if self.pagination:
             self.cleaned_args["per_page"] = self.cleaned_args["per_page"] or 100
-            self.cleaned_args["page_start"] = self.cleaned_args["per_page"] or 0
+            self.cleaned_args["page_start"] = self.cleaned_args["page_start"] or 0
 
     def sid_check(self):
         if self.sid is None and not self.sid_required:
