@@ -69,7 +69,7 @@ def sectionize_requests():
                 sections["Admin HTML"][url] = handler
             else:
                 sections["HTML Pages"][url] = handler
-        elif issubclass(handler.__class__, api.web.APIHandler):
+        elif getattr(handler, "is_api_handler", False):
             if handler.admin_required or handler.dj_required or handler.dj_preparation:
                 sections["Admin JSON"][url] = handler
             else:

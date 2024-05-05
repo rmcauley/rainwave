@@ -557,6 +557,8 @@ class RainwaveHandler(tornado.web.RequestHandler):
 class APIHandler(RainwaveHandler):
     content_type = "application/json"
 
+    is_api_handler = True
+
     def initialize(self, **kwargs):
         super(APIHandler, self).initialize(**kwargs)
         if self.allow_get and not isinstance(self, PrettyPrintAPIMixin):
