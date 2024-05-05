@@ -130,24 +130,7 @@ def set_song_fave(song_id, user_id, fave):
         (song_id, user_id),
     )
     rating = None
-    if not exists and fave:
-        if (
-            db.c.update(
-                "INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES (%s, %s, %s)",
-                (song_id, user_id, fave),
-            )
-            == 0
-        ):
-            log.debug(
-                "rating",
-                "Failed to insert record for song fave %s, fave is: %s."
-                % (song_id, fave),
-            )
-            return False
-    elif not exists and not fave:
-        # Nothing to do!
-        return True
-    else:
+    if exists:
         rating = exists["song_rating_user"]
         if (
             db.c.update(
@@ -162,16 +145,24 @@ def set_song_fave(song_id, user_id, fave):
                 % (song_id, fave),
             )
             return False
-    if (not exists and fave) or (not exists["song_fave"] and fave):
-        db.c.update(
-            "UPDATE r4_songs SET song_fave_count = song_fave_count + 1 WHERE song_id = %s",
-            (song_id,),
-        )
-    elif exists and exists["song_fave"] and not fave:
-        db.c.update(
-            "UPDATE r4_songs SET song_fave_count = song_fave_count - 1 WHERE song_id = %s",
-            (song_id,),
-        )
+    elif not exists and fave:
+        if (
+            db.c.update(
+                "INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES (%s, %s, %s)",
+                (song_id, user_id, fave),
+            )
+            == 0
+        ):
+            log.debug(
+                "rating",
+                "Failed to insert record for song fave %s, fave is: %s."
+                % (song_id, fave),
+            )
+            return False
+    else:
+        # Nothing to do!
+        return True
+
     cache.set_song_rating(song_id, user_id, {"rating_user": rating, "fave": fave})
     db.c.commit()
     return True
@@ -213,16 +204,6 @@ def set_album_fave(sid, album_id, user_id, fave):
                 % ("album", album_id, fave),
             )
             return False
-    if (not exists and fave) or (not exists["album" + "_fave"] and fave):
-        db.c.update(
-            "UPDATE r4_album_sid SET album_fave_count = album_fave_count + 1 WHERE album_id = %s",
-            (album_id,),
-        )
-    elif exists and exists["album" + "_fave"] and not fave:
-        db.c.update(
-            "UPDATE r4_album_sid SET album_fave_count = album_fave_count - 1 WHERE album_id = %s",
-            (album_id,),
-        )
     cache.set_album_rating(
         sid,
         album_id,

@@ -215,6 +215,7 @@ def post_process(sid):
                 "INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)",
                 (sid, last_song.id),
             )
+            last_song.update_fave_count(sid, update_albums=True)
         log.debug("post", "Last song insertion time: %s" % (timestamp() - start_time,))
 
         start_time = timestamp()
