@@ -97,8 +97,6 @@ class ToolList(api.web.HTMLRequest):
             ("Associate Groups", "associate_groups"),
             ("Disassociate Groups", "disassociate_groups"),
             ("Edit Groups", "group_edit"),
-            ("Listener Count", "listener_stats"),
-            ("Listener Count [Wkly]", "listener_stats_aggregate"),
             ("JS Errors", "js_errors"),
         ]:
             self.write(
