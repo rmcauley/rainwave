@@ -1,11 +1,10 @@
-from typing import Union
 import tornado.web
 import api.web
 from libs import config
 
 help_classes: dict[
     str,
-    api.web.APIHandler | api.web.RainwaveHandler | api.web.HTMLRequest,
+    api.web.RainwaveHandler | api.web.APIHandler,
 ] = {}
 url_properties = (
     ("allow_get", "GET", "Allows HTTP GET requests in addition to POST requests."),
@@ -60,12 +59,12 @@ def sectionize_requests():
         elif handler.local_only:
             if config.get("developer_mode"):
                 sections["Other"][url] = handler
-        elif isinstance(handler, api.web.PrettyPrintAPIMixin):
+        elif handler.is_pretty_print_html:
             if handler.admin_required or handler.dj_required or handler.dj_preparation:
                 sections["Admin HTML"][url] = handler
             else:
                 sections["Statistic HTML"][url] = handler
-        elif isinstance(handler, api.web.HTMLRequest):
+        elif handler.is_html:
             if handler.admin_required or handler.dj_required or handler.dj_preparation:
                 sections["Admin HTML"][url] = handler
             else:
@@ -117,10 +116,7 @@ class IndexRequest(api.web.HTMLRequest):
                 self.write_property(prop[0], handler, prop[1])
         display_url = url
         self.write("<td><a href='/api4/help%s'>%s</a></td>" % (url, display_url))
-        if (
-            isinstance(handler, api.web.HTMLRequest)
-            or isinstance(handler, api.web.PrettyPrintAPIMixin)
-        ) and url.find("(") == -1:
+        if (handler.is_html) and url.find("(") == -1:
             self.write("<td><a href='%s'>Link</a></td>" % url)
         else:
             self.write("<td>&nbsp;</td>")

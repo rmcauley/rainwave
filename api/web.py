@@ -1,4 +1,3 @@
-from http import cookies
 from typing import Any, cast, Callable
 import traceback
 import hashlib
@@ -25,7 +24,6 @@ from libs import db
 from libs import cache
 
 from api.html import html_write_error
-from api_requests.auth.errors import OAuthRejectedError
 
 # This is the Rainwave API main handling request class.  You'll inherit it in order to handle requests.
 # Does a lot of form checking and validation of user/etc.  There's a request class that requires no authentication at the bottom of this module.
@@ -151,6 +149,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
     user: User
     _output: dict[Any, Any] | list[Any]
+
+    is_pretty_print_html = False
+    is_html = False
 
     def __init__(self, *args, **kwargs):
         if "websocket" not in kwargs:
@@ -668,6 +669,7 @@ class HTMLRequest(RainwaveHandler):
     phpbb_auth = True
     allow_get = True
     write_error = html_write_error
+    is_html = True
 
 
 # this mixin will overwrite anything in APIHandler and RainwaveHandler so be careful wielding it
@@ -675,6 +677,8 @@ class PrettyPrintAPIMixin:
     phpbb_auth = True
     allow_get = True
     write_error = html_write_error
+    is_html = True
+    is_pretty_print_html = True
 
     # Vars here be filled by the base class, not the mixin
     _output: dict[Any, Any] | list[Any]
