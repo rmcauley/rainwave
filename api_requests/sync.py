@@ -777,8 +777,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             message["sid"] if ("sid" in message and message["sid"]) else self.sid
         )
         endpoint.user = self.user
+        endpoint._startclock = timestamp()
         try:
-            startclock = timestamp()
             # it's required to see if another person on the same IP address has overriden the vote
             # for the in-memory user here, so it requires a DB fetch.
             if message["action"] == "/api4/vote" and self.user.is_anonymous():
@@ -798,7 +798,10 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             endpoint.post()
             endpoint.append(
                 "api_info",
-                {"exectime": timestamp() - startclock, "time": round(timestamp())},
+                {
+                    "exectime": timestamp() - endpoint._startclock,
+                    "time": round(timestamp()),
+                },
             )
             if endpoint.sync_across_sessions:
                 if (

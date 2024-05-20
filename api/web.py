@@ -583,14 +583,10 @@ class APIHandler(RainwaveHandler):
             self.write(json.dumps(self._output, ensure_ascii=False))
 
     def write_error(self, status_code, **kwargs):
-        if self._output_array:
+        if isinstance(self._output, list):
             self._output = []
         else:
-            if (
-                self._output
-                and isinstance(self._output, dict)
-                and "message_id" in self._output
-            ):
+            if self._output and "message_id" in self._output:
                 self._output = {
                     "message_id": self._output["message_id"],
                 }
