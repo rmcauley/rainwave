@@ -288,6 +288,7 @@ class BaseEvent:
         if song:
             song.update_last_played(self.sid)
             song.start_cooldown(self.sid)
+            song.update_rating()
 
     def length(self):
         # These go in descending order of accuracy
