@@ -48,39 +48,13 @@ class MainIndex(api.web.HTMLRequest):
         self.set_header("X-XSS-Protection", "1; mode=block")
         self.set_header("X-Content-Type-Options", "nosniff")
 
-        if self.request.protocol == "https":
+        if self.request.protocol == "https" or config.get("enforce_ssl"):
             self.set_header("Content-Security-Policy", config.csp_header)
             self.set_header("Referrer-Policy", "origin")
             self.set_header("Strict-Transport-Security", "max-age=63072000; preload")
 
     def prepare(self):
-        station_kwarg = self.path_kwargs.get("station")
-        if station_kwarg:
-            potential_sid = config.stream_filename_to_sid.get(station_kwarg)
-            if not potential_sid:
-                self.redirect(config.get("base_site_url"))
-                return
-            self.sid = potential_sid
-
         super(MainIndex, self).prepare()
-
-        if self.path_kwargs.get("station") is None:
-            self.redirect(
-                "{}{}/".format(
-                    config.get("base_site_url"),
-                    config.station_mount_filenames[self.sid],
-                )
-            )
-            return
-
-        if config.get("enforce_ssl") and self.request.protocol != "https":
-            self.redirect(
-                "{}{}/".format(
-                    config.get("base_site_url"),
-                    config.station_mount_filenames[self.sid],
-                )
-            )
-            return
 
         if not config.get("developer_mode") and self.request.host != config.get(
             "hostname"
