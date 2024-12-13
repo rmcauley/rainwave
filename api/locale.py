@@ -115,6 +115,8 @@ def compile_static_language_files():
 
     buildtools.create_baked_directory()
 
+    all_languages = {}
+
     for locale, translation in translations.items():
         f = codecs.open(
             os.path.join(
@@ -128,20 +130,34 @@ def compile_static_language_files():
         )
         f.write("\u4500")
         f.seek(0)
-        f.write(
-            'var LOCALE = "'
-            + locale
-            + '"; var lang = '
-            + (
-                json.dumps(
-                    translation.dict,
-                    ensure_ascii=False,
-                    separators=(",", ":"),
-                )
-            )
-            + ";"
+        this_lang = json.dumps(
+            translation.dict,
+            ensure_ascii=False,
+            separators=(",", ":"),
         )
+        f.write(f'var LOCALE = "{locale}";')
+        f.write(f"var lang = {this_lang};")
+        all_languages[locale] = translation.dict
         f.close()
+
+    with open(
+        os.path.join(
+            os.path.dirname(__file__),
+            "../static/baked/",
+            str(buildtools.get_build_number()),
+            "all_languages.js",
+        ),
+        "w",
+    ) as all_languages_output:
+        all_languages_output.write("ALL_LANG=")
+        all_languages_output.write(
+            json.dumps(
+                all_languages,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        )
+        all_languages_output.write(";")
 
 
 # I know this whole thing seems a bit wonkily-coded, but that's because we're staying Tornado compatible,

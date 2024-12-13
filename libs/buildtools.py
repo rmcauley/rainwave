@@ -149,3 +149,44 @@ def bake_beta_templates():
         debug_symbols=True,
         full_calls=False,
     )
+
+
+def build_new_static():
+    baked_dir = os.path.join(os.path.dirname(__file__), "../static/baked/")
+    number_dir = os.path.join(baked_dir, str(get_build_number()))
+    with open(
+        os.path.join(
+            baked_dir,
+            "rainwave.js",
+        ),
+        "w",
+    ) as output:
+        with open(
+            os.path.join(
+                number_dir,
+                "script5.js",
+            )
+        ) as js:
+            output.write(js.read())
+
+        with open(
+            os.path.join(
+                number_dir,
+                "templates5.js",
+            )
+        ) as templates:
+            output.write(templates.read())
+
+        with open(
+            os.path.join(
+                number_dir,
+                "all_languages.js",
+            )
+        ) as all_languages:
+            output.write(all_languages.read())
+
+        output.write("rainwaveInit();")
+
+    shutil.copy(
+        os.path.join(number_dir, "style5.css"), os.path.join(baked_dir, "style.css")
+    )

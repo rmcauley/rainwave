@@ -180,6 +180,10 @@ class Bootstrap(api.web.APIHandler):
             ua.lower().find("mobile") != -1 or ua.lower().find("android") != -1
         )
 
+    def finish(self, chunk=None):
+        self.set_header("Content-Type", self.content_type)
+        super(api.web.APIHandler, self).finish(chunk)
+
     def get(self):  # pylint: disable=method-hidden
         self.post()
         if self.is_mobile:
@@ -187,6 +191,8 @@ class Bootstrap(api.web.APIHandler):
         else:
             self.write("window.MOBILE = false;")
         self.write("var BOOTSTRAP=")
+        self.write_output()
+        self.write(";if(rainwaveInit){rainwaveInit()}")
 
     def post(self):
         info.attach_info_to_request(self, live_voting=True)
@@ -205,6 +211,7 @@ class Bootstrap(api.web.APIHandler):
             self.append("mobile", True)
         else:
             self.append("mobile", False)
+        self.write_output()
 
 
 @handle_api_url("bootstrap_dj")

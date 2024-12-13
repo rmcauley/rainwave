@@ -209,6 +209,25 @@ $rating_bkg_size: 60px 728px;
 
 // CORE CONTENT **********************************************************************************************
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #555;
+}
+
+div {
+  scrollbar-width: 8px;
+  scrollbar-color: #555;
+}
+
 body {
   height: 100%;
   color: $text;
@@ -242,6 +261,22 @@ body {
 
   &.safari {
     -webkit-font-smoothing: antialiased;
+  }
+
+  &:lang(ko) {
+    @font-face {
+      font-family: 'KoPub Dotum';
+      font-style: normal;
+      font-weight: 400;
+      src: local('KoPub Dotum'), local('KoPub Dotum-Medium'), url('/static/fonts/KoPubDotum-Medium.min.woff') format('woff');
+    }
+
+    @font-face {
+      font-family: 'KoPub Dotum';
+      font-style: normal;
+      font-weight: 700;
+      src: local('KoPub Dotum'), local('KoPub Dotum-Medium'), url('/static/fonts/KoPubDotum-Bold.min.woff') format('woff');
+    }
   }
 }
 

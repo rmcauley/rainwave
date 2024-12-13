@@ -1,44 +1,16 @@
 <!DOCTYPE html>
-<html lang="{{ request.locale.code }}">
+<html>
 <head>
-	<title>Rainwave {{ station_name }}</title>
+	<title>Rainwave</title>
 	<meta charset="UTF-8" />
-	<meta name="description" content="{{ site_description }}" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<meta name="description" content="Vote, rate, and request your favourite video game music." />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
 	<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet"> 
+	<link href="/static/baked/style.css" type="text/css" rel="stylesheet" />
 
-	{% if jsfiles %}
-		<link href="/static/baked/{{ revision_number }}/style5b.css" type="text/css" rel="stylesheet" />
-	{% else %}
-		<link href="/static/baked/{{ revision_number }}/style5.css" type="text/css" rel="stylesheet" />
-	{% end %}
-
-	<script src="/static/baked/{{ revision_number }}/{{ request.locale.code }}.js"></script>
-	{% if dj %}
-		<script src="/api4/bootstrap_dj?sid={{ request.sid }}"></script>
-	{% else %}
-		<script src="/api4/bootstrap?sid={{ request.sid }}"></script>
-	{% end %}
-
-	{% if jsfiles %}
-		<script src="/static/baked/{{ revision_number }}/templates5b.js"></script>
-		{% for file in jsfiles %}
-			<script src="/{{ file }}"></script>
-		{% end %}
-	{% else %}
-		<script src="/static/baked/{{ revision_number }}/templates5.js"></script>
-		<script src="/static/baked/{{ revision_number }}/script5.js"></script>
-	{% end %}
-
-	{% if dj %}
-		<script src="/static/js_dj/adapter.js"></script>
-		<script src="/static/js_dj/libshine.js"></script>
-		<script src="/static/js_dj/libsamplerate.js"></script>
-		<script src="/static/js_dj/libmad.js"></script>
-		<script src="/static/js_dj/webcast.js"></script>
-		<script src="/static/js_dj/dj.js"></script>
-	{% end %}
+	<script src="/static/baked/rainwave.js" async defer></script>
+	<script src="/api4/bootstrap" async defer></script>
 
 	<meta name="msapplication-TileColor" content="#1978B7">
 	<meta name="msapplication-TileImage" content="/static/images4/logo_white.png">

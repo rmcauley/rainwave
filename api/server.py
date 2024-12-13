@@ -66,9 +66,6 @@ class APIServer:
         cache.connect()
         memory_trace.setup(port_no)
 
-        api.locale.load_translations()
-        api.locale.compile_static_language_files()
-
         if config.has("sentry_dsn") and config.get("sentry_dsn"):
             sentry_sdk.init(
                 dsn=config.get("sentry_dsn"),
@@ -145,11 +142,15 @@ class APIServer:
             log.close()
 
     def start(self):
+        api.locale.load_translations()
+        api.locale.compile_static_language_files()
+
         buildtools.bake_css()
         buildtools.bake_js()
         buildtools.bake_templates()
         buildtools.bake_beta_templates()
         buildtools.copy_woff()
+        buildtools.build_new_static()
 
         # Setup variables for the long poll module
         # Bypass Tornado's forking processes if num_processes is set to 1
