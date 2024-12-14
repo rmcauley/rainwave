@@ -29,14 +29,14 @@ function rainwaveInit() {
   rainwaveInitialized = true;
   
   var potentialLang = (docCookies.getItem("rw_lang") || navigator.language).replace("-", "_");
-  Object.entries(ALL_LANG).forEach((langString, translation) => {
+  Object.entries(ALL_LANG).forEach(function (langString, translation) {
     if (langString.toLowerCase() == potentialLang.toLowerCase()) {
       LOCALE = langString;
       lang = translation;
     }
   })
   if (!lang) {
-    Object.entries(ALL_LANG).forEach((langString, translation) => {
+    Object.entries(ALL_LANG).forEach(function (langString, translation) {
       if (langString.slice(0, 2).toLowerCase() == potentialLang.slice(0, 2).toLowerCase()) {
         LOCALE = langString;
         lang = translation;
