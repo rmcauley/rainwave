@@ -24,13 +24,14 @@ var Prefs;
 function rainwaveInit() {
   "use strict";
 
+  if (!document.body) {
+    document.addEventListener("load", rainwaveInit);
+    return;
+  }
   if (rainwaveInitialized || !window.BOOTSTRAP || !window.ALL_LANG || !window.RWTemplates) {
     return;
   }
-  if (!document.body) {
-    document.addEventListener("DOMContentLoaded", rainwaveInit);
-    return;
-  }
+
   rainwaveInitialized = true;
 
   Prefs = PrefsInit(BOOTSTRAP.locales, BOOTSTRAP.cookie_domain);
