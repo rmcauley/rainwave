@@ -12,11 +12,12 @@ var API;
 var RWAudio;
 var rainwaveInitialized = false;
 var LOCALE = 'en_CA';
+var lang;
 
 function rainwaveInit() {
   "use strict";
 
-  if (rainwaveInitialized || !BOOTSTRAP || !ALL_LANG || !RWTemplates) {
+  if (rainwaveInitialized || !window.BOOTSTRAP || !window.ALL_LANG || !window.RWTemplates) {
     return;
   }
   rainwaveInitialized = true;
