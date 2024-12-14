@@ -146,7 +146,7 @@ function rainwaveInit() {
       var stationUrl = new URL(Stations[Stations.length - 1].url);
       if (order[i] == BOOTSTRAP.user.sid) {
         if (window.location.pathname == '/' && window.location.hostname == stationUrl.hostname) {
-          window.location.replace(stationUrl.pathname + window.location.search);
+          window.history.replaceState(null, "", stationUrl.pathname + window.location.search);
         }
         Stations[Stations.length - 1].url = null;
       }
