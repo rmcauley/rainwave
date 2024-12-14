@@ -149,9 +149,9 @@ var AlbumList = function (el) {
 
   var has_new_threshold;
   var has_newish_threshold;
-  if (!Clock.now && BOOTSTRAP && BOOTSTRAP.api_info) {
-    has_new_threshold = BOOTSTRAP.api_info.time;
-    has_newish_threshold = BOOTSTRAP.api_info.time;
+  if (!Clock.now && window.BOOTSTRAP && window.BOOTSTRAP.api_info) {
+    has_new_threshold = window.BOOTSTRAP.api_info.time;
+    has_newish_threshold = window.BOOTSTRAP.api_info.time;
   } else if (Clock.now) {
     has_new_threshold = Clock.now;
     has_newish_threshold = Clock.now;

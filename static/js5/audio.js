@@ -72,7 +72,7 @@ var RWAudioConstructor = function () {
     if (User && User.listen_key) {
       stream_query += "?" + User.id + ":" + User.listen_key;
     }
-    self.useStation(BOOTSTRAP.user.sid, stream_query);
+    self.useStation(User.sid, stream_query);
 
     API.add_callback("user", user_tunein_check);
     API.add_callback("sched_current", function (np) {

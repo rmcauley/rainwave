@@ -19,6 +19,7 @@ var INIT_TASKS = {
   "on_draw": [],
 };
 var MOBILE = navigator.userAgent.toLowerCase().includes("mobile") || navigator.userAgent.toLowerCase().includes("android");
+var Prefs;
 
 function rainwaveInit() {
   "use strict";
@@ -27,6 +28,8 @@ function rainwaveInit() {
     return;
   }
   rainwaveInitialized = true;
+
+  Prefs = PrefsInit(BOOTSTRAP.locales, BOOTSTRAP.cookie_domain);
   
   var potentialLang = (docCookies.getItem("rw_lang") || navigator.language).replace("-", "_");
   Object.entries(ALL_LANG).forEach(function (entry) {
@@ -46,6 +49,8 @@ function rainwaveInit() {
   if (!lang) {
     lang = ALL_LANG[LOCALE];
   }
+
+  User = BOOTSTRAP.user;
 
   var template;
 
@@ -154,7 +159,6 @@ function rainwaveInit() {
   BOOTSTRAP.station_list = Stations;
 
   template = RWTemplates.index({ stations: Stations });
-  User = BOOTSTRAP.user;
 
   API.add_callback("user", function (json) {
     if (json.dj) {
