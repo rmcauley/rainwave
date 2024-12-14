@@ -29,17 +29,17 @@ function rainwaveInit() {
   rainwaveInitialized = true;
   
   var potentialLang = (docCookies.getItem("rw_lang") || navigator.language).replace("-", "_");
-  Object.entries(ALL_LANG).forEach(function (langString, translation) {
-    if (langString.toLowerCase() == potentialLang.toLowerCase()) {
-      LOCALE = langString;
-      lang = translation;
+  Object.entries(ALL_LANG).forEach(function (entry) {
+    if (entry[0].toLowerCase() == potentialLang.toLowerCase()) {
+      LOCALE = entry[0];
+      lang = entry[1];
     }
   })
   if (!lang) {
-    Object.entries(ALL_LANG).forEach(function (langString, translation) {
-      if (langString.slice(0, 2).toLowerCase() == potentialLang.slice(0, 2).toLowerCase()) {
-        LOCALE = langString;
-        lang = translation;
+    Object.entries(ALL_LANG).forEach(function (entry) {
+      if (entry[0].slice(0, 2).toLowerCase() == potentialLang.slice(0, 2).toLowerCase()) {
+        LOCALE = entry[0];
+        lang = entry[1];
       }
     });
   }
