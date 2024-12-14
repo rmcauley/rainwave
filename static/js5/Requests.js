@@ -344,12 +344,12 @@ var Requests = (function () {
   var indicator2;
   var root_container;
 
-  BOOTSTRAP.on_draw.push(function () {
+  INIT_TASKS.on_draw.push(function () {
     self.on_draw();
     self.get_scroller().scrollblock.classList.add("request_scrollblock");
   });
 
-  BOOTSTRAP.on_init.push(function (root_template) {
+  INIT_TASKS.on_init.push(function (root_template) {
     var $t = RWTemplates.requests();
     self.on_init($t, root_template);
 

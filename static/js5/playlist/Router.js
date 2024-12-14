@@ -49,7 +49,7 @@ var Router = (function () {
     }
   };
 
-  BOOTSTRAP.on_init.push(function (root_template) {
+  INIT_TASKS.on_init.push(function (root_template) {
     tabs.album = true;
     views.album = AlbumView;
     scroll_positions.album = {};
@@ -149,7 +149,7 @@ var Router = (function () {
     window.onhashchange = self.detect_url_change;
   });
 
-  BOOTSTRAP.on_draw.push(function (root_template) {
+  INIT_TASKS.on_draw.push(function (root_template) {
     lists.album = AlbumList(root_template.album_list);
     lists.artist = ArtistList(root_template.artist_list);
     lists.request_line = RequestLineList(root_template.listener_list);

@@ -205,7 +205,7 @@ var Sizing = (function () {
     fx_workaround_timer = setTimeout(self.trigger_resize, 100);
   });
 
-  BOOTSTRAP.on_init.push(function (t) {
+  INIT_TASKS.on_init.push(function (t) {
     index_t = t;
     if (MOBILE) document.body.classList.add("mobile");
     else document.body.classList.add("desktop");

@@ -12,7 +12,7 @@ var Timeline = (function () {
   var history_bar;
   var root_template;
 
-  BOOTSTRAP.on_init.push(function (root_tmpl) {
+  INIT_TASKS.on_init.push(function (root_tmpl) {
     root_template = root_tmpl;
     Prefs.define("l_stk", [false, true], true);
     Prefs.define("l_stksz", [0, 1, 2, 3, 4, 5], true);
@@ -80,7 +80,7 @@ var Timeline = (function () {
     // Clock.pageclock_bar_function = progress_bar_update;
   });
 
-  BOOTSTRAP.on_draw.push(function () {
+  INIT_TASKS.on_draw.push(function () {
     scroller = Scrollbar.create(template.timeline, true);
     // if we don't do this, content can get cut off in the timeline
     // for browsers that don't need the custom scrollbars

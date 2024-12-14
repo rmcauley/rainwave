@@ -51,7 +51,7 @@ var KeyHandler = (function () {
   keymaps.AZER.vote1_0 = ["w"];
   var keymap = keymaps.QWER;
 
-  BOOTSTRAP.on_draw.push(function (template) {
+  INIT_TASKS.on_draw.push(function (template) {
     Prefs.define("hkm", ["QWER", "AZER", "DVOR"]);
     if (Prefs.get("pwr")) {
       var mapchange = function (nv) {

@@ -5,7 +5,7 @@ var Scrollbar = (function () {
   var scrollbar_width;
   var enabled = false;
 
-  BOOTSTRAP.on_init.push(function (t) {
+  INIT_TASKS.on_init.push(function (t) {
     // if we're on mobile we won't need this due to mobile scrollbars being great
     if (MOBILE) return;
     // if we're on Chrome we have custom scrollbars that don't need Javascript
@@ -22,7 +22,7 @@ var Scrollbar = (function () {
       return;
     }
 
-    BOOTSTRAP.on_measure.push(function () {
+    INIT_TASKS.on_measure.push(function () {
       scrollbar_width = 100 - t.scroller_size.scrollWidth;
       // if scrollbars are 0 width (as they are on mobile, or Mac OS) we don't need customs
       if (scrollbar_width !== 0) {
@@ -31,7 +31,7 @@ var Scrollbar = (function () {
       }
     });
 
-    BOOTSTRAP.on_draw.push(function () {
+    INIT_TASKS.on_draw.push(function () {
       t.scroller_size.parentNode.removeChild(t.scroller_size);
     });
 

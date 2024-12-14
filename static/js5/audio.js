@@ -41,7 +41,7 @@ var RWAudioConstructor = function () {
     };
   }
 
-  BOOTSTRAP.on_init.push(function (root_template) {
+  INIT_TASKS.on_init.push(function (root_template) {
     self.audioElDest = root_template.measure_box;
 
     root_template.volume_container = document.getElementById(

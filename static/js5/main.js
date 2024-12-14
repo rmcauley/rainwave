@@ -1,8 +1,8 @@
 /* For page initialization:
 
-BOOTSTRAP.on_init will fill a documentFragment
-BOOTSTRAP.on_measure happens after a paint - use this to measure elements without incurring extra reflows
-BOOTSTRAP.on_draw happens after the measurement - please do not cause reflows.
+INIT_TASKS.on_init will fill a documentFragment
+INIT_TASKS.on_measure happens after a paint - use this to measure elements without incurring extra reflows
+INIT_TASKS.on_draw happens after the measurement - please do not cause reflows.
 
 */
 
@@ -13,6 +13,12 @@ var RWAudio;
 var rainwaveInitialized = false;
 var LOCALE = 'en_CA';
 var lang;
+var INIT_TASKS = { 
+  "on_init": [],
+  "on_measure": [],
+  "on_draw": [],
+};
+var MOBILE = navigator.userAgent.toLowerCase().includes("mobile") || navigator.userAgent.toLowerCase().includes("android");
 
 function rainwaveInit() {
   "use strict";
@@ -160,8 +166,8 @@ function rainwaveInit() {
   });
 
   // pre-paint DOM operations while the network is doing its work for CSS
-  for (i = 0; i < BOOTSTRAP.on_init.length; i++) {
-    BOOTSTRAP.on_init[i](template);
+  for (i = 0; i < INIT_TASKS.on_init.length; i++) {
+    INIT_TASKS.on_init[i](template);
   }
   // };
 
@@ -192,12 +198,12 @@ function rainwaveInit() {
 
   document.body.appendChild(template._root);
 
-  for (i = 0; i < BOOTSTRAP.on_measure.length; i++) {
-    BOOTSTRAP.on_measure[i](template);
+  for (i = 0; i < INIT_TASKS.on_measure.length; i++) {
+    INIT_TASKS.on_measure[i](template);
   }
 
-  for (i = 0; i < BOOTSTRAP.on_draw.length; i++) {
-    BOOTSTRAP.on_draw[i](template);
+  for (i = 0; i < INIT_TASKS.on_draw.length; i++) {
+    INIT_TASKS.on_draw[i](template);
   }
 
   Sizing.trigger_resize();

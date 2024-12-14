@@ -78,7 +78,7 @@ var R4Notify = (function () {
     }
   };
 
-  BOOTSTRAP.on_init.push(function () {
+  INIT_TASKS.on_init.push(function () {
     Prefs.define("notify", [false, true]);
     if (!self.capable) return;
     if (MOBILE) return;

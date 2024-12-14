@@ -46,7 +46,7 @@ var ErrorHandler = (function () {
     self.nonpermanent_error(self.make_error("redownload_m3u", 200));
   };
 
-  BOOTSTRAP.on_init.push(function () {
+  INIT_TASKS.on_init.push(function () {
     API.add_callback("station_offline", self.permanent_error);
     API.add_callback("redownload_m3u", redownload_m3u_message);
   });

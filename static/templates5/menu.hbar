@@ -10,11 +10,11 @@
 		</ul>
 
 		<ul class="menu user_status">
-			{{#if ^BOOTSTRAP.user.id > 1 }}
+			{{#if ^User.id > 1 }}
 				<li bind="user_link" class="user_info">
-					<a href="#!/listener/{{ ^BOOTSTRAP.user.id }}">
-						<span>{{ ^BOOTSTRAP.user.name }}</span>
-						<img class="avatar" src="{{ ^BOOTSTRAP.user.avatar }}" />
+					<a href="#!/listener/{{ ^User.id }}">
+						<span>{{ ^User.name }}</span>
+						<img class="avatar" src="{{ ^User.avatar }}" />
 					</a>
 				</li>
 			{{#else}}
@@ -65,7 +65,7 @@
 			</a>
 			{{#each stations}}
 				<a bind="menu_link" class="station">
-					{{#if ^_c.id != BOOTSTRAP.user.sid && !MOBILE}}
+					{{#if ^_c.id != User.sid && !MOBILE}}
 						<div bind="menu_np" class="station_song_container">
 							<div bind="menu_np_art" class="ss_art"></div>
 							<div bind="menu_np_song" class="ss_title"></div>
@@ -87,10 +87,10 @@
 				<a bind="play2" class="link">
 					{{ $l("listen_via_browser") }}
 				</a>
-				<a href="/tune_in/{{ ^BOOTSTRAP.user.sid }}.mp3.m3u" target="_blank">
+				<a href="/tune_in/{{ ^User.sid }}.mp3.m3u" target="_blank">
 					{{ $l("listen_via_mp3") }}
 				</a>
-				<a href="/tune_in/{{ ^BOOTSTRAP.user.sid }}.ogg.m3u" target="_blank">
+				<a href="/tune_in/{{ ^User.sid }}.ogg.m3u" target="_blank">
 					{{ $l("listen_via_ogg") }}
 				</a>
 			</div>

@@ -81,7 +81,7 @@ var Menu = (function () {
     }
   };
 
-  BOOTSTRAP.on_init.push(function (root_template) {
+  INIT_TASKS.on_init.push(function (root_template) {
     template = root_template;
 
     // must be done in JS, if you try to do it in the template you still get a clickable <a> for

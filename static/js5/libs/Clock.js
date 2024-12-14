@@ -27,7 +27,7 @@ var Clock = (function () {
     }
   };
 
-  BOOTSTRAP.on_init.push(function () {
+  INIT_TASKS.on_init.push(function () {
     Prefs.define("t_rt", [false, true], true);
     Prefs.define("t_clk", [true, false]);
     Prefs.define("t_tl", [true, false]);

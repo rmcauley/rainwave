@@ -3,7 +3,7 @@ var Fave = (function () {
   var self = {};
   self.album_callback = null;
 
-  BOOTSTRAP.on_init.push(function () {
+  INIT_TASKS.on_init.push(function () {
     API.add_callback("fave_song_result", song_fave_update);
     API.add_callback("fave_album_result", album_fave_update);
     API.add_callback("fave_all_songs_result", song_fave_all_update);

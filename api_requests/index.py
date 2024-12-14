@@ -185,10 +185,6 @@ class Bootstrap(api.web.APIHandler):
         super(api.web.APIHandler, self).finish(chunk)
 
     def get(self):  # pylint: disable=method-hidden
-        if self.is_mobile:
-            self.write("window.MOBILE = true;")
-        else:
-            self.write("window.MOBILE = false;")
         self.write("var BOOTSTRAP=")
         self.post()
         self.write(";if(window.rainwaveInit){window.rainwaveInit()}")

@@ -3,12 +3,12 @@
 		<a href="https://discord.gg/fdb2cs7puS" target="_blank">
 			Discord
 		</a>
-		{{#if ^BOOTSTRAP.user.id > 1 && !BOOTSTRAP.user.uses_oauth }}
+		{{#if ^User.id > 1 && !User.uses_oauth }}
 			<a href="/oauth/discord">
 				{{ $l("link_discord") }}
 			</a>
 		{{/if}}
-		{{#if ^BOOTSTRAP.user.id != 1 }}
+		{{#if ^User.id != 1 }}
 			<a href="/oauth/logout">
 				{{ $l("logout") }}
 			</a>

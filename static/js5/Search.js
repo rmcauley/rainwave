@@ -148,7 +148,7 @@ var SearchPanel = (function () {
     );
   };
 
-  BOOTSTRAP.on_init.push(function (root_template) {
+  INIT_TASKS.on_init.push(function (root_template) {
     container = root_template.search_results_container;
     el = root_template.search_results;
     input = root_template.search;
@@ -201,7 +201,7 @@ var SearchPanel = (function () {
     });
   });
 
-  BOOTSTRAP.on_draw.push(function () {
+  INIT_TASKS.on_draw.push(function () {
     scroller = Scrollbar.create(container);
   });
 

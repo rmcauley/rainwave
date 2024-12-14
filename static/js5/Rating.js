@@ -584,7 +584,7 @@ var Rating = (function () {
     }
   };
 
-  BOOTSTRAP.on_init.push(function () {
+  INIT_TASKS.on_init.push(function () {
     API.add_callback("rate_result", rating_api_callback);
 
     Prefs.define("r_incmplt", [false, true], true);
