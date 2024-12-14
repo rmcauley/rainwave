@@ -88,7 +88,7 @@ def get_js_file_list(js_dir="js"):
     ):
         for f in files:
             if f.endswith("main.js"):
-                main_file = f
+                main_file = os.path.join(root[root.find("..") + 3 :], f)
             elif f.endswith(".js"):
                 jsfiles.append(os.path.join(root[root.find("..") + 3 :], f))
     jsfiles = sorted(jsfiles)
