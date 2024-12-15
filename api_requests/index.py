@@ -187,7 +187,6 @@ class Bootstrap(api.web.APIHandler):
                 self.sid = config.stream_filename_to_sid.get(
                     referer_match.group("station")
                 )
-            print(STATION_URL_REGEX, referer_path, referer_match)
         super(Bootstrap, self).prepare()
         if not self.user:
             self.user = User(1)
