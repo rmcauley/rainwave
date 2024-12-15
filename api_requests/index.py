@@ -1,6 +1,7 @@
 import os
 import tornado.web
 import re
+import urllib.parse
 
 import api.web
 import api.locale
@@ -17,6 +18,7 @@ STATION_REGEX = "|".join(
     stream_filename for stream_filename in config.stream_filename_to_sid.keys()
 )
 STATION_URL_REGEX = "/(?P<station>{})?/?(?:index.html)?".format(STATION_REGEX)
+STATION_URL_REGEX_COMPILED = re.compile(STATION_URL_REGEX)
 
 
 @handle_url("/blank")
@@ -173,14 +175,19 @@ class Bootstrap(api.web.APIHandler):
     content_type = "text/javascript"
 
     def prepare(self):
-        referer = self.request.headers.get("Referer") or ""
-        referer_match = re.search(STATION_URL_REGEX, referer)
-        if (
-            referer_match
-            and referer_match.group("station")
-            and config.stream_filename_to_sid.get(referer_match.group("station"))
-        ):
-            self.sid = config.stream_filename_to_sid.get(referer_match.group("station"))
+        referer = self.request.headers.get("Referer")
+        if referer:
+            referer_path = urllib.parse.urlparse(referer).path
+            referer_match = STATION_URL_REGEX_COMPILED.search(referer_path)
+            if (
+                referer_match
+                and referer_match.group("station")
+                and config.stream_filename_to_sid.get(referer_match.group("station"))
+            ):
+                self.sid = config.stream_filename_to_sid.get(
+                    referer_match.group("station")
+                )
+            print(STATION_URL_REGEX, referer_path, referer_match)
         super(Bootstrap, self).prepare()
         if not self.user:
             self.user = User(1)
