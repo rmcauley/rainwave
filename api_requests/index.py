@@ -1,5 +1,6 @@
 import os
 import tornado.web
+import re
 
 import api.web
 import api.locale
@@ -15,6 +16,7 @@ from rainwave.user import User
 STATION_REGEX = "|".join(
     stream_filename for stream_filename in config.stream_filename_to_sid.keys()
 )
+STATION_URL_REGEX = "/(?P<station>{})?/?(?:index.html)?".format(STATION_REGEX)
 
 
 @handle_url("/blank")
@@ -27,7 +29,7 @@ class Blank(api.web.HTMLRequest):
         self.write(self.render_string("basic_footer.html"))
 
 
-@handle_url("/(?P<station>{})?/?(?:index.html)?".format(STATION_REGEX))
+@handle_url(STATION_URL_REGEX)
 class MainIndex(api.web.HTMLRequest):
     sid: int = config.get("default_station")
     description = "Main Rainwave page."
@@ -171,6 +173,14 @@ class Bootstrap(api.web.APIHandler):
     content_type = "text/javascript"
 
     def prepare(self):
+        referer = self.request.headers.get("Referer") or ""
+        referer_match = re.search(STATION_URL_REGEX, referer)
+        if (
+            referer_match
+            and referer_match.group("station")
+            and config.stream_filename_to_sid.get(referer_match.group("station"))
+        ):
+            self.sid = config.stream_filename_to_sid.get(referer_match.group("station"))
         super(Bootstrap, self).prepare()
         if not self.user:
             self.user = User(1)
