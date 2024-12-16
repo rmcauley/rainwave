@@ -567,7 +567,7 @@ class Album(AssociatedMetadata):
             "FROM r4_song_ratings "
             "JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE) "
             "JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
-            "JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id) "
+            "JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id AND r4_songs.song_verified = TRUE) "
             "WHERE album_id = %s "
             "GROUP BY song_rating_user",
             (sid, self.id),
