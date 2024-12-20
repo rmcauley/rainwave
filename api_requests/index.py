@@ -19,6 +19,12 @@ STATION_REGEX = "|".join(
 )
 STATION_URL_REGEX = "/(?P<station>{})?/?(?:index.html)?".format(STATION_REGEX)
 STATION_URL_REGEX_COMPILED = re.compile(STATION_URL_REGEX)
+index_file_location = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "static",
+    "index.html",
+)
 
 
 @handle_url("/blank")
@@ -32,131 +38,137 @@ class Blank(api.web.HTMLRequest):
 
 
 @handle_url(STATION_URL_REGEX)
-class MainIndex(api.web.HTMLRequest):
-    sid: int = config.get("default_station")
-    description = "Main Rainwave page."
-    auth_required = config.has("index_requires_login") and config.get(
-        "index_requires_login"
-    )
-    login_required = config.has("index_requires_login") and config.get(
-        "index_requires_login"
-    )
-    sid_required = False
-    beta = False
-    page_template = "r5_index.html"
-    js_dir = "js5"
-    jsfiles = None
-
-    def set_default_headers(self):
-        self.set_header("X-Frame-Options", "SAMEORIGIN")
-        self.set_header("X-XSS-Protection", "1; mode=block")
-        self.set_header("X-Content-Type-Options", "nosniff")
-
-        if self.request.protocol == "https" or config.get("enforce_ssl"):
-            self.set_header("Content-Security-Policy", config.csp_header)
-            self.set_header("Referrer-Policy", "origin")
-            self.set_header("Strict-Transport-Security", "max-age=63072000; preload")
-
-    def prepare(self):
-        super(MainIndex, self).prepare()
-
-        if not config.get("developer_mode") and self.request.host != config.get(
-            "hostname"
-        ):
-            self.redirect(
-                "{}{}/".format(
-                    config.get("base_site_url"),
-                    config.station_mount_filenames[self.sid],
-                )
-            )
-            return
-
-        if not cache.get_station(self.sid, "sched_current"):
-            raise APIException(
-                "server_just_started",
-                "Rainwave is Rebooting, Please Try Again in a Few Minutes",
-                http_code=500,
-            )
-
-        self.jsfiles = None
-
-        if not self.user:
-            self.user = User(1)
-        self.user.ip_address = self.request.remote_ip
-        self.user.ensure_api_key()
-
-        if self.beta or config.get("developer_mode"):
-            buildtools.bake_beta_css()
-            buildtools.bake_beta_templates()
-            self.jsfiles = []
-            for root, _subdirs, files in os.walk(
-                os.path.join(os.path.dirname(__file__), "../static/%s" % self.js_dir)
-            ):
-                for f in files:
-                    if f.endswith(".js"):
-                        self.jsfiles.append(
-                            os.path.join(
-                                root[root.find("static/%s" % self.js_dir) :], f
-                            )
-                        )
-
-    def get(self, station=None):
-        self.mobile = False
-        ua = self.request.headers.get("User-Agent") or ""
-        if ua:
-            self.mobile = (
-                ua.lower().find("mobile") != -1 or ua.lower().find("android") != -1
-            )
-        page_title = None
-        if self.sid == config.get("default_station"):
-            page_title = self.locale.translate("page_title_on_google")
-        else:
-            page_title = "%s %s" % (
-                self.locale.translate("page_title_on_google"),
-                self.locale.translate("station_name_%s" % self.sid),
-            )
-        self.render(
-            self.page_template,
-            request=self,
-            site_description=self.locale.translate(
-                "station_description_id_%s" % self.sid
-            ),
-            revision_number=config.build_number,
-            jsfiles=self.jsfiles,
-            mobile=self.mobile,
-            station_name=page_title,
-            dj=self.user.is_dj(),
-        )
+class StaticIndex(tornado.web.StaticFileHandler):
+    def get_absolute_path(self, root: str, path: str):
+        return index_file_location
 
 
-@handle_url("/(?P<station>{})/dj".format(STATION_REGEX))
-class DJIndex(MainIndex):
-    dj_required = True
+# @handle_url(STATION_URL_REGEX)
+# class MainIndex(api.web.HTMLRequest):
+#     sid: int = config.get("default_station")
+#     description = "Main Rainwave page."
+#     auth_required = config.has("index_requires_login") and config.get(
+#         "index_requires_login"
+#     )
+#     login_required = config.has("index_requires_login") and config.get(
+#         "index_requires_login"
+#     )
+#     sid_required = False
+#     beta = False
+#     page_template = "r5_index.html"
+#     js_dir = "js5"
+#     jsfiles = None
+
+#     def set_default_headers(self):
+#         self.set_header("X-Frame-Options", "SAMEORIGIN")
+#         self.set_header("X-XSS-Protection", "1; mode=block")
+#         self.set_header("X-Content-Type-Options", "nosniff")
+
+#         if self.request.protocol == "https" or config.get("enforce_ssl"):
+#             self.set_header("Content-Security-Policy", config.csp_header)
+#             self.set_header("Referrer-Policy", "origin")
+#             self.set_header("Strict-Transport-Security", "max-age=63072000; preload")
+
+#     def prepare(self):
+#         super(MainIndex, self).prepare()
+
+#         if not config.get("developer_mode") and self.request.host != config.get(
+#             "hostname"
+#         ):
+#             self.redirect(
+#                 "{}{}/".format(
+#                     config.get("base_site_url"),
+#                     config.station_mount_filenames[self.sid],
+#                 )
+#             )
+#             return
+
+#         if not cache.get_station(self.sid, "sched_current"):
+#             raise APIException(
+#                 "server_just_started",
+#                 "Rainwave is Rebooting, Please Try Again in a Few Minutes",
+#                 http_code=500,
+#             )
+
+#         self.jsfiles = None
+
+#         if not self.user:
+#             self.user = User(1)
+#         self.user.ip_address = self.request.remote_ip
+#         self.user.ensure_api_key()
+
+#         if self.beta or config.get("developer_mode"):
+#             buildtools.bake_beta_css()
+#             buildtools.bake_beta_templates()
+#             self.jsfiles = []
+#             for root, _subdirs, files in os.walk(
+#                 os.path.join(os.path.dirname(__file__), "../static/%s" % self.js_dir)
+#             ):
+#                 for f in files:
+#                     if f.endswith(".js"):
+#                         self.jsfiles.append(
+#                             os.path.join(
+#                                 root[root.find("static/%s" % self.js_dir) :], f
+#                             )
+#                         )
+
+#     def get(self, station=None):
+#         self.mobile = False
+#         ua = self.request.headers.get("User-Agent") or ""
+#         if ua:
+#             self.mobile = (
+#                 ua.lower().find("mobile") != -1 or ua.lower().find("android") != -1
+#             )
+#         page_title = None
+#         if self.sid == config.get("default_station"):
+#             page_title = self.locale.translate("page_title_on_google")
+#         else:
+#             page_title = "%s %s" % (
+#                 self.locale.translate("page_title_on_google"),
+#                 self.locale.translate("station_name_%s" % self.sid),
+#             )
+#         self.render(
+#             self.page_template,
+#             request=self,
+#             site_description=self.locale.translate(
+#                 "station_description_id_%s" % self.sid
+#             ),
+#             revision_number=config.build_number,
+#             jsfiles=self.jsfiles,
+#             mobile=self.mobile,
+#             station_name=page_title,
+#             dj=self.user.is_dj(),
+#         )
 
 
-@handle_url("/(?P<station>{})/beta".format(STATION_REGEX))
-class BetaRedirect(tornado.web.RequestHandler):
-    help_hidden = True
-
-    def prepare(self):
-        self.redirect("/beta/", permanent=True)
+# @handle_url("/(?P<station>{})/dj".format(STATION_REGEX))
+# class DJIndex(MainIndex):
+#     dj_required = True
 
 
-@handle_url("/(?P<station>{})/beta/".format(STATION_REGEX))
-class BetaIndex(MainIndex):
-    beta = True
-    page_template = "r5_index.html"
-    js_dir = "js5"
+# @handle_url("/(?P<station>{})/beta".format(STATION_REGEX))
+# class BetaRedirect(tornado.web.RequestHandler):
+#     help_hidden = True
 
-    def prepare(self):
-        if not config.get("public_beta"):
-            self.perks_required = True
-        super(BetaIndex, self).prepare()
+#     def prepare(self):
+#         self.redirect("/beta/", permanent=True)
 
 
-@handle_url("/(?P<station>{})/beta/dj".format(STATION_REGEX))
-class DJBetaIndex(MainIndex):
-    dj_required = True
+# @handle_url("/(?P<station>{})/beta/".format(STATION_REGEX))
+# class BetaIndex(MainIndex):
+#     beta = True
+#     page_template = "r5_index.html"
+#     js_dir = "js5"
+
+#     def prepare(self):
+#         if not config.get("public_beta"):
+#             self.perks_required = True
+#         super(BetaIndex, self).prepare()
+
+
+# @handle_url("/(?P<station>{})/beta/dj".format(STATION_REGEX))
+# class DJBetaIndex(MainIndex):
+#     dj_required = True
 
 
 @handle_api_url("bootstrap")
