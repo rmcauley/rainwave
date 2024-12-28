@@ -7,11 +7,8 @@ import api.web
 import api.locale
 from api.urls import handle_url, handle_api_url
 from api_requests import info
-from api.exceptions import APIException
 
-from libs import cache
 from libs import config
-from libs import buildtools
 from rainwave.user import User
 
 STATION_REGEX = "|".join(
@@ -35,15 +32,6 @@ class Blank(api.web.HTMLRequest):
     def get(self):
         self.write(self.render_string("bare_header.html", title="Blank"))
         self.write(self.render_string("basic_footer.html"))
-
-
-@handle_url(STATION_URL_REGEX)
-class StaticIndex(tornado.web.StaticFileHandler):
-    def initialize(self, **kwargs) -> None:
-        super(StaticIndex, self).initialize("", None)
-
-    def get_absolute_path(self, root: str, path: str):
-        return index_file_location
 
 
 # @handle_url(STATION_URL_REGEX)
