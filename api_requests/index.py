@@ -40,8 +40,7 @@ class Blank(api.web.HTMLRequest):
 @handle_url(STATION_URL_REGEX)
 class StaticIndex(tornado.web.StaticFileHandler):
     def initialize(self, **kwargs) -> None:
-        self.root = ""
-        self.default_filename = ""
+        super(StaticIndex, self).initialize("", None)
 
     def get_absolute_path(self, root: str, path: str):
         return index_file_location
