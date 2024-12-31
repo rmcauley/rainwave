@@ -86,7 +86,7 @@ class ToolList(api.web.HTMLRequest):
         self.write("<b>See:</b><br />")
         # [ ( "Link Title", "admin_url" ) ]
         for item in [
-            ("All Stations:"),
+            ("All Stations:", ""),
             ("Song Upload Errors (All Stations)", "scan_results"),
             # ("Producers", "producers"),
             ("PHs & PVPs (All Stations)", "producers_all"),
@@ -107,7 +107,7 @@ class ToolList(api.web.HTMLRequest):
             if item[0] == "":
                 self.write("<br>")
             elif item[1] == "":
-                self.write(f"<b>{item[0]}")
+                self.write(f"<b>{item[0]}</b>")
             else:
                 self.write(
                     '<a style=\'display: block\' id="%s" href="#" onclick="window.top.current_tool = \'%s\'; window.top.change_screen();">%s</a>'
