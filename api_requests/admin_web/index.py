@@ -83,7 +83,6 @@ class ToolList(api.web.HTMLRequest):
 
     def get(self):
         self.write(self.render_string("bare_header.html", title="Tool List"))
-        self.write("<b>See:</b><br />")
         # [ ( "Link Title", "admin_url" ) ]
         for item in [
             ("All Stations:", ""),
