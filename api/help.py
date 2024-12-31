@@ -213,6 +213,8 @@ class HelpRequest(tornado.web.RequestHandler):
             cls = help_classes[url]
         except:
             self.send_error(404)
+            return
+
         self.write(
             self.render_string("basic_header.html", title="Rainwave API - %s" % url)
         )
