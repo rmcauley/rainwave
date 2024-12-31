@@ -83,21 +83,21 @@ class ToolList(api.web.HTMLRequest):
 
     def get(self):
         self.write(self.render_string("bare_header.html", title="Tool List"))
-        self.write("<b>Do:</b><br />")
+        self.write("<b>See:</b><br />")
         # [ ( "Link Title", "admin_url" ) ]
         for item in [
-            ("Scan Results", "scan_results"),
-            ("Producers", "producers"),
-            ("Producers (Meta)", "producers_all"),
-            ("Power Hours", "power_hours"),
-            ("DJ Elections", "dj_election"),
-            ("Cooldown", "cooldown"),
-            ("Request Only Songs", "song_request_only"),
-            ("Donations", "donations"),
-            ("Associate Groups", "associate_groups"),
-            ("Disassociate Groups", "disassociate_groups"),
-            ("Edit Groups", "group_edit"),
-            ("JS Errors", "js_errors"),
+            ("Song Upload Errors (All Stations)", "scan_results"),
+            # ("Producers", "producers"),
+            ("PHs & PVPs (All Stations)", "producers_all"),
+            ("PH Creator (Selected Station)", "power_hours"),
+            # ("DJ Elections", "dj_election"),
+            ("Cooldown Multiplier Editor (This Station)", "cooldown"),
+            ("Make Songs Request Only (This Station)", "song_request_only"),
+            ("Patreon/Tip Jar Manager", "donations"),
+            # ("Associate Groups", "associate_groups"),
+            # ("Disassociate Groups", "disassociate_groups"),
+            # ("Edit Groups", "group_edit"),
+            ("Website Crash Reports", "js_errors"),
         ]:
             self.write(
                 '<a style=\'display: block\' id="%s" href="#" onclick="window.top.current_tool = \'%s\'; window.top.change_screen();">%s</a>'
@@ -133,18 +133,19 @@ class RestrictList(api.web.HTMLRequest):
                 '<a style=\'display: block\' id="sid_%s" href="#" onclick="window.top.current_restriction = %s; window.top.change_screen();">%s</a>'
                 % (sid, sid, config.station_id_friendly[sid])
             )
-        self.write(
-            '<a style=\'display: block\' id="sid_%s" href="#" onclick="window.top.current_restriction = %s; window.top.change_screen();">%s</a>'
-            % (0, 0, "DJ Only")
-        )
+        # self.write(
+        #     '<a style=\'display: block\' id="sid_%s" href="#" onclick="window.top.current_restriction = %s; window.top.change_screen();">%s</a>'
+        #     % (0, 0, "DJ Only")
+        # )
         self.write("<br>")
+        self.write("<b>Sort Songs By:</b>")
         self.write(
             '<a style=\'display: block\' id="sort_%s" href="#" onclick="window.top.current_sort = \'%s\'; window.top.change_screen();">%s</a>'
-            % ("alpha", "alpha", "AlphaNum")
+            % ("alpha", "alpha", "Alphabetical Order")
         )
         self.write(
             '<a style=\'display: block\' id="sort_%s" href="#" onclick="window.top.current_sort = \'%s\'; window.top.change_screen();">%s</a>'
-            % ("added_on", "added_on", "Added On")
+            % ("added_on", "added_on", "Newest Songs First")
         )
         self.write(self.render_string("basic_footer.html"))
 
