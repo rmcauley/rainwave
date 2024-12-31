@@ -86,23 +86,33 @@ class ToolList(api.web.HTMLRequest):
         self.write("<b>See:</b><br />")
         # [ ( "Link Title", "admin_url" ) ]
         for item in [
+            ("All Stations:"),
             ("Song Upload Errors (All Stations)", "scan_results"),
             # ("Producers", "producers"),
             ("PHs & PVPs (All Stations)", "producers_all"),
+            ("", ""),
+            ("Selected Station:", ""),
             ("PH Creator (Selected Station)", "power_hours"),
             # ("DJ Elections", "dj_election"),
             ("Cooldown Multiplier Editor (Selected Station)", "cooldown"),
-            ("Make Songs Request Only (Selected Station)", "song_request_only"),
+            ("Songs That Are Request Only (Selected Station)", "song_request_only"),
+            ("", ""),
+            ("Other", ""),
             ("Patreon/Tip Jar Manager", "donations"),
             # ("Associate Groups", "associate_groups"),
             # ("Disassociate Groups", "disassociate_groups"),
             # ("Edit Groups", "group_edit"),
             ("Website Crash Reports", "js_errors"),
         ]:
-            self.write(
-                '<a style=\'display: block\' id="%s" href="#" onclick="window.top.current_tool = \'%s\'; window.top.change_screen();">%s</a>'
-                % (item[1], item[1], item[0])
-            )
+            if item[0] == "":
+                self.write("<br>")
+            elif item[1] == "":
+                self.write(f"<b>{item[0]}")
+            else:
+                self.write(
+                    '<a style=\'display: block\' id="%s" href="#" onclick="window.top.current_tool = \'%s\'; window.top.change_screen();">%s</a>'
+                    % (item[1], item[1], item[0])
+                )
         self.write(self.render_string("basic_footer.html"))
 
 
