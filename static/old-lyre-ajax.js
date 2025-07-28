@@ -13,7 +13,7 @@ var lyre = (function() {
 	var async_queue = new Array();
 	var callbacks = new Array();
 	var universal_callbacks = new Array();
-	var urlprefix = "http://rainwave.cc/api4/";
+	var urlprefix = "https://rainwave.cc/api4/";
 
 	var rw_user_id = 1;
 	var rw_apikey = "";
