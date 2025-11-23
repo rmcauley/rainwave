@@ -25,8 +25,7 @@ class UpdateUserAvatarByDiscordId(api.web.APIHandler):
             )
 
         discord_user_id = self.get_argument("discord_user_id")
-        avatar = self.get_argument("avatar")
-        avatar_url = f"https://cdn.discordapp.com/avatars/{discord_user_id}/{avatar}.png?size=320"
+        avatar_url = self.get_argument("avatar")
         user_avatar_type = "avatar.driver.remote"
 
         possible_id = db.c.fetch_var(
