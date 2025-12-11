@@ -7,7 +7,6 @@ requires-python = ">=3.11"
 dependencies = [
     "aiohttp>=3.12.15",
     "bcrypt>=4.3.0",
-    "black>=25.1.0",
     "calmjs>=3.4.4",
     "ipython~=8.24.0",
     "libsass>=0.23.0",
@@ -28,4 +27,9 @@ dependencies = [
     "tornado~=6.4.0",
     "ujson>=5.10.0",
     "unidecode>=1.4.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.12.0",
 ]
