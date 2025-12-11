@@ -23,7 +23,7 @@ pyzmq = "~=26.0.2"
 requests = "~=2.31.0"
 rgain3 = "*"
 sentry-sdk = "*"
-tornado = "~=6.4.0"
+tornado = "~=6.5.0"
 ujson = "*"
 Unidecode = "*"
 
