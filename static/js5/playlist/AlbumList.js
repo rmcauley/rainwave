@@ -169,8 +169,8 @@ var AlbumList = function (el) {
       (item.newest_song_time > has_new_threshold
         ? " has_new"
         : item.newest_song_time > has_newish_threshold
-        ? " has_newish"
-        : "");
+          ? " has_newish"
+          : "");
     item._el._id = item.id;
 
     // could do this using RWTemplates.fave but... speed.  want to inline here as much as possible.
@@ -249,6 +249,17 @@ var AlbumList = function (el) {
     }
   };
 
+  // Alphabetically compares two strings as titles, with prefixes of "A", "An",
+  // and "The" stripped.
+  self.article_regex = /^(The|An?)\s+/igm;
+
+  self.compare_titles = function (a, b) {
+    var a_title = a.replace(self.article_regex, "");
+    var b_title = b.replace(self.article_regex, "");
+
+    return a.localeCompare(b);
+  };
+
   self.sort_by_alpha = function (a, b) {
     if (!self.data[a] && self.data[b]) {
       return 1;
@@ -291,7 +302,7 @@ var AlbumList = function (el) {
         return 1;
     }
 
-    return self.data[a].name.localeCompare(self.data[b].name);
+    return self.compare_titles(self.data[a].name, self.data[b].name);
   };
 
   self.sort_by_rating_user = function (a, b) {
@@ -331,7 +342,7 @@ var AlbumList = function (el) {
     if (self.data[a].rating_user < self.data[b].rating_user) return 1;
     if (self.data[a].rating_user > self.data[b].rating_user) return -1;
 
-    return self.data[a].name.localeCompare(self.data[b].name);
+    return self.compare_titles(self.data[a].name, self.data[b].name);
   };
 
   prefs_update(null, null, true);
