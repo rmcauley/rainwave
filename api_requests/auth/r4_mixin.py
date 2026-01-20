@@ -26,7 +26,7 @@ class R4SetupSessionMixin:
                 user_id,
             ),
         )
-        self.set_cookie("r4_session_id", session_id, expires_days=365)
+        self.set_cookie("r4_session_id", session_id, expires_days=365, httponly=True)
 
         if destination == "app" or destination == "rw":
             user = User(user_id)
