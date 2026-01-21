@@ -1,0 +1,19 @@
+{
+  "name": "rainwave",
+  "version": "5.0.0",
+  "description": "rainwave.cc",
+  "scripts": {
+    "prepare": "husky",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmcauley/rainwave.git"
+  },
+  "author": "Robert McAuley",
+  "license": "GPL-2.0-only",
+  "homepage": "https://github.com/rmcauley/rainwave#readme",
+  "devDependencies": {
+    "husky": "9.1.7"
+  }
+}

@@ -1,12 +1,26 @@
 {
   "files.exclude": {
     "**/*.pyc": true,
-    "static/baked/**": true
+    "static/baked/**": true,
+    "**/__pycache__": true,
+    ".venv": true,
+    "uv.lock": true,
+    ".mypy_cache": true,
+    "node_modules": true
   },
   "editor.formatOnSave": true,
   "files.insertFinalNewline": true,
-  "python.analysis.typeCheckingMode": "basic",
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
+  "mypy.runUsingActiveInterpreter": true,
+  "editor.defaultFormatter": "ms-python.black-formatter",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.stubPath": "stubs",
+  "python.analysis.useLibraryCodeForTypes": false,
+  "python.linting.mypyEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.mypyArgs": ["--config-file", "pyproject.toml"]
 }
