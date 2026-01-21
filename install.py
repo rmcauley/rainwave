@@ -71,4 +71,4 @@ if __name__ == "__main__":
     print(f"Rainwave installed to {install_dir}")
 
     for service in services:
-        subprocess.check_call(["service", service, "restart"])
+        subprocess.check_call(["systemctl", "restart", f"{service}.service"])
