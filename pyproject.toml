@@ -1,37 +1,34 @@
 [project]
 name = "rainwave"
-version = "0.1.0"
-description = "Add your description here"
+version = "5.0.0"
+description = "rainwave.cc"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = "~=3.14.0"
 dependencies = [
-    "aiohttp>=3.12.15",
-    "bcrypt>=4.3.0",
-    "calmjs>=3.4.4",
-    "ipython~=8.24.0",
-    "libsass>=0.23.0",
+    "aiohttp==3.13.3",
+    "bcrypt==5.0.0",
+    "emcache==1.3.3",
+    "ipython==9.10.0",
     "mutagen==1.47.0",
-    "pillow~=10.3.0",
-    "psutil~=5.9.8",
-    "psycopg2-binary~=2.9.9",
-    "pygobject~=3.50.0",
+    "orjson==3.11.7",
+    "pillow==12.1.0",
+    "psycopg-binary==3.3.2",
     "pyinotify==0.9.6",
-    "pylibmc~=1.6.3",
-    "pylint~=3.1.0",
-    "pyscss>=1.4.0",
     "pytz>=2025.2",
-    "pyzmq~=26.0.2",
-    "requests~=2.32.4",
-    "rgain3>=1.1.1",
-    "sentry-sdk>=2.34.1",
-    "tornado~=6.5.0",
-    "ujson>=5.10.0",
-    "unidecode>=1.4.0",
+    "pyzmq==27.1.0",
+    "requests==2.32.5",
+    "tornado==6.5.4",
+    "types-requests==2.32.4.20260107",
+    "unidecode==1.4.0",
 ]
 
 [dependency-groups]
 dev = [
-    "black>=25.12.0",
-    "pytest>=8.3.0",
-    "testcontainers>=4.4.0",
+    "black==26.1.0",
+    "mypy==1.19.1",
+    "pytest==9.0.2",
+    "testcontainers==4.14.1",
 ]
+
+[tool.mypy]
+mypy_path = ["stubs"]
