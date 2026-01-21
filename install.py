@@ -29,7 +29,7 @@ copy_dirs = [
     "templates",
 ]
 
-copy_files = list(glob("rw_*.py")) + ["tagset.py", "Pipfile", "Pipfile.lock"]
+copy_files = list(glob("rw_*.py")) + [".python-version", "pyproject.toml", "tagset.py", "uv.lock"]
 
 services = [
     "rainwave-backend",
@@ -68,13 +68,7 @@ if __name__ == "__main__":
 
     subprocess.call(["chown", "-R", "%s:%s" % (user, group), install_dir])
 
-    pwd = os.getcwd()
-    os.chdir(install_dir)
-    subprocess.call(["sudo", "--user=rainwave", "python3", "-m", "pipenv", "sync"])
-    subprocess.call(["python3", "-m", "pipenv", "sync"])
-    os.chdir(pwd)
-
     print(f"Rainwave installed to {install_dir}")
 
     for service in services:
-        subprocess.check_call(["service", service, "restart"])
+        subprocess.check_call(["systemctl", "restart", f"{service}.service"])
