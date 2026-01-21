@@ -30,20 +30,20 @@ If using LiquidSoap, LiquidSoap 1.1 or above is required.
 
 ### Prerequisites on Debian/Ubuntu
 
-Rainwave is designed to run on Python 3.7 using `pipenv`. It also requires installation
+Rainwave is designed to run on Python 3.11 using `uv`. It also requires installation
 of various media libraries to run volume analysis on its files.
 
 ```
 git clone https://github.com/rmcauley/rainwave.git
 cd rainwave
-sudo apt-get install pipenv libpq-dev python3.7-dev libmemcached-dev
+sudo apt-get install libpq-dev libmemcached-dev
 sudo apt-get install gir1.2-gstreamer-1.0 \
      gstreamer1.0-plugins-base \
      gstreamer1.0-plugins-good \
      libcairo2-dev \
      libgirepository1.0-dev
 cp rainwave/etc/rainwave_reference.conf rainwave/etc/$USER.conf
-pipenv install
+uv sync
 ```
 
 ## Postgres Setup
@@ -98,13 +98,13 @@ Open a terminal/command line to your Rainwave repository directory.
 You need to initialize the database and then add your songs to the database:
 
 ```
-python db_init.py
+uv run db_init.py
 ```
 
 Now have Rainwave pick up the music you added to your `song_dirs`:
 
 ```
-python rw_scanner.py --full
+uv run rw_scanner.py --full
 ```
 
 This will run a full scan of your `song_dirs`. To monitor `song_dirs`
@@ -114,20 +114,20 @@ Once done, open another terminal/command line and start the music
 management backend that LiquidSoap talks to:
 
 ```
-python rw_backend.py
+uv run rw_backend.py
 ```
 
 Once that is started successfully, open another terminal/command line
 and start the public-facing website and API:
 
 ```
-python rw_api.py
+uv run rw_api.py
 ```
 
 Now use the same tool LiquidSoap uses to test that everything works:
 
 ```
-python rw_get_next.py
+uv run rw_get_next.py
 ```
 
 If successful, you should see a song file name as output.
@@ -148,16 +148,11 @@ and tune for production. e.g. Turn off development modes,
 turn down logging, increase number of processes to the
 number of CPUs you have.
 
-Init scripts are included for systemd but are not
-installed for you by default.
-
-`install.py` will attempt to automatically run
-`/etc/init.d/rainwave` with `start` and `stop` arguments if
-the script exists.
-
-`sudo python install.py` when ready, and Rainwave will be copied to
+`sudo uv run install.py` when ready, and Rainwave will be copied to
 `/opt/rainwave`, and will minify and bundle Javascript to be put
-into the "baked" static directory.
+into the "baked" static directory. `install.py` will also copy
+systemd service files to `/etc/systemd/system` and attempt to start
+the associated services.
 
 Rainwave depends on three daemons:
 
