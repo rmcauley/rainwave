@@ -1,6 +1,5 @@
 import type { index } from '../templates';
 
-const windowCallbacks = [];
 let indexT: ReturnType<typeof index>;
 
 let mobile = false;

@@ -41,7 +41,7 @@ class BaseProducer:
     name: str
 
     @classmethod
-    def load_producer_by_id(cls: Type[T], sched_id) -> T | None:
+    def load_producer_by_id(cls: Type[T], sched_id: int) -> T | None:
         global all_producers
         row = db.c.fetch_row(
             "SELECT * FROM r4_schedule WHERE sched_id = %s", (sched_id,)
@@ -73,17 +73,17 @@ class BaseProducer:
     @classmethod
     def create(
         cls,
-        sid,
-        start,
-        end,
-        name="",
-        public=True,
-        timed=True,
-        url=None,
-        use_crossfade=True,
-        use_tag_suffix=True,
-        dj_user_id=None,
-    ):
+        sid: int,
+        start: int,
+        end: int,
+        name: str = "",
+        public: bool = True,
+        timed: bool = True,
+        url: str | None = None,
+        use_crossfade: bool = True,
+        use_tag_suffix: bool = True,
+        dj_user_id: int | None = None,
+    ) -> "BaseProducer":
         evt = cls(sid)
         evt.id = db.c.get_next_id("r4_schedule", "sched_id")
         evt.start = start
@@ -117,7 +117,7 @@ class BaseProducer:
         )
         return evt
 
-    def __init__(self, sid):
+    def __init__(self, sid: int) -> None:
         self.sid = sid
         self.id = None
         self.start = 0
@@ -137,7 +137,7 @@ class BaseProducer:
         self.songs = []
         self.dj_user_id = None
 
-    def duplicate(self):
+    def duplicate(self) -> "BaseProducer":
         duped = self.__class__.create(
             self.sid,
             self.start,
@@ -156,7 +156,7 @@ class BaseProducer:
             duped.change_end(duped.start + (self.end - self.start))
         return duped
 
-    def change_start(self, new_start):
+    def change_start(self, new_start: int) -> None:
         if not self.used:
             self.start = new_start
             db.c.update(
@@ -166,7 +166,7 @@ class BaseProducer:
         else:
             raise Exception("Cannot change the start time of a used producer.")
 
-    def change_end(self, new_end):
+    def change_end(self, new_end: int) -> None:
         if not self.used:
             self.end = new_end
             db.c.update(
@@ -176,16 +176,18 @@ class BaseProducer:
         else:
             raise Exception("Cannot change the start time of a used producer.")
 
-    def has_next_event(self):
+    def has_next_event(self) -> Any:
         raise Exception("No event type specified.")
 
-    def load_next_event(self, target_length=None, min_elec_id=None):
+    def load_next_event(
+        self, target_length: int | None = None, min_elec_id: int | None = None
+    ) -> Any:
         raise Exception("No event type specified.")
 
-    def load_event_in_progress(self):
+    def load_event_in_progress(self) -> Any:
         raise Exception("No event type specified.")
 
-    def start_producer(self):
+    def start_producer(self) -> None:
         if not self.start_actual:
             self.start_actual = int(timestamp())
             if self.id:
@@ -194,7 +196,7 @@ class BaseProducer:
                     (self.start_actual, self.id),
                 )
 
-    def finish(self):
+    def finish(self) -> None:
         self.end_actual = int(timestamp())
         if self.id:
             db.c.update(
@@ -202,10 +204,10 @@ class BaseProducer:
                 (self.end_actual, self.id),
             )
 
-    def load(self):
+    def load(self) -> None:
         pass
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         obj = {
             "sid": self.sid,
             "id": self.id,
@@ -235,7 +237,7 @@ class BaseProducer:
 class BaseEvent:
     name: str | None
 
-    def __init__(self, sid=None):
+    def __init__(self, sid: int | None = None) -> None:
         self.id = 0
         self.type = self.__class__.__name__
         self.start = None
@@ -254,10 +256,10 @@ class BaseEvent:
         self.songs = []
         self.core_event_id = None
 
-    def _update_from_dict(self, dct):
+    def _update_from_dict(self, dct: dict[str, Any]) -> None:
         pass
 
-    def get_filename(self):
+    def get_filename(self) -> str | None:
         if hasattr(self, "songs"):
             return self.songs[0].filename
         return None
@@ -267,7 +269,7 @@ class BaseEvent:
             return self.songs[0]
         return None
 
-    def prepare_event(self):
+    def prepare_event(self) -> None:
         if self.in_progress and not self.used:
             return
         elif self.used:
@@ -275,11 +277,11 @@ class BaseEvent:
         song = self.get_song()
         self.replay_gain = song.replay_gain if song else None
 
-    def start_event(self):
+    def start_event(self) -> None:
         self.start_actual = int(timestamp())
         self.in_progress = True
 
-    def finish(self):
+    def finish(self) -> None:
         self.used = True
         self.in_progress = False
         self.end = int(timestamp())
@@ -290,7 +292,7 @@ class BaseEvent:
             song.start_cooldown(self.sid)
             song.update_rating()
 
-    def length(self):
+    def length(self) -> int:
         # These go in descending order of accuracy
         if not self.used and hasattr(self, "songs"):
             return self.songs[0].data["length"]
@@ -316,7 +318,9 @@ class BaseEvent:
             )
             return 0
 
-    def to_dict(self, user=None, check_rating_acl=False):
+    def to_dict(
+        self, user: Any | None = None, check_rating_acl: bool = False
+    ) -> dict[str, Any]:
         obj = {
             "id": self.id,
             "start": self.start,
@@ -343,5 +347,5 @@ class BaseEvent:
                 obj["songs"].append(song.to_dict(user))
         return obj
 
-    def delete(self):
+    def delete(self) -> None:
         pass

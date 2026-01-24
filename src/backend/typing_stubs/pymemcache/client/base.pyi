@@ -1,0 +1,16 @@
+from typing import Any, Iterable
+
+class Client:
+    def __init__(
+        self,
+        server: tuple[str, int] | str,
+        connect_timeout: float | None = ...,
+        timeout: float | None = ...,
+        serde: Any = ...,
+        **kwargs: Any,
+    ) -> None: ...
+    def get(self, key: str, default: Any | None = ...) -> Any | None: ...
+    def set(self, key: str, value: Any, expire: int = ..., noreply: bool = ...) -> bool: ...
+    def delete(self, key: str, noreply: bool = ...) -> bool: ...
+    def close(self) -> None: ...
+

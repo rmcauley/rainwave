@@ -4,6 +4,7 @@ import random
 import string
 import unicodedata
 from urllib import parse
+from typing import Any
 
 from libs import log
 from libs import cache
@@ -74,7 +75,7 @@ class User:
         self.data["listener_id"] = 0
         self.data["_group_id"] = None
 
-    def authorize(self, sid, api_key: str | None, bypass=False):
+    def authorize(self, sid: int, api_key: str | None, bypass: bool = False) -> None:
         self.api_key = api_key
 
         if not bypass and (api_key and not re.match(r"^[\w\d]+$", api_key)):
@@ -87,7 +88,7 @@ class User:
             print("auth anon user")
             self._auth_anon_user(api_key, bypass)
 
-    def get_all_api_keys(self):
+    def get_all_api_keys(self) -> list[str]:
         if self.id > 1:
             keys = db.c.fetch_list(
                 "SELECT api_key FROM r4_api_keys WHERE user_id = %s ", (self.id,)
@@ -96,7 +97,7 @@ class User:
             return keys
         return []
 
-    def _auth_registered_user(self, api_key: str | None, bypass=False):
+    def _auth_registered_user(self, api_key: str | None, bypass: bool = False) -> None:
         if not bypass:
             keys = cache.get_user(self, "api_keys")
             if keys and api_key in keys:
@@ -152,7 +153,7 @@ class User:
         self.data["uses_oauth"] = True if self.data["_discord_user_id"] else False
         self.data.pop("_discord_user_id")
 
-    def _auth_anon_user(self, api_key: str | None, bypass=False):
+    def _auth_anon_user(self, api_key: str | None, bypass: bool = False) -> None:
         if not bypass:
             print("not bypassing")
             cache_key = unicodedata.normalize(
@@ -179,7 +180,7 @@ class User:
         print("all should be good!")
         self.authorized = True
 
-    def get_tuned_in_sid(self):
+    def get_tuned_in_sid(self) -> int | None:
         if "sid" in self.data and self.data["sid"]:
             return self.data["sid"]
         lrecord = self.get_listener_record()
@@ -187,7 +188,7 @@ class User:
             return lrecord["sid"]
         return None
 
-    def get_listener_record(self, use_cache=True):
+    def get_listener_record(self, use_cache: bool = True) -> dict[str, Any] | None:
         listener = None
         if self.id > 1:
             # listener = cache.get_user(self.id, "listener_record")
@@ -213,7 +214,7 @@ class User:
         # cache.set_user(self.id, "listener_record", listener)
         return listener
 
-    def refresh(self, sid):
+    def refresh(self, sid: int) -> None:
         self.data["tuned_in"] = False
         listener = self.get_listener_record(use_cache=False)
         if listener:
@@ -240,31 +241,31 @@ class User:
         if self.data["lock"] and sid != self.data["lock_sid"]:
             self.data["lock_in_effect"] = True
 
-    def to_private_dict(self):
+    def to_private_dict(self) -> dict[str, Any]:
         """
         Returns a JSONable dict containing data that the user will want to see or make use of.
         NOT for other users to see.
         """
         return self.data
 
-    def is_tunedin(self):
+    def is_tunedin(self) -> bool:
         return self.data["tuned_in"]
 
-    def is_admin(self):
+    def is_admin(self) -> bool:
         return self.data["admin"] > 0
 
-    def is_dj(self):
+    def is_dj(self) -> bool:
         if "dj" in self.data and self.data["dj"]:
             return True
         return False
 
-    def has_perks(self):
+    def has_perks(self) -> bool:
         return self.data["perks"]
 
-    def is_anonymous(self):
+    def is_anonymous(self) -> bool:
         return self.id <= 1
 
-    def has_requests(self, sid=False) -> bool | int:
+    def has_requests(self, sid: int | bool = False) -> bool | int:
         if self.id <= 1:
             return False
         elif sid:
@@ -284,7 +285,7 @@ class User:
                 or 0
             )
 
-    def _check_too_many_requests(self):
+    def _check_too_many_requests(self) -> int:
         num_reqs = self.has_requests()
         max_reqs = 12
         if self.data["perks"]:
@@ -293,7 +294,7 @@ class User:
             raise APIException("too_many_requests")
         return max_reqs - num_reqs
 
-    def add_request(self, sid, song_id):
+    def add_request(self, sid: int, song_id: int) -> int:
         song = playlist.Song.load_from_id(song_id, sid)
         for requested in db.c.fetch_all(
             "SELECT r4_request_store.song_id, r4_songs.album_id FROM r4_request_store JOIN r4_songs USING (song_id) WHERE r4_request_store.user_id = %s",
@@ -313,7 +314,7 @@ class User:
             self.put_in_request_line(sid)
         return updated_rows
 
-    def add_unrated_requests(self, sid, limit=None):
+    def add_unrated_requests(self, sid: int, limit: int | None = None) -> int:
         max_limit = self._check_too_many_requests()
         if not limit:
             limit = max_limit
@@ -337,7 +338,7 @@ class User:
             self.put_in_request_line(sid)
         return added_requests
 
-    def add_favorited_requests(self, sid, limit=None):
+    def add_favorited_requests(self, sid: int, limit: int | None = None) -> int:
         max_limit = self._check_too_many_requests()
         if not limit:
             limit = max_limit
@@ -354,7 +355,7 @@ class User:
             self.put_in_request_line(sid)
         return added_requests
 
-    def remove_request(self, song_id):
+    def remove_request(self, song_id: int) -> int:
         song_requested = db.c.fetch_var(
             "SELECT reqstor_id FROM r4_request_store WHERE user_id = %s AND song_id = %s",
             (self.id, song_id),
@@ -366,12 +367,12 @@ class User:
             (self.id, song_id),
         )
 
-    def clear_all_requests(self):
+    def clear_all_requests(self) -> int:
         return db.c.update(
             "DELETE FROM r4_request_store WHERE user_id = %s", (self.id,)
         )
 
-    def clear_all_requests_on_cooldown(self):
+    def clear_all_requests_on_cooldown(self) -> int:
         return db.c.update(
             "DELETE FROM r4_request_store USING r4_song_sid WHERE r4_song_sid.song_id = r4_request_store.song_id AND r4_song_sid.sid = r4_request_store.sid AND user_id = %s AND song_cool_end > %s",
             (
@@ -380,7 +381,7 @@ class User:
             ),
         )
 
-    def pause_requests(self):
+    def pause_requests(self) -> bool:
         self.remove_from_request_line()
         if (
             db.c.update(
@@ -393,7 +394,7 @@ class User:
             return True
         return False
 
-    def unpause_requests(self, sid):
+    def unpause_requests(self, sid: int) -> bool:
         if (
             db.c.update(
                 "UPDATE phpbb_users SET radio_requests_paused = FALSE WHERE user_id = %s",
@@ -406,7 +407,7 @@ class User:
             return True
         return False
 
-    def put_in_request_line(self, sid):
+    def put_in_request_line(self, sid: int) -> bool:
         if self.id <= 1 or not sid:
             return False
         else:
@@ -438,13 +439,13 @@ class User:
                 > 0
             )
 
-    def remove_from_request_line(self):
+    def remove_from_request_line(self) -> bool:
         return (
             db.c.update("DELETE FROM r4_request_line WHERE user_id = %s", (self.id,))
             > 0
         )
 
-    def is_in_request_line(self):
+    def is_in_request_line(self) -> bool:
         return (
             db.c.fetch_var(
                 "SELECT COUNT(*) FROM r4_request_line WHERE user_id = %s", (self.id,)
@@ -452,24 +453,24 @@ class User:
             or 0
         ) > 0
 
-    def get_top_request_song_id(self, sid):
+    def get_top_request_song_id(self, sid: int) -> int | None:
         return db.c.fetch_var(
             "SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE ORDER BY reqstor_order, reqstor_id LIMIT 1",
             (self.id, sid),
         )
 
-    def get_top_request_song_id_any(self, sid):
+    def get_top_request_song_id_any(self, sid: int) -> int | None:
         return db.c.fetch_var(
             "SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE ORDER BY reqstor_order, reqstor_id LIMIT 1",
             (self.id, sid),
         )
 
-    def get_request_line_sid(self):
+    def get_request_line_sid(self) -> int | None:
         return db.c.fetch_var(
             "SELECT sid FROM r4_request_line WHERE user_id = %s", (self.id,)
         )
 
-    def get_request_line_position(self, sid):
+    def get_request_line_position(self, sid: int) -> int | None:
         if self.id <= 1:
             return None
         request_user_positions = cache.get_station(sid, "request_user_positions")
@@ -477,7 +478,7 @@ class User:
             return request_user_positions[self.id]
         return None
 
-    def get_request_expiry(self):
+    def get_request_expiry(self) -> int | None:
         if self.id <= 1:
             return None
         request_expire_times = cache.get("request_expire_times")
@@ -485,7 +486,7 @@ class User:
             return request_expire_times[self.id]
         return None
 
-    def get_requests(self, sid):
+    def get_requests(self, sid: int) -> list[dict[str, Any]]:
         if self.id <= 1:
             return []
         requests = db.c.fetch_all(
@@ -537,7 +538,7 @@ class User:
             ]
         return requests
 
-    def set_request_tunein_expiry(self, t=None):
+    def set_request_tunein_expiry(self, t: int | None = None) -> int | None:
         if not self.is_in_request_line():
             return None
         if not t:
@@ -547,7 +548,7 @@ class User:
             (t, self.id),
         )
 
-    def lock_to_sid(self, sid, lock_count):
+    def lock_to_sid(self, sid: int, lock_count: int) -> int:
         self.data["lock"] = True
         self.data["lock_sid"] = sid
         self.data["lock_counter"] = lock_count
@@ -556,10 +557,10 @@ class User:
             (sid, lock_count, self.data["listener_id"]),
         )
 
-    def update(self, data):
+    def update(self, data: dict[str, Any]) -> None:
         self.data.update(data)
 
-    def generate_listen_key(self):
+    def generate_listen_key(self) -> None:
         listen_key = "".join(
             random.choice(
                 string.ascii_uppercase + string.digits + string.ascii_lowercase
@@ -572,7 +573,7 @@ class User:
         )
         self.update({"radio_listen_key": listen_key})
 
-    def ensure_api_key(self):
+    def ensure_api_key(self) -> str:
         api_key = None
         if self.id == 1:
             if self.data.get("api_key") and self.data["listen_key"]:
@@ -597,7 +598,9 @@ class User:
 
         return api_key
 
-    def generate_api_key(self, expiry=None, reuse=None):
+    def generate_api_key(
+        self, expiry: int | None = None, reuse: str | None = None
+    ) -> str:
         api_key = reuse or "".join(
             random.choice(
                 string.ascii_uppercase + string.digits + string.ascii_lowercase
@@ -625,7 +628,7 @@ class User:
             self.get_all_api_keys()
         return api_key
 
-    def save_preferences(self, ip_addr, prefs_json_string):
+    def save_preferences(self, ip_addr: str, prefs_json_string: str | None) -> None:
         if not config.get("store_prefs") or not prefs_json_string:
             return
 

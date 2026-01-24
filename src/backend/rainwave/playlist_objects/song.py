@@ -81,7 +81,9 @@ class Song:
     fake = False
 
     @classmethod
-    def load_from_id(cls, song_id, sid=None, all_categories=False):
+    def load_from_id(
+        cls, song_id: int, sid: int | None = None, all_categories: bool = False
+    ) -> "Song":
         if sid is not None:
             d = db.c.fetch_row(
                 "SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s",
@@ -125,7 +127,7 @@ class Song:
         return s
 
     @classmethod
-    def load_from_file(cls, filename, sids):
+    def load_from_file(cls, filename: str, sids: list[int]) -> "Song":
         """
         Produces an instance of the Song class with all album, group, and artist IDs loaded from only a filename.
         All metadata is saved to the database and updated where necessary.
@@ -195,7 +197,7 @@ class Song:
         return s
 
     @classmethod
-    def load_from_deleted_file(cls, filename):
+    def load_from_deleted_file(cls, filename: str) -> "Song | None":
         matched_entry = db.c.fetch_row(
             "SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,)
         )
@@ -206,7 +208,7 @@ class Song:
         return s
 
     @classmethod
-    def create_fake(cls, sid):
+    def create_fake(cls, sid: int) -> "Song":
         s = cls()
         s.filename = "fake.mp3"
         s.data["title"] = "Test Song %s" % db.c.get_next_id("r4_songs", "song_id")
@@ -217,7 +219,7 @@ class Song:
         s.save([sid])
         return s
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         A blank Song object.  Please use one of the load functions to get a filled instance.
         """
@@ -237,7 +239,7 @@ class Song:
         self.replay_gain = None
         self.fake = False
 
-    def load_tag_from_file(self, filename):
+    def load_tag_from_file(self, filename: str) -> None:
         """
         Reads ID3 tags and sets object-level variables.
         """
@@ -285,10 +287,10 @@ class Song:
 
             self.data["length"] = int(f.info.length)
 
-    def get_replay_gain(self):
+    def get_replay_gain(self) -> str | None:
         return replaygain.get_gain_for_song(self.filename)
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """
         Lets callee know if this MP3 is valid or not.
         """
@@ -303,7 +305,7 @@ class Song:
             self.verified = False
             return False
 
-    def update_artist_parseable(self):
+    def update_artist_parseable(self) -> None:
         if not self.artists:
             return
         artist_parseable = []
@@ -315,7 +317,7 @@ class Song:
             (artist_parseable, self.id),
         )
 
-    def save(self, sids_override: list[int] | None = None):
+    def save(self, sids_override: list[int] | None = None) -> None:
         """
         Save song to the database.  Does NOT associate metadata.
         """
@@ -441,7 +443,7 @@ class Song:
                     (self.id, sid),
                 )
 
-    def disable(self):
+    def disable(self) -> None:
         if not self.id:
             log.critical("song_disable", "Tried to disable a song without a song ID.")
             return
@@ -459,7 +461,7 @@ class Song:
             for metadata in self.groups:
                 metadata.reconcile_sids()
 
-    def _assign_from_dict(self, d):
+    def _assign_from_dict(self, d: dict[str, Any]) -> None:
         for key, val in d.items():
             if key.find("song_") == 0:
                 key = key[5:]
@@ -469,7 +471,7 @@ class Song:
             else:
                 self.data[key] = val
 
-    def start_cooldown(self, sid):
+    def start_cooldown(self, sid: int) -> None:
         """
         Calculates cooldown based on jfinalfunk's crazy algorithms.
         Cooldown may be overriden by song_cool_* rules found in database.
@@ -534,7 +536,7 @@ class Song:
             (self.data["request_only_end"], self.id, sid),
         )
 
-    def start_election_block(self, sid, num_elections):
+    def start_election_block(self, sid: int, num_elections: int) -> None:
         if sid == 0:
             return
 
@@ -544,7 +546,7 @@ class Song:
             self.album.start_election_block(sid, num_elections)
         self.set_election_block(sid, "in_election", num_elections)
 
-    def set_election_block(self, sid, blocked_by, block_length):
+    def set_election_block(self, sid: int, blocked_by: str, block_length: int) -> None:
         db.c.update(
             "UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num <= %s",
             (blocked_by, block_length, self.id, sid, block_length),
@@ -553,7 +555,7 @@ class Song:
         self.data["elec_blocked_by"] = blocked_by
         self.data["elec_blocked"] = True
 
-    def update_rating(self, skip_album_update=False):
+    def update_rating(self, skip_album_update: bool = False) -> None:
         ratings = db.c.fetch_all(
             "SELECT song_rating_user AS rating, COUNT(user_id) AS count FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE song_id = %s AND radio_inactive = FALSE AND song_rating_user IS NOT NULL GROUP BY song_rating_user",
             (self.id,),
@@ -578,12 +580,12 @@ class Song:
         if not skip_album_update and self.album:
             self.album.update_rating()
 
-    def add_artist(self, name):
+    def add_artist(self, name: str) -> None:
         to_ret = self._add_metadata(self.artists, name, Artist)
         self.update_artist_parseable()
         return to_ret
 
-    def add_album(self, name, sids=None):
+    def add_album(self, name: str, sids: list[int] | None = None) -> None:
         if not sids and "sids" not in self.data:
             raise TypeError(
                 "add_album() requires a station ID list if song was not loaded/saved into database"
@@ -597,10 +599,10 @@ class Song:
         self.album = new_md
         return True
 
-    def add_group(self, name):
+    def add_group(self, name: str) -> None:
         return self._add_metadata(self.groups, name, SongGroup)
 
-    def _add_metadata(self, lst, name, cls):
+    def _add_metadata(self, lst: list[Any], name: str, cls: Any) -> None:
         for metadata in lst:
             if metadata.data["name"] == name:
                 return True
@@ -609,12 +611,12 @@ class Song:
         lst.append(new_md)
         return True
 
-    def remove_artist_id(self, metadata_id):
+    def remove_artist_id(self, metadata_id: int) -> None:
         toret = self._remove_metadata_id(self.artists, metadata_id)
         self.update_artist_parseable()
         return toret
 
-    def remove_album_id(self, metadata_id):
+    def remove_album_id(self, metadata_id: int) -> None:
         if self.album and self.album.id == metadata_id:
             self.album.disassociate_song_id(self.id)
             return True
@@ -622,10 +624,10 @@ class Song:
             "Found no tag by ID %s that wasn't assigned by ID3." % metadata_id
         )
 
-    def remove_group_id(self, metadata_id):
+    def remove_group_id(self, metadata_id: int) -> None:
         return self._remove_metadata_id(self.groups, metadata_id)
 
-    def _remove_metadata_id(self, lst, metadata_id):
+    def _remove_metadata_id(self, lst: list[Any], metadata_id: int) -> None:
         for metadata in lst:
             if metadata.id == metadata_id and not metadata.is_tag:
                 metadata.disassociate_song_id(self.id)
@@ -634,12 +636,12 @@ class Song:
             "Found no tag by ID %s that wasn't assigned by ID3." % metadata_id
         )
 
-    def remove_artist(self, name):
+    def remove_artist(self, name: str) -> None:
         toret = self._remove_metadata(self.artists, name)
         self.update_artist_parseable()
         return toret
 
-    def remove_album(self, name):
+    def remove_album(self, name: str) -> None:
         if self.album and self.album.data["name"] == name and not self.album.is_tag:
             self.album.disassociate_song_id(self.id)
             return True
@@ -647,15 +649,15 @@ class Song:
             "Found no tag by name %s that wasn't assigned by ID3." % name
         )
 
-    def remove_group(self, name):
+    def remove_group(self, name: str) -> None:
         return self._remove_metadata(self.groups, name)
 
-    def remove_nontag_metadata(self):
+    def remove_nontag_metadata(self) -> None:
         for metadata in self.artists + self.groups:
             if not metadata.is_tag:
                 metadata.disassociate_song_id(self.id)
 
-    def _remove_metadata(self, lst, name):
+    def _remove_metadata(self, lst: list[Any], name: str) -> None:
         for metadata in lst:
             if metadata.data["name"] == name and not metadata.is_tag:
                 metadata.disassociate_song_id(self.id)
@@ -664,7 +666,7 @@ class Song:
             "Found no tag by name %s that wasn't assigned by ID3." % name
         )
 
-    def load_extra_detail(self, sid):
+    def load_extra_detail(self, sid: int) -> None:
         self.data["rating_rank"] = db.c.fetch_var(
             "SELECT COUNT(song_id) + 1 FROM r4_songs WHERE song_verified = TRUE AND song_rating > %s",
             (self.data["rating"],),
@@ -705,7 +707,7 @@ class Song:
                     "rating_user_count"
                 ]
 
-    def to_dict(self, user=None):
+    def to_dict(self, user: Any | None = None) -> dict[str, Any]:
         d = {}
         d["title"] = self.data["title"]
         d["id"] = self.id
@@ -763,7 +765,7 @@ class Song:
 
         return d
 
-    def get_all_ratings(self):
+    def get_all_ratings(self) -> dict[int, Any]:
         table = db.c.fetch_all(
             "SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s",
             (self.id,),
@@ -776,7 +778,7 @@ class Song:
             }
         return all_ratings
 
-    def update_last_played(self, sid):
+    def update_last_played(self, sid: int) -> None:
         if self.album:
             self.album.update_last_played(sid)
         return db.c.update(
@@ -784,13 +786,13 @@ class Song:
             (timestamp(), self.id, sid),
         )
 
-    def add_to_vote_count(self, votes, sid):
+    def add_to_vote_count(self, votes: int, sid: int) -> None:
         return db.c.update(
             "UPDATE r4_songs SET song_vote_count = song_vote_count + %s WHERE song_id = %s",
             (votes, self.id),
         )
 
-    def check_rating_acl(self, user):
+    def check_rating_acl(self, user: Any) -> None:
         if user.id == 1:
             return
 
@@ -807,7 +809,7 @@ class Song:
         else:
             self.data["rating_allowed"] = False
 
-    def update_request_count(self, sid, update_albums=True):
+    def update_request_count(self, sid: int, update_albums: bool = True) -> None:
         count = db.c.fetch_var(
             "SELECT COUNT(*) FROM r4_request_history WHERE song_id = %s", (self.id,)
         )
@@ -822,7 +824,7 @@ class Song:
         if update_albums and self.album:
             self.album.update_request_count(sid)
 
-    def update_fave_count(self, sid, update_albums=True):
+    def update_fave_count(self, sid: int, update_albums: bool = True) -> None:
         count = db.c.fetch_var(
             "SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s",
             (self.id,),
@@ -838,7 +840,7 @@ class Song:
         if update_albums and self.album:
             self.album.update_fave_count()
 
-    def update_vote_count(self, sid, update_albums=True):
+    def update_vote_count(self, sid: int, update_albums: bool = True) -> None:
         count = db.c.fetch_var(
             "SELECT COUNT(*) FROM r4_vote_history AND song_id = %s", (self.id,)
         )
@@ -853,5 +855,5 @@ class Song:
         if update_albums and self.album:
             self.album.update_vote_count(sid)
 
-    def length(self):
+    def length(self) -> int:
         return self.data["length"]

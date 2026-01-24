@@ -1,5 +1,6 @@
 import orjson
 from config import rainwave_config
+from config.rainwave_config import *
 from src.backend.config.config_types import PublicRelayConfig
 
 station_ids: set[int] = set(k for k in rainwave_config.stations.keys())

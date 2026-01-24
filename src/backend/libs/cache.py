@@ -1,22 +1,9 @@
 from src.backend.config import config
 from libs import db
-import pylibmc as libmc
+from pymemcache.client.base import Client
+from pymemcache.serde import pickle_serde
 from web_api.exceptions import APIException
 from typing import Any, Iterable
-
-_memcache: libmc.Client | "TestModeCache" | None = None
-_memcache_ratings: libmc.Client | "TestModeCache" | None = None
-_memcache_behaviors = {
-    "tcp_nodelay": True,
-    "ketama": False,
-    "remove_failed": 1,
-    "retry_timeout": 1,
-    "dead_timeout": 60,
-    "connect_timeout": 1000000,
-    "receive_timeout": 5000000,
-    "send_timeout": 5000000,
-}
-local: dict[str, Any] = {}
 
 
 class TestModeCache:
@@ -33,31 +20,45 @@ class TestModeCache:
         self.vars[key] = value
 
 
+_memcache: Client | TestModeCache | None = None
+_memcache_ratings: Client | TestModeCache | None = None
+
+local: dict[str, Any] = {}
+
+
 def connect() -> None:
     global _memcache
     global _memcache_ratings
 
-    _memcache_behaviors["ketama"] = config.has("memcached_ketama") and config.get(
-        "memcache_ketama"
-    )
-
     if _memcache:
         return
-    if config.get("memcache_fake"):
+    if config.memcache_fake:
         _memcache = TestModeCache()
         _memcache_ratings = TestModeCache()
         reset_station_caches()
     else:
-        _memcache = libmc.Client(config.get("memcache_servers"), binary=True)
-        _memcache.set_behaviors(_memcache_behaviors)
+        _memcache = _build_memcache_client([config.memcache_server])
         # memcache doesn't test its connection on start, so we force a get
         _memcache.get("hello")
 
-        _memcache_ratings = libmc.Client(
-            config.get("memcache_ratings_servers"), binary=True
-        )
-        _memcache_ratings.set_behaviors(_memcache_behaviors)
+        _memcache_ratings = _build_memcache_client([config.memcache_ratings_server])
         _memcache_ratings.get("hello")
+
+
+def _build_memcache_client(servers: list[str]) -> Client:
+    server = servers[0]
+    if ":" in server:
+        host, port_text = server.rsplit(":", 1)
+        address = (host, int(port_text))
+    else:
+        address = (server, 11211)
+
+    return Client(
+        address,
+        connect_timeout=config.memcache_connect_timeout,
+        timeout=config.memcache_timeout,
+        serde=pickle_serde,
+    )
 
 
 def set_global(key: str, value: Any, save_local: bool = False) -> None:
