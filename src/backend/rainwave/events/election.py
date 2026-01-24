@@ -1,6 +1,7 @@
 import random
 import math
 from time import time as timestamp
+from typing import Any
 
 from libs import db
 from src.backend.config import config
@@ -47,13 +48,13 @@ def force_request(sid: int) -> None:
 class ElectionProducer(event.BaseProducer):
     always_return_elec = False
 
-    def __init__(self, sid):
+    def __init__(self, sid: int) -> None:
         super(ElectionProducer, self).__init__(sid)
         self.plan_ahead_limit = config.get_station(sid, "num_planned_elections")
         self.elec_type = "Election"
         self.elec_class = Election
 
-    def has_next_event(self):
+    def has_next_event(self) -> Any:
         if not self.id:
             return True
         else:
@@ -62,7 +63,12 @@ class ElectionProducer(event.BaseProducer):
                 (self.elec_type, self.sid, self.id),
             )
 
-    def load_next_event(self, target_length=None, min_elec_id=0, skip_requests=False):
+    def load_next_event(
+        self,
+        target_length: int | None = None,
+        min_elec_id: int = 0,
+        skip_requests: bool = False,
+    ) -> Any:
         if self.id:
             elec_id = db.c.fetch_var(
                 "SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s AND sched_id = %s ORDER BY elec_id LIMIT 1",
@@ -95,7 +101,7 @@ class ElectionProducer(event.BaseProducer):
         else:
             return self._create_election(target_length, skip_requests)
 
-    def load_event_in_progress(self):
+    def load_event_in_progress(self) -> Any:
         if self.id:
             elec_id = db.c.fetch_var(
                 "SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s AND sched_id = %s ORDER BY elec_id DESC LIMIT 1",
@@ -127,7 +133,7 @@ class ElectionProducer(event.BaseProducer):
         else:
             return self.load_next_event()
 
-    def _create_election(self, target_length, skip_requests):
+    def _create_election(self, target_length: int | None, skip_requests: bool) -> Any:
         log.debug(
             "create_elec",
             "Creating election type %s for sid %s, target length %s."
@@ -158,7 +164,7 @@ class Election(event.BaseEvent):
     dj_user_id = None
 
     @classmethod
-    def load_by_id(cls, elec_id):
+    def load_by_id(cls, elec_id: int) -> "Election":
         elec = cls()
         row = db.c.fetch_row(
             "SELECT * FROM r4_elections WHERE elec_id = %s", (elec_id,)
@@ -202,7 +208,7 @@ class Election(event.BaseEvent):
         return elec
 
     @classmethod
-    def create(cls, sid, sched_id=None):
+    def create(cls, sid: int, sched_id: int | None = None) -> "Election":
         elec_id = db.c.get_next_id("r4_schedule", "sched_id")
         elec = cls(sid)
         elec.is_election = True
@@ -224,7 +230,7 @@ class Election(event.BaseEvent):
         )
         return elec
 
-    def __init__(self, sid=None):
+    def __init__(self, sid: int | None = None) -> None:
         super(Election, self).__init__()
         self._num_requests = 1
         if sid:
@@ -233,7 +239,9 @@ class Election(event.BaseEvent):
             self._num_songs = 3
         self.is_election = True
 
-    def fill(self, target_song_length=None, skip_requests=False):
+    def fill(
+        self, target_song_length: int | None = None, skip_requests: bool = False
+    ) -> "Election":
         # ONLY RUN _ADD_REQUESTS ONCE PER FILL
         if not skip_requests:
             self._add_requests()
@@ -274,10 +282,10 @@ class Election(event.BaseEvent):
                 u.put_in_request_line(u.get_tuned_in_sid())
         request.update_line(self.sid)
 
-    def _fill_get_song(self, target_song_length):
+    def _fill_get_song(self, target_song_length: int | None) -> Any:
         return playlist.get_random_song_timed(self.sid, target_song_length)
 
-    def add_song(self, song):
+    def add_song(self, song: Any) -> None:
         if not song:
             return False
         entry_id = db.c.get_next_id("r4_election_entries", "entry_id")
@@ -306,7 +314,7 @@ class Election(event.BaseEvent):
             request.update_line(self.sid)
         return True
 
-    def prepare_event(self):
+    def prepare_event(self) -> None:
         results = db.c.fetch_all(
             "SELECT song_id, entry_votes FROM r4_election_entries WHERE elec_id = %s",
             (self.id,),
@@ -323,7 +331,7 @@ class Election(event.BaseEvent):
         self.songs.reverse()
         self.replay_gain = self.songs[0].replay_gain
 
-    def start_event(self):
+    def start_event(self) -> None:
         # at this point, self.songs[0] is the winner
         if not self.used and not self.in_progress:
             total_votes = 0
@@ -398,17 +406,17 @@ class Election(event.BaseEvent):
             (self.start_actual, self.id),
         )
 
-    def get_filename(self):
+    def get_filename(self) -> str | None:
         if len(self.songs) == 0:
             return None
         return self.songs[0].filename
 
-    def get_song(self):
+    def get_song(self) -> Any:
         if len(self.songs) == 0:
             return None
         return self.songs[0]
 
-    def _add_requests(self):
+    def _add_requests(self) -> None:
         # ONLY RUN IS_REQUEST_NEEDED ONCE
         if self.is_request_needed() and len(self.songs) < self._num_songs:
             log.debug(
@@ -417,7 +425,7 @@ class Election(event.BaseEvent):
             for _i in range(0, self._num_requests):
                 self.add_song(self.get_request())
 
-    def is_request_needed(self):
+    def is_request_needed(self) -> bool:
         global _request_interval
         global _request_sequence
         if not self.sid in _request_interval:
@@ -461,7 +469,7 @@ class Election(event.BaseEvent):
         cache.set_station(self.sid, "request_sequence", _request_sequence[self.sid])
         return return_value
 
-    def reset_request_sequence(self):
+    def reset_request_sequence(self) -> None:
         if _request_interval[self.sid] <= 0 and _request_sequence[self.sid] <= 0:
             line_length = cache.get_station(self.sid, "request_valid_positions")
             if not line_length:
@@ -491,10 +499,10 @@ class Election(event.BaseEvent):
             )
             log.debug("requests", "Sequence length: %s" % _request_sequence[self.sid])
 
-    def _get_request_song(self):
+    def _get_request_song(self) -> Any:
         return request.get_next(self.sid)
 
-    def get_request(self):
+    def get_request(self) -> Any:
         song = self._get_request_song()
         if not song:
             return None
@@ -503,7 +511,7 @@ class Election(event.BaseEvent):
         song.data["entry_votes"] = 1
         return song
 
-    def length(self):
+    def length(self) -> int:
         if self.used or self.in_progress:
             if len(self.songs) == 0:
                 return 0
@@ -517,7 +525,7 @@ class Election(event.BaseEvent):
                 return 0
             return math.floor(totalsec / len(self.songs))
 
-    def finish(self):
+    def finish(self) -> None:
         self.in_progress = False
         self.used = True
 
@@ -540,7 +548,7 @@ class Election(event.BaseEvent):
             self.songs[0].update_rating()
             self.songs[0].start_cooldown(self.sid)
 
-    def set_priority(self, priority):
+    def set_priority(self, priority: bool) -> None:
         if priority:
             db.c.update(
                 "UPDATE r4_elections SET elec_priority = TRUE WHERE elec_id = %s",
@@ -553,7 +561,9 @@ class Election(event.BaseEvent):
             )
         self.has_priority = priority
 
-    def to_dict(self, user=None, check_rating_acl=False):
+    def to_dict(
+        self, user: Any | None = None, check_rating_acl: bool = False
+    ) -> dict[str, Any]:
         obj = super(Election, self).to_dict(user)
         obj["used"] = self.used
         obj["length"] = self.length()
@@ -564,19 +574,19 @@ class Election(event.BaseEvent):
             obj["songs"].append(song.to_dict(user))
         return obj
 
-    def has_entry_id(self, entry_id):
+    def has_entry_id(self, entry_id: int) -> bool:
         for song in self.songs:
             if song.data["entry_id"] == entry_id:
                 return True
         return False
 
-    def get_entry(self, entry_id):
+    def get_entry(self, entry_id: int) -> Any:
         for song in self.songs:
             if song.data["entry_id"] == entry_id:
                 return song
         return None
 
-    def has_request_by_user(self, user_id):
+    def has_request_by_user(self, user_id: int) -> bool:
         for song in self.songs:
             if (
                 song.data["entry_type"] == ElecSongTypes.request
@@ -585,17 +595,17 @@ class Election(event.BaseEvent):
                 return song
         return False
 
-    def add_vote_to_entry(self, entry_id, addition=1):
+    def add_vote_to_entry(self, entry_id: int, addition: int = 1) -> None:
         # I hope you've verified this entry belongs to this event, cause I don't do that here.. :)
         return db.c.update(
             "UPDATE r4_election_entries SET entry_votes = entry_votes + %s WHERE entry_id = %s",
             (addition, entry_id),
         )
 
-    def delete(self):
+    def delete(self) -> None:
         return db.c.update("DELETE FROM r4_elections WHERE elec_id = %s", (self.id,))
 
-    def update_vote_counts(self):
+    def update_vote_counts(self) -> None:
         for song in self.songs:
             song.data["entry_votes"] = db.c.fetch_var(
                 "SELECT entry_votes FROM r4_election_entries WHERE entry_id = %s",

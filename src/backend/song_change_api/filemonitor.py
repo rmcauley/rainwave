@@ -428,7 +428,7 @@ class DeletedDirectoryException(Exception):
 
 
 class FileEventHandler(ProcessEvent):
-    def process_IN_ATTRIB(self, event):
+    def process_IN_ATTRIB(self, event: Any) -> None:
         # ATTRIB events are:
         # - Some file renames (see: WinSCP)
         # - Directories when they've been touched
@@ -441,11 +441,11 @@ class FileEventHandler(ProcessEvent):
 
         self._process(event)
 
-    def process_IN_CREATE(self, event):
+    def process_IN_CREATE(self, event: Any) -> None:
         if event.dir:
             self._process(event)
 
-    def process_IN_CLOSE_WRITE(self, event):
+    def process_IN_CLOSE_WRITE(self, event: Any) -> None:
         if event.dir:
             log.debug(
                 "scan", "Ignoring close write event for directory %s" % event.pathname
@@ -453,7 +453,7 @@ class FileEventHandler(ProcessEvent):
             return
         self._process(event)
 
-    def process_IN_DELETE(self, event):
+    def process_IN_DELETE(self, event: Any) -> None:
         # Ignore WinSCP events.
         if event.pathname.endswith(".filepart"):
             return
@@ -468,13 +468,13 @@ class FileEventHandler(ProcessEvent):
 
         self._process(event)
 
-    def process_IN_MOVED_TO(self, event):
+    def process_IN_MOVED_TO(self, event: Any) -> None:
         self._process(event)
 
         if event.dir:
             raise NewDirectoryException
 
-    def process_IN_MOVED_FROM(self, event):
+    def process_IN_MOVED_FROM(self, event: Any) -> None:
         if not event.dir and not _is_mp3(event.pathname):
             log.debug(
                 "scan", "Ignoring moved-from event for non-MP3 %s" % event.pathname
@@ -483,10 +483,10 @@ class FileEventHandler(ProcessEvent):
 
         self._process(event)
 
-    def process_IN_MOVED_SELF(self, event):
+    def process_IN_MOVED_SELF(self, event: Any) -> None:
         raise DeletedDirectoryException
 
-    def _process(self, event):
+    def _process(self, event: Any) -> None:
         # Ignore WinSCP events.
         if event.pathname.endswith(".filepart"):
             return

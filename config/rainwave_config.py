@@ -63,13 +63,13 @@ db_password = "password"
 zeromq_pub = "tcp://127.0.0.1:19998"
 zeromq_sub = "tcp://127.0.0.1:19999"
 
-memcache_servers = ["127.0.0.1"]
-memcache_ketama = False
-
+memcache_fake = False
+memcache_server = "127.0.0.1"
 # It's recommended to use a separate cache for ratings in production.
 # The ratings cache is extremely volatile and can churn the main cache.
-memcache_ratings_servers = ["127.0.0.1"]
-memcache_ratings_ketama = False
+memcache_ratings_server = "127.0.0.1"
+memcache_connect_timeout = 1.0
+memcache_timeout = 5.0
 
 # How long do you want to keep old data around? (in seconds)
 # How long to keep 'events' for e.g. DJ hosting blocks, power hours/playlists

@@ -1,4 +1,5 @@
 from time import time as timestamp
+from typing import Any
 
 from libs import db
 from libs import log
@@ -23,7 +24,9 @@ class SongGroup(AssociatedMetadata):
     delete_self_query = "DELETE FROM r4_groups WHERE group_id = %s"
 
     @classmethod
-    def load_list_from_song_id(cls, song_id, sid=None, all_categories=False):
+    def load_list_from_song_id(
+        cls, song_id: int, sid: int | None = None, all_categories: bool = False
+    ) -> list["SongGroup"]:
         if not sid:
             return super(SongGroup, cls).load_list_from_song_id(song_id)
 
@@ -50,11 +53,11 @@ class SongGroup(AssociatedMetadata):
             instances.append(instance)
         return instances
 
-    def associate_song_id(self, song_id, is_tag=None):
+    def associate_song_id(self, song_id: int, is_tag: bool | None = None) -> None:
         super(SongGroup, self).associate_song_id(song_id, is_tag)
         self.reconcile_sids()
 
-    def reconcile_sids(self):
+    def reconcile_sids(self) -> None:
         new_sids_all = db.c.fetch_all(
             "SELECT sid, COUNT(DISTINCT album_id) "
             "FROM r4_song_group "
@@ -87,20 +90,20 @@ class SongGroup(AssociatedMetadata):
                     (self.id, sid),
                 )
 
-    def _insert_into_db(self):
+    def _insert_into_db(self) -> bool:
         self.id = db.c.get_next_id("r4_groups", "group_id")
         return db.c.update(
             "INSERT INTO r4_groups (group_id, group_name, group_name_searchable) VALUES (%s, %s, %s)",
             (self.id, self.data["name"], make_searchable_string(self.data["name"])),
         )
 
-    def _update_db(self):
+    def _update_db(self) -> bool:
         return db.c.update(
             "UPDATE r4_groups SET group_name = %s, group_name_searchable = %s WHERE group_id = %s",
             (self.data["name"], make_searchable_string(self.data["name"]), self.id),
         )
 
-    def _start_cooldown_db(self, sid, cool_time):
+    def _start_cooldown_db(self, sid: int, cool_time: int) -> None:
         if config.has_station(
             sid, "cooldown_enable_for_categories"
         ) and not config.get_station(sid, "cooldown_enable_for_categories"):
@@ -130,7 +133,7 @@ class SongGroup(AssociatedMetadata):
             (request_only_end, self.id, sid, cool_end),
         )
 
-    def _start_election_block_db(self, sid, num_elections):
+    def _start_election_block_db(self, sid: int, num_elections: int) -> None:
         # refer to song.set_election_block for base SQL
         db.c.update(
             "UPDATE r4_song_sid "
@@ -141,19 +144,19 @@ class SongGroup(AssociatedMetadata):
             ("group", num_elections, self.id, sid, num_elections),
         )
 
-    def set_elec_block(self, num_elections):
+    def set_elec_block(self, num_elections: int) -> None:
         db.c.update(
             "UPDATE r4_groups SET group_elec_block = %s WHERE group_id = %s",
             (num_elections, self.id),
         )
 
-    def set_cooldown(self, cooldown):
+    def set_cooldown(self, cooldown: int) -> None:
         db.c.update(
             "UPDATE r4_groups SET group_cool_time = %s WHERE group_id = %s",
             (cooldown, self.id),
         )
 
-    def load_songs_from_sid(self, sid, user_id):
+    def load_songs_from_sid(self, sid: int, user_id: int) -> None:
         all_songs = db.c.fetch_all(
             "SELECT r4_song_group.song_id AS id, song_title AS title, "
             "CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, "

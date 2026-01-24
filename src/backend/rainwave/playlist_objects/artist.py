@@ -1,5 +1,6 @@
 from libs import db
 from src.backend.config import config
+from typing import Any
 
 from rainwave.playlist_objects.metadata import (
     AssociatedMetadata,
@@ -21,7 +22,9 @@ class Artist(AssociatedMetadata):
     delete_self_query = "DELETE FROM r4_artists WHERE artist_id = %s"
 
     # needs to be specialized because of artist_order
-    def associate_song_id(self, song_id, is_tag=None, order=None):
+    def associate_song_id(
+        self, song_id: int, is_tag: bool | None = None, order: int | None = None
+    ) -> None:
         if not order and not self.data.get("order"):
             order = db.c.fetch_var(
                 "SELECT MAX(artist_order) FROM r4_song_artist WHERE song_id = %s",
@@ -48,28 +51,28 @@ class Artist(AssociatedMetadata):
                     % (song_id, self.__class__.__name__, self.id)
                 )
 
-    def _insert_into_db(self):
+    def _insert_into_db(self) -> bool:
         self.id = db.c.get_next_id("r4_artists", "artist_id")
         return db.c.update(
             "INSERT INTO r4_artists (artist_id, artist_name, artist_name_searchable) VALUES (%s, %s, %s)",
             (self.id, self.data["name"], make_searchable_string(self.data["name"])),
         )
 
-    def _update_db(self):
+    def _update_db(self) -> bool:
         return db.c.update(
             "UPDATE r4_artists SET artist_name = %s, artist_name_searchable = %s WHERE artist_id = %s",
             (self.data["name"], make_searchable_string(self.data["name"]), self.id),
         )
 
-    def _start_cooldown_db(self, sid, cool_time):
+    def _start_cooldown_db(self, sid: int, cool_time: int) -> None:
         # Artists don't have cooldowns on Rainwave.
         pass
 
-    def _start_election_block_db(self, sid, num_elections):
+    def _start_election_block_db(self, sid: int, num_elections: int) -> None:
         # Artists don't block elections either (OR DO THEY) (they don't)
         pass
 
-    def load_all_songs(self, sid, user_id=1):
+    def load_all_songs(self, sid: int, user_id: int = 1) -> None:
         all_songs = db.c.fetch_all(
             "SELECT r4_song_artist.song_id AS id, "
             "r4_songs.song_origin_sid AS sid, "
@@ -113,7 +116,7 @@ class Artist(AssociatedMetadata):
                 }
             ]
 
-    def to_dict(self, user=None):
+    def to_dict(self, user: Any | None = None) -> dict[str, Any]:
         d = super(Artist, self).to_dict(user)
         d["order"] = self.data["order"]
         return d

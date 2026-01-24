@@ -1,5 +1,6 @@
 import random
 from time import time as timestamp
+from typing import Any
 
 from libs import db
 from src.backend.config import config
@@ -11,18 +12,20 @@ from rainwave.events import event
 class OneUpProducer(event.BaseProducer):
     # AKA Power Hour
 
-    def __init__(self, sid):
+    def __init__(self, sid: int) -> None:
         super(OneUpProducer, self).__init__(sid)
         self.plan_ahead_limit = 5
 
-    def has_next_event(self):
+    def has_next_event(self) -> bool:
         next_up_id = db.c.fetch_var(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1",
             (self.id,),
         )
         return bool(next_up_id)
 
-    def load_next_event(self, target_length=None, min_elec_id=None):
+    def load_next_event(
+        self, target_length: int | None = None, min_elec_id: int | None = None
+    ) -> Any:
         next_up_id = db.c.fetch_var(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1",
             (self.id,),
@@ -47,7 +50,7 @@ class OneUpProducer(event.BaseProducer):
             self.start_actual = timestamp()
             self._update_length()
 
-    def change_start(self, new_start):
+    def change_start(self, new_start: int) -> None:
         if not self.used:
             length = self.end - self.start
             self.start = new_start
@@ -59,7 +62,7 @@ class OneUpProducer(event.BaseProducer):
         else:
             raise Exception("Cannot change the start time of a used producer.")
 
-    def _update_length(self):
+    def _update_length(self) -> None:
         stats = db.c.fetch_row(
             "SELECT SUM(song_length) AS l, COUNT(song_length) AS c FROM r4_one_ups JOIN r4_songs USING (song_id) WHERE sched_id = %s GROUP BY sched_id",
             (self.id,),
@@ -81,7 +84,7 @@ class OneUpProducer(event.BaseProducer):
             (self.end, self.id),
         )
 
-    def load_event_in_progress(self):
+    def load_event_in_progress(self) -> Any:
         next_song_id = db.c.fetch_var(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE ORDER BY one_up_order DESC LIMIT 1",
             (self.id,),
@@ -95,7 +98,9 @@ class OneUpProducer(event.BaseProducer):
         else:
             return None
 
-    def add_song_id(self, song_id, sid, order=None):
+    def add_song_id(
+        self, song_id: int, sid: int, order: int | None = None
+    ) -> None:
         if not order:
             order = db.c.fetch_var(
                 "SELECT MAX(one_up_order) + 1 FROM r4_one_ups WHERE sched_id = %s",
@@ -109,7 +114,9 @@ class OneUpProducer(event.BaseProducer):
         )
         self._update_length()
 
-    def add_album_id(self, album_id, sid, order=None):
+    def add_album_id(
+        self, album_id: int, sid: int, order: int | None = None
+    ) -> None:
         order = db.c.fetch_var(
             "SELECT MAX(one_up_order) + 1 FROM r4_one_ups WHERE sched_id = %s",
             (self.id,),
@@ -121,7 +128,7 @@ class OneUpProducer(event.BaseProducer):
             order += 1
         self._update_length()
 
-    def remove_one_up(self, one_up_id):
+    def remove_one_up(self, one_up_id: int) -> bool:
         if (
             db.c.update("DELETE FROM r4_one_ups WHERE one_up_id = %s", (one_up_id,))
             >= 1
@@ -130,7 +137,7 @@ class OneUpProducer(event.BaseProducer):
             return True
         return False
 
-    def shuffle_songs(self):
+    def shuffle_songs(self) -> bool:
         one_up_ids = db.c.fetch_list(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s", (self.id,)
         )
@@ -144,7 +151,7 @@ class OneUpProducer(event.BaseProducer):
             i += 1
         return True
 
-    def move_song_up(self, one_up_id):
+    def move_song_up(self, one_up_id: int) -> bool:
         one_up_ids = db.c.fetch_list(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
             (self.id,),
@@ -165,7 +172,7 @@ class OneUpProducer(event.BaseProducer):
             i += 1
         return True
 
-    def load_all_songs(self):
+    def load_all_songs(self) -> None:
         self.songs = []
         for song_row in db.c.fetch_all(
             "SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
@@ -177,7 +184,7 @@ class OneUpProducer(event.BaseProducer):
             s.data["one_up_id"] = song_row["one_up_id"]
             self.songs.append(s)
 
-    def fill_unrated(self, sid, max_length):
+    def fill_unrated(self, sid: int, max_length: int) -> None:
         total_time = 0
         rows = db.c.fetch_all(
             "SELECT song_id, song_length "
@@ -194,7 +201,7 @@ class OneUpProducer(event.BaseProducer):
             total_time += row["song_length"]
         self._update_length()
 
-    def duplicate(self):
+    def duplicate(self) -> "OneUpProducer":
         duped = super().duplicate()
         for song_row in db.c.fetch_all(
             "SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
@@ -213,14 +220,14 @@ class OneUpProducer(event.BaseProducer):
         duped._update_length()  # pylint: disable=no-member
         return duped
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         self.load_all_songs()
         return super().to_dict()
 
 
 class OneUp(event.BaseEvent):
     @classmethod
-    def load_by_id(cls, one_up_id, sid):
+    def load_by_id(cls, one_up_id: int, sid: int) -> "OneUp":
         row = db.c.fetch_row(
             "SELECT * FROM r4_one_ups WHERE one_up_id = %s", (one_up_id,)
         )
@@ -233,17 +240,17 @@ class OneUp(event.BaseEvent):
         one_up.sid = sid
         return one_up
 
-    def start_event(self):
+    def start_event(self) -> None:
         super(OneUp, self).start_event()
         self.songs[0].start_election_block(
             self.sid, config.get_station(self.sid, "num_planned_elections") + 1
         )
 
-    def finish(self):
+    def finish(self) -> None:
         super(OneUp, self).finish()
         db.c.update(
             "UPDATE r4_one_ups SET one_up_used = TRUE WHERE one_up_id = %s", (self.id,)
         )
 
-    def delete(self):
+    def delete(self) -> int:
         return db.c.update("DELETE FROM r4_one_ups WHERE one_up_id = %s", (self.id,))

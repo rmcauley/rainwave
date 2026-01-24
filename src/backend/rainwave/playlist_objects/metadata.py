@@ -1,6 +1,7 @@
 from libs import log
 from libs import db
 from unidecode import unidecode
+from typing import Any, TypeVar, Type
 
 
 def make_searchable_string(s: str | bytes) -> str:
@@ -13,11 +14,11 @@ def make_searchable_string(s: str | bytes) -> str:
 
 
 class MetadataInsertionError(Exception):
-    def __init__(self, value):
+    def __init__(self, value: Any) -> None:
         super(MetadataInsertionError, self).__init__()
         self.value = value
 
-    def __str__(self):
+    def __str__(self) -> str:
         return repr(self.value)
 
 
@@ -44,7 +45,7 @@ class AssociatedMetadata:
     has_song_id_query = None  # two arguments: song_id, self.id
 
     @classmethod
-    def load_from_name(cls, name):
+    def load_from_name(cls, name: str) -> "AssociatedMetadata":
         instance = cls()
         data = db.c.fetch_row(cls.select_by_name_query, (name,))
         if data:
@@ -55,7 +56,7 @@ class AssociatedMetadata:
         return instance
 
     @classmethod
-    def load_from_id(cls, metadata_id):
+    def load_from_id(cls, metadata_id: int) -> "AssociatedMetadata":
         instance = cls()
         data = db.c.fetch_row(cls.select_by_id_query, (metadata_id,))
         if not data:
@@ -66,7 +67,7 @@ class AssociatedMetadata:
         return instance
 
     @classmethod
-    def load_list_from_tag(cls, tag):
+    def load_list_from_tag(cls, tag: str | None) -> list["AssociatedMetadata"]:
         if not tag:
             return []
         instances = []
@@ -78,7 +79,7 @@ class AssociatedMetadata:
         return instances
 
     @classmethod
-    def load_list_from_song_id(cls, song_id):
+    def load_list_from_song_id(cls, song_id: int) -> list["AssociatedMetadata"]:
         instances = []
         for row in db.c.fetch_all(cls.select_by_song_id_query, (song_id,)):
             instance = cls()
@@ -86,7 +87,7 @@ class AssociatedMetadata:
             instances.append(instance)
         return instances
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.id = None
         self.is_tag = False
         self.elec_block = None
@@ -95,13 +96,13 @@ class AssociatedMetadata:
         self.data = {}
         self.data["name"] = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.data["name"]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__
 
-    def _assign_from_dict(self, d):
+    def _assign_from_dict(self, d: dict[str, Any]) -> None:
         self.id = d["id"]
         self.data["name"] = d["name"]
         if "is_tag" in d:
@@ -115,7 +116,7 @@ class AssociatedMetadata:
         if "order" in d:
             self.data["order"] = d["order"]
 
-    def save(self):
+    def save(self) -> None:
         if not self.id and self.data["name"]:
             if not self._insert_into_db():
                 raise MetadataInsertionError(
@@ -133,13 +134,13 @@ class AssociatedMetadata:
                 "Tried to save a %s without a name" % self.__class__.__name__
             )
 
-    def _insert_into_db(self):
+    def _insert_into_db(self) -> bool:
         return False
 
-    def _update_db(self):
+    def _update_db(self) -> bool:
         return False
 
-    def start_election_block(self, sid, num_elections=False):
+    def start_election_block(self, sid: int, num_elections: int | bool = False) -> None:
         if self.elec_block is not None:
             if self.elec_block > 0:
                 log.debug(
@@ -156,20 +157,20 @@ class AssociatedMetadata:
             )
             self._start_election_block_db(sid, num_elections)
 
-    def _start_election_block_db(self, sid, num_elections):
+    def _start_election_block_db(self, sid: int, num_elections: int) -> None:
         pass
 
-    def start_cooldown(self, sid, cool_time=False):
+    def start_cooldown(self, sid: int, cool_time: int | bool = False) -> None:
         if self.cool_time is not None:
             if self.cool_time > 0:
                 self._start_cooldown_db(sid, self.cool_time)
         elif cool_time and cool_time > 0:
             self._start_cooldown_db(sid, cool_time)
 
-    def _start_cooldown_db(self, sid, cool_time):
+    def _start_cooldown_db(self, sid: int, cool_time: int) -> None:
         pass
 
-    def associate_song_id(self, song_id, is_tag=None):
+    def associate_song_id(self, song_id: int, is_tag: bool | None = None) -> None:
         if is_tag == None:
             is_tag = self.is_tag
         else:
@@ -185,7 +186,7 @@ class AssociatedMetadata:
                     % (song_id, self.__class__.__name__, self.id)
                 )
 
-    def disassociate_song_id(self, song_id, is_tag=True):
+    def disassociate_song_id(self, song_id: int, is_tag: bool = True) -> None:
         if not db.c.update(self.disassociate_song_id_query, (song_id, self.id)):
             raise MetadataUpdateError(
                 "Cannot disassociate song ID %s with %s ID %s"
@@ -194,12 +195,12 @@ class AssociatedMetadata:
         if db.c.fetch_var(self.check_self_size_query, (self.id,)) == 0:
             db.c.update(self.delete_self_query, (self.id,))
 
-    def to_dict(self, user=None):
+    def to_dict(self, user: Any | None = None) -> dict[str, Any]:
         d = {}
         d["id"] = self.id
         d["name"] = self.data["name"]
         return d
 
-    def to_dict_full(self, user=None):
+    def to_dict_full(self, user: Any | None = None) -> dict[str, Any]:
         self.data["id"] = self.id
         return self.data
