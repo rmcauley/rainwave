@@ -80,7 +80,7 @@ def get_browser_locale(handler, default="en_CA"):
             if len(parts) > 1 and parts[1].startswith("q="):
                 try:
                     score = float(parts[1][2:])
-                except (ValueError, TypeError):
+                except ValueError, TypeError:
                     score = 0.0
             else:
                 score = 1.0

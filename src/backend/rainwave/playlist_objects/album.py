@@ -413,7 +413,7 @@ class Album(AssociatedMetadata):
                 "GROUP BY rating ",
                 (sid, self.id),
             )
-            (points, potential_points) = rating.rating_calculator(ratings)
+            points, potential_points = rating.rating_calculator(ratings)
             log.debug(
                 "song_rating",
                 "%s album ratings for %s (%s)"

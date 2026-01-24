@@ -30,7 +30,12 @@ copy_dirs = [
     "templates",
 ]
 
-copy_files = list(glob("rw_*.py")) + [".python-version", "pyproject.toml", "tagset.py", "uv.lock"]
+copy_files = list(glob("rw_*.py")) + [
+    ".python-version",
+    "pyproject.toml",
+    "tagset.py",
+    "uv.lock",
+]
 
 services = [
     "rainwave-backend",

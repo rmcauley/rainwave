@@ -1,0 +1,40 @@
+<div class="close" bind="panel_close">
+  <img src="/static/images4/cancel.png" alt="X" />
+</div>
+<ul class="panel_header">
+  <li class="open">
+    <a bind="request_header"> {{ $l("Requests") }} </a>
+  </li>
+</ul>
+<if condition="^!Sizing.simple">
+  <div bind="request_indicator2" class="plusminus"></div>
+</if>
+<ul class="panel_header request_icons unselectable">
+  <li class="pause_queue" bind="requests_pause" class="requests_pause">
+    <img src="/static/images4/request_pause.png" />
+    <span>{{ $l("Suspend") }}</span>
+  </li>
+  <li class="pause_queue" bind="requests_play" class="requests_play">
+    <img src="/static/images4/request_play.png" />
+    <span>{{ $l("Resume") }}</span>
+  </li>
+  <li bind="requests_favfill">
+    <img src="/static/images4/request_faves.png" />
+    <span>{{ $l("Faves") }}</span>
+  </li>
+  <li bind="requests_unrated">
+    <img src="/static/images4/request_unrated.png" />
+    <span>{{ $l("Unrated") }}</span>
+  </li>
+  <li bind="requests_clear">
+    <img src="/static/images4/request_clear.png" />
+    <span>{{ $l("Clear") }}</span>
+  </li>
+</ul>
+<div bind="song_list" bind="song_list_container">
+  <div
+    class="song"
+    style="visibility: hidden; z-index: -1; transition: none"
+    bind="last_song_padder"
+  ></div>
+</div>

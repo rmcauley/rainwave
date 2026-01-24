@@ -140,7 +140,7 @@ def _scan_directory(directory, sids):
     try:
         os.stat(directory)
         do_scan = True
-    except (IOError, OSError):
+    except IOError, OSError:
         log.debug("scan", "Directory %s no longer exists." % directory)
 
     if do_scan and len(sids) > 0:
