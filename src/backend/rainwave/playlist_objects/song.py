@@ -341,7 +341,7 @@ class Song:
                     "SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s",
                     (self.data["title"], self.data["length"]),
                 )
-            if not config.get("allow_duplicate_song") and potential_id:
+            if not config.allow_duplicate_song and potential_id:
                 self.id = potential_id
                 update = True
 
@@ -565,7 +565,7 @@ class Song:
         log.debug(
             "song_rating", "%s ratings for %s" % (potential_points, self.filename)
         )
-        if points > 0 and potential_points > config.get("rating_threshold_for_calc"):
+        if points > 0 and potential_points > config.rating_threshold_for_calc:
             self.data["rating"] = ((points / potential_points) * 4) + 1
             self.data["rating_count"] = potential_points
             log.debug(

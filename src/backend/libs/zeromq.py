@@ -18,14 +18,14 @@ def init_pub() -> None:
     global _pub
     context = zmq.Context()
     _pub = context.socket(zmq.PUB)
-    _pub.connect(config.get("zeromq_pub"))
+    _pub.connect(config.zeromq_pub)
 
 
 def init_sub() -> None:
     global _sub_stream
     context = zmq.Context()
     sub = context.socket(zmq.SUB)
-    sub.connect(config.get("zeromq_sub"))
+    sub.connect(config.zeromq_sub)
     sub.setsockopt(zmq.SUBSCRIBE, b"")
     _sub_stream = ZMQStream(sub)
 
@@ -45,11 +45,11 @@ def publish(dct: dict[str, Any]) -> None:
 def init_proxy() -> None:
     td = zmq.devices.ThreadDevice(zmq.FORWARDER, zmq.SUB, zmq.PUB)
 
-    td.bind_in(config.get("zeromq_pub"))
+    td.bind_in(config.zeromq_pub)
     td.setsockopt_in(zmq.IDENTITY, b"SUB")
     td.setsockopt_in(zmq.SUBSCRIBE, b"")
 
-    td.bind_out(config.get("zeromq_sub"))
+    td.bind_out(config.zeromq_sub)
     td.setsockopt_out(zmq.IDENTITY, b"PUB")
 
     td.start()

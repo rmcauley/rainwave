@@ -65,7 +65,7 @@ def html_write_error(self, status_code: int, **kwargs: Any) -> None:
                 )
             )
 
-        if status_code == 500 or config.get("developer_mode"):
+        if status_code == 500 or config.developer_mode:
             self.write("<p>")
             self.write(self.locale.translate("unknown_error_message"))
             self.write("</p><p>")

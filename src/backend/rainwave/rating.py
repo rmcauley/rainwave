@@ -13,7 +13,7 @@ def rating_calculator(ratings: Iterable[dict[str, Any]]) -> tuple[float, float]:
     Uses "rating_map" from config to map each rating tier's to the fraction of point(s) it should get.
     Returns a set: (points, potential_points)
     """
-    point_map = config.get("rating_map")
+    point_map = config.rating_map
     points = 0.0
     potential_points = 0.0
     for row in ratings:

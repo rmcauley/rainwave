@@ -1,4 +1,3 @@
-import psycopg2
 from time import time as timestamp
 import tornado.httpserver
 import tornado.ioloop
@@ -47,7 +46,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
         try:
             schedule.advance_station(self.sid)
-        except psycopg2.extensions.TransactionRollbackError:
+        except db.transaction_rollback_errors:
             log.warn(
                 "backend",
                 "Database transaction deadlock.  Re-opening database and setting retry timeout.",
@@ -57,7 +56,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
             raise
 
         to_send = None
-        if not config.get("liquidsoap_annotations"):
+        if not config.liquidsoap_annotations:
             to_send = schedule.get_advancing_file(self.sid)
         else:
             to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
@@ -66,18 +65,18 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
             self.write(to_send)
 
     def _get_pause_file(self) -> str:
-        if not config.get("liquidsoap_annotations"):
+        if not config.liquidsoap_annotations:
             log.debug(
-                "backend", "Station is paused, using: %s" % config.get("pause_file")
+                "backend", "Station is paused, using: %s" % config.pause_file
             )
-            return config.get("pause_file")
+            return config.pause_file
 
         string = 'annotate:crossfade="2",use_suffix="1",'
         if cache.get_station(self.sid, "pause_title"):
             string += 'title="%s"' % cache.get_station(self.sid, "pause_title")
         else:
             string += 'title="Intermission"'
-        string += ":" + config.get("pause_file")
+        string += ":" + config.pause_file
         log.debug("backend", "Station is paused, using: %s" % string)
         return string
 
@@ -118,7 +117,7 @@ class BackendServer:
                 config.get_directory("log_dir"),
                 config.station_id_friendly[sid].lower(),
             ),
-            config.get("log_level"),
+            config.log_level,
         )
         db.connect()
         cache.connect()
@@ -130,10 +129,10 @@ class BackendServer:
             [
                 (r"/advance/([0-9]+)", AdvanceScheduleRequest),
             ],
-            debug=config.get("developer_mode"),
+            debug=config.developer_mode,
         )
 
-        port = int(config.get("backend_port")) + sid
+        port = int(config.backend_port) + sid
         server = tornado.httpserver.HTTPServer(app)
         server.listen(port, address="127.0.0.1")
 

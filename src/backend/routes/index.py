@@ -36,14 +36,10 @@ class Blank(web_api.web.HTMLRequest):
 
 # @handle_url(STATION_URL_REGEX)
 # class MainIndex(api.web.HTMLRequest):
-#     sid: int = config.get("default_station")
+#     sid: int = config.default_station
 #     description = "Main Rainwave page."
-#     auth_required = config.has("index_requires_login") and config.get(
-#         "index_requires_login"
-#     )
-#     login_required = config.has("index_requires_login") and config.get(
-#         "index_requires_login"
-#     )
+#     auth_required = config.has("index_requires_login") and config.index_requires_login
+#     login_required = config.has("index_requires_login") and config.index_requires_login
 #     sid_required = False
 #     beta = False
 #     page_template = "r5_index.html"
@@ -55,7 +51,7 @@ class Blank(web_api.web.HTMLRequest):
 #         self.set_header("X-XSS-Protection", "1; mode=block")
 #         self.set_header("X-Content-Type-Options", "nosniff")
 
-#         if self.request.protocol == "https" or config.get("enforce_ssl"):
+#         if self.request.protocol == "https" or config.enforce_ssl:
 #             self.set_header("Content-Security-Policy", config.csp_header)
 #             self.set_header("Referrer-Policy", "origin")
 #             self.set_header("Strict-Transport-Security", "max-age=63072000; preload")
@@ -63,12 +59,10 @@ class Blank(web_api.web.HTMLRequest):
 #     def prepare(self):
 #         super(MainIndex, self).prepare()
 
-#         if not config.get("developer_mode") and self.request.host != config.get(
-#             "hostname"
-#         ):
+#         if not config.developer_mode and self.request.host != config.hostname:
 #             self.redirect(
 #                 "{}{}/".format(
-#                     config.get("base_site_url"),
+#                     config.base_site_url,
 #                     config.station_mount_filenames[self.sid],
 #                 )
 #             )
@@ -88,7 +82,7 @@ class Blank(web_api.web.HTMLRequest):
 #         self.user.ip_address = self.request.remote_ip
 #         self.user.ensure_api_key()
 
-#         if self.beta or config.get("developer_mode"):
+#         if self.beta or config.developer_mode:
 #             buildtools.bake_beta_css()
 #             buildtools.bake_beta_templates()
 #             self.jsfiles = []
@@ -111,7 +105,7 @@ class Blank(web_api.web.HTMLRequest):
 #                 ua.lower().find("mobile") != -1 or ua.lower().find("android") != -1
 #             )
 #         page_title = None
-#         if self.sid == config.get("default_station"):
+#         if self.sid == config.default_station:
 #             page_title = self.locale.translate("page_title_on_google")
 #         else:
 #             page_title = "%s %s" % (
@@ -152,7 +146,7 @@ class Blank(web_api.web.HTMLRequest):
 #     js_dir = "js5"
 
 #     def prepare(self):
-#         if not config.get("public_beta"):
+#         if not config.public_beta:
 #             self.perks_required = True
 #         super(BetaIndex, self).prepare()
 
@@ -213,11 +207,11 @@ class Bootstrap(web_api.web.APIHandler):
         self.append("build_version", config.build_number)
         self.append("locale", self.locale.code)
         self.append("locales", src.backend.libs.locale.locale_names)
-        self.append("cookie_domain", config.get("cookie_domain"))
+        self.append("cookie_domain", config.cookie_domain)
         self.append("on_init", [])
         self.append("on_measure", [])
         self.append("on_draw", [])
-        self.append("websocket_host", config.get("websocket_host"))
+        self.append("websocket_host", config.websocket_host)
         self.append("stream_filename", config.get_station(self.sid, "stream_filename"))
         self.append("station_list", config.station_list)
         self.append("relays", config.public_relays[self.sid])

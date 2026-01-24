@@ -225,11 +225,11 @@ class AlbumHandler(APIHandler):
             )
             if not valid_sids:
                 raise APIException("album_is_dj_only")
-            elif config.get("default_station") in valid_sids:
+            elif config.default_station in valid_sids:
                 raise APIException(
                     "album_on_other_station",
                     available_station=config.station_id_friendly[
-                        config.get("default_station")
+                        config.default_station
                     ],
                     available_sid=valid_sids[0],
                 )

@@ -20,7 +20,7 @@ from .r4_mixin import R4SetupSessionMixin
 
 DEFAULT_TIMEOUT = aiohttp.ClientTimeout(total=10)
 
-REDIRECT_URI = config.get("base_site_url") + "oauth/discord"
+REDIRECT_URI = config.base_site_url + "oauth/discord"
 OAUTH_STATE_SALT = bcrypt.gensalt()
 
 
@@ -83,7 +83,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             )
             self.authorize_redirect(
                 redirect_uri=REDIRECT_URI,
-                client_id=config.get("discord_client_id"),
+                client_id=config.discord_client_id,
                 scope=["identify"],
                 response_type="code",
                 extra_params={"prompt": "none", "state": oauth_state},
@@ -91,8 +91,8 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
 
     async def get_token(self, code: str):
         data = {
-            "client_id": config.get("discord_client_id"),
-            "client_secret": config.get("discord_client_secret"),
+            "client_id": config.discord_client_id,
+            "client_secret": config.discord_client_secret,
             "grant_type": "authorization_code",
             "code": code,
             "redirect_uri": REDIRECT_URI,

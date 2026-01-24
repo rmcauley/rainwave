@@ -134,18 +134,18 @@ class Album(AssociatedMetadata):
 
     @classmethod
     def get_art_url(cls, album_id, sid=None):
-        if not config.get("album_art_file_path"):
+        if not config.album_art_file_path:
             return ""
         elif sid and os.path.isfile(
             os.path.join(
-                config.get("album_art_file_path"), "%s_%s_320.jpg" % (sid, album_id)
+                config.album_art_file_path, "%s_%s_320.jpg" % (sid, album_id)
             )
         ):
-            return "%s/%s_%s" % (config.get("album_art_url_path"), sid, album_id)
+            return "%s/%s_%s" % (config.album_art_url_path, sid, album_id)
         elif os.path.isfile(
-            os.path.join(config.get("album_art_file_path"), "a_%s_320.jpg" % album_id)
+            os.path.join(config.album_art_file_path, "a_%s_320.jpg" % album_id)
         ):
-            return "%s/a_%s" % (config.get("album_art_url_path"), album_id)
+            return "%s/a_%s" % (config.album_art_url_path, album_id)
         return ""
 
     def __init__(self):
@@ -424,9 +424,7 @@ class Album(AssociatedMetadata):
                     config.station_id_friendly[sid],
                 ),
             )
-            if points > 0 and potential_points > config.get(
-                "rating_threshold_for_calc"
-            ):
+            if points > 0 and potential_points > config.rating_threshold_for_calc:
                 self.rating_precise = ((points / potential_points) * 4) + 1
                 self.data["rating"] = round(self.rating_precise, 1)
                 self.data["rating_count"] = potential_points

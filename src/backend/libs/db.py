@@ -1,5 +1,5 @@
-import psycopg2
-import psycopg2.extras
+import psycopg
+from psycopg import rows
 import time
 from typing import Any, Mapping, Sequence
 
@@ -11,23 +11,26 @@ class DatabaseDisconnectedError(Exception):
     pass
 
 
-class PostgresCursor(psycopg2.extras.RealDictCursor):
+class PostgresCursor:
     in_tx = False
     auto_retry = True
     disconnected = False
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, cursor: psycopg.Cursor) -> None:
+        self._cursor = cursor
         self.in_tx = False
         self.auto_retry = True
         self.disconnected = False
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._cursor, name)
 
     def execute(self, *args: Any, **kwargs: Any) -> Any:
         if self.disconnected:
             raise DatabaseDisconnectedError
 
         try:
-            return super().execute(*args, **kwargs)
+            return self._cursor.execute(*args, **kwargs)
         except connection_errors as e:
             if self.auto_retry:
                 log.exception("psycopg", "Psycopg exception", e)
@@ -151,8 +154,12 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
 # Ignoring type because we expect a crash if these don't exist anyway.
 # App won't run without the cursor and connection established.
 c: PostgresCursor = None  # type: ignore
-connection: psycopg2.extensions.connection = None  # type: ignore
-connection_errors = (psycopg2.OperationalError, psycopg2.InterfaceError)
+connection: psycopg.Connection = None  # type: ignore
+connection_errors = (psycopg.OperationalError, psycopg.InterfaceError)
+transaction_rollback_errors = (
+    psycopg.errors.SerializationFailure,
+    psycopg.errors.DeadlockDetected,
+)
 
 
 def connect(auto_retry: bool = True, retry_only_this_time: bool = False) -> bool:
@@ -162,14 +169,12 @@ def connect(auto_retry: bool = True, retry_only_this_time: bool = False) -> bool
     if connection and c and not c.closed:
         return True
 
-    name = config.get("db_name")
-    host = config.get("db_host")
-    port = config.get("db_port")
-    user = config.get("db_user")
-    password = config.get("db_password")
+    name = config.db_name
+    host = config.db_host
+    port = config.db_port
+    user = config.db_user
+    password = config.db_password
 
-    psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-    psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
     base_connstr = "sslmode=disable "
     if host:
         base_connstr += "host=%s " % host
@@ -182,18 +187,15 @@ def connect(auto_retry: bool = True, retry_only_this_time: bool = False) -> bool
     connected = False
     while not connected:
         try:
-            connection = psycopg2.connect(
+            connection = psycopg.connect(
                 base_connstr + ("dbname=%s" % name), connect_timeout=1
             )
-            connection.set_isolation_level(
-                psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT
-            )
             connection.autocommit = True
-            c = connection.cursor(cursor_factory=PostgresCursor)
+            c = PostgresCursor(connection.cursor(row_factory=rows.dict_row))
             c.auto_retry = auto_retry
             connected = True
         except connection_errors as e:
-            log.exception("psycopg", "Psycopg2 exception", e)
+            log.exception("psycopg", "Psycopg exception", e)
             if auto_retry or retry_only_this_time:
                 time.sleep(1)
             else:

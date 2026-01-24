@@ -54,7 +54,7 @@ class AdminIndex(web_api.web.HTMLRequest):
         self.render(
             "admin_frame.html",
             title="Rainwave Admin",
-            api_url=config.get("api_external_url_prefix"),
+            api_url=config.api_external_url_prefix,
             user_id=self.user.id,
             api_key=self.user.ensure_api_key(),
             sid=sid,
@@ -71,7 +71,7 @@ class DJIndex(web_api.web.HTMLRequest):
         self.render(
             "admin_frame.html",
             title="Rainwave DJ",
-            api_url=config.get("api_external_url_prefix"),
+            api_url=config.api_external_url_prefix,
             user_id=self.user.id,
             api_key=self.user.ensure_api_key(),
             sid=self.sid,

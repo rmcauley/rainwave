@@ -27,7 +27,7 @@ def setup(unique_prefix: str) -> None:
     global _prefix
     _prefix = unique_prefix
 
-    if not config.get("memory_trace") or "meliae" not in sys.modules:
+    if not config.memory_trace or "meliae" not in sys.modules:
         return
 
     record_loop = tornado.ioloop.PeriodicCallback(record_sizes, 60 * 60 * 1000)

@@ -18,7 +18,7 @@ class UpdateUserNicknameByDiscordId(web_api.web.APIHandler):
     }
 
     def post(self):
-        if self.request.remote_ip not in config.get("api_trusted_ip_addresses"):
+        if self.request.remote_ip not in config.api_trusted_ip_addresses:
             raise APIException(
                 "auth_failed",
                 f"{self.request.remote_ip} is not allowed to access this endpoint.",

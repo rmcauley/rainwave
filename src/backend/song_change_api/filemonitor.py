@@ -104,12 +104,12 @@ def _print_to_screen_inline(txt: str) -> None:
 def _scan_all_directories(art_only: bool = False) -> None:
     total_files = 0
     file_counter = 0
-    for directory, sids in config.get("song_dirs").items():
+    for directory, sids in config.song_dirs.items():
         for root, _subdirs, files in os.walk(directory, followlinks=True):
             total_files += len(files)
             _print_to_screen_inline(f"Prepping {total_files}")
 
-    for directory, sids in config.get("song_dirs").items():
+    for directory, sids in config.song_dirs.items():
         for root, _subdirs, files in os.walk(directory, followlinks=True):
             for filename in files:
                 filename = os.path.join(root, filename)
@@ -271,7 +271,7 @@ def _process_found_album_art(dirname: str | None = None) -> None:
 def _process_album_art(filename: str, sids: list[int]) -> bool:
     # Processes album art by finding the album IDs that are associated with the songs that exist
     # in the same directory as the image file.
-    if not config.get("album_art_enabled"):
+    if not config.album_art_enabled:
         return True
     try:
         directory = os.path.dirname(filename) + os.sep
@@ -310,39 +310,39 @@ def _process_album_art(filename: str, sids: list[int]) -> bool:
                 for sid in sids:
                     im_120.save(
                         os.path.join(
-                            config.get("album_art_file_path"),
+                            config.album_art_file_path,
                             "%s_%s_120.jpg" % (sid, album_id),
                         )
                     )
                     im_240.save(
                         os.path.join(
-                            config.get("album_art_file_path"),
+                            config.album_art_file_path,
                             "%s_%s_240.jpg" % (sid, album_id),
                         )
                     )
                     im_320.save(
                         os.path.join(
-                            config.get("album_art_file_path"),
+                            config.album_art_file_path,
                             "%s_%s_320.jpg" % (sid, album_id),
                         )
                     )
                 a_120_path = os.path.join(
-                    config.get("album_art_file_path"), "a_%s_120.jpg" % (album_id)
+                    config.album_art_file_path, "a_%s_120.jpg" % (album_id)
                 )
                 # sids[0] is the origin SID
-                if sids[0] == config.get("album_art_master_sid") or not os.path.exists(
+                if sids[0] == config.album_art_master_sid or not os.path.exists(
                     a_120_path
                 ):
                     im_120.save(a_120_path)
                     im_240.save(
                         os.path.join(
-                            config.get("album_art_file_path"),
+                            config.album_art_file_path,
                             "a_%s_240.jpg" % (album_id),
                         )
                     )
                     im_320.save(
                         os.path.join(
-                            config.get("album_art_file_path"),
+                            config.album_art_file_path,
                             "a_%s_320.jpg" % (album_id),
                         )
                     )
@@ -493,7 +493,7 @@ class FileEventHandler(ProcessEvent):
 
         try:
             matched_sids = []
-            for song_dirs_path, sids in config.get("song_dirs").items():
+            for song_dirs_path, sids in config.song_dirs.items():
                 if event.pathname.startswith(song_dirs_path):
                     matched_sids.extend(sids)
         except Exception as xception:
@@ -532,7 +532,7 @@ def monitor() -> None:
             try:
                 log.info("scan", "File monitor started.")
                 wm = pyinotify.WatchManager()
-                wm.add_watch(config.get("monitor_dir"), mask, rec=True, auto_add=True)
+                wm.add_watch(config.monitor_dir, mask, rec=True, auto_add=True)
                 pyinotify.Notifier(wm, FileEventHandler()).loop()
                 go = False
             except NewDirectoryException:

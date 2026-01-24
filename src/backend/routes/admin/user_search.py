@@ -15,7 +15,7 @@ class UserSearchRequest(web_api.web.APIHandler):
     help_hidden = True
 
     def post(self):
-        if self.request.remote_ip not in config.get("api_trusted_ip_addresses"):
+        if self.request.remote_ip not in config.api_trusted_ip_addresses:
             raise APIException(
                 "auth_failed",
                 f"{self.request.remote_ip} is not allowed to access this endpoint.",
@@ -43,7 +43,7 @@ class UserSearchByDiscordUserIdRequest(web_api.web.APIHandler):
     fields = {"discord_user_id": (fieldtypes.string, True)}
 
     def post(self):
-        if self.request.remote_ip not in config.get("api_trusted_ip_addresses"):
+        if self.request.remote_ip not in config.api_trusted_ip_addresses:
             raise APIException(
                 "auth_failed",
                 f"{self.request.remote_ip} is not allowed to access this endpoint.",
