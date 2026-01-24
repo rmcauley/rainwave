@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src_backend.config.config_types import (
+    from src.backend.config.config_types import (
         RatingMap,
         RelaysConfig,
         StationsConfig,

@@ -1,0 +1,31 @@
+export function menu(context: unknown): {
+  $root: DocumentFragment;
+  header: HTMLDivElement;
+  menu_wrapper: HTMLDivElement;
+  hamburger_container: HTMLUListElement;
+  burger_button: HTMLAnchorElement;
+  user_link: HTMLLIElement;
+  login: HTMLAnchorElement;
+  main_menu_ul: HTMLUListElement;
+  request_indicator: HTMLDivElement;
+  request_link: HTMLAnchorElement;
+  request_link_text: HTMLSpanElement;
+  playlist_link: HTMLAnchorElement;
+  search_link: HTMLAnchorElement;
+  station_select: HTMLDivElement;
+  pulldown: SVGSVGElement;
+  station_select_header: HTMLAnchorElement;
+  stations: Array<{
+    $root: DocumentFragment;
+    menu_link: HTMLAnchorElement;
+    menu_np: HTMLDivElement;
+    menu_np_art: HTMLDivElement;
+    menu_np_song: HTMLDivElement;
+    menu_np_album: HTMLDivElement;
+  }>;
+  player: HTMLDivElement;
+  play2: HTMLAnchorElement;
+  play: SVGSVGElement;
+  stop: SVGSVGElement;
+  mute: SVGSVGElement;
+};

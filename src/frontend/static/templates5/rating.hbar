@@ -1,5 +1,0 @@
-<div class="rating" bind="rating">
-	{{#if ^User.id > 1 || _c.rating_user }}
-		<div class="rating_number rating_hover" bind="rating_hover_number"></div>
-	{{/if}}
-</div>

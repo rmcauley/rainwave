@@ -1,0 +1,18 @@
+<div class="modal_container" bind="container">
+	<div class="header_wrapper">
+		<div class="bkg">
+			<div class="content">
+				<if condition="closeable">
+					<div class="modal_close" bind="close">
+						<img src="/static/images4/cancel.png" alt="X" />
+					</div>
+				</if>
+				<if condition="title">
+					<span>{{ title }}</span>
+				</if>
+			</div>
+		</div>
+	</div>
+	<div class="content main" bind="content"></div>
+	<div class="bottom_border"></div>
+</div>

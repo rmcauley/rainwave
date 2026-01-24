@@ -2,7 +2,7 @@ import random
 from time import time as timestamp
 
 from libs import db
-from src_backend.config import config
+from src.backend.config import config
 from rainwave import playlist
 from rainwave.events import event
 

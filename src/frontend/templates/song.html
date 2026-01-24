@@ -1,0 +1,105 @@
+<div bind="root" class="song">
+  <if condition="request_id">
+    <div class="request_cancel" bind="cancel">
+      <span class="request_cancel_x">x</span>
+    </div>
+  </if>
+
+  <if condition="^_c.entry_id">
+    <div class="song_highlight song_highlight_left"></div>
+    <div class="song_highlight song_highlight_right"></div>
+    <div class="song_highlight song_highlight_topleft"></div>
+    <div class="song_highlight song_highlight_topright"></div>
+    <div class="song_highlight song_highlight_bottomleft"></div>
+    <div class="song_highlight song_highlight_bottomright"></div>
+  </if>
+
+  <if condition="^_c.entry_id && !MOBILE && Sizing.simple">
+    <div class="vote_button">
+      <span class="vote_button_rotate" bind="vote_button_text">{{ $l("vote") }}</span>
+    </div>
+  </if>
+
+  <div class="art_anchor">
+    <if condition="request_id">
+      <div class="request_sort_grab" bind="request_drag">
+        <img src="/static/images4/sort.svg" />
+      </div>
+    </if>
+    <div bind="art" class="art_container">
+      <if condition="^_c._is_timeline && User.sid === 5">
+        <div
+          class="power_only song_station_indicator song_station_indicator_{{ origin_sid }}"
+        ></div>
+      </if>
+
+      <if condition="elec_request_user_id">
+        <if condition="^_c.elec_request_user_id == User.id">
+          <div class="requester your_request">
+            <if condition="^!MOBILE">
+              <a href="#!/listener/{{ elec_request_user_id }}"> {{ elec_request_username }} </a>
+            </if>
+            <else> {{ elec_request_username }} </else>
+          </div>
+          <div class="request_indicator your_request">
+            {{ $l("timeline_art__your_request_indicator") }}
+          </div>
+        </if>
+        <else>
+          <div class="requester">
+            <if condition="^!MOBILE">
+              <a href="#!/listener/{{ elec_request_user_id }}"> {{ elec_request_username }} </a>
+            </if>
+            <else> {{ elec_request_username }} </else>
+          </div>
+          <div class="request_indicator">{{ $l("timeline_art__request_indicator") }}</div>
+        </else>
+      </if>
+    </div>
+  </div>
+
+  <div class="song_content">
+    <template use="rating" />
+
+    <if condition="^_c.entry_id">
+      <div class="entry_votes">
+        <span bind="votes"></span>
+      </div>
+    </if>
+
+    <template use="fave" />
+    <div bind="title" class="title" title="{{ title }}">{{ title }}</div>
+
+    <!-- TODO: <with> tag not yet implemented in v2 -->
+    <!--
+		{{#with albums[0] }}
+			<if condition="^!Sizing.simple">
+				<template use="rating_album" />
+			</if>
+
+			<template use="fave" />
+			<div bind="title" class="album" title="{{ name }}">
+				<a href="#!/album/{{ id }}">{{ name }}</a>
+			</div>
+		</with>
+		-->
+
+    <if condition="request_id">
+      <div class="cooldown_info" bind="cooldown"></div>
+    </if>
+    <else>
+      <div class="artist">
+        <for each="artists">
+          <a href="#!/artist/{{ id }}"> {{ name }} </a>
+          <span>,</span>
+        </for>
+      </div>
+
+      <if condition="url">
+        <div class="song_link_container">
+          <a class="song_link" href="{{ url }}" target="_blank"> {{ link_text }} </a>
+        </div>
+      </if>
+    </else>
+  </div>
+</div>

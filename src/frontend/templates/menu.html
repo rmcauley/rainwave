@@ -1,0 +1,95 @@
+<div class="header unselectable" bind="header">
+  <div class="menu_wrapper" bind="menu_wrapper">
+    <ul class="menu hamburger_container" bind="hamburger_container">
+      <li class="hamburger_icon_li">
+        <template use="menu_hamburger" />
+        <a class="link" bind="burger_button">
+          <div class="hamburger_icon"></div>
+        </a>
+      </li>
+    </ul>
+
+    <ul class="menu user_status">
+      <if condition="^User.id > 1">
+        <li bind="user_link" class="user_info">
+          <a href="#!/listener/{{ ^User.id }}">
+            <span>{{ ^User.name }}</span>
+            <img class="avatar" src="{{ ^User.avatar }}" />
+          </a>
+        </li>
+      </if>
+      <else>
+        <li class="login_link">
+          <a bind="login" class="link" href="/oauth/login"> {{ $l("login") }} </a>
+        </li>
+
+        <li class="signup_link">
+          <a href="/oauth/discord"> {{ $l("signup") }} </a>
+        </li>
+      </else>
+    </ul>
+
+    <ul class="menu main_menu" bind="main_menu_ul">
+      <li class="requests_link">
+        <div bind="request_indicator" class="plusminus"></div>
+        <a bind="request_link">
+          <svg class="menu_icon menu_icon_requests" use="requests"></svg>
+          <span bind="request_link_text">{{ $l("Requests")}}</span>
+        </a>
+      </li>
+
+      <li class="playlist_link">
+        <a bind="playlist_link">
+          <svg class="menu_icon menu_icon_library" use="library"></svg>
+          <span>{{ $l("library") }}</span>
+        </a>
+      </li>
+
+      <li class="search_link">
+        <a bind="search_link">
+          <img class="menu_icon menu_icon_search" src="/static/images4/search.png" />
+          <span>{{ $l("search") }}</span>
+        </a>
+      </li>
+    </ul>
+
+    <div id="station_select" bind="station_select" class="closed">
+      <svg bind="pulldown" class="pulldown_arrow" use="pulldown"></svg>
+      <a id="station_select_header" bind="station_select_header" class="station">
+        <div class="station_details">
+          <div class="station_name">{{ $l("station_select_header") }}</div>
+        </div>
+      </a>
+      <for each="stations" bind="stations">
+        <a bind="menu_link" class="station">
+          <if condition="^_c.id != User.sid && !MOBILE">
+            <div bind="menu_np" class="station_song_container">
+              <div bind="menu_np_art" class="ss_art"></div>
+              <div bind="menu_np_song" class="ss_title"></div>
+              <div bind="menu_np_album" class="ss_album"></div>
+            </div>
+          </if>
+          <div class="station_details">
+            <div class="station_name">{{ name }}</div>
+            <div class="station_description">{{ $l("station_menu_description_id_" + _c.id) }}</div>
+          </div>
+        </a>
+      </for>
+    </div>
+
+    <div id="r4_audio_player" bind="player" class="unselectable">
+      <div class="load_indicator"></div>
+      <div class="tuned_in_indicator"></div>
+      <div class="m3u menu_dropdown menu_hover_dropdown pconly">
+        <a bind="play2" class="link"> {{ $l("listen_via_browser") }} </a>
+        <a href="/tune_in/{{ ^User.sid }}.mp3.m3u" target="_blank"> {{ $l("listen_via_mp3") }} </a>
+        <a href="/tune_in/{{ ^User.sid }}.ogg.m3u" target="_blank"> {{ $l("listen_via_ogg") }} </a>
+      </div>
+      <div class="background">
+        <svg bind="play" class="audio_icon audio_icon_play" use="play"></svg>
+        <svg bind="stop" class="audio_icon audio_icon_stop pconly" use="stop"></svg>
+        <svg bind="mute" class="audio_icon audio_icon_mute pconly" use="mute"></svg>
+      </div>
+    </div>
+  </div>
+</div>

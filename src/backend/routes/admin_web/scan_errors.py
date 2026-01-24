@@ -1,8 +1,8 @@
 from time import time as timestamp
 import datetime
 from libs import db
-import api_web.web
-from api_web.urls import handle_url
+import web_api.web
+from web_api.urls import handle_url
 
 from routes.admin.scan_errors import BackendScanErrors
 
@@ -21,12 +21,12 @@ def relative_time(epoch_time):
 
 
 @handle_url("/admin/album_list/scan_results")
-class ScanResults(api_web.web.PrettyPrintAPIMixin, BackendScanErrors):
+class ScanResults(web_api.web.PrettyPrintAPIMixin, BackendScanErrors):
     dj_preparation = True
 
     def get(self):  # pylint: disable=E0202
         if not isinstance(self._output, dict):
-            raise api_web.web.APIException("internal_error", http_code=500)
+            raise web_api.web.APIException("internal_error", http_code=500)
 
         new_results = []
         for row in self._output[self.return_name]:
@@ -45,7 +45,7 @@ class ScanResults(api_web.web.PrettyPrintAPIMixin, BackendScanErrors):
 
 
 @handle_url("/admin/tools/scan_results")
-class LatestSongs(api_web.web.HTMLRequest):
+class LatestSongs(web_api.web.HTMLRequest):
     dj_preparation = True
 
     def get(self):

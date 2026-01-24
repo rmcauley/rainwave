@@ -18,7 +18,7 @@ except:
     pass
 
 # Other includes
-from src_backend.config import config
+from src.backend.config import config
 
 _prefix = ""
 

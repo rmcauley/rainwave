@@ -1,11 +1,11 @@
-from src_backend.config import config
+from src.backend.config import config
 from libs import cache
 from libs import db
 
-import api_web.web
-import api_web.fieldtypes
-from api_web.urls import handle_url
-from api_web.urls import handle_api_url
+import web_api.web
+import web_api.fieldtypes
+from web_api.urls import handle_url
+from web_api.urls import handle_api_url
 from routes.admin_web.index import AlbumList
 from routes.admin_web.index import SongList
 
@@ -13,10 +13,10 @@ from rainwave.playlist import Song, Album, SongGroup
 
 
 @handle_api_url("admin/associate_groups_add_song")
-class AssociateGroupAddSong(api_web.web.APIHandler):
+class AssociateGroupAddSong(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
-    fields = {"song_id": (api_web.fieldtypes.song_id, True)}
+    fields = {"song_id": (web_api.fieldtypes.song_id, True)}
 
     def post(self):
         songs = cache.get_user(self.user, "admin_associate_groups_songs")
@@ -28,12 +28,12 @@ class AssociateGroupAddSong(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/associate_groups_add_album")
-class AssociateGroupAddAlbum(api_web.web.APIHandler):
+class AssociateGroupAddAlbum(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     fields = {
-        "album_id": (api_web.fieldtypes.album_id, True),
-        "album_sid": (api_web.fieldtypes.sid, True),
+        "album_id": (web_api.fieldtypes.album_id, True),
+        "album_sid": (web_api.fieldtypes.sid, True),
     }
 
     def post(self):
@@ -46,7 +46,7 @@ class AssociateGroupAddAlbum(api_web.web.APIHandler):
 
 
 @handle_url(r"/admin/tools/associate_groups_finish/(\d+)")
-class AssociateGroupToolFinish(api_web.web.HTMLRequest):
+class AssociateGroupToolFinish(web_api.web.HTMLRequest):
     admin_required = True
     sid_required = False
 
@@ -70,7 +70,7 @@ class AssociateGroupToolFinish(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/tools/associate_groups_cache_reset")
-class AssociateGroupCacheReset(api_web.web.HTMLRequest):
+class AssociateGroupCacheReset(web_api.web.HTMLRequest):
     admin_required = True
     sid_required = False
 
@@ -85,7 +85,7 @@ class AssociateGroupCacheReset(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/tools/associate_groups")
-class AssociateGroupTool(api_web.web.HTMLRequest):
+class AssociateGroupTool(web_api.web.HTMLRequest):
     admin_required = True
     sid_required = False
 
@@ -160,7 +160,7 @@ class AssociateGroupSongList(SongList):
 
 
 @handle_url("/admin/tools/group_edit")
-class GroupEditTool(api_web.web.HTMLRequest):
+class GroupEditTool(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):
@@ -173,7 +173,7 @@ class GroupEditTool(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/album_list/group_edit")
-class GroupEditGroupList(api_web.web.HTMLRequest):
+class GroupEditGroupList(web_api.web.HTMLRequest):
     admin_required = True
     allow_get = True
 
@@ -215,9 +215,9 @@ class GroupEditGroupList(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/song_list/group_edit")
-class GroupEditSongList(api_web.web.HTMLRequest):
+class GroupEditSongList(web_api.web.HTMLRequest):
     admin_required = True
-    fields = {"id": (api_web.web.fieldtypes.group_id, True)}
+    fields = {"id": (web_api.web.fieldtypes.group_id, True)}
 
     def get(self):
         group = SongGroup.load_from_id(self.get_argument("id"))
@@ -242,7 +242,7 @@ class GroupEditSongList(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/tools/disassociate_groups")
-class DisassociateGroupTool(api_web.web.HTMLRequest):
+class DisassociateGroupTool(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):

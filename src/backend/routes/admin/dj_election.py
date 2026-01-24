@@ -1,13 +1,13 @@
 from libs import cache, db
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web.exceptions import APIException
-from api_web import fieldtypes
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api.exceptions import APIException
+from web_api import fieldtypes
 from rainwave import playlist
 from rainwave.events import election
 
 
-class GetCachedSongList(api_web.web.APIHandler):
+class GetCachedSongList(web_api.web.APIHandler):
     dj_preparation = True
 
     def post(self):
@@ -21,7 +21,7 @@ class GetCachedSongList(api_web.web.APIHandler):
             self.append(self.return_name, [])
 
 
-class AddToCachedSongList(api_web.web.APIHandler):
+class AddToCachedSongList(web_api.web.APIHandler):
     dj_preparation = True
     allow_sid_zero = True
     fields = {"song_id": (fieldtypes.song_id, True), "song_sid": (fieldtypes.sid, True)}
@@ -42,7 +42,7 @@ class AddToCachedSongList(api_web.web.APIHandler):
         self.append(self.return_name, to_output)
 
 
-class RemoveFromCachedSongList(api_web.web.APIHandler):
+class RemoveFromCachedSongList(web_api.web.APIHandler):
     dj_preparation = True
     fields = {"song_id": (fieldtypes.song_id, True)}
 
@@ -78,7 +78,7 @@ class RemoveFromDJElection(RemoveFromCachedSongList):
 
 
 @handle_api_url("admin/commit_dj_election")
-class CommitDJElection(api_web.web.APIHandler):
+class CommitDJElection(web_api.web.APIHandler):
     dj_preparation = True
     description = "Commit the DJ Election the user is editing."
     fields = {"sched_id": (fieldtypes.sched_id, False)}
@@ -103,7 +103,7 @@ class CommitDJElection(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/delete_election")
-class DeleteElection(api_web.web.APIHandler):
+class DeleteElection(web_api.web.APIHandler):
     dj_preparation = True
     description = "Delete an existing election."
     fields = {"elec_id": (fieldtypes.elec_id, True)}

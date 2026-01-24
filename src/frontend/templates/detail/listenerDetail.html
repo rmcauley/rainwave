@@ -1,0 +1,59 @@
+<div class="art_anchor">
+	<div class="art_container" style="background-image: url({{ avatar }});"></div>
+</div>
+
+<div class="detail_header">
+	<div>
+		<if condition="rank">
+			<span style="color: #{{ colour }}; padding-right: 5px;">
+				{{ rank }}.
+			</span>
+		</if>
+		<span>
+			{{ $l("registered_in_year", { 'year': _c.regdate }) }}
+		</span>
+	</div>
+	<if condition="^_c.user_id == User.id">
+		<div>{{ $l("view_your") }}</div>
+		<div style="padding-left: 10px;">
+			<a class="obvious" target="_blank" href="/pages/user_recent_votes">
+				{{ $l("recent_votes") }}
+			</a>
+		</div>
+		<div style="padding-left: 10px;">
+			<a class="obvious" target="_blank" href="/pages/all_faves">
+				{{ $l("all_faves") }}
+			</a>
+		</div>
+		<div style="padding-left: 10px;">
+			<a class="obvious" target="_blank" href="/pages/user_requested_history">
+				{{ $l("request_history") }}
+			</a>
+		</div>
+	</if>
+</div>
+
+<if condition="^_c.top_albums.length">
+	<h2>{{ $l("top_rated_albums") }}</h2>
+	<for each="top_albums">
+		<div class="row">
+			<template use="rating" />
+			<!--<div class="rating_site">
+				{{ ^Formatting.rating(_c.rating_site) }}
+			</div>-->
+			<div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
+		</div>
+	</for>
+</if>
+
+<if condition="^_c.top_request_albums">
+	<h2>{{ $l("top_requested_albums") }}</h2>
+	<for each="top_request_albums">
+		<div class="row">
+			<div class="request_count">{{ request_count_listener }}</div>
+			<div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
+		</div>
+	</for>
+</if>
+
+<div bind="user_detail_container" class="user_detail_container"></div>

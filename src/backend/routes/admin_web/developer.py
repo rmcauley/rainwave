@@ -1,11 +1,11 @@
 from time import time as timestamp
 import hashlib
 
-from api_web.web import APIHandler
-from api_web.exceptions import APIException
-from api_web.urls import handle_api_url
+from web_api.web import APIHandler
+from web_api.exceptions import APIException
+from web_api.urls import handle_api_url
 
-from src_backend.config import config
+from src.backend.config import config
 from libs import db
 
 

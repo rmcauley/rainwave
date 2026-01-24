@@ -1,8 +1,8 @@
 import math
 
-from api_web import fieldtypes
-from api_web.urls import handle_api_html_url, handle_api_url
-from api_web.web import APIHandler, PrettyPrintAPIMixin, APIException
+from web_api import fieldtypes
+from web_api.urls import handle_api_html_url, handle_api_url
+from web_api.web import APIHandler, PrettyPrintAPIMixin, APIException
 from libs import cache, db
 from rainwave import playlist
 from rainwave import user as UserLib

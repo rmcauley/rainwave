@@ -4,7 +4,7 @@ import datetime
 import requests
 import tornado.ioloop
 
-from api_song_changer import sync_to_front
+from song_change_api import sync_to_front
 from rainwave import events
 from rainwave import playlist
 import rainwave.playlist_objects.album
@@ -12,7 +12,7 @@ from rainwave import listeners
 from rainwave import request
 from rainwave import user
 from libs import db
-from src_backend.config import config
+from src.backend.config import config
 from libs import cache
 from libs import log
 

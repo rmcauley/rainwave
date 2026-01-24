@@ -1,11 +1,11 @@
 from libs import db
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web import fieldtypes
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api import fieldtypes
 
 
 @handle_api_url("admin/set_song_request_only")
-class SetSongRequestOnly(api_web.web.APIHandler):
+class SetSongRequestOnly(web_api.web.APIHandler):
     admin_required = True
     sid_required = True
     description = "Sets a song to be played only by request."

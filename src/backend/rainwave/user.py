@@ -8,11 +8,11 @@ from urllib import parse
 from libs import log
 from libs import cache
 from libs import db
-from src_backend.config import config
+from src.backend.config import config
 
 from rainwave import playlist
 
-from api_web.exceptions import APIException
+from web_api.exceptions import APIException
 
 _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
 _DEFAULT_AVATAR = "/static/images4/user.svg"

@@ -1,9 +1,9 @@
-from api_web.web import APIHandler
-from api_web import fieldtypes
-from api_web.urls import handle_api_url
+from web_api.web import APIHandler
+from web_api import fieldtypes
+from web_api.urls import handle_api_url
 from libs import db
 from rainwave.playlist_objects.metadata import make_searchable_string
-from api_web.exceptions import APIException
+from web_api.exceptions import APIException
 
 
 @handle_api_url("search")

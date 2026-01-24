@@ -1,425 +1,614 @@
 {
-   "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
-   "__comment__"                 : "Please put them in your actual language. (i.e. use kanji!) Short version should be < 4 characters.",
-
-   "language_name"                                   : "Nederlands",
-   "language_name_short"                             : "NL",
-   
-    "__comment__"                 : "This shows up after 'Rainwave' on Google results.  e.g. 'Rainwave Video Game Music Radio: Covers'",
-
-   "page_title_on_google"                            : "Video Game Music Radio",
-
-   "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
-
-   "missing_station_id"                              : "Station ID ontbreekt.",
-   "invalid_station_id"                              : "Ongeldig station ID.",
-   "missing_argument"                                : "Ontbrekend argument: '%(argument)'.",
-   "invalid_argument"                                : "Ongeldig argument '%(argument)': %(reason)",
-   "auth_required"                                   : "Autorisatie vereist.",
-   "auth_failed"                                     : "Autorisatie mislukt.",
-   "login_required"                                  : "Inloggen vereist.",
-   "tunein_required"                                 : "U moet naar een station luisteren.",
-   "admin_required"                                  : "U moet een admin zijn.",
-   "dj_required"                                     : "U moet een DJ zijn.",
-   "perks_required"                                  : "U moet een donor zijn.",
-   "unlocked_only"                                   : "Gebruiker vergrendeld op %(station) voor nog %(lock_counter) nummers.",
-   "internal_error"                                  : "Interne server-fout.",
-   "song_does_not_exist"                             : "Nummer bestaat niet.",
-   "db_error_retry"                                  : "Interne database fout - probeer het opnieuw.",
-   "db_error_permanent"                              : "Server-fout - interne database is offline.",
-   "websocket_throttle"                              : "Rustig aan!",
-   "404"                                             : "Pagina niet gevonden.",
-
-   "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
-
-   "fave_failed"                                     : "Favoriet toevoegen mislukt.",
-   "request_success"                                 : "Aangevraagd.",
-   "request_failed"                                  : "Aanvraag mislukt.",
-   "request_deleted"                                 : "Verzoek verwijderd.",
-   "request_delete_failed"                           : "Aanvraag verwijderen mislukt.",
-   "request_unrated_failed"                          : "Aanvraag onbeoordeelt mislukt.",
-   "request_favorited_songs_success"                 : "Favorieten aangevraagd.",
-   "request_favorited_failed"                        : "Geen favorieten beschikbaar.",
-   "too_many_requests"                               : "Te veel aanvragen.",
-   "same_request_exists"                             : "Nummer al aangevraagd.",
-   "same_request_album"                              : "Album al aangevraagd.",
-   "song_not_requested"                              : "Nummer niet aangevraagd.",
-   "station_offline"                                 : "Dit station is momenteel offline. Probeer het later opnieuw.",
-   "must_login_and_tune_in_to_request"               : "U moet inloggen en naar een station luisteren om een nummer aan te vragen.",
-   "already_voted_for_song"                          : "Al gestemd voor dit nummer.",
-   "cannot_rate_now"                                 : "Kan nu niet dit nummer beoordelen.",
-   "tunein_to_rate_current_song"                     : "U moet naar dit station luisteren om het huidige nummer te beoordelen.",
-   "rating_submitted"                                : "Beoordeling ingezonden.",
-   "rating_cleared"                                  : "Beoordeling gewist.",
-   "unknown_error_message"                           : "Sorry hiervoor; Probeer het opnieuw, of formuleer een bug met de debug informatie hieronder. (Deze error is gerapporteerd)",
-   "debug_information"                               : "Debug informatie:",
-   "requests_reordered"                              : "Aanvragen gehersorteerd.",
-   "request_queue_paused"                            : "Aanvraag wachtrij gepauzeerd.",
-   "request_queue_unpaused"                          : "Aanvraag wachtrij hervat.",
-   "no_results"                                      : "Geen resultaten.",
-   "empty_list"                                      : "Leeg lijst.",
-   "no_search_results"                               : "Geen zoekresultaten.",
-   "server_just_started"                             : "Rainwave is aan het herstarten.",
-   "station_paused"                                  : "Station is momenteel gepauzeerd door de DJ.",
-   "album_on_other_station"                          : "Album is niet beschikbaar op dit station, sorry!",
-   "song_on_other_station"                           : "Nummer is niet beschikbaar op %(station).",
-   "album_is_dj_only"                                : "Album is exclusief geselecteerd voor dit evenement, sorry!",
-   "locked_to_station"                               : "U was aan het stemmen op %(locked_station), u moet %(lock_counter) &(lock_counter:song/songs) wachten om te stemmen op %(this_station).",
-       "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
-   "search_string_too_short"                         : "Zoekopdracht moet minstens 3 letters bevatten.",
-   "search_result_limit"                             : "(te veel resultaten.  gelieve uw zoekopdracht nader te specifiëren.)",
-
-   "auth_failed_message"                             : "Ons verificatiesysteem faalde!  We hebben deze bug al een paar weken bij anonieme gebruikers, en we zijn het verificatiesysteem momenteel aan het herschrijven.  Gelieve de pagina te verversen, of beter, REGISTREER EN LOGIN door de link naar forum hieronder te gebruiken wat het probleem zal oplossen!",
-   
- "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
-
-   "oops"                                            : "Oeps",
-   "something_went_wrong"                            : "Er is iets misgegaan bij het laden van de server. :(",
-   "crash_happened"                                  : "Rainwave is gecrasht. :(",
-   "report_sending"                                  : "We sturen een formulier hierover naar onze servers.",
-   "report_sent"                                     : "De error is gerapporteerd en we zullen het bekijken!",
-   "report_error"                                    : "We konden zelfs geen formulier sturen naar onze servers! :(",
-   "please_refresh"                                  : "Gelieve de pagina te verversen.",
-   "report_submitted"                                : "Rapport Verzonden",
-
-   "__comment__"                 : "API Key Management",
-
-   "api_key_manager"                                 : "API Sleutel Beheerder",
-   "api_key"                                         : "API Sleutel",
-   "qr_code"                                         : "QR Code",
-   "create_api_key"                                  : "Creëer API Sleutel",
-   "your_numeric_user_id"                            : "Uw numerieke ID",
-   "app_would_like_to"                               : "Deze App Wilt Graag:",
-   "allow_api_auth"                                  : "Accepteer",
-
-   "__comment__"                 : "Menu",
-
-   "station_select_header"                           : "Station Selecteren",
-   "station_name_1"                                  : "Games",
-   "station_name_2"                                  : "OC ReMix",
-   "station_name_3"                                  : "Covers",
-   "station_name_4"                                  : "Chiptune",
-   "station_name_5"                                  : "Alles",
-
-   "login"                                           : "Inloggen",
-   "register_with_discord"                           : "Login/Registreer met Discord",
-   "discord_already_associated"                      : "Een ander account gebruikt al dit Discord login.",
-   "login_with_legacy"                               : "Verouderd Login",
-   "link_discord"                                    : "Link Discord Account",
-   "logout"                                          : "Log uit",
-   "legacy_username"                                 : "Verouderd Forum Gebruikersnaam",
-   "password"                                        : "Wachtwoord",
-   "oauth_rejected"                                  : "Autorisatie Geweigerd :(",
-   "username_required"                               : "Vul alstublief jouw gebruikersnaam in.",
-   "password_required"                               : "Vul alstublieft jouw wachtwoord in.",
-   "login_failed"                                    : "Verkeerd gebruikersnaam of wachtwoord.",
-   "login_limit"                                     : "Totaal aantal login pogingen bereikt.",
-   "login_too_old"                                   : "Jouw login is te oud om te herstellen via wachtwoord. Neem contact op met het personeel op Discord.",
-   "login_password_disabled"                         : "Login met wachtwoord uitgeschakeld voor dit account.",
-   "signup"                                          : "Registreer",
-   "chat"                                            : "Chat",
-   "search"                                          : "Zoeken",
-   "previouslyplayed"                                : "Zojuist afgespeeld",
-   "playback_history_link"                           : "Afgespeelde Geschiedenis",
-   "special_event_alert"                             : "Speciaal Evenement op %(station): ",
-
-   "tunein"                                          : "Tune In",
-   "stop"                                            : "Stoppen",
-   "audio_error"                                     : "Kan niet naar dit station luisteren vanaf uw browser!",
-   "audio_connect_error"                             : "Op dit moment hebben we problemen om met de radioserver te verbinden.",
-   "audio_connect_error_reattempting"                : "U verliest de mogelijkheid om te stemmen door verbindingsproblemen. We proberen er voor te zorgen dat u volledig verbonden blijft.",
-   "try_external_player"                             : "Klik hier om te proberen om een app te gebruiken om naar dit station te luisteren.",
-   "m3u_hijack_right_click"                          : "Een plugin probeert uw browser te kapen.  Gelieve de MP3 of Ogg M3U download links te gebruiken en een app om naar de radio te luisteren.",
-
-   "listen_via_browser"                              : "Beluister in Browser",
-   "listen_via_mp3"                                  : "Beluister via MP3",
-   "listen_via_ogg"                                  : "Beluister via Ogg",
-   "chrome_mobile_takes_time"                        : "Android kan tot 20 seconden nodig hebben om te laden.  Een oranje icoon betekent dat het OK is - even geduld!",
-
-   "api_docs"                                        : "API Docs",
-   "github_repo"                                     : "GitHub",
-
-   "__comment__"                 : "Timeline Headers",
-
-   "coming_up"                                       : "Binnenkort",
-   "vote_now"                                        : "Stem Nu",
-   "now_playing"                                     : "Nu Spelend",
-   "election"                                        : "Verkiezing",
-   "power_hour"                                      : "Kracht Uur",
-   
-   "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
-   "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
-   "__comment__"                 : "at the top of the timeline.  That's what this 'continued' line is for.",
-   "continued"                                       : "Vervolgd",
-   
-     "__comment__"                 : "Timeline Song",
-     
-   "vote_submitted"                                  : "Stem ingezonden",
-   "cannot_vote_for_this_now"                        : "Kan op dit moment niet op dit nummer stemmen.",
-   "invalid_hotkey_vote"                             : "Ongeldige keuze, probeer het opnieuw.",
-   "played_ago"                                      : "%(time) Geleden Afgespeeld",
-   "timeline_art__request_indicator"                 : "Aanvraag",
-   "timeline_art__your_request_indicator"            : "Uw",
-   "num_votes"                                       : "%(num_votes) &(num_votes:Vote/Votes)",
-   "vote"                                            : "Stem",
-       "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
-   "voted"                                           : "Gestemd",
-
-   "event_naming__oneup"                             : "%(name) Kracht Uur",
-
-   "__comment__"                 : "Tip Jar",
-
-   "Patreon"                                         : "Patreon",
-   "PayPal"                                          : "PayPal",
-   "tip_jar"                                         : "Fooi Pot",
-   "tip_jar_opener"                                  : "Rainwave zal altijd blijven doorgaan ongeacht wat er in de Fooi Pot zit.  Als u geïnteresseerd bent in het geven van een fooi; Het is simpel:",
-   "tip_jar_instruction_1"                           : "Stuur een PayPal gift met het Paypal.me link hieronder.",
-   "tip_jar_instruction_2"                           : "Verstuur ons uw gebruikersnaam en een bericht als een reactie.",
-   "tip_jar_instruction_3"                           : "Geef alstublieft aan of u wilt dat u anoniem wilt blijven.",
-   "tip_jar_opener_end"                              : "Nadat we uw Donatie hebben verwerkt, krijgt u een Donor status op de website. Dit zorgt ervoor dat u meer aanvragen in de aanvragen wachtrij kan hebben en de mogelijkheid om op meer dan 1 verkiezing te stemmen op één moment.",
-   "amount"                                          : "Bedrag",
-   "message"                                         : "Bericht",
-   "tip_jar_balance"                                 : "Huidig saldo",
-   "tip_jar_all_donations"                           : "Totaal bedrag van donaties sinds juli 2007",
-
-   "__comment__"                 : "User Detail",
-
-   "votes_by_station"                                : "Stemmen per Station",
-   "votes_by_source_station"                         : "Stemmen per Bron Stn.",
-   "requests_by_station"                             : "Aanvragen per Station",
-   "requests_by_source_station"                      : "Aanvragen per Bron Stn.",
-   "rating_counts_across_stations"                   : "Waarderingen per Bron Stn.",
-   "ratings_completion_rate"                         : "Waarderingen Volledigheid",
-   "rating_spread"                                   : "Waarderingen Verspreiding",
-   "average_rating_by_station"                       : "Gem. Waarderingen per Station",
-   "no_ratings"                                      : "Geen waarderingen",
-
-   "view_your"                                       : "Bekijk uw: ",
-   "recent_votes"                                    : "recente stemmen",
-   "request_history"                                 : "aanvraag geschiedenis",
-   "registered_in_year"                              : "Lid geworden in %(year).",
-
-   "top_rated_albums"                                : "Hoogst Gewaardeerde Albums",
-   "top_requested_albums"                            : "Meest Aangevraagde Albums",
-
-   "__comment__"                 : "Other",
-
-   "random_relay"                                    : "Willekeurige Relais",
-   "redownload_m3u"                                  : "Bent u aan het verbinden met dit station? Als u net ingelogd bent en een externe app gebruikt om te luisteren, download dan de afspeellijst opnieuw",
-   "sync_stopped"                                    : "Rainwave is gestopt met reageren. Gelieve de pagina te verversen en probeer het opnieuw.",
-   "lost_connection"                                 : "Verbinding met Rainwave verloren.",
-   "sync_retrying"                                   : "Problemen bij het communiceren met de Rainwave server, even geduld a.u.b. ...",
-   "mobile_sync_retrying"                            : "Connectie timeout problemen, ververs alstublieft de pagina of probeer het later opnieuw.",
-   "async_error"                                     : "Fout bij het communiceren met Rainwave. Probeer het opnieuw of ververs de pagina.",
-   "deeplink_error"                                  : "Fout bij het begrijpen van de ingevoerde URL.",
-   "hold_to_rate"                                    : "Hou ingedrukt om te waarderen",
-
-   "Loading..."                                      : "Laden...",
-   "Cancel"                                          : "Annuleer",
-   "go"                                              : "Ga",
-
-   "__comment__"                 : "Hotkey Mode",
-
-   "hotkey_mode"                                     : "1-5 om te waarderen, A/S/D om te stemmen",
-   "invalid_hotkey"                                  : "Ongeldige sneltoets.",
-   "not_an_election"                                 : "Geen verkiezing.",
-   "rate_song_mobile_dialog"                         : "Waardeer Nummer",
-
-   "__comment__"                 : "Playlist View",
-
-   "playlist"                                        : "Afspeellijst",
-   "library"                                         : "Bibliotheek",
-   "Filter..."                                       : "Filter...",
-   "your_album_rating"                               : "U waardeerde dit album %(rating_user).",
-   "album_rating_ranked_at_v2"                       : "Gewaardeerd op %(rating) met %(rating_count) Nummers beoordelingen, Rang: #(rank).",
-   "album_requests_ranked_at"                        : "Aantal keren aangevraagd: %(count) &(count:time/times), Rang: #(rank).",
-   "album_year"                                      : "Uitgebracht in %(year).",
-   "album_rating_detail"                             : "Gebruikers beoordeelden dit album ",
-   "song_rating_detail"                              : "Gebruikers beoordeelden dit nummer ",
-   "rating_detail_numbers"                           : "%(rating). (%(percentile_message))",
-   "rating_percentile_top"                           : "hoogste %(percentile_top)%",
-   "rating_percentile_bottom"                        : "laagste %(percentile)%",
-   "request_percentile_top"                          : "Aanvraag populariteit: hoogste %(percentile_top)%.",
-   "request_percentile_bottom"                       : "Aanvraag populariteit: laagste %(percentile)%.",
-   "song_has_no_ratings"                             : "Nummer heeft geen waarderingen.",
-   "Rate"                                            : "Beoordeel",
-   "Request"                                         : "Aanvraag",
-   "Albums"                                          : "Albums",
-   "Songs"                                           : "Nummers",
-   "Artists"                                         : "Artiesten",
-   "Artists_pluralized"                              : "&(count:Artiest/Artiesten)",
-   "Users"                                           : "Gebruikers",
-   "Groups"                                          : "Categorieën",
-   "Listeners"                                       : "Luisteraars",
-   "songs_from"                                      : "Nummers van %(station)",
-   "album_on_station"                                : "Op %(station): %(album)",
-   "groups_tab_title"                                : "Categorieën",
-   "RequestLine"                                     : "Aanvragen Wachtrij",
-   "nobody_in_line"                                  : "Niemand in Wachtrij.",
-   "relevant_categories"                             : "Relevante Categorieën: ",
-   "relevant_category"                               : "Categorie: ",
-   "relevant_categories_rollover"                    : "Relevante categorieën: beweeg de muis over de lijst.",
-   "new_album"                                       : "Nieuw album!",
-   "album_all_cooldown"                              : "Dit album is op cooldown.",
-   "album_has_cooldown"                              : "Sommige nummers zijn op cooldown.",
-   "newish_album"                                    : "Recent toegevoegd.",
-   "new_songs"                                       : "Nieuwe nummers!",
-   "newish_songs"                                    : "Recent bijgewerkt.",
-   "search..."                                       : "Zoek...",
-   "no_songs_on_this_station"                        : "Er zijn geen nummers op %(station) voor dit album.",
-   "fave_all_songs"                                  : "Voeg alle toe als favoriet",
-   "unfave_all_songs"                                : "Verwijder alle als favoriet",
-
-   "__comment__"                 : "Requests",
-
-   "clear_request_queue"                             : "Wis alles",
-   "pause_request_queue"                             : "Pauzeer",
-   "unpause_request_queue"                           : "Onpauzeer",
-   "request_fill_with_unrated"                       : "Onbeoordeeld aanvragen.",
-   "request_fill_with_faves"                         : "Favorieten aanvragen",
-   "Suspend"                                         : "Onderbreek",
-   "Pause"                                           : "Pauzeer",
-   "Resume"                                          : "Hervat",
-   "Faves"                                           : "Favorieten",
-   "Unrated"                                         : "Onbeoordeeld",
-   "Clear"                                           : "Wis",
-
-   "Requests"                                        : "Aanvragen",
-   "#_requests"                                      : "%(num_requests) &(num_requests:Request/Requests)",
-   "requests_all_on_cooldown"                        : "Alle aanvragen in cooldown!",
-   "request_you_are_x_in_line"                       : "#(position) In Wachtrij",
-   "request_grab_tag__paused"                        : "Gepauzeerd",
-
-   "request_on_cooldown_for"                         : "Op cooldown voor %(cool_time).",
-   "request_on_cooldown_ends_soon"                   : "Cooldown bijna afgelopen.",
-   "request_in_election"                             : "%(blocked_by) is in een verkiezing.",
-   "blocked_by_name__group"                          : "Categorie",
-   "blocked_by_name__album"                          : "Album",
-   "blocked_by_name__in_election"                    : "Nummer",
-   "request_only_on_x"                               : "Beschikbaar op %(station).",
-   "no_song_selected"                                : "(geen nummer geselecteerd)",
-
-   "make_a_request"                                  : "Open de bibliotheek en klik op de titel van een nummer om het bij uw aanvragen toe te voegen.",
-
-   "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
-
-   "station_description_id_1"                        : "Videogame soundtrack radio.  Stem op de nummers die u wilt horen!",
-   "station_description_id_2"                        : "OverClocked ReMix Radio, de beste in videogame remixes.  Stem voor uw favoriete remixes!",
-   "station_description_id_3"                        : "Officiële en fan-made remixes van videogames, streamt 24/7.  Stem op uw favoriete artiesten!",
-   "station_description_id_4"                        : "Videogame en originele chiptune soundtracks, streamt 24/7.  Stem op de nummers die u wilt horen!",
-   "station_description_id_5"                        : "Videogame muziek online radio, inclusief remixes en originele soundtracks!  Stem op de nummers die u wilt horen!",
-
-   "__comment__"                 : "Station Descriptions For The Menu (short messages)",
-
-   "station_menu_description_id_1"                   : "Muziek, rechtstreeks uit de games.",
-   "station_menu_description_id_2"                   : "OverClocked ReMixes en albums.",
-   "station_menu_description_id_3"                   : "Officiële en fan-made remixes.",
-   "station_menu_description_id_4"                   : "Videogame en originele chiptunes.",
-   "station_menu_description_id_5"                   : "De volledige Rainwave afspeellijst.",
-   "now_playing_on_..."                              : "Nu aan het afspelen op %(station)",
-
-   "__comment__"                 : "Preferences",
-
-   "preferences"                                     : "Voorkeuren",
-   "Settings"                                        : "Instellingen",
-   "yes"                                             : "Ja",
-   "no"                                              : "Nee",
-   "site_mode"                                       : "Site Modus",
-   "basic"                                           : "Basis",
-   "full"                                            : "Geavanceerd",
-   "change_language"                                 : "Taal",
-   "timeline_preferences"                            : "Tijdlijn",
-   "tab_title_preferences"                           : "Tabblad Titel",
-   "font_options"                                    : "Lettertype Opties",
-   "prefs_roboto"                                    : "Gebruik Aangepast Lettertype",
-   "prefs_f_norm"                                    : "Krimp Lettertype Voor Schermbreedte",
-   "prefs_notify"                                    : "Bureaublad Notificaties bij Verandering Nummer",
-   "prefs_t_clk"                                     : "Laat de Klok in Tabblad Titel Zien",
-   "prefs_t_rt"                                      : "Laat Waardering in Tabblad Titel Zien",
-   "prefs_t_tl"                                      : "Laat Titel Nummer in Tabblad Titel Zien",
-   "prefs_l_stksz"                                   : "Permanente Zichtbaarheid Geschiedenis Afgespeelde Nummers",
-   "prefs_l_displose"                                : "Toon Nummers die de Verkiezingen Verloren",
-   "playlist_preferences"                            : "Album Lijst",
-   "prefs_p_avup"                                    : "Sorteer Beschikbare Nummers Bovenaan",
-   "prefs_p_favup"                                   : "Sorteer Favorieten Bovenaan",
-   "prefs_p_null1"                                   : "Sorteer Onbeoordeelde Nummers Bovenaan",
-   "prefs_p_fav1"                                    : "Prioriteer Favorieten Boven Beschikbare Nummers",
-   "prefs_p_sort"                                    : "Sorteer Albums op...",
-   "prefs_p_songsort"                                : "Sorteer Nummers Zoals Albums Gesorteerd Worden",
-   "prefs_sort_playlist_by_alpha"                    : "Alfabetische Volgorde",
-   "prefs_sort_playlist_by_rating_user"              : "Waardering",
-   "rating_preferences"                              : "Waarderingen",
-   "prefs_r_incmplt"                                 : "Duid Incomplete Albums Aan",
-   "prefs_r_noglbl"                                  : "Verberg de Globale Waarderingen tot ik Gewaardeerd heb",
-   "prefs_r_clear"                                   : "Toon 'Verwijder Waardering' Knop",
-   "prefs_pwr"                                       : "Activeer Power User Modus",
-   "prefs_hkm"                                       : "Sneltoets Modus Toetsenbord Layout",
-   
-    "__comment__"                 : "Hotkey Mode - MAKE THEM VERY SHORT (and to test, activate power user mode and press backtick/tilde key)",
-
-   "waiting_for_hotkey"                              : "Wachten Op Sneltoets",
-   "hotkeys_rate10"                                  : " = Waardeer 1.0-5.0",
-   "hotkeys_rate05"                                  : " = Waardeer 1.5-4.5",
-   "hotkeys_vote0"                                   : " = Stem 1st Verk",
-   "hotkeys_vote1"                                   : " = Stem 2nd Verk",
-   "hotkeys_fave"                                    : " = Fav Huidig Nummer",
-   "hotkeys_play"                                    : " = Stop/Speel",
-
- "__comment__"                 : "Cooldown Explanation",
-
-   "cd_what_is"                                      : "Wat Is Cooldown?",
-   "cd_blue_bkg_is"                                  : "Als een nummer of album een blauwe achtergrond heeft, is het op cooldown en kan het momenteel niet gespeeld worden.",
-   "cd_why_use_cooldown"                             : "Cooldowns worden gebruikt zodat Rainwave gen nummers en albums herhaalt.",
-   "cd_type_of_cooldown"                             : "Type van Cooldown",
-   "cd_example"                                      : "Voorbeeld",
-   "cd_cooldown_length"                              : "Cooldown Lengte",
-   "cd_song"                                         : "Nummer",
-   "cd_song_length"                                  : "2-6 dagen",
-   "cd_album"                                        : "Album",
-   "cd_album_length"                                 : "6-48 uren",
-   "cd_category"                                     : "Categorie",
-   "cd_category_length"                              : "15 minuten",
-   "cd_cooldowns_depend_on"                          : "Cooldowns hangen af van:",
-   "cd_album_size"                                   : "Album Grootte",
-   "cd_larger_album"                                 : "Groter Album = Kortere Cooldown",
-   "cd_rating"                                       : "Waardering",
-   "cd_higher_rating"                                : "Hogere Waardering = Kortere Cooldown",
-   "cd_recently_added"                               : "Recent Toegevoegd",
-   "cd_newer"                                        : "Nieuwer = Kortere Cooldown",
-
-   "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
-
-   "timeformat_w"                                    : "w ",
-   "timeformat_d"                                    : "d ",
-   "timeformat_h"                                    : "u ",
-   "timeformat_m"                                    : "m ",
-   "timeformat_s"                                    : "s ",
-
-   "__comment__"                 : "Statistic Pages (see http://rainwave.cc/api4/ and scroll down)",
-
-   "unrated_songs"                                   : "Onbeoordeelde Nummers",
-   "title"                                           : "Titel",
-   "album_name"                                      : "Album Naam",
-   "id"                                              : "ID",
-   "sid"                                             : "Station ID",
-   "delete"                                          : "Verwijder",
-   "all_faves"                                       : "Alle Favorieten",
-   "rating_user"                                     : "Gebruikers Beoordeling",
-   "fave"                                            : "Favoriet",
-   "rating"                                          : "Gem. Beoordeling",
-   "album_id"                                        : "Album ID",
-   "playback_history"                                : "Zojuist Afgespeeld - Uitgebreid",
-   "name"                                            : "Naam",
-   "song_rating"                                     : "Beoordeling",
-   "top_100"                                         : "Top 100",
-   "song_rating_count"                               : "# Beoordelingen",
-   "origin_sid"                                      : "Station",
-   "user_recent_votes"                               : "Uw Recente Stemmen",
-   "user_requested_history"                          : "Uw Aanvraag Geschiedenis",
-   "song_id"                                         : "Nummer ID",
-   "user_id"                                         : "Gebruiker ID",
-   "cool_end"                                        : "Cooldown Einde",
-   "power_hours"                                     : "Power Hours",
-   "start"                                           : "Start",
-   "end"                                             : "Einde"
+  "language_name": "Nederlands",
+  "language_name_short": "NL",
+  "page_title_on_google": "Video Game Music Radio",
+  "missing_station_id": "Station ID ontbreekt.",
+  "invalid_station_id": "Ongeldig station ID.",
+  "missing_argument": [
+    "Ontbrekend argument: '",
+    {
+      "type": "substitute",
+      "key": "argument"
+    },
+    "'."
+  ],
+  "invalid_argument": [
+    "Ongeldig argument '",
+    {
+      "type": "substitute",
+      "key": "argument"
+    },
+    "': ",
+    {
+      "type": "substitute",
+      "key": "reason"
+    }
+  ],
+  "auth_required": "Autorisatie vereist.",
+  "auth_failed": "Autorisatie mislukt.",
+  "login_required": "Inloggen vereist.",
+  "tunein_required": "U moet naar een station luisteren.",
+  "admin_required": "U moet een admin zijn.",
+  "dj_required": "U moet een DJ zijn.",
+  "perks_required": "U moet een donor zijn.",
+  "unlocked_only": [
+    "Gebruiker vergrendeld op ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    " voor nog ",
+    {
+      "type": "substitute",
+      "key": "lock_counter"
+    },
+    " nummers."
+  ],
+  "internal_error": "Interne server-fout.",
+  "song_does_not_exist": "Nummer bestaat niet.",
+  "db_error_retry": "Interne database fout - probeer het opnieuw.",
+  "db_error_permanent": "Server-fout - interne database is offline.",
+  "websocket_throttle": "Rustig aan!",
+  "404": "Pagina niet gevonden.",
+  "fave_failed": "Favoriet toevoegen mislukt.",
+  "request_success": "Aangevraagd.",
+  "request_failed": "Aanvraag mislukt.",
+  "request_deleted": "Verzoek verwijderd.",
+  "request_delete_failed": "Aanvraag verwijderen mislukt.",
+  "request_unrated_failed": "Aanvraag onbeoordeelt mislukt.",
+  "request_favorited_songs_success": "Favorieten aangevraagd.",
+  "request_favorited_failed": "Geen favorieten beschikbaar.",
+  "too_many_requests": "Te veel aanvragen.",
+  "same_request_exists": "Nummer al aangevraagd.",
+  "same_request_album": "Album al aangevraagd.",
+  "song_not_requested": "Nummer niet aangevraagd.",
+  "station_offline": "Dit station is momenteel offline. Probeer het later opnieuw.",
+  "must_login_and_tune_in_to_request": "U moet inloggen en naar een station luisteren om een nummer aan te vragen.",
+  "already_voted_for_song": "Al gestemd voor dit nummer.",
+  "cannot_rate_now": "Kan nu niet dit nummer beoordelen.",
+  "tunein_to_rate_current_song": "U moet naar dit station luisteren om het huidige nummer te beoordelen.",
+  "rating_submitted": "Beoordeling ingezonden.",
+  "rating_cleared": "Beoordeling gewist.",
+  "unknown_error_message": "Sorry hiervoor; Probeer het opnieuw, of formuleer een bug met de debug informatie hieronder. (Deze error is gerapporteerd)",
+  "debug_information": "Debug informatie:",
+  "requests_reordered": "Aanvragen gehersorteerd.",
+  "request_queue_paused": "Aanvraag wachtrij gepauzeerd.",
+  "request_queue_unpaused": "Aanvraag wachtrij hervat.",
+  "no_results": "Geen resultaten.",
+  "empty_list": "Leeg lijst.",
+  "no_search_results": "Geen zoekresultaten.",
+  "server_just_started": "Rainwave is aan het herstarten.",
+  "station_paused": "Station is momenteel gepauzeerd door de DJ.",
+  "album_on_other_station": "Album is niet beschikbaar op dit station, sorry!",
+  "song_on_other_station": [
+    "Nummer is niet beschikbaar op ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "."
+  ],
+  "album_is_dj_only": "Album is exclusief geselecteerd voor dit evenement, sorry!",
+  "locked_to_station": [
+    "U was aan het stemmen op ",
+    {
+      "type": "substitute",
+      "key": "locked_station"
+    },
+    ", u moet ",
+    {
+      "type": "substitute",
+      "key": "lock_counter"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "lock_counter",
+      "plurals": {
+        "one": "song",
+        "other": "songs"
+      }
+    },
+    " wachten om te stemmen op ",
+    {
+      "type": "substitute",
+      "key": "this_station"
+    },
+    "."
+  ],
+  "search_string_too_short": "Zoekopdracht moet minstens 3 letters bevatten.",
+  "search_result_limit": "(te veel resultaten.  gelieve uw zoekopdracht nader te specifiëren.)",
+  "auth_failed_message": "Ons verificatiesysteem faalde!  We hebben deze bug al een paar weken bij anonieme gebruikers, en we zijn het verificatiesysteem momenteel aan het herschrijven.  Gelieve de pagina te verversen, of beter, REGISTREER EN LOGIN door de link naar forum hieronder te gebruiken wat het probleem zal oplossen!",
+  "oops": "Oeps",
+  "something_went_wrong": "Er is iets misgegaan bij het laden van de server. :(",
+  "crash_happened": "Rainwave is gecrasht. :(",
+  "report_sending": "We sturen een formulier hierover naar onze servers.",
+  "report_sent": "De error is gerapporteerd en we zullen het bekijken!",
+  "report_error": "We konden zelfs geen formulier sturen naar onze servers! :(",
+  "please_refresh": "Gelieve de pagina te verversen.",
+  "report_submitted": "Rapport Verzonden",
+  "api_key_manager": "API Sleutel Beheerder",
+  "api_key": "API Sleutel",
+  "qr_code": "QR Code",
+  "create_api_key": "Creëer API Sleutel",
+  "your_numeric_user_id": "Uw numerieke ID",
+  "app_would_like_to": "Deze App Wilt Graag:",
+  "allow_api_auth": "Accepteer",
+  "station_select_header": "Station Selecteren",
+  "station_name_1": "Games",
+  "station_name_2": "OC ReMix",
+  "station_name_3": "Covers",
+  "station_name_4": "Chiptune",
+  "station_name_5": "Alles",
+  "login": "Inloggen",
+  "register_with_discord": "Login/Registreer met Discord",
+  "discord_already_associated": "Een ander account gebruikt al dit Discord login.",
+  "login_with_legacy": "Verouderd Login",
+  "link_discord": "Link Discord Account",
+  "logout": "Log uit",
+  "legacy_username": "Verouderd Forum Gebruikersnaam",
+  "password": "Wachtwoord",
+  "oauth_rejected": "Autorisatie Geweigerd :(",
+  "username_required": "Vul alstublief jouw gebruikersnaam in.",
+  "password_required": "Vul alstublieft jouw wachtwoord in.",
+  "login_failed": "Verkeerd gebruikersnaam of wachtwoord.",
+  "login_limit": "Totaal aantal login pogingen bereikt.",
+  "login_too_old": "Jouw login is te oud om te herstellen via wachtwoord. Neem contact op met het personeel op Discord.",
+  "login_password_disabled": "Login met wachtwoord uitgeschakeld voor dit account.",
+  "signup": "Registreer",
+  "chat": "Chat",
+  "search": "Zoeken",
+  "previouslyplayed": "Zojuist afgespeeld",
+  "playback_history_link": "Afgespeelde Geschiedenis",
+  "special_event_alert": [
+    "Speciaal Evenement op ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    ": "
+  ],
+  "tunein": "Tune In",
+  "stop": "Stoppen",
+  "audio_error": "Kan niet naar dit station luisteren vanaf uw browser!",
+  "audio_connect_error": "Op dit moment hebben we problemen om met de radioserver te verbinden.",
+  "audio_connect_error_reattempting": "U verliest de mogelijkheid om te stemmen door verbindingsproblemen. We proberen er voor te zorgen dat u volledig verbonden blijft.",
+  "try_external_player": "Klik hier om te proberen om een app te gebruiken om naar dit station te luisteren.",
+  "m3u_hijack_right_click": "Een plugin probeert uw browser te kapen.  Gelieve de MP3 of Ogg M3U download links te gebruiken en een app om naar de radio te luisteren.",
+  "listen_via_browser": "Beluister in Browser",
+  "listen_via_mp3": "Beluister via MP3",
+  "listen_via_ogg": "Beluister via Ogg",
+  "chrome_mobile_takes_time": "Android kan tot 20 seconden nodig hebben om te laden.  Een oranje icoon betekent dat het OK is - even geduld!",
+  "api_docs": "API Docs",
+  "github_repo": "GitHub",
+  "coming_up": "Binnenkort",
+  "vote_now": "Stem Nu",
+  "now_playing": "Nu Spelend",
+  "election": "Verkiezing",
+  "power_hour": "Kracht Uur",
+  "continued": "Vervolgd",
+  "vote_submitted": "Stem ingezonden",
+  "cannot_vote_for_this_now": "Kan op dit moment niet op dit nummer stemmen.",
+  "invalid_hotkey_vote": "Ongeldige keuze, probeer het opnieuw.",
+  "played_ago": [
+    {
+      "type": "substitute",
+      "key": "time"
+    },
+    " Geleden Afgespeeld"
+  ],
+  "timeline_art__request_indicator": "Aanvraag",
+  "timeline_art__your_request_indicator": "Uw",
+  "num_votes": [
+    {
+      "type": "substitute",
+      "key": "num_votes"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "num_votes",
+      "plurals": {
+        "one": "Vote",
+        "other": "Votes"
+      }
+    }
+  ],
+  "vote": "Stem",
+  "voted": "Gestemd",
+  "event_naming__oneup": [
+    {
+      "type": "substitute",
+      "key": "name"
+    },
+    " Kracht Uur"
+  ],
+  "Patreon": "Patreon",
+  "PayPal": "PayPal",
+  "tip_jar": "Fooi Pot",
+  "tip_jar_opener": "Rainwave zal altijd blijven doorgaan ongeacht wat er in de Fooi Pot zit.  Als u geïnteresseerd bent in het geven van een fooi; Het is simpel:",
+  "tip_jar_instruction_1": "Stuur een PayPal gift met het Paypal.me link hieronder.",
+  "tip_jar_instruction_2": "Verstuur ons uw gebruikersnaam en een bericht als een reactie.",
+  "tip_jar_instruction_3": "Geef alstublieft aan of u wilt dat u anoniem wilt blijven.",
+  "tip_jar_opener_end": "Nadat we uw Donatie hebben verwerkt, krijgt u een Donor status op de website. Dit zorgt ervoor dat u meer aanvragen in de aanvragen wachtrij kan hebben en de mogelijkheid om op meer dan 1 verkiezing te stemmen op één moment.",
+  "amount": "Bedrag",
+  "message": "Bericht",
+  "tip_jar_balance": "Huidig saldo",
+  "tip_jar_all_donations": "Totaal bedrag van donaties sinds juli 2007",
+  "votes_by_station": "Stemmen per Station",
+  "votes_by_source_station": "Stemmen per Bron Stn.",
+  "requests_by_station": "Aanvragen per Station",
+  "requests_by_source_station": "Aanvragen per Bron Stn.",
+  "rating_counts_across_stations": "Waarderingen per Bron Stn.",
+  "ratings_completion_rate": "Waarderingen Volledigheid",
+  "rating_spread": "Waarderingen Verspreiding",
+  "average_rating_by_station": "Gem. Waarderingen per Station",
+  "no_ratings": "Geen waarderingen",
+  "view_your": "Bekijk uw: ",
+  "recent_votes": "recente stemmen",
+  "request_history": "aanvraag geschiedenis",
+  "registered_in_year": [
+    "Lid geworden in ",
+    {
+      "type": "substitute",
+      "key": "year"
+    },
+    "."
+  ],
+  "top_rated_albums": "Hoogst Gewaardeerde Albums",
+  "top_requested_albums": "Meest Aangevraagde Albums",
+  "random_relay": "Willekeurige Relais",
+  "redownload_m3u": "Bent u aan het verbinden met dit station? Als u net ingelogd bent en een externe app gebruikt om te luisteren, download dan de afspeellijst opnieuw",
+  "sync_stopped": "Rainwave is gestopt met reageren. Gelieve de pagina te verversen en probeer het opnieuw.",
+  "lost_connection": "Verbinding met Rainwave verloren.",
+  "sync_retrying": "Problemen bij het communiceren met de Rainwave server, even geduld a.u.b. ...",
+  "mobile_sync_retrying": "Connectie timeout problemen, ververs alstublieft de pagina of probeer het later opnieuw.",
+  "async_error": "Fout bij het communiceren met Rainwave. Probeer het opnieuw of ververs de pagina.",
+  "deeplink_error": "Fout bij het begrijpen van de ingevoerde URL.",
+  "hold_to_rate": "Hou ingedrukt om te waarderen",
+  "Loading...": "Laden...",
+  "Cancel": "Annuleer",
+  "go": "Ga",
+  "hotkey_mode": "1-5 om te waarderen, A/S/D om te stemmen",
+  "invalid_hotkey": "Ongeldige sneltoets.",
+  "not_an_election": "Geen verkiezing.",
+  "rate_song_mobile_dialog": "Waardeer Nummer",
+  "playlist": "Afspeellijst",
+  "library": "Bibliotheek",
+  "Filter...": "Filter...",
+  "your_album_rating": [
+    "U waardeerde dit album ",
+    {
+      "type": "substitute",
+      "key": "rating_user"
+    },
+    "."
+  ],
+  "album_rating_ranked_at_v2": [
+    "Gewaardeerd op ",
+    {
+      "type": "substitute",
+      "key": "rating"
+    },
+    " met ",
+    {
+      "type": "substitute",
+      "key": "rating_count"
+    },
+    " Nummers beoordelingen, Rang: ",
+    {
+      "type": "ordinal",
+      "key": "rank"
+    },
+    "."
+  ],
+  "album_requests_ranked_at": [
+    "Aantal keren aangevraagd: ",
+    {
+      "type": "substitute",
+      "key": "count"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "count",
+      "plurals": {
+        "one": "time",
+        "other": "times"
+      }
+    },
+    ", Rang: ",
+    {
+      "type": "ordinal",
+      "key": "rank"
+    },
+    "."
+  ],
+  "album_year": [
+    "Uitgebracht in ",
+    {
+      "type": "substitute",
+      "key": "year"
+    },
+    "."
+  ],
+  "album_rating_detail": "Gebruikers beoordeelden dit album ",
+  "song_rating_detail": "Gebruikers beoordeelden dit nummer ",
+  "rating_detail_numbers": [
+    {
+      "type": "substitute",
+      "key": "rating"
+    },
+    ". (",
+    {
+      "type": "substitute",
+      "key": "percentile_message"
+    },
+    ")"
+  ],
+  "rating_percentile_top": [
+    "hoogste ",
+    {
+      "type": "substitute",
+      "key": "percentile_top"
+    },
+    "%"
+  ],
+  "rating_percentile_bottom": [
+    "laagste ",
+    {
+      "type": "substitute",
+      "key": "percentile"
+    },
+    "%"
+  ],
+  "request_percentile_top": [
+    "Aanvraag populariteit: hoogste ",
+    {
+      "type": "substitute",
+      "key": "percentile_top"
+    },
+    "%."
+  ],
+  "request_percentile_bottom": [
+    "Aanvraag populariteit: laagste ",
+    {
+      "type": "substitute",
+      "key": "percentile"
+    },
+    "%."
+  ],
+  "song_has_no_ratings": "Nummer heeft geen waarderingen.",
+  "Rate": "Beoordeel",
+  "Request": "Aanvraag",
+  "Albums": "Albums",
+  "Songs": "Nummers",
+  "Artists": "Artiesten",
+  "Artists_pluralized": [
+    {
+      "type": "plural",
+      "key": "count",
+      "plurals": {
+        "one": "Artiest",
+        "other": "Artiesten"
+      }
+    }
+  ],
+  "Users": "Gebruikers",
+  "Groups": "Categorieën",
+  "Listeners": "Luisteraars",
+  "songs_from": [
+    "Nummers van ",
+    {
+      "type": "substitute",
+      "key": "station"
+    }
+  ],
+  "album_on_station": [
+    "Op ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    ": ",
+    {
+      "type": "substitute",
+      "key": "album"
+    }
+  ],
+  "groups_tab_title": "Categorieën",
+  "RequestLine": "Aanvragen Wachtrij",
+  "nobody_in_line": "Niemand in Wachtrij.",
+  "relevant_categories": "Relevante Categorieën: ",
+  "relevant_category": "Categorie: ",
+  "relevant_categories_rollover": "Relevante categorieën: beweeg de muis over de lijst.",
+  "new_album": "Nieuw album!",
+  "album_all_cooldown": "Dit album is op cooldown.",
+  "album_has_cooldown": "Sommige nummers zijn op cooldown.",
+  "newish_album": "Recent toegevoegd.",
+  "new_songs": "Nieuwe nummers!",
+  "newish_songs": "Recent bijgewerkt.",
+  "search...": "Zoek...",
+  "no_songs_on_this_station": [
+    "Er zijn geen nummers op ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    " voor dit album."
+  ],
+  "fave_all_songs": "Voeg alle toe als favoriet",
+  "unfave_all_songs": "Verwijder alle als favoriet",
+  "clear_request_queue": "Wis alles",
+  "pause_request_queue": "Pauzeer",
+  "unpause_request_queue": "Onpauzeer",
+  "request_fill_with_unrated": "Onbeoordeeld aanvragen.",
+  "request_fill_with_faves": "Favorieten aanvragen",
+  "Suspend": "Onderbreek",
+  "Pause": "Pauzeer",
+  "Resume": "Hervat",
+  "Faves": "Favorieten",
+  "Unrated": "Onbeoordeeld",
+  "Clear": "Wis",
+  "Requests": "Aanvragen",
+  "#_requests": [
+    {
+      "type": "substitute",
+      "key": "num_requests"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "num_requests",
+      "plurals": {
+        "one": "Request",
+        "other": "Requests"
+      }
+    }
+  ],
+  "requests_all_on_cooldown": "Alle aanvragen in cooldown!",
+  "request_you_are_x_in_line": [
+    {
+      "type": "ordinal",
+      "key": "position"
+    },
+    " In Wachtrij"
+  ],
+  "request_grab_tag__paused": "Gepauzeerd",
+  "request_on_cooldown_for": [
+    "Op cooldown voor ",
+    {
+      "type": "substitute",
+      "key": "cool_time"
+    },
+    "."
+  ],
+  "request_on_cooldown_ends_soon": "Cooldown bijna afgelopen.",
+  "request_in_election": [
+    {
+      "type": "substitute",
+      "key": "blocked_by"
+    },
+    " is in een verkiezing."
+  ],
+  "blocked_by_name__group": "Categorie",
+  "blocked_by_name__album": "Album",
+  "blocked_by_name__in_election": "Nummer",
+  "request_only_on_x": [
+    "Beschikbaar op ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "."
+  ],
+  "no_song_selected": "(geen nummer geselecteerd)",
+  "make_a_request": "Open de bibliotheek en klik op de titel van een nummer om het bij uw aanvragen toe te voegen.",
+  "station_description_id_1": "Videogame soundtrack radio.  Stem op de nummers die u wilt horen!",
+  "station_description_id_2": "OverClocked ReMix Radio, de beste in videogame remixes.  Stem voor uw favoriete remixes!",
+  "station_description_id_3": "Officiële en fan-made remixes van videogames, streamt 24/7.  Stem op uw favoriete artiesten!",
+  "station_description_id_4": "Videogame en originele chiptune soundtracks, streamt 24/7.  Stem op de nummers die u wilt horen!",
+  "station_description_id_5": "Videogame muziek online radio, inclusief remixes en originele soundtracks!  Stem op de nummers die u wilt horen!",
+  "station_menu_description_id_1": "Muziek, rechtstreeks uit de games.",
+  "station_menu_description_id_2": "OverClocked ReMixes en albums.",
+  "station_menu_description_id_3": "Officiële en fan-made remixes.",
+  "station_menu_description_id_4": "Videogame en originele chiptunes.",
+  "station_menu_description_id_5": "De volledige Rainwave afspeellijst.",
+  "now_playing_on_...": [
+    "Nu aan het afspelen op ",
+    {
+      "type": "substitute",
+      "key": "station"
+    }
+  ],
+  "preferences": "Voorkeuren",
+  "Settings": "Instellingen",
+  "yes": "Ja",
+  "no": "Nee",
+  "site_mode": "Site Modus",
+  "basic": "Basis",
+  "full": "Geavanceerd",
+  "change_language": "Taal",
+  "timeline_preferences": "Tijdlijn",
+  "tab_title_preferences": "Tabblad Titel",
+  "font_options": "Lettertype Opties",
+  "prefs_roboto": "Gebruik Aangepast Lettertype",
+  "prefs_f_norm": "Krimp Lettertype Voor Schermbreedte",
+  "prefs_notify": "Bureaublad Notificaties bij Verandering Nummer",
+  "prefs_t_clk": "Laat de Klok in Tabblad Titel Zien",
+  "prefs_t_rt": "Laat Waardering in Tabblad Titel Zien",
+  "prefs_t_tl": "Laat Titel Nummer in Tabblad Titel Zien",
+  "prefs_l_stksz": "Permanente Zichtbaarheid Geschiedenis Afgespeelde Nummers",
+  "prefs_l_displose": "Toon Nummers die de Verkiezingen Verloren",
+  "playlist_preferences": "Album Lijst",
+  "prefs_p_avup": "Sorteer Beschikbare Nummers Bovenaan",
+  "prefs_p_favup": "Sorteer Favorieten Bovenaan",
+  "prefs_p_null1": "Sorteer Onbeoordeelde Nummers Bovenaan",
+  "prefs_p_fav1": "Prioriteer Favorieten Boven Beschikbare Nummers",
+  "prefs_p_sort": "Sorteer Albums op...",
+  "prefs_p_songsort": "Sorteer Nummers Zoals Albums Gesorteerd Worden",
+  "prefs_sort_playlist_by_alpha": "Alfabetische Volgorde",
+  "prefs_sort_playlist_by_rating_user": "Waardering",
+  "rating_preferences": "Waarderingen",
+  "prefs_r_incmplt": "Duid Incomplete Albums Aan",
+  "prefs_r_noglbl": "Verberg de Globale Waarderingen tot ik Gewaardeerd heb",
+  "prefs_r_clear": "Toon 'Verwijder Waardering' Knop",
+  "prefs_pwr": "Activeer Power User Modus",
+  "prefs_hkm": "Sneltoets Modus Toetsenbord Layout",
+  "waiting_for_hotkey": "Wachten Op Sneltoets",
+  "hotkeys_rate10": " = Waardeer 1.0-5.0",
+  "hotkeys_rate05": " = Waardeer 1.5-4.5",
+  "hotkeys_vote0": " = Stem 1st Verk",
+  "hotkeys_vote1": " = Stem 2nd Verk",
+  "hotkeys_fave": " = Fav Huidig Nummer",
+  "hotkeys_play": " = Stop/Speel",
+  "cd_what_is": "Wat Is Cooldown?",
+  "cd_blue_bkg_is": "Als een nummer of album een blauwe achtergrond heeft, is het op cooldown en kan het momenteel niet gespeeld worden.",
+  "cd_why_use_cooldown": "Cooldowns worden gebruikt zodat Rainwave gen nummers en albums herhaalt.",
+  "cd_type_of_cooldown": "Type van Cooldown",
+  "cd_example": "Voorbeeld",
+  "cd_cooldown_length": "Cooldown Lengte",
+  "cd_song": "Nummer",
+  "cd_song_length": "2-6 dagen",
+  "cd_album": "Album",
+  "cd_album_length": "6-48 uren",
+  "cd_category": "Categorie",
+  "cd_category_length": "15 minuten",
+  "cd_cooldowns_depend_on": "Cooldowns hangen af van:",
+  "cd_album_size": "Album Grootte",
+  "cd_larger_album": "Groter Album = Kortere Cooldown",
+  "cd_rating": "Waardering",
+  "cd_higher_rating": "Hogere Waardering = Kortere Cooldown",
+  "cd_recently_added": "Recent Toegevoegd",
+  "cd_newer": "Nieuwer = Kortere Cooldown",
+  "timeformat_w": "w",
+  "timeformat_d": "d",
+  "timeformat_h": "u",
+  "timeformat_m": "m",
+  "timeformat_s": "s",
+  "unrated_songs": "Onbeoordeelde Nummers",
+  "title": "Titel",
+  "album_name": "Album Naam",
+  "id": "ID",
+  "sid": "Station ID",
+  "delete": "Verwijder",
+  "all_faves": "Alle Favorieten",
+  "rating_user": "Gebruikers Beoordeling",
+  "fave": "Favoriet",
+  "rating": "Gem. Beoordeling",
+  "album_id": "Album ID",
+  "playback_history": "Zojuist Afgespeeld - Uitgebreid",
+  "name": "Naam",
+  "song_rating": "Beoordeling",
+  "top_100": "Top 100",
+  "song_rating_count": "# Beoordelingen",
+  "origin_sid": "Station",
+  "user_recent_votes": "Uw Recente Stemmen",
+  "user_requested_history": "Uw Aanvraag Geschiedenis",
+  "song_id": "Nummer ID",
+  "user_id": "Gebruiker ID",
+  "cool_end": "Cooldown Einde",
+  "power_hours": "Power Hours",
+  "start": "Start",
+  "end": "Einde"
 }
