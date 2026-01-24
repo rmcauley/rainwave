@@ -2,16 +2,16 @@ from datetime import datetime, timedelta
 from pytz import timezone
 from time import time as timestamp
 from libs import db
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web.exceptions import APIException
-from api_web import fieldtypes
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api.exceptions import APIException
+from web_api import fieldtypes
 from rainwave.events import event
 from rainwave.events.event import BaseProducer
 
 
 @handle_api_url("admin/list_producers")
-class ListProducers(api_web.web.APIHandler):
+class ListProducers(web_api.web.APIHandler):
     return_name = "producers"
     admin_required = True
     sid_required = True
@@ -39,7 +39,7 @@ class ListProducers(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/list_producers_all")
-class ListProducersAll(api_web.web.APIHandler):
+class ListProducersAll(web_api.web.APIHandler):
     return_name = "producers"
     admin_required = True
     sid_required = False
@@ -67,7 +67,7 @@ class ListProducersAll(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/list_producer_types")
-class ListProducerTypes(api_web.web.APIHandler):
+class ListProducerTypes(web_api.web.APIHandler):
     return_name = "producer_types"
     admin_required = True
     sid_required = False
@@ -77,7 +77,7 @@ class ListProducerTypes(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/create_producer")
-class CreateProducer(api_web.web.APIHandler):
+class CreateProducer(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True
@@ -113,7 +113,7 @@ class CreateProducer(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/duplicate_producer")
-class DuplicateProducer(api_web.web.APIHandler):
+class DuplicateProducer(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True
@@ -131,7 +131,7 @@ class DuplicateProducer(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/europify_producer")
-class EuropifyProducer(api_web.web.APIHandler):
+class EuropifyProducer(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True
@@ -161,7 +161,7 @@ class EuropifyProducer(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/change_producer_name")
-class ChangeProducerName(api_web.web.APIHandler):
+class ChangeProducerName(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     fields = {
@@ -186,7 +186,7 @@ class ChangeProducerName(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/change_producer_url")
-class ChangeProducerURL(api_web.web.APIHandler):
+class ChangeProducerURL(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     fields = {"sched_id": (fieldtypes.sched_id, True), "url": (fieldtypes.string, None)}
@@ -211,7 +211,7 @@ class ChangeProducerURL(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/change_producer_start_time")
-class ChangeProducerStartTime(api_web.web.APIHandler):
+class ChangeProducerStartTime(web_api.web.APIHandler):
     return_name = "producer"
     admin_required = True
     sid_required = True
@@ -229,7 +229,7 @@ class ChangeProducerStartTime(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/change_producer_end_time")
-class ChangeProducerEndTime(api_web.web.APIHandler):
+class ChangeProducerEndTime(web_api.web.APIHandler):
     return_name = "producer"
     admin_required = True
     sid_required = True
@@ -247,7 +247,7 @@ class ChangeProducerEndTime(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/delete_producer")
-class DeleteProducer(api_web.web.APIHandler):
+class DeleteProducer(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     fields = {"sched_id": (fieldtypes.sched_id, True)}

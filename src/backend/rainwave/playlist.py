@@ -3,7 +3,7 @@ import random
 
 from libs import db
 from libs import log
-from src_backend.config import config
+from src.backend.config import config
 
 from rainwave.playlist_objects.song import Song
 from rainwave.playlist_objects import cooldown

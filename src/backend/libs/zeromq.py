@@ -1,8 +1,8 @@
 import zmq
 import zmq.devices
 from zmq.eventloop import ioloop, zmqstream
-from src_backend.config import config
-from api_web.web import APIException
+from src.backend.config import config
+from web_api.web import APIException
 
 try:
     import ujson as json

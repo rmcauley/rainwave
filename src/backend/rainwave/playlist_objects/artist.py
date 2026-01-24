@@ -1,5 +1,5 @@
 from libs import db
-from src_backend.config import config
+from src.backend.config import config
 
 from rainwave.playlist_objects.metadata import (
     AssociatedMetadata,

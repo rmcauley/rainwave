@@ -1,7 +1,7 @@
-from src_backend.config import config
+from src.backend.config import config
 from libs import db
 import pylibmc as libmc
-from api_web.exceptions import APIException
+from web_api.exceptions import APIException
 
 _memcache = None
 _memcache_ratings = None

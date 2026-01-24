@@ -1,7 +1,7 @@
 import copy
 import os
 
-from src_backend.config import config
+from src.backend.config import config
 
 try:
     import ujson as json

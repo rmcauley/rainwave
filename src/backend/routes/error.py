@@ -4,12 +4,12 @@ from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from urllib.parse import urlsplit
 import urllib.parse
 import time
-from api_web import fieldtypes
-from api_web.web import APIHandler
-from api_web.exceptions import APIException
-from api_web.urls import handle_api_url
+from web_api import fieldtypes
+from web_api.web import APIHandler
+from web_api.exceptions import APIException
+from web_api.urls import handle_api_url
 from libs import cache
-from src_backend.config import config
+from src.backend.config import config
 from libs import log
 import json
 

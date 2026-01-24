@@ -1,13 +1,13 @@
 from libs import db
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web import fieldtypes
-from api_web.exceptions import APIException
-from src_backend.config import config
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api import fieldtypes
+from web_api.exceptions import APIException
+from src.backend.config import config
 
 
 @handle_api_url("user_search")
-class UserSearchRequest(api_web.web.APIHandler):
+class UserSearchRequest(web_api.web.APIHandler):
     description = "Returns a user ID and station they're currently tuned to based on the username provided."
     fields = {"username": (fieldtypes.string, True)}
     auth_required = False
@@ -35,7 +35,7 @@ class UserSearchRequest(api_web.web.APIHandler):
 
 
 @handle_api_url("user_search_by_discord_user_id")
-class UserSearchByDiscordUserIdRequest(api_web.web.APIHandler):
+class UserSearchByDiscordUserIdRequest(web_api.web.APIHandler):
     auth_required = False
     sid_required = False
     description = "Accessible only to localhost connections, for wormgas."

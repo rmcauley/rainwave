@@ -5,9 +5,9 @@ except ImportError:
 
 import tornado.web
 
-from api_web.web import HTMLRequest
-from api_web.urls import handle_url
-from src_backend.config import config
+from web_api.web import HTMLRequest
+from web_api.urls import handle_url
+from src.backend.config import config
 
 
 @handle_url("/manifest.json")

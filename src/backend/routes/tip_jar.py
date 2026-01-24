@@ -1,7 +1,7 @@
-from api_web.web import APIHandler
-from api_web.web import PrettyPrintAPIMixin
-from api_web.urls import handle_api_url
-from api_web.urls import handle_api_html_url
+from web_api.web import APIHandler
+from web_api.web import PrettyPrintAPIMixin
+from web_api.urls import handle_api_url
+from web_api.urls import handle_api_html_url
 
 from libs import db
 

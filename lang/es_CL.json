@@ -1,402 +1,601 @@
 {
-   "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
-   "__comment__"                 : "Please put them in your actual language. (i.e. use kanji!) Short version should be < 4 characters.",
-
-   "language_name"                                   : "Español",
-   "language_name_short"                             : "ES-CL",
-
-   "__comment__"                 : "This shows up after 'Rainwave' on Google results.  e.g. 'Rainwave Video Game Music Radio: Covers'",
-
-   "page_title_on_google"                            : "Radio de Música de Videojuegos",
-
-   "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
-
-   "missing_station_id"                              : "ID de estación ausente.",
-   "invalid_station_id"                              : "ID de estación inválido.",
-   "missing_argument"                                : "Argumento ausente: '%(argument)'.",
-   "invalid_argument"                                : "Argumento '%(argument)' inválido: %(reason)",
-   "auth_required"                                   : "Se requiere de autorización.",
-   "auth_failed"                                     : "La autorización ha fallado.",
-   "login_required"                                  : "Necesita iniciar sesión.",
-   "tunein_required"                                 : "Necesita estar sintonizado.",
-   "admin_required"                                  : "Necesita ser administrador.",
-   "dj_required"                                     : "Necesita ser un DJ.",
-   "perks_required"                                  : "Debe ser un donante.",
-   "unlocked_only"                                   : "Usuario aislado en %(station) por %(lock_counter) canciones más.",
-   "internal_error"                                  : "Error interno del servidor.",
-   "song_does_not_exist"                             : "La canción no existe.",
-   "db_error_retry"                                  : "Error interno de la base de datos - Intente nuevamente.",
-   "db_error_permanent"                              : "Error del servidor - la base de datos interna no está en línea.",
-   "websocket_throttle"                              : "¡Ve más despacio!",
-   "404"                                             : "Página no encontrada.",
-
-   "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
-
-   "fave_failed"                                     : "No se pudo marcar como favorito.",
-   "request_failed"                                  : "La petición ha fallado.",
-   "request_delete_failed"                           : "No se pudo eliminar la petición.",
-   "request_unrated_failed"                          : "Pedir canciones no evaluadas ha fallado.",
-   "request_favorited_failed"                        : "No hay favoritos disponibles.",
-   "too_many_requests"                               : "Fila de peticiones llena.",
-   "same_request_exists"                             : "La misma canción ya está en tu fila.",
-   "same_request_album"                              : "Una canción del mismo álbum ya está en tu fila.",
-   "song_not_requested"                              : "Canción no pedida.",
-   "station_offline"                                 : "Esta estación no está en línea.  Inténtelo más tarde.",
-   "must_login_and_tune_in_to_request"               : "Debes iniciar sesión y sintonizar para hacer peticiones.",
-   "already_voted_for_song"                          : "Ya has votado por esa canción.",
-   "cannot_rate_now"                                 : "No se puede evaluar esa canción en este momento.",
-   "tunein_to_rate_current_song"                     : "Debes sintonizar para evaluar la canción actual.",
-   "rating_submitted"                                : "Puntaje enviado.",
-   "rating_cleared"                                  : "Puntaje borrado.",
-   "unknown_error_message"                           : "Lamentamos esto.  Por favor intenta nuevamente o reporta la incidencia con la información de abajo.  (Este error ha quedado registrado)",
-   "debug_information"                               : "Información de depuración:",
-   "requests_reordered"                              : "Peticiones reordenadas.",
-   "request_queue_paused"                            : "Fila de peticiones pausada.",
-   "request_queue_unpaused"                          : "Fila de peticiones reanudada.",
-   "no_results"                                      : "Sin resultados.",
-   "empty_list"                                      : "Lista vacía.",
-   "no_search_results"                               : "Búsqueda sin resultados.",
-   "server_just_started"                             : "Rainwave se está Reiniciando",
-   "station_paused"                                  : "La estación ha sido pausada por el DJ.",
-   "album_on_other_station"                          : "Lo sentimos, este álbum no está disponible en esta estación.",
-   "album_is_dj_only"                                : "Lo sentimos, este álbum es exclusivo de este evento.",
-   "song_on_other_station"                           : "La canción no está disponible en %(station).",
-   "locked_to_station"                               : "Acabas de votar en %(locked_station), debes esperar %(lock_counter) &(lock_counter:canción/canciones) más para votar en %(this_station).",
-      "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
-   "search_string_too_short"                         : "La búsqueda debe tener como mínimo 3 letras.",
-   "search_result_limit"                             : "(demasiados resultados. debes ser más específico.)",
-   "auth_failed_message"                             : "¡Nuestro sistema de autorización ha fallado! Hemos tenido este error en las últimas semanas con usuarios anónimos, y actualmente estamos reescribiendo el sistema de autenticación. Por favor, actualiza la página, o mejor, REGÍSTRATE Y ACCEDE usando el enlace del foro que se encuentra a continuación para solucionar el problema",
-
-   "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
-
-   "oops"                                            : "Ups",
-   "something_went_wrong"                            : "Algo salió mal al cargar eso desde el servidor. :(",
-   "crash_happened"                                  : "Rainwave ha fallado. :(",
-   "report_sending"                                  : "Tratando de enviar un reporte al respecto...",
-   "report_sent"                                     : "¡El error ha sido reportado! ¡Le echaremos un vistazo!",
-   "report_error"                                    : "¡...Ni siquiera hemos podido enviar el reporte! :(",
-   "please_refresh"                                  : "Recarga la página para traer a Rainwave de vuelta.",
-   "report_submitted"                                : "Reporte Enviado",
-
-   "__comment__"                 : "API Key Management",
-
-   "api_key_manager"                                 : "Administrador de Claves de API",
-   "api_key"                                         : "Clave de API",
-   "qr_code"                                         : "Código QR",
-   "create_api_key"                                  : "Crear Clave de API",
-   "your_numeric_user_id"                            : "Tu identificador numérico de usuario",
-   "app_would_like_to"                               : "A Esta App Le Gustaría:",
-   "allow_api_auth"                                  : "Suena Bien",
-
-   "__comment__"                 : "Menu",
-
-   "station_select_header"                           : "Selección de Estación",
-   "station_name_1"                                  : "Juegos",
-   "station_name_2"                                  : "OC ReMix",
-   "station_name_3"                                  : "Covers",
-   "station_name_4"                                  : "Chiptune",
-   "station_name_5"                                  : "Todo",
-
-   "login"                                           : "Ingresar",
-   "signup"                                          : "Regístrarse",
-   "chat"                                            : "Chat",
-   "search"                                          : "Buscar",
-   "previouslyplayed"                                : "Tocadas Previamente",
-   "playback_history_link"                           : "Historial de Reproducción",
-   "special_event_alert"                             : "Evento Especial en %(station): ",
-
-   "tunein"                                          : "Sintonizar",
-   "stop"                                            : "Detener",
-   "audio_error"                                     : "¡No se pudo sintonizar desde el navegador!",
-   "audio_connect_error"                             : "De momento hay dificultades conectándose al servidor de la radio.",
-   "audio_connect_error_reattempting"                : "Estás perdiendo la capacidad de votar por problemas de conexión. Estamos tratando de mantener la conexión.",
-   "try_external_player"                             : "Haz clic para intentar usar una aplicación externa para sintonizar.",
-   "m3u_hijack_right_click"                          : "Un complemento está tratando de secuestrar el navegador. Utiliza los enlaces de descarga del MP3 o el Ogg y una aplicación externa para sintonizar.",
-
-   "listen_via_browser"                              : "Escucha en el Navegador",
-   "listen_via_mp3"                                  : "Escucha el MP3",
-   "listen_via_ogg"                                  : "Escucha el Ogg",
-   "chrome_mobile_takes_time"                        : "En Android se puede tardar hasta 20 segundos. El icono de color naranja significa que todo está bien - ¡tan sólo espera!",
-
-   "api_docs"                                        : "Documentación de la API",
-   "github_repo"                                     : "GitHub",
-
-   "__comment__"                 : "Timeline Headers",
-
-   "coming_up"                                       : "A Continuación",
-   "vote_now"                                        : "Vota Ahora",
-   "now_playing"                                     : "Tocando Ahora",
-   "election"                                        : "Votación",
-   "power_hour"                                      : "Especial de Una Hora",
-
-   "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
-   "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
-   "__comment__"                 : "at the top of the timeline.  That's what this 'continued' line is for.",
-   "continued"                                       : "Continuación",
-
-   "__comment__"                 : "Timeline Song",
-
-   "vote_submitted"                                  : "Voto Enviado",
-   "cannot_vote_for_this_now"                        : "No puedes votar por esa canción en este momento.",
-   "invalid_hotkey_vote"                             : "Opción inválida, intenta nuevamente.",
-   "played_ago"                                      : "Tocada Hace %(time)",
-   "timeline_art__request_indicator"                 : "Petición",
-   "timeline_art__your_request_indicator"            : "Tuya",
-   "num_votes"                                       : "%(num_votes) &(num_votes:Voto/Votos)",
-   "vote"                                            : "Votar",
-      "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
-   "voted"                                           : "Votado",
-
-   "event_naming__oneup"                             : "Una Hora de: %(name)",
-
-   "__comment__"                 : "Tip Jar",
-
-   "Patreon"                                         : "Patreon",
-   "PayPal"                                          : "PayPal",
-   "tip_jar"                                         : "Donaciones",
-   "tip_jar_opener"                                  : "Rainwave seguirá funcionando independientemente de lo que haya en el jarro de propinas.  Si deseas echarle algunos guiles o rupias:",
-   "tip_jar_instruction_2"                           : "Envíanos tu nombre de usuario y un mensaje como comentario.",
-   "tip_jar_instruction_3"                           : "Por favor indica si deseas que tu nombre se mantenga anónimo.",
-   "tip_jar_opener_end"                              : "Luego de procesar tu propina se te dará el estado de Donante en el sitio.  Esto te permitirá agregar más peticiones en tu fila y tener la capacidad de votar en más de 1 votación a la vez.",
-   "amount"                                          : "Cantidad",
-   "message"                                         : "Mensaje",
-   "tip_jar_balance"                                 : "Balance Actual",
-   "tip_jar_all_donations"                           : "Total de donaciones desde julio del 2007",
-
-   "__comment__"                 : "User Detail",
-
-   "votes_by_station"                                : "Votos por Estación",
-   "votes_by_source_station"                         : "Votos por Estación de Origen",
-   "requests_by_station"                             : "Peticiones por Estación",
-   "requests_by_source_station"                      : "Peticiones por Estación de Origen",
-   "rating_counts_across_stations"                   : "Evaluaciones por Estación de Origen",
-   "ratings_completion_rate"                         : "Progreso de Evaluaciones",
-   "rating_spread"                                   : "Distribución de Puntajes",
-   "average_rating_by_station"                       : "Puntaje Promedio por Estación",
-   "no_ratings"                                      : "sin evaluaciones",
-
-   "view_your"                                       : "Ver tus: ",
-   "recent_votes"                                    : "Votos Recientes",
-   "request_history"                                 : "Historial de Peticiones",
-   "registered_in_year"                              : "Miembro desde %(year).",
-
-   "top_rated_albums"                                : "Álbumes Mejor Evaluados",
-   "top_requested_albums"                            : "Álbumes Más Pedidos",
-
-   "__comment__"                 : "Other",
-
-   "random_relay"                                    : "Servidor Aleatorio",
-   "redownload_m3u"                                  : "¿Estás sintonizando?  Si acabas de iniciar sesión y estás usando una aplicación externa para escuchar, vuelve a descargar la lista de reproducción MP3 u Ogg.",
-   "sync_stopped"                                    : "Rainwave ha dejado de funcionar.  Actualiza la página y vuelve a intentarlo.",
-   "lost_connection"                                 : "Se ha perdido la conexión con Rainwave.",
-   "sync_retrying"                                   : "Hay problemas comunicándose con Rainwave, un momento...",
-   "mobile_sync_retrying"                            : "Problemas de conexión, actualiza la página o intenta más tarde.",
-   "async_error"                                     : "Error comunicándose con Rainwave.  Intenta nuevamente o actualiza la página.",
-   "deeplink_error"                                  : "Lo sentimos, no pudimos entender la URL que has intentado abrir.",
-   "hold_to_rate"                                    : "mantén presionado para evaluar",
-
-   "Loading..."                                      : "Cargando...",
-   "Cancel"                                          : "Cancelar",
-   "go"                                              : "Ir",
-
-   "__comment__"                 : "Hotkey Mode",
-
-   "hotkey_mode"                                     : "1-5 para Evaluar, A/S/D para Votar",
-   "invalid_hotkey"                                  : "Tecla rápida inválida.",
-   "not_an_election"                                 : "No es una votación.",
-   "rate_song_mobile_dialog"                         : "Evaluar Canción",
-
-   "__comment__"                 : "Playlist View",
-
-   "playlist"                                        : "Lista de Reproducción",
-   "library"                                         : "Biblioteca",
-   "Filter..."                                       : "Filtrar...",
-   "your_album_rating"                               : "Has valorado este álbum con un %(rating_user).",
-   "album_rating_ranked_at_v2"                       : "Evaluado %(rating_count) &(rating_count:vez/veces) con un %(rating), en la posición Nº #(rank).",
-   "album_requests_ranked_at"                        : "Pedido %(count) &(count:vez/veces), en la posición Nº #(rank).",
-   "album_year"                                      : "Publicado en %(year).",
-   "album_rating_detail"                             : "Los usuarios le han dado a este álbum una evaluación de ",
-   "song_rating_detail"                              : "Los usuarios le han dado a esta canción una evaluación de ",
-   "rating_detail_numbers"                           : "%(rating). (%(percentile_message))",
-   "rating_percentile_top"                           : "el %(percentile_top)% superior",
-   "rating_percentile_bottom"                        : "el %(percentile)% inferior",
-   "request_percentile_top"                          : "Popularidad de Pedidos: %(percentile_top)% superior.",
-   "request_percentile_bottom"                       : "Popularidad de Pedidos: %(percentile)% inferior.",
-   "song_has_no_ratings"                             : "La canción tiene muy pocas evaluaciones para reportar.",
-   "Rate"                                            : "Evaluar",
-   "Request"                                         : "Pedido",
-   "Albums"                                          : "Álbumes",
-   "Songs"                                           : "Canciones",
-   "Artists"                                         : "Artistas",
-   "Artists_pluralized"                              : "&(count:Artista/Artistas)",
-   "Users"                                           : "Usuarios",
-   "Groups"                                          : "Categorías",
-   "Listeners"                                       : "Auditores",
-   "songs_from"                                      : "Canciones en %(station)",
-   "album_on_station"                                : "En %(station): %(album)",
-   "groups_tab_title"                                : "Categorías",
-   "RequestLine"                                     : "Fila de Peticiones",
-   "nobody_in_line"                                  : "Nadie en la Fila.",
-   "relevant_categories"                             : "Categorías relacionadas: ",
-   "relevant_category"                               : "Categoría: ",
-   "relevant_categories_rollover"                    : "Categorías relacionadas: Mostrar lista.",
-   "album_all_cooldown"                              : "Este álbum está en reposo.",
-   "album_has_cooldown"                              : "Algunas canciones están en reposo.",
-   "new_album"                                       : "¡Álbum nuevo!",
-   "newish_album"                                    : "Añadido recientemente.",
-   "new_songs"                                       : "¡Canciones nuevas!",
-   "newish_songs"                                    : "Actualizado recientemente.",
-   "search..."                                       : "Buscar...",
-   "no_songs_on_this_station"                        : "No hay canciones para este álbum en %(station).",
-   "fave_all_songs"                                  : "Marcar todas las canciones como favoritas",
-   "unfave_all_songs"                                : "Quitar todas las canciones de favoritos",
-
-   "__comment__"                 : "Requests",
-
-   "clear_request_queue"                             : "Borrar Todo",
-   "pause_request_queue"                             : "Pausar",
-   "unpause_request_queue"                           : "Reanudar",
-   "request_fill_with_unrated"                       : "Llenar con Canciones No Evaluadas",
-   "request_fill_with_faves"                         : "Llenar con Favoritos",
-   "Suspend"                                         : "Suspender",
-   "Pause"                                           : "Pausar",
-   "Resume"                                          : "Reanudar",
-   "Faves"                                           : "Favoritos",
-   "Unrated"                                         : "Sin valoración",
-   "Clear"                                           : "Limpiar",
-
-   "Requests"                                        : "Peticiones",
-   "#_requests"                                      : "%(num_requests) &(num_requests:Petición/Peticiones)",
-   "requests_all_on_cooldown"                        : "¡Todas en reposo!",
-   "request_you_are_x_in_line"                       : "#(position)º En La Fila",
-   "request_grab_tag__paused"                        : "Suspendido",
-
-   "request_on_cooldown_for"                         : "En reposo por %(cool_time).",
-   "request_on_cooldown_ends_soon"                   : "Saliendo del reposo.",
-   "request_in_election"                             : "%(blocked_by) está presente en una votación.",
-   "blocked_by_name__group"                          : "Categoría",
-   "blocked_by_name__album"                          : "Álbum",
-   "blocked_by_name__in_election"                    : "Canción",
-   "request_only_on_x"                               : "Esta canción está en %(station).",
-   "no_song_selected"                                : "(no ha seleccionado canción)",
-
-   "make_a_request"                                  : "Abre la biblioteca y haz clic/pulsa sobre el título de una canción para agregarla a tu fila de peticiones.",
-
-   "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
-
-   "station_description_id_1"                        : "Radio de bandas sonoras originales de videojuegos.  ¡Vota por la canción que deseas escuchar!",
-   "station_description_id_2"                        : "Radio de OverClocked ReMix, la mejor en remixes de videojuegos.  ¡Vota por tus remixes favoritos!",
-   "station_description_id_3"                        : "Remixes de oficiales y hechos por fans de música de videojuegos, transmitiendo 24/7.  ¡Vota por tus artistas favoritos!",
-   "station_description_id_4"                        : "Chiptunes originales y de videojuegos, transmitiendo 24/7.  ¡Vota por las canciones que deseas escuchar!",
-   "station_description_id_5"                        : "¡Radio en línea de música de videojuegos, incluyendo remixes y bandas sonoras originales!  ¡Vota por las canciones que deseas escuchar!",
-
-   "__comment__"                 : "Station Descriptions For The Menu (short messages)",
-
-   "station_menu_description_id_1"                   : "Música directamente desde los videojuegos.",
-   "station_menu_description_id_2"                   : "Canciones y álbumes de OverClocked ReMix.",
-   "station_menu_description_id_3"                   : "Remezclas oficiales y hechas por fans.",
-   "station_menu_description_id_4"                   : "Pitidos y ruido blanco de videojuegos y más allá.",
-   "station_menu_description_id_5"                   : "Todas las canciones de nuestra biblioteca.",
-   "now_playing_on_..."                              : "Tocando Ahora En %(station)",
-
-   "__comment__"                 : "Preferences",
-
-   "preferences"                                     : "Preferencias",
-   "Settings"                                        : "Ajustes",
-   "yes"                                             : "Sí",
-   "no"                                              : "No",
-   "site_mode"                                       : "Modo Del Sitio",
-   "basic"                                           : "Básico",
-   "full"                                            : "Completo",
-   "change_language"                                 : "Idioma",
-   "timeline_preferences"                            : "Timeline",
-   "tab_title_preferences"                           : "Título De Pestaña",
-   "font_options"                                    : "Opciones de Tipografía",
-   "prefs_roboto"                                    : "Usar Tipografía Propia",
-   "prefs_f_norm"                                    : "Ajustar Tipografía Con Ancho de Pantalla",
-   "prefs_notify"                                    : "Notificaciones de Escritorio Cuando Cambie la Canción",
-   "prefs_t_clk"                                     : "Mostrar Reloj En Pestaña",
-   "prefs_t_rt"                                      : "Mostrar Puntaje En Pestaña",
-   "prefs_t_tl"                                      : "Mostrar Título De Canción En Pestaña",
-   "prefs_l_stksz"                                   : "Historial Permanentemente Visible",
-   "prefs_l_displose"                                : "Mostrar Canciones que Perdieron la Votación",
-   "playlist_preferences"                            : "Lista De Álbumes",
-   "prefs_p_avup"                                    : "Mostrar Disponibles Primero",
-   "prefs_p_favup"                                   : "Mostrar Favoritos Primero",
-   "prefs_p_null1"                                   : "Mostrar Sin Evaluar Primero",
-   "prefs_p_fav1"                                    : "Priorizar Favoritos Sobre Disponibles",
-   "prefs_p_sort"                                    : "Método para Ordenar Álbumes",
-   "prefs_p_songsort"                                : "Ordenar Canciones Igual Que Álbumes",
-   "prefs_sort_playlist_by_alpha"                    : "Alfabético",
-   "prefs_sort_playlist_by_rating_user"              : "Valoración",
-   "rating_preferences"                              : "Evaluaciones",
-   "prefs_r_incmplt"                                 : "Indicar Álbumes Incompletos",
-   "prefs_r_noglbl"                                  : "Esconder Valoración Global Hasta que se haya Valorado",
-   "prefs_r_clear"                                   : "Mostrar Botón para Borrar Valoración",
-   "prefs_pwr"                                       : "Activar Modo Avanzado",
-   "prefs_hkm"                                       : "Distribución de Teclas Rápidas",
-
-   "__comment__"                 : "Hotkey Mode - MAKE THEM VERY SHORT (and to test, activate power user mode and press backtick/tilde key)",
-
-   "waiting_for_hotkey"                              : "Esperando por Tecla Rápida",
-   "hotkeys_rate10"                                  : " = Evaluar 1.0-5.0",
-   "hotkeys_rate05"                                  : " = Evaluar 1.5-4.5",
-   "hotkeys_vote0"                                   : " = Votar 1ª Elec",
-   "hotkeys_vote1"                                   : " = Votar 2ª Elec",
-   "hotkeys_fave"                                    : " = Fav. Canción Actual",
-   "hotkeys_play"                                    : " = Detener/Reproducir",
-
-   "__comment__"                 : "Cooldown Explanation",
-
-   "cd_what_is"                                      : "¿Qué es Reposo?",
-   "cd_blue_bkg_is"                                  : "Cuando una canción o álbum tiene un fondo azul, está en reposo y no puede ser tocada en este momento.",
-   "cd_why_use_cooldown"                             : "Los tiempos de Reposo son usados de manera que Rainwave no repita canciones y álbumes.",
-   "cd_type_of_cooldown"                             : "Tipo de Reposo",
-   "cd_example"                                      : "Ejemplo",
-   "cd_cooldown_length"                              : "Tiempo de Reposo",
-   "cd_song"                                         : "Canción",
-   "cd_song_length"                                  : "2-6 días",
-   "cd_album"                                        : "Álbum",
-   "cd_album_length"                                 : "6-48 horas",
-   "cd_category"                                     : "Categoría",
-   "cd_category_length"                              : "15 minutos",
-   "cd_cooldowns_depend_on"                          : "Los tiempos de Reposo pueden depender de:",
-   "cd_album_size"                                   : "Tamaño del Álbum",
-   "cd_larger_album"                                 : "Mayor Tamaño = Reposo más Breve",
-   "cd_rating"                                       : "Valoración",
-   "cd_higher_rating"                                : "Mayor Valoración = Reposo más Breve",
-   "cd_recently_added"                               : "Añadido Recientemente",
-   "cd_newer"                                        : "Más nuevo = Reposo más Breve",
-
-   "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
-
-   "timeformat_w"                                    : "sm ",
-   "timeformat_d"                                    : "d ",
-   "timeformat_h"                                    : "h ",
-   "timeformat_m"                                    : "m ",
-   "timeformat_s"                                    : "s ",
-
-   "__comment__"                 : "Statistic Pages (see http://rainwave.cc/api4/ and scroll down)",
-
-   "unrated_songs"                                   : "Canciones No Evaluadas",
-   "title"                                           : "Título",
-   "album_name"                                      : "Nombre de Álbum",
-   "id"                                              : "ID",
-   "sid"                                             : "ID de Estación",
-   "delete"                                          : "Eliminar",
-   "all_faves"                                       : "Mis Favoritos",
-   "rating_user"                                     : "Evaluación del Usuario",
-   "fave"                                            : "Favorito",
-   "rating"                                          : "Evaluación Promedio",
-   "album_id"                                        : "ID de Álbum",
-   "playback_history"                                : "Tocadas Previamente - Ampliado",
-   "name"                                            : "Nombre",
-   "song_rating"                                     : "Evaluación",
-   "top_100"                                         : "Los Primeros 100",
-   "song_rating_count"                               : "Nº de Evaluaciones",
-   "origin_sid"                                      : "Estación",
-   "user_recent_votes"                               : "Tus Votos Recientes",
-   "user_requested_history"                          : "Tu Historial de Peticiones",
-   "song_id"                                         : "ID de Canción",
-   "user_id"                                         : "ID de Usuario"
+  "language_name": "Español",
+  "language_name_short": "ES-CL",
+  "page_title_on_google": "Radio de Música de Videojuegos",
+  "missing_station_id": "ID de estación ausente.",
+  "invalid_station_id": "ID de estación inválido.",
+  "missing_argument": [
+    "Argumento ausente: '",
+    {
+      "type": "substitute",
+      "key": "argument"
+    },
+    "'."
+  ],
+  "invalid_argument": [
+    "Argumento '",
+    {
+      "type": "substitute",
+      "key": "argument"
+    },
+    "' inválido: ",
+    {
+      "type": "substitute",
+      "key": "reason"
+    }
+  ],
+  "auth_required": "Se requiere de autorización.",
+  "auth_failed": "La autorización ha fallado.",
+  "login_required": "Necesita iniciar sesión.",
+  "tunein_required": "Necesita estar sintonizado.",
+  "admin_required": "Necesita ser administrador.",
+  "dj_required": "Necesita ser un DJ.",
+  "perks_required": "Debe ser un donante.",
+  "unlocked_only": [
+    "Usuario aislado en ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    " por ",
+    {
+      "type": "substitute",
+      "key": "lock_counter"
+    },
+    " canciones más."
+  ],
+  "internal_error": "Error interno del servidor.",
+  "song_does_not_exist": "La canción no existe.",
+  "db_error_retry": "Error interno de la base de datos - Intente nuevamente.",
+  "db_error_permanent": "Error del servidor - la base de datos interna no está en línea.",
+  "websocket_throttle": "¡Ve más despacio!",
+  "404": "Página no encontrada.",
+  "fave_failed": "No se pudo marcar como favorito.",
+  "request_failed": "La petición ha fallado.",
+  "request_delete_failed": "No se pudo eliminar la petición.",
+  "request_unrated_failed": "Pedir canciones no evaluadas ha fallado.",
+  "request_favorited_failed": "No hay favoritos disponibles.",
+  "too_many_requests": "Fila de peticiones llena.",
+  "same_request_exists": "La misma canción ya está en tu fila.",
+  "same_request_album": "Una canción del mismo álbum ya está en tu fila.",
+  "song_not_requested": "Canción no pedida.",
+  "station_offline": "Esta estación no está en línea.  Inténtelo más tarde.",
+  "must_login_and_tune_in_to_request": "Debes iniciar sesión y sintonizar para hacer peticiones.",
+  "already_voted_for_song": "Ya has votado por esa canción.",
+  "cannot_rate_now": "No se puede evaluar esa canción en este momento.",
+  "tunein_to_rate_current_song": "Debes sintonizar para evaluar la canción actual.",
+  "rating_submitted": "Puntaje enviado.",
+  "rating_cleared": "Puntaje borrado.",
+  "unknown_error_message": "Lamentamos esto.  Por favor intenta nuevamente o reporta la incidencia con la información de abajo.  (Este error ha quedado registrado)",
+  "debug_information": "Información de depuración:",
+  "requests_reordered": "Peticiones reordenadas.",
+  "request_queue_paused": "Fila de peticiones pausada.",
+  "request_queue_unpaused": "Fila de peticiones reanudada.",
+  "no_results": "Sin resultados.",
+  "empty_list": "Lista vacía.",
+  "no_search_results": "Búsqueda sin resultados.",
+  "server_just_started": "Rainwave se está Reiniciando",
+  "station_paused": "La estación ha sido pausada por el DJ.",
+  "album_on_other_station": "Lo sentimos, este álbum no está disponible en esta estación.",
+  "album_is_dj_only": "Lo sentimos, este álbum es exclusivo de este evento.",
+  "song_on_other_station": [
+    "La canción no está disponible en ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "."
+  ],
+  "locked_to_station": [
+    "Acabas de votar en ",
+    {
+      "type": "substitute",
+      "key": "locked_station"
+    },
+    ", debes esperar ",
+    {
+      "type": "substitute",
+      "key": "lock_counter"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "lock_counter",
+      "plurals": {
+        "one": "canción",
+        "other": "canciones"
+      }
+    },
+    " más para votar en ",
+    {
+      "type": "substitute",
+      "key": "this_station"
+    },
+    "."
+  ],
+  "search_string_too_short": "La búsqueda debe tener como mínimo 3 letras.",
+  "search_result_limit": "(demasiados resultados. debes ser más específico.)",
+  "auth_failed_message": "¡Nuestro sistema de autorización ha fallado! Hemos tenido este error en las últimas semanas con usuarios anónimos, y actualmente estamos reescribiendo el sistema de autenticación. Por favor, actualiza la página, o mejor, REGÍSTRATE Y ACCEDE usando el enlace del foro que se encuentra a continuación para solucionar el problema",
+  "oops": "Ups",
+  "something_went_wrong": "Algo salió mal al cargar eso desde el servidor. :(",
+  "crash_happened": "Rainwave ha fallado. :(",
+  "report_sending": "Tratando de enviar un reporte al respecto...",
+  "report_sent": "¡El error ha sido reportado! ¡Le echaremos un vistazo!",
+  "report_error": "¡...Ni siquiera hemos podido enviar el reporte! :(",
+  "please_refresh": "Recarga la página para traer a Rainwave de vuelta.",
+  "report_submitted": "Reporte Enviado",
+  "api_key_manager": "Administrador de Claves de API",
+  "api_key": "Clave de API",
+  "qr_code": "Código QR",
+  "create_api_key": "Crear Clave de API",
+  "your_numeric_user_id": "Tu identificador numérico de usuario",
+  "app_would_like_to": "A Esta App Le Gustaría:",
+  "allow_api_auth": "Suena Bien",
+  "station_select_header": "Selección de Estación",
+  "station_name_1": "Juegos",
+  "station_name_2": "OC ReMix",
+  "station_name_3": "Covers",
+  "station_name_4": "Chiptune",
+  "station_name_5": "Todo",
+  "login": "Ingresar",
+  "signup": "Regístrarse",
+  "chat": "Chat",
+  "search": "Buscar",
+  "previouslyplayed": "Tocadas Previamente",
+  "playback_history_link": "Historial de Reproducción",
+  "special_event_alert": [
+    "Evento Especial en ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    ": "
+  ],
+  "tunein": "Sintonizar",
+  "stop": "Detener",
+  "audio_error": "¡No se pudo sintonizar desde el navegador!",
+  "audio_connect_error": "De momento hay dificultades conectándose al servidor de la radio.",
+  "audio_connect_error_reattempting": "Estás perdiendo la capacidad de votar por problemas de conexión. Estamos tratando de mantener la conexión.",
+  "try_external_player": "Haz clic para intentar usar una aplicación externa para sintonizar.",
+  "m3u_hijack_right_click": "Un complemento está tratando de secuestrar el navegador. Utiliza los enlaces de descarga del MP3 o el Ogg y una aplicación externa para sintonizar.",
+  "listen_via_browser": "Escucha en el Navegador",
+  "listen_via_mp3": "Escucha el MP3",
+  "listen_via_ogg": "Escucha el Ogg",
+  "chrome_mobile_takes_time": "En Android se puede tardar hasta 20 segundos. El icono de color naranja significa que todo está bien - ¡tan sólo espera!",
+  "api_docs": "Documentación de la API",
+  "github_repo": "GitHub",
+  "coming_up": "A Continuación",
+  "vote_now": "Vota Ahora",
+  "now_playing": "Tocando Ahora",
+  "election": "Votación",
+  "power_hour": "Especial de Una Hora",
+  "continued": "Continuación",
+  "vote_submitted": "Voto Enviado",
+  "cannot_vote_for_this_now": "No puedes votar por esa canción en este momento.",
+  "invalid_hotkey_vote": "Opción inválida, intenta nuevamente.",
+  "played_ago": [
+    "Tocada Hace ",
+    {
+      "type": "substitute",
+      "key": "time"
+    }
+  ],
+  "timeline_art__request_indicator": "Petición",
+  "timeline_art__your_request_indicator": "Tuya",
+  "num_votes": [
+    {
+      "type": "substitute",
+      "key": "num_votes"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "num_votes",
+      "plurals": {
+        "one": "Voto",
+        "other": "Votos"
+      }
+    }
+  ],
+  "vote": "Votar",
+  "voted": "Votado",
+  "event_naming__oneup": [
+    "Una Hora de: ",
+    {
+      "type": "substitute",
+      "key": "name"
+    }
+  ],
+  "Patreon": "Patreon",
+  "PayPal": "PayPal",
+  "tip_jar": "Donaciones",
+  "tip_jar_opener": "Rainwave seguirá funcionando independientemente de lo que haya en el jarro de propinas.  Si deseas echarle algunos guiles o rupias:",
+  "tip_jar_instruction_2": "Envíanos tu nombre de usuario y un mensaje como comentario.",
+  "tip_jar_instruction_3": "Por favor indica si deseas que tu nombre se mantenga anónimo.",
+  "tip_jar_opener_end": "Luego de procesar tu propina se te dará el estado de Donante en el sitio.  Esto te permitirá agregar más peticiones en tu fila y tener la capacidad de votar en más de 1 votación a la vez.",
+  "amount": "Cantidad",
+  "message": "Mensaje",
+  "tip_jar_balance": "Balance Actual",
+  "tip_jar_all_donations": "Total de donaciones desde julio del 2007",
+  "votes_by_station": "Votos por Estación",
+  "votes_by_source_station": "Votos por Estación de Origen",
+  "requests_by_station": "Peticiones por Estación",
+  "requests_by_source_station": "Peticiones por Estación de Origen",
+  "rating_counts_across_stations": "Evaluaciones por Estación de Origen",
+  "ratings_completion_rate": "Progreso de Evaluaciones",
+  "rating_spread": "Distribución de Puntajes",
+  "average_rating_by_station": "Puntaje Promedio por Estación",
+  "no_ratings": "sin evaluaciones",
+  "view_your": "Ver tus: ",
+  "recent_votes": "Votos Recientes",
+  "request_history": "Historial de Peticiones",
+  "registered_in_year": [
+    "Miembro desde ",
+    {
+      "type": "substitute",
+      "key": "year"
+    },
+    "."
+  ],
+  "top_rated_albums": "Álbumes Mejor Evaluados",
+  "top_requested_albums": "Álbumes Más Pedidos",
+  "random_relay": "Servidor Aleatorio",
+  "redownload_m3u": "¿Estás sintonizando?  Si acabas de iniciar sesión y estás usando una aplicación externa para escuchar, vuelve a descargar la lista de reproducción MP3 u Ogg.",
+  "sync_stopped": "Rainwave ha dejado de funcionar.  Actualiza la página y vuelve a intentarlo.",
+  "lost_connection": "Se ha perdido la conexión con Rainwave.",
+  "sync_retrying": "Hay problemas comunicándose con Rainwave, un momento...",
+  "mobile_sync_retrying": "Problemas de conexión, actualiza la página o intenta más tarde.",
+  "async_error": "Error comunicándose con Rainwave.  Intenta nuevamente o actualiza la página.",
+  "deeplink_error": "Lo sentimos, no pudimos entender la URL que has intentado abrir.",
+  "hold_to_rate": "mantén presionado para evaluar",
+  "Loading...": "Cargando...",
+  "Cancel": "Cancelar",
+  "go": "Ir",
+  "hotkey_mode": "1-5 para Evaluar, A/S/D para Votar",
+  "invalid_hotkey": "Tecla rápida inválida.",
+  "not_an_election": "No es una votación.",
+  "rate_song_mobile_dialog": "Evaluar Canción",
+  "playlist": "Lista de Reproducción",
+  "library": "Biblioteca",
+  "Filter...": "Filtrar...",
+  "your_album_rating": [
+    "Has valorado este álbum con un ",
+    {
+      "type": "substitute",
+      "key": "rating_user"
+    },
+    "."
+  ],
+  "album_rating_ranked_at_v2": [
+    "Evaluado ",
+    {
+      "type": "substitute",
+      "key": "rating_count"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "rating_count",
+      "plurals": {
+        "one": "vez",
+        "other": "veces"
+      }
+    },
+    " con un ",
+    {
+      "type": "substitute",
+      "key": "rating"
+    },
+    ", en la posición Nº ",
+    {
+      "type": "ordinal",
+      "key": "rank"
+    },
+    "."
+  ],
+  "album_requests_ranked_at": [
+    "Pedido ",
+    {
+      "type": "substitute",
+      "key": "count"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "count",
+      "plurals": {
+        "one": "vez",
+        "other": "veces"
+      }
+    },
+    ", en la posición Nº ",
+    {
+      "type": "ordinal",
+      "key": "rank"
+    },
+    "."
+  ],
+  "album_year": [
+    "Publicado en ",
+    {
+      "type": "substitute",
+      "key": "year"
+    },
+    "."
+  ],
+  "album_rating_detail": "Los usuarios le han dado a este álbum una evaluación de ",
+  "song_rating_detail": "Los usuarios le han dado a esta canción una evaluación de ",
+  "rating_detail_numbers": [
+    {
+      "type": "substitute",
+      "key": "rating"
+    },
+    ". (",
+    {
+      "type": "substitute",
+      "key": "percentile_message"
+    },
+    ")"
+  ],
+  "rating_percentile_top": [
+    "el ",
+    {
+      "type": "substitute",
+      "key": "percentile_top"
+    },
+    "% superior"
+  ],
+  "rating_percentile_bottom": [
+    "el ",
+    {
+      "type": "substitute",
+      "key": "percentile"
+    },
+    "% inferior"
+  ],
+  "request_percentile_top": [
+    "Popularidad de Pedidos: ",
+    {
+      "type": "substitute",
+      "key": "percentile_top"
+    },
+    "% superior."
+  ],
+  "request_percentile_bottom": [
+    "Popularidad de Pedidos: ",
+    {
+      "type": "substitute",
+      "key": "percentile"
+    },
+    "% inferior."
+  ],
+  "song_has_no_ratings": "La canción tiene muy pocas evaluaciones para reportar.",
+  "Rate": "Evaluar",
+  "Request": "Pedido",
+  "Albums": "Álbumes",
+  "Songs": "Canciones",
+  "Artists": "Artistas",
+  "Artists_pluralized": [
+    {
+      "type": "plural",
+      "key": "count",
+      "plurals": {
+        "one": "Artista",
+        "other": "Artistas"
+      }
+    }
+  ],
+  "Users": "Usuarios",
+  "Groups": "Categorías",
+  "Listeners": "Auditores",
+  "songs_from": [
+    "Canciones en ",
+    {
+      "type": "substitute",
+      "key": "station"
+    }
+  ],
+  "album_on_station": [
+    "En ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    ": ",
+    {
+      "type": "substitute",
+      "key": "album"
+    }
+  ],
+  "groups_tab_title": "Categorías",
+  "RequestLine": "Fila de Peticiones",
+  "nobody_in_line": "Nadie en la Fila.",
+  "relevant_categories": "Categorías relacionadas: ",
+  "relevant_category": "Categoría: ",
+  "relevant_categories_rollover": "Categorías relacionadas: Mostrar lista.",
+  "album_all_cooldown": "Este álbum está en reposo.",
+  "album_has_cooldown": "Algunas canciones están en reposo.",
+  "new_album": "¡Álbum nuevo!",
+  "newish_album": "Añadido recientemente.",
+  "new_songs": "¡Canciones nuevas!",
+  "newish_songs": "Actualizado recientemente.",
+  "search...": "Buscar...",
+  "no_songs_on_this_station": [
+    "No hay canciones para este álbum en ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "."
+  ],
+  "fave_all_songs": "Marcar todas las canciones como favoritas",
+  "unfave_all_songs": "Quitar todas las canciones de favoritos",
+  "clear_request_queue": "Borrar Todo",
+  "pause_request_queue": "Pausar",
+  "unpause_request_queue": "Reanudar",
+  "request_fill_with_unrated": "Llenar con Canciones No Evaluadas",
+  "request_fill_with_faves": "Llenar con Favoritos",
+  "Suspend": "Suspender",
+  "Pause": "Pausar",
+  "Resume": "Reanudar",
+  "Faves": "Favoritos",
+  "Unrated": "Sin valoración",
+  "Clear": "Limpiar",
+  "Requests": "Peticiones",
+  "#_requests": [
+    {
+      "type": "substitute",
+      "key": "num_requests"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "num_requests",
+      "plurals": {
+        "one": "Petición",
+        "other": "Peticiones"
+      }
+    }
+  ],
+  "requests_all_on_cooldown": "¡Todas en reposo!",
+  "request_you_are_x_in_line": [
+    {
+      "type": "ordinal",
+      "key": "position"
+    },
+    "º En La Fila"
+  ],
+  "request_grab_tag__paused": "Suspendido",
+  "request_on_cooldown_for": [
+    "En reposo por ",
+    {
+      "type": "substitute",
+      "key": "cool_time"
+    },
+    "."
+  ],
+  "request_on_cooldown_ends_soon": "Saliendo del reposo.",
+  "request_in_election": [
+    {
+      "type": "substitute",
+      "key": "blocked_by"
+    },
+    " está presente en una votación."
+  ],
+  "blocked_by_name__group": "Categoría",
+  "blocked_by_name__album": "Álbum",
+  "blocked_by_name__in_election": "Canción",
+  "request_only_on_x": [
+    "Esta canción está en ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "."
+  ],
+  "no_song_selected": "(no ha seleccionado canción)",
+  "make_a_request": "Abre la biblioteca y haz clic/pulsa sobre el título de una canción para agregarla a tu fila de peticiones.",
+  "station_description_id_1": "Radio de bandas sonoras originales de videojuegos.  ¡Vota por la canción que deseas escuchar!",
+  "station_description_id_2": "Radio de OverClocked ReMix, la mejor en remixes de videojuegos.  ¡Vota por tus remixes favoritos!",
+  "station_description_id_3": "Remixes de oficiales y hechos por fans de música de videojuegos, transmitiendo 24/7.  ¡Vota por tus artistas favoritos!",
+  "station_description_id_4": "Chiptunes originales y de videojuegos, transmitiendo 24/7.  ¡Vota por las canciones que deseas escuchar!",
+  "station_description_id_5": "¡Radio en línea de música de videojuegos, incluyendo remixes y bandas sonoras originales!  ¡Vota por las canciones que deseas escuchar!",
+  "station_menu_description_id_1": "Música directamente desde los videojuegos.",
+  "station_menu_description_id_2": "Canciones y álbumes de OverClocked ReMix.",
+  "station_menu_description_id_3": "Remezclas oficiales y hechas por fans.",
+  "station_menu_description_id_4": "Pitidos y ruido blanco de videojuegos y más allá.",
+  "station_menu_description_id_5": "Todas las canciones de nuestra biblioteca.",
+  "now_playing_on_...": [
+    "Tocando Ahora En ",
+    {
+      "type": "substitute",
+      "key": "station"
+    }
+  ],
+  "preferences": "Preferencias",
+  "Settings": "Ajustes",
+  "yes": "Sí",
+  "no": "No",
+  "site_mode": "Modo Del Sitio",
+  "basic": "Básico",
+  "full": "Completo",
+  "change_language": "Idioma",
+  "timeline_preferences": "Timeline",
+  "tab_title_preferences": "Título De Pestaña",
+  "font_options": "Opciones de Tipografía",
+  "prefs_roboto": "Usar Tipografía Propia",
+  "prefs_f_norm": "Ajustar Tipografía Con Ancho de Pantalla",
+  "prefs_notify": "Notificaciones de Escritorio Cuando Cambie la Canción",
+  "prefs_t_clk": "Mostrar Reloj En Pestaña",
+  "prefs_t_rt": "Mostrar Puntaje En Pestaña",
+  "prefs_t_tl": "Mostrar Título De Canción En Pestaña",
+  "prefs_l_stksz": "Historial Permanentemente Visible",
+  "prefs_l_displose": "Mostrar Canciones que Perdieron la Votación",
+  "playlist_preferences": "Lista De Álbumes",
+  "prefs_p_avup": "Mostrar Disponibles Primero",
+  "prefs_p_favup": "Mostrar Favoritos Primero",
+  "prefs_p_null1": "Mostrar Sin Evaluar Primero",
+  "prefs_p_fav1": "Priorizar Favoritos Sobre Disponibles",
+  "prefs_p_sort": "Método para Ordenar Álbumes",
+  "prefs_p_songsort": "Ordenar Canciones Igual Que Álbumes",
+  "prefs_sort_playlist_by_alpha": "Alfabético",
+  "prefs_sort_playlist_by_rating_user": "Valoración",
+  "rating_preferences": "Evaluaciones",
+  "prefs_r_incmplt": "Indicar Álbumes Incompletos",
+  "prefs_r_noglbl": "Esconder Valoración Global Hasta que se haya Valorado",
+  "prefs_r_clear": "Mostrar Botón para Borrar Valoración",
+  "prefs_pwr": "Activar Modo Avanzado",
+  "prefs_hkm": "Distribución de Teclas Rápidas",
+  "waiting_for_hotkey": "Esperando por Tecla Rápida",
+  "hotkeys_rate10": " = Evaluar 1.0-5.0",
+  "hotkeys_rate05": " = Evaluar 1.5-4.5",
+  "hotkeys_vote0": " = Votar 1ª Elec",
+  "hotkeys_vote1": " = Votar 2ª Elec",
+  "hotkeys_fave": " = Fav. Canción Actual",
+  "hotkeys_play": " = Detener/Reproducir",
+  "cd_what_is": "¿Qué es Reposo?",
+  "cd_blue_bkg_is": "Cuando una canción o álbum tiene un fondo azul, está en reposo y no puede ser tocada en este momento.",
+  "cd_why_use_cooldown": "Los tiempos de Reposo son usados de manera que Rainwave no repita canciones y álbumes.",
+  "cd_type_of_cooldown": "Tipo de Reposo",
+  "cd_example": "Ejemplo",
+  "cd_cooldown_length": "Tiempo de Reposo",
+  "cd_song": "Canción",
+  "cd_song_length": "2-6 días",
+  "cd_album": "Álbum",
+  "cd_album_length": "6-48 horas",
+  "cd_category": "Categoría",
+  "cd_category_length": "15 minutos",
+  "cd_cooldowns_depend_on": "Los tiempos de Reposo pueden depender de:",
+  "cd_album_size": "Tamaño del Álbum",
+  "cd_larger_album": "Mayor Tamaño = Reposo más Breve",
+  "cd_rating": "Valoración",
+  "cd_higher_rating": "Mayor Valoración = Reposo más Breve",
+  "cd_recently_added": "Añadido Recientemente",
+  "cd_newer": "Más nuevo = Reposo más Breve",
+  "timeformat_w": "sm",
+  "timeformat_d": "d",
+  "timeformat_h": "h",
+  "timeformat_m": "m",
+  "timeformat_s": "s",
+  "unrated_songs": "Canciones No Evaluadas",
+  "title": "Título",
+  "album_name": "Nombre de Álbum",
+  "id": "ID",
+  "sid": "ID de Estación",
+  "delete": "Eliminar",
+  "all_faves": "Mis Favoritos",
+  "rating_user": "Evaluación del Usuario",
+  "fave": "Favorito",
+  "rating": "Evaluación Promedio",
+  "album_id": "ID de Álbum",
+  "playback_history": "Tocadas Previamente - Ampliado",
+  "name": "Nombre",
+  "song_rating": "Evaluación",
+  "top_100": "Los Primeros 100",
+  "song_rating_count": "Nº de Evaluaciones",
+  "origin_sid": "Estación",
+  "user_recent_votes": "Tus Votos Recientes",
+  "user_requested_history": "Tu Historial de Peticiones",
+  "song_id": "ID de Canción",
+  "user_id": "ID de Usuario"
 }

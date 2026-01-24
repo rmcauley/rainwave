@@ -1,11 +1,11 @@
 from libs import cache
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web.urls import handle_api_html_url
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api.urls import handle_api_html_url
 
 
 @handle_api_url("admin/request_line")
-class ListRequestLine(api_web.web.APIHandler):
+class ListRequestLine(web_api.web.APIHandler):
     return_name = "request_line"
     admin_required = True
     sid_required = True
@@ -16,5 +16,5 @@ class ListRequestLine(api_web.web.APIHandler):
 
 
 @handle_api_html_url("request_line")
-class ListRequestLineHTML(api_web.web.PrettyPrintAPIMixin, ListRequestLine):
+class ListRequestLineHTML(web_api.web.PrettyPrintAPIMixin, ListRequestLine):
     pass

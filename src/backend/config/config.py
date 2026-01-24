@@ -1,6 +1,6 @@
 import orjson
 from config import rainwave_config
-from src_backend.config.config_types import PublicRelayConfig
+from src.backend.config.config_types import PublicRelayConfig
 
 station_ids: set[int] = set(k for k in rainwave_config.stations.keys())
 station_id_friendly: dict[int, str] = {

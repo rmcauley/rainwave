@@ -5,7 +5,7 @@
 import uuid
 from libs import db
 from rainwave.user import User
-from api_web.web import RainwaveHandler
+from web_api.web import RainwaveHandler
 
 ALLOWED_DESTINATIONS = ("web", "rw", "app", "rwpath")
 

@@ -1,7 +1,7 @@
-from src_backend.config import config
-import api_web.web
-from api_web import fieldtypes
-from api_web.urls import handle_url
+from src.backend.config import config
+import web_api.web
+from web_api import fieldtypes
+from web_api.urls import handle_url
 from routes.admin import producers
 from rainwave.events import event
 from routes.admin_web import index
@@ -15,7 +15,7 @@ from rainwave import schedule  # pylint: disable=W0611
 
 
 @handle_url("/admin/tools/producers")
-class WebCreateProducer(api_web.web.HTMLRequest):
+class WebCreateProducer(web_api.web.HTMLRequest):
     admin_required = True
     sid_required = True
 
@@ -55,7 +55,7 @@ class WebCreateProducer(api_web.web.HTMLRequest):
         self.write(self.render_string("basic_footer.html"))
 
 
-class WebListProducersBase(api_web.web.PrettyPrintAPIMixin):
+class WebListProducersBase(web_api.web.PrettyPrintAPIMixin):
     sid: int
 
     # pylint: disable=E1101
@@ -106,7 +106,7 @@ class WebListProducersAll(WebListProducersBase, producers.ListProducersAll):
 
 
 @handle_url("/admin/album_list/modify_producer")
-class WebModifyProducer(api_web.web.HTMLRequest):
+class WebModifyProducer(web_api.web.HTMLRequest):
     admin_required = True
     sid_required = True
     fields = {"sched_id": (fieldtypes.sched_id, True)}
@@ -114,7 +114,7 @@ class WebModifyProducer(api_web.web.HTMLRequest):
     def get(self):
         p = event.BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
         if not p:
-            raise api_web.web.APIException("404", http_code=404)
+            raise web_api.web.APIException("404", http_code=404)
         self.write(self.render_string("bare_header.html", title="%s" % p.name))
         self.write(
             "<h2>%s %s - %s</h2>"

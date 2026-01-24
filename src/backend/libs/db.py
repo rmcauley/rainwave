@@ -2,7 +2,7 @@ import psycopg2
 import psycopg2.extras
 import time
 
-from src_backend.config import config
+from src.backend.config import config
 from libs import log
 
 

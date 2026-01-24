@@ -1,15 +1,15 @@
 from time import time as timestamp
 from libs import db
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web.exceptions import APIException
-from api_web import fieldtypes
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api.exceptions import APIException
+from web_api import fieldtypes
 
 from rainwave.events.oneup import OneUpProducer
 
 
 @handle_api_url("admin/list_power_hours")
-class ListPowerHours(api_web.web.APIHandler):
+class ListPowerHours(web_api.web.APIHandler):
     return_name = "power_hours"
     admin_required = True
     sid_required = True
@@ -27,7 +27,7 @@ class ListPowerHours(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/get_power_hour")
-class GetPowerHour(api_web.web.APIHandler):
+class GetPowerHour(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True
@@ -42,7 +42,7 @@ class GetPowerHour(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/add_song_to_power_hour")
-class AddSongToPowerHour(api_web.web.APIHandler):
+class AddSongToPowerHour(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True
@@ -62,7 +62,7 @@ class AddSongToPowerHour(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/add_album_to_power_hour")
-class AddAlbumToPowerHour(api_web.web.APIHandler):
+class AddAlbumToPowerHour(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True
@@ -82,7 +82,7 @@ class AddAlbumToPowerHour(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/remove_from_power_hour")
-class RemoveFromPowerHour(api_web.web.APIHandler):
+class RemoveFromPowerHour(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True
@@ -103,7 +103,7 @@ class RemoveFromPowerHour(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/shuffle_power_hour")
-class ShufflePowerHour(api_web.web.APIHandler):
+class ShufflePowerHour(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True
@@ -118,7 +118,7 @@ class ShufflePowerHour(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/move_up_in_power_hour")
-class MoveUpInPowerHour(api_web.web.APIHandler):
+class MoveUpInPowerHour(web_api.web.APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

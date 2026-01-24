@@ -2,13 +2,13 @@ import json  # We have some features of stdlib JSON we need here, don't use ujso
 
 import tornado.web
 
-import api_web.web
-from api_web.urls import handle_url
-from src_backend.libs import locale
+import web_api.web
+from web_api.urls import handle_url
+from src.backend.libs import locale
 
 
 @handle_url("/locale/")
-class LocaleIndex(api_web.web.HTMLRequest):
+class LocaleIndex(web_api.web.HTMLRequest):
     description = "Lists the currently available Rainwave locales/translations and how many lines are missing in them, as compared to the English master locale."
     auth_required = False
     sid_required = False
@@ -41,7 +41,7 @@ class LocaleIndex(api_web.web.HTMLRequest):
 
 
 @handle_url(r"/locale/(\w+)")
-class LocaleMissingLines(api_web.web.HTMLRequest):
+class LocaleMissingLines(web_api.web.HTMLRequest):
     description = "Lists all the missing lines in a locale/translation file."
     auth_required = False
     sid_required = False

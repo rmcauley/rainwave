@@ -1,10 +1,10 @@
 import tornado.web
-import api_web.web
-from src_backend.config import config
+import web_api.web
+from src.backend.config import config
 
 help_classes: dict[
     str,
-    api_web.web.RainwaveHandler | api_web.web.APIHandler,
+    web_api.web.RainwaveHandler | web_api.web.APIHandler,
 ] = {}
 url_properties = (
     ("allow_get", "GET", "Allows HTTP GET requests in addition to POST requests."),
@@ -82,7 +82,7 @@ def add_help_class(cls, url):
     help_classes[url] = cls
 
 
-class IndexRequest(api_web.web.HTMLRequest):
+class IndexRequest(web_api.web.HTMLRequest):
     auth_required = False
     login_required = False
     sid_required = False

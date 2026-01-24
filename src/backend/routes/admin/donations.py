@@ -1,12 +1,12 @@
 from libs import db
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web.exceptions import APIException
-from api_web import fieldtypes
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api.exceptions import APIException
+from web_api import fieldtypes
 
 
 @handle_api_url("admin/add_donation")
-class AddDonationHandler(api_web.web.APIHandler):
+class AddDonationHandler(web_api.web.APIHandler):
     admin_required = True
     fields = {
         "donor_id": (fieldtypes.user_id, True),
