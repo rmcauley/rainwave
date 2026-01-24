@@ -67,7 +67,7 @@ async def _start() -> None:
     calls = []
     requests = []
     clients = []
-    for relay, relay_info in config.get("relays").items():
+    for relay, relay_info in config.relays.items():
         client = aiohttp.ClientSession(
             loop=loop,
             timeout=aiohttp.ClientTimeout(total=5),
@@ -107,7 +107,7 @@ async def _start() -> None:
             stations[sid] = 0
 
         relays = {}
-        for relay, _relay_info in config.get("relays").items():
+        for relay, _relay_info in config.relays.items():
             relays[relay] = 0
 
         for call in calls:
@@ -131,7 +131,7 @@ async def _start() -> None:
 
         cache.set_global("relay_status", relays)
 
-        # db.c.update("DELETE FROM r4_listener_counts WHERE lc_time <= %s", (current_time - config.get("trim_history_length"),))
+        # db.c.update("DELETE FROM r4_listener_counts WHERE lc_time <= %s", (current_time - config.trim_history_length,))
     except Exception as e:
         log.exception("icecast_sync", "Could not finish counting listeners.", e)
 

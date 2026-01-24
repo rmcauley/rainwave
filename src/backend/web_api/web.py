@@ -124,7 +124,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
     description = "Undocumented."
     # Error codes for documentation.
     return_codes = None
-    # Restricts requests to config.get("api_trusted_ip_addresses") (presumably 127.0.0.1)
+    # Restricts requests to config.api_trusted_ip_addresses (presumably 127.0.0.1)
     local_only = False
     # Should the user be free to vote and rate?
     unlocked_listener_only = False
@@ -273,7 +273,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
     def sid_check(self) -> None:
         if self.sid is None and not self.sid_required:
-            self.sid = config.get("default_station")
+            self.sid = config.default_station
         if self.sid == 0 and self.allow_sid_zero:
             pass
         elif not self.sid in config.station_ids:
@@ -327,8 +327,9 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
     # Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
     def prepare(self) -> None:
-        if self.local_only and not self.request.remote_ip in config.get(
-            "api_trusted_ip_addresses"
+        if (
+            self.local_only
+            and not self.request.remote_ip in config.api_trusted_ip_addresses
         ):
             log.info(
                 "api",
@@ -400,7 +401,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
         self.permission_checks()
 
     def do_phpbb_auth(self) -> bool:
-        phpbb_cookie_name = config.get("phpbb_cookie_name") + "_"
+        phpbb_cookie_name = config.phpbb_cookie_name + "_"
         user_id = fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", ""))
         if not user_id:
             pass
@@ -437,7 +438,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
             return None
         if not user_id:
             user_id = self.user.id
-        cookie_session = self.get_cookie(config.get("phpbb_cookie_name") + "_sid")
+        cookie_session = self.get_cookie(config.phpbb_cookie_name + "_sid")
         if cookie_session:
             if cookie_session == db.c.fetch_var(
                 "SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s",

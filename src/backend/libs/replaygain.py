@@ -11,7 +11,7 @@ ref_level = 89
 
 
 def get_gain_for_song(file: str) -> str:
-    if config.has("disable_replaygain") and config.get("disable_replaygain"):
+    if config.has("disable_replaygain") and config.disable_replaygain:
         return "0.0 dB"
 
     output = subprocess.run(

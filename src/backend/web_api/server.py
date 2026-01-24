@@ -53,17 +53,17 @@ class APIServer:
         routes.sync.init()
 
         # task_ids start at zero, so we gobble up ports starting at the base port and work up
-        port_no = int(config.get("api_base_port")) + task_id
+        port_no = int(config.api_base_port) + task_id
 
         # Log according to configured directory and port # we're operating on
         log_file = "%s/rw_api_%s.log" % (config.get_directory("log_dir"), port_no)
-        log.init(log_file, config.get("log_level"))
+        log.init(log_file, config.log_level)
         log.debug("start", "Server booting, port %s." % port_no)
         db.connect(auto_retry=False, retry_only_this_time=True)
         cache.connect()
         memory_trace.setup(port_no)
 
-        if config.get("developer_mode"):
+        if config.developer_mode:
             for station_id in config.station_ids:
                 playlist.prepare_cooldown_algorithm(station_id)
             # automatically loads every station ID and fills things in if there's no data
@@ -82,7 +82,7 @@ class APIServer:
             playlist.update_num_songs()
 
         # If we're not in developer, remove development-related URLs
-        if not config.get("developer_mode"):
+        if not config.developer_mode:
             i = 0
             while i < len(request_classes):
                 if request_classes[i][0].find("/test/") != -1:
@@ -100,7 +100,7 @@ class APIServer:
 
         # Fire ze missiles!
         global app
-        debug = config.get("developer_mode")
+        debug = config.developer_mode
         app = tornado.web.Application(
             request_classes,
             debug=debug,
@@ -137,7 +137,7 @@ class APIServer:
 
         # Setup variables for the long poll module
         # Bypass Tornado's forking processes if num_processes is set to 1
-        if config.get("api_num_processes") == 1:
+        if config.api_num_processes == 1:
             self._listen(0)
         else:
             # The way this works, is that the parent PID is hijacked away from us and everything after this
@@ -148,7 +148,7 @@ class APIServer:
             # We can have a config directive for numprocesses but it's entirely optional - a return of
             # None from the config option getter (if the config didn't exist) will cause Tornado
             # to spawn as many processes as there are cores on the server CPU(s).
-            tornado.process.fork_processes(config.get("api_num_processes"))
+            tornado.process.fork_processes(config.api_num_processes)
 
             task_id = tornado.process.task_id()
             if task_id != None:

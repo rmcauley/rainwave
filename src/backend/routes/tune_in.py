@@ -10,11 +10,9 @@ from typing import Any
 def get_round_robin_url(
     sid: int, filetype: str = "mp3", user: Any | None = None
 ) -> str:
-    stream_url = config.get("round_robin_relay_protocol") + config.get(
-        "round_robin_relay_host"
-    )
-    if config.get("round_robin_relay_port"):
-        stream_url += ":" + config.get("round_robin_relay_port")
+    stream_url = config.round_robin_relay_protocol + config.round_robin_relay_host
+    if config.round_robin_relay_port:
+        stream_url += ":" + config.round_robin_relay_port
     stream_url += "/" + get_stream_filename(sid, filetype, user)
     return stream_url
 

@@ -94,7 +94,7 @@ class TestUserRequest(APIHandler):
                 + "', %s, 5)",
                 (user_id,),
             )
-        self.set_cookie(config.get("phpbb_cookie_name") + "_u", user_id)
+        self.set_cookie(config.phpbb_cookie_name + "_u", user_id)
         session_id = db.c.fetch_var(
             "SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s",
             (user_id,),
@@ -105,8 +105,8 @@ class TestUserRequest(APIHandler):
                 "INSERT INTO phpbb_sessions (session_id, session_user_id) VALUES (%s, %s)",
                 (session_id, user_id),
             )
-        self.set_cookie(config.get("phpbb_cookie_name") + "_u", user_id)
-        self.set_cookie(config.get("phpbb_cookie_name") + "_sid", session_id)
+        self.set_cookie(config.phpbb_cookie_name + "_u", user_id)
+        self.set_cookie(config.phpbb_cookie_name + "_sid", session_id)
         self.execute(user_id, sid)
         self.append_standard(
             "dev_login_ok",

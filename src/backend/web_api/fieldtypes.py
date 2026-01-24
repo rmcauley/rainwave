@@ -257,7 +257,7 @@ valid_relay_error = "must be a known and valid relay's IP address."
 def valid_relay(s: Any, request: Any = None) -> str | None:
     if not s:
         return None
-    for name, value in config.get("relays").items():
+    for name, value in config.relays.items():
         if value["ip_address"] == s or (
             value.get("ip_address6") and value.get("ip_address6") == s
         ):

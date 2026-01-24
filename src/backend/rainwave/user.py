@@ -143,7 +143,7 @@ class User:
 
         if self.data["perks"]:
             self.data["rate_anything"] = True
-        elif self.data["_total_ratings"] > config.get("rating_allow_all_threshold"):
+        elif self.data["_total_ratings"] > config.rating_allow_all_threshold:
             self.data["rate_anything"] = True
         self.data.pop("_total_ratings")
 
@@ -542,7 +542,7 @@ class User:
         if not self.is_in_request_line():
             return None
         if not t:
-            t = timestamp() + config.get("request_tunein_timeout")
+            t = timestamp() + config.request_tunein_timeout
         return db.c.update(
             "UPDATE r4_listeners SET line_expiry_tunein = %s WHERE user_id = %s",
             (t, self.id),
@@ -629,7 +629,7 @@ class User:
         return api_key
 
     def save_preferences(self, ip_addr: str, prefs_json_string: str | None) -> None:
-        if not config.get("store_prefs") or not prefs_json_string:
+        if not config.store_prefs or not prefs_json_string:
             return
 
         try:

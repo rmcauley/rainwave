@@ -10,8 +10,8 @@ class Logout(HTMLRequest):
 
     def get(self):
         self.set_cookie("r4_session_id", "")
-        phpbb_cookie_name = config.get("phpbb_cookie_name") + "_"
+        phpbb_cookie_name = config.phpbb_cookie_name + "_"
         self.set_cookie(phpbb_cookie_name + "u", "")
-        self.set_cookie(config.get("phpbb_cookie_name") + "_sid", "")
-        self.set_cookie(config.get("phpbb_cookie_name") + "_k", "")
+        self.set_cookie(config.phpbb_cookie_name + "_sid", "")
+        self.set_cookie(config.phpbb_cookie_name + "_k", "")
         self.redirect("/")

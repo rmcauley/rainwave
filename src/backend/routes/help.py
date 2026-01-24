@@ -58,7 +58,7 @@ def sectionize_requests() -> None:
         if getattr(handler, "help_hidden", False):
             pass
         elif getattr(handler, "local_only", False):
-            if config.get("developer_mode"):
+            if config.developer_mode:
                 sections["Other"][url] = handler
         elif getattr(handler, "is_pretty_print_html", False):
             if handler.admin_required or handler.dj_required or handler.dj_preparation:

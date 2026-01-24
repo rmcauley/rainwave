@@ -239,7 +239,7 @@ def init() -> None:
         sessions[sid] = SessionBank()
         delayed_live_vote[sid] = None
         delayed_live_vote_timers[sid] = None
-    websocket_allow_from = config.get("websocket_allow_from")
+    websocket_allow_from = config.websocket_allow_from
     tornado.ioloop.PeriodicCallback(_keep_all_alive, 30000).start()
     zeromq.set_sub_callback(_on_zmq)
 
@@ -512,7 +512,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.throttled_msgs = []
         self.votes_by_key = ""
         self.user = User(1)
-        self.sid = config.get("default_station")
+        self.sid = config.default_station
         self.uuid = str(uuid.uuid4())
 
     def check_origin(self, origin):
