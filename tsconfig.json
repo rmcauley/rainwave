@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "lib": ["dom", "dom.iterable", "es2023"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": true,
+    "outDir": "${configDir}/dist",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2023",
+    "useDefineForClassFields": true,
+    "plugins": [
+      { "name": "typescript-eslint-language-service" },
+      { "name": "typescript-plugin-css-modules" }
+    ]
+  },
+  "include": ["./src/frontend"]
+}

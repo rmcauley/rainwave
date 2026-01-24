@@ -3,7 +3,7 @@ from time import time as timestamp
 from libs import db
 from libs import log
 from libs import cache
-from src_backend.config import config
+from src.backend.config import config
 
 
 def rating_calculator(ratings):

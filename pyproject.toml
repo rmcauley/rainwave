@@ -31,4 +31,4 @@ dev = [
 ]
 
 [tool.mypy]
-mypy_path = ["stubs"]
+mypy_path = ["src/backend/typing_stubs"]

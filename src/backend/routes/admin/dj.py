@@ -4,16 +4,16 @@ from time import time as timestamp
 
 from libs import cache
 
-import api_web.web
-from api_web.exceptions import APIException
-from api_web.urls import handle_api_url
-from api_web import liquidsoap
-from api_web import fieldtypes
+import web_api.web
+from web_api.exceptions import APIException
+from web_api.urls import handle_api_url
+from web_api import liquidsoap
+from web_api import fieldtypes
 from routes.info import attach_dj_info_to_request
 
 
 @handle_api_url("admin/dj/pause")
-class PauseStation(api_web.web.APIHandler):
+class PauseStation(web_api.web.APIHandler):
     dj_required = True
 
     def post(self):
@@ -29,7 +29,7 @@ class PauseStation(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/dj/unpause")
-class UnpauseStation(api_web.web.APIHandler):
+class UnpauseStation(web_api.web.APIHandler):
     dj_required = True
     fields = {"kick_dj": (fieldtypes.boolean, False)}
 
@@ -54,7 +54,7 @@ class UnpauseStation(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/dj/skip")
-class SkipStation(api_web.web.APIHandler):
+class SkipStation(web_api.web.APIHandler):
     dj_required = True
 
     def post(self):
@@ -64,7 +64,7 @@ class SkipStation(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/dj/pause_title")
-class PauseTitle(api_web.web.APIHandler):
+class PauseTitle(web_api.web.APIHandler):
     dj_required = True
     fields = {"title": (fieldtypes.string, True)}
 
@@ -78,7 +78,7 @@ class PauseTitle(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/dj/change_pw")
-class ChangeDJPW(api_web.web.APIHandler):
+class ChangeDJPW(web_api.web.APIHandler):
     dj_required = True
 
     def post(self):
@@ -95,7 +95,7 @@ class ChangeDJPW(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/dj/heartbeat")
-class DJHeartbeat(api_web.web.APIHandler):
+class DJHeartbeat(web_api.web.APIHandler):
     dj_required = True
 
     def post(self):

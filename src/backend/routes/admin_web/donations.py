@@ -1,9 +1,9 @@
-import api_web.web
-from api_web.urls import handle_url
+import web_api.web
+from web_api.urls import handle_url
 
 
 @handle_url("/admin/tools/donations")
-class UserSearchTool(api_web.web.HTMLRequest):
+class UserSearchTool(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):
@@ -20,7 +20,7 @@ class UserSearchTool(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/album_list/donations")
-class DonationAddTool(api_web.web.HTMLRequest):
+class DonationAddTool(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):

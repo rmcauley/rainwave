@@ -19,21 +19,21 @@ import tornado.locks
 import tornado.httputil
 import tornado.concurrent
 
-from api_web import fieldtypes
-from api_web.exceptions import APIException
-from api_web.web import APIHandler
-from api_web.web import get_browser_locale
-from api_web.urls import api_endpoints
-from api_web.urls import handle_api_url
+from web_api import fieldtypes
+from web_api.exceptions import APIException
+from web_api.web import APIHandler
+from web_api.web import get_browser_locale
+from web_api.urls import api_endpoints
+from web_api.urls import handle_api_url
 from rainwave.user import User
-import src_backend.libs.locale
+import src.backend.libs.locale
 import routes.info
 import rainwave.playlist
 import rainwave.schedule
 
 from libs import cache
 from libs import log
-from src_backend.config import config
+from src.backend.config import config
 from libs import zeromq
 
 
@@ -502,7 +502,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     is_websocket = True
     local_only = False
     help_hidden = False
-    locale: src_backend.libs.locale.RainwaveLocale
+    locale: src.backend.libs.locale.RainwaveLocale
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

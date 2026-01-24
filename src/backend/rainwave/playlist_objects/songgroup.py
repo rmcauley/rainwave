@@ -2,7 +2,7 @@ from time import time as timestamp
 
 from libs import db
 from libs import log
-from src_backend.config import config
+from src.backend.config import config
 
 from rainwave.playlist_objects.metadata import AssociatedMetadata
 from rainwave.playlist_objects.metadata import make_searchable_string

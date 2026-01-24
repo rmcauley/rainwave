@@ -1,12 +1,12 @@
-from src_backend.config import config
-import api_web.web
-from api_web.urls import handle_url
+from src.backend.config import config
+import web_api.web
+from web_api.urls import handle_url
 from routes.admin_web.index import AlbumList
 from routes.admin_web.index import SongList
 
 
 @handle_url("/admin/tools/cooldown")
-class CooldownTool(api_web.web.HTMLRequest):
+class CooldownTool(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):

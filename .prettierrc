@@ -1,4 +1,20 @@
 {
-    "tabWidth": 2,
-    "quoteProps": "consistent"
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "quoteProps": "consistent",
+
+  "overrides": [
+    {
+      "files": "*.jsonc",
+      "options": {
+        "trailingComma": "none"
+      }
+    }
+  ]
 }

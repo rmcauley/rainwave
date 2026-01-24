@@ -1,12 +1,12 @@
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web import fieldtypes
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api import fieldtypes
 from rainwave.playlist import Song
 from rainwave.playlist import SongGroup
 
 
 @handle_api_url("admin/remove_group_from_song")
-class RemoveGroupFromSong(api_web.web.APIHandler):
+class RemoveGroupFromSong(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     description = "Removes the group from a song."
@@ -27,7 +27,7 @@ class RemoveGroupFromSong(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/edit_group_elec_block")
-class EditGroup(api_web.web.APIHandler):
+class EditGroup(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     fields = {
@@ -49,7 +49,7 @@ class EditGroup(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/edit_group_cooldown")
-class EditGroupCooldown(api_web.web.APIHandler):
+class EditGroupCooldown(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     fields = {
@@ -70,7 +70,7 @@ class EditGroupCooldown(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/create_group")
-class CreateGroup(api_web.web.APIHandler):
+class CreateGroup(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     fields = {"name": (fieldtypes.string, True)}

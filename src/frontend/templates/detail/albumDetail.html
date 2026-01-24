@@ -1,0 +1,67 @@
+<div class="art_anchor">
+  <div bind="art" class="art_container"></div>
+</div>
+
+<div class="detail_header" bind="detail_header">
+  <if condition="new_indicator">
+    <div class="{{ new_indicator_class }}">{{ new_indicator }}</div>
+  </if>
+  <if condition="all_cooldown">
+    <div class="album_all_cooldown" bind="cooldown_explanation">
+      <span>{{ $l("album_all_cooldown") }}</span>
+      <sup>?</sup>
+    </div>
+  </if>
+  <else>
+    <if condition="has_cooldown">
+      <div class="album_has_cooldown" bind="cooldown_explanation">
+        <span>{{ $l("album_has_cooldown") }}</span>
+        <sup>?</sup>
+      </div>
+    </if>
+  </else>
+  <if condition="rating_user">
+    <div>{{ $l("your_album_rating", { 'rating_user': Formatting.rating(_c.rating_user) }) }}</div>
+  </if>
+  <if condition="rating_count">
+    <div>
+      <span>{{ $l("album_rating_detail") }}</span>
+      <span>
+        {{ $l("rating_detail_numbers", { "rating": Formatting.rating(_c.rating), "count":
+        _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message":
+        _c.rating_percentile_message }) }}
+      </span>
+      <div bind="graph_placement"></div>
+    </div>
+  </if>
+  <!--<if condition="request_count">
+		<div>{{ request_percentile_message }}</div>
+	</if>-->
+  <if condition="^_c.genres.length && !MOBILE">
+    <div class="genres">
+      <if condition="^_c.genres.length <= 2">
+        <span>{{ $l("relevant_category") }}</span>
+        <a href="#!/group/{{ ^_c.genres[0].id }}">{{ ^_c.genres[0].name }}</a>
+        <if condition="^_c.genres.length == 2">
+          <span style="margin-right: 2px">,</span>
+          <a href="#!/group/{{ ^_c.genres[1].id }}">{{ ^_c.genres[1].name }}</a>
+        </if>
+      </if>
+      <else>
+        <div bind="category_rollover">{{ $l("relevant_categories_rollover")}}</div>
+        <div bind="category_list" class="category_list">
+          <for each="genres">
+            <a href="#!/group/{{ id }}">{{ name }}</a>
+          </for>
+        </div>
+      </else>
+    </div>
+  </if>
+  <if condition="^User.perks">
+    <div>
+      <a class="fave_all_songs" bind="fave_all_songs">{{ $l("fave_all_songs") }}</a>
+      <span>-</span>
+      <a class="unfave_all_songs" bind="unfave_all_songs">{{ $l("unfave_all_songs") }}</a>
+    </div>
+  </if>
+</div>

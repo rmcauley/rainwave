@@ -1,16 +1,16 @@
 from typing import cast
 from libs import db
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web import fieldtypes
-from api_web.exceptions import APIException
-from src_backend.config import config
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api import fieldtypes
+from web_api.exceptions import APIException
+from src.backend.config import config
 
 PRIVILEGED_GROUP_IDS = (18, 5, 4)
 
 
 @handle_api_url("enable_perks_by_discord_ids")
-class UserSearchByDiscordUserIdRequest(api_web.web.APIHandler):
+class UserSearchByDiscordUserIdRequest(web_api.web.APIHandler):
     auth_required = False
     sid_required = False
     description = "Accessible only to localhost connections, for wormgas."

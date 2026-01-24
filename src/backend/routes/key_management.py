@@ -1,6 +1,6 @@
-import api_web.web
-from api_web.urls import handle_url
-from api_web import fieldtypes
+import web_api.web
+from web_api.urls import handle_url
+from web_api import fieldtypes
 
 from libs import db
 
@@ -11,7 +11,7 @@ mini_qr_service = "http://chart.apis.google.com/chart?cht=qr&chs=75x75&choe=ISO-
 
 
 @handle_url("/keys/")
-class KeyIndex(api_web.web.HTMLRequest):
+class KeyIndex(web_api.web.HTMLRequest):
     login_required = True
     sid_required = False
     auth_required = False
@@ -68,7 +68,7 @@ class KeyIndex(api_web.web.HTMLRequest):
 
 
 @handle_url("/keys/app")
-class AppLogin(api_web.web.HTMLRequest):
+class AppLogin(web_api.web.HTMLRequest):
     login_required = False
     sid_required = False
     auth_required = False

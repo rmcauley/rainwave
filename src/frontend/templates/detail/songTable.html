@@ -1,0 +1,52 @@
+<for each="songs">
+  <div
+    class="{{ ^'row ' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') + ' ' + (_c.requestable ? 'requestable' : 'unrequestable') + ' ' + (_c.is_new ? 'is_new' : (_c.is_newish ? 'is_newish' : '')) }}"
+    bind="row"
+  >
+    <if condition="^!MOBILE">
+      <if condition="^Sizing.simple">
+        <if condition="url">
+          <a class="url" href="{{ url }}" target="_blank"></a>
+        </if>
+        <else>
+          <div class="fake_url"></div>
+        </else>
+      </if>
+      <if condition="^!Sizing.simple">
+        <div class="cool_info">{{ ^Formatting.cooldown_glance(_c.cool_end) }}</div>
+        <div class="length">{{ ^Formatting.minute_clock(_c.length) }}</div>
+      </if>
+      <if condition="^User.id > 1">
+        <div class="rating_clear">
+          <img src="/static/images4/rating_clear.png" bind="rating_clear" />
+        </div>
+      </if>
+    </if>
+    <template use="rating" />
+    <if condition="^!MOBILE && !Sizing.simple">
+      <div class="rating_site">{{ ^Formatting.rating(_c.rating) }}</div>
+    </if>
+    <if condition="^!Sizing.simple && _c.artists">
+      <div class="artists">
+        <for each="artists">
+          <a href="#!/artist/{{ id }}">{{ name }}</a>
+        </for>
+      </div>
+    </if>
+    <if condition="^!MOBILE">
+      <if condition="^!Sizing.simple">
+        <if condition="url">
+          <a class="url" href="{{ url }}" target="_blank"></a>
+        </if>
+        <else>
+          <div class="fake_url"></div>
+        </else>
+      </if>
+      <div class="detail_icon" bind="detail_icon">
+        <img src="/static/images4/info.png" />
+      </div>
+    </if>
+    <template use="fave" />
+    <div class="title" title="{{ title }}" bind="title">{{ title }}</div>
+  </div>
+</for>

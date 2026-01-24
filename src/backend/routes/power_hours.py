@@ -1,18 +1,18 @@
 from time import time as timestamp
-import api_web
+import web_api
 
-from api_web.urls import handle_api_url
-from api_web.urls import handle_api_html_url
-import api_web.web
-from api_web.web import PrettyPrintAPIMixin
+from web_api.urls import handle_api_url
+from web_api.urls import handle_api_html_url
+import web_api.web
+from web_api.web import PrettyPrintAPIMixin
 from libs import db
-from src_backend.config import config
+from src.backend.config import config
 
 from routes.admin_web.power_hours import get_ph_formatted_time
 
 
 @handle_api_url("power_hours")
-class ListPowerHours(api_web.web.APIHandler):
+class ListPowerHours(web_api.web.APIHandler):
     return_name = "power_hours"
     admin_required = False
     sid_required = False

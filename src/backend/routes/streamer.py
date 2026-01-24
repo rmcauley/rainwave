@@ -1,6 +1,6 @@
-from api_web.urls import handle_url
-from api_web.web import HTMLRequest
-from src_backend.config import config
+from web_api.urls import handle_url
+from web_api.web import HTMLRequest
+from src.backend.config import config
 
 
 @handle_url("/twitch/?")

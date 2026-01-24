@@ -1,16 +1,16 @@
-from api_web.exceptions import APIException
+from web_api.exceptions import APIException
 import asyncio
 import uuid
 import secrets
 import bcrypt
 
 import aiohttp
-from api_web.urls import handle_url
-from api_web.web import HTMLRequest
+from web_api.urls import handle_url
+from web_api.web import HTMLRequest
 from libs import db, log
 from tornado.auth import OAuth2Mixin
 
-from src_backend.config import config
+from src.backend.config import config
 
 from .errors import OAuthNetworkError, OAuthRejectedError
 from .r4_mixin import R4SetupSessionMixin

@@ -1,362 +1,501 @@
 {
-   "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
-
-   "language_name"                                   : "한국어",
-   "language_name_short"                             : "한국어",
-
-   "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
-
-   "missing_station_id"                              : "스테이션 ID가 필요합니다.",
-   "invalid_station_id"                              : "스테이션 ID가 유효하지 않습니다.",
-   "missing_argument"                                : "인자가 필요합니다: '%(argument)'.",
-   "invalid_argument"                                : "'%(argument)' 인자가 유효하지 않습니다: %(reason)",
-   "auth_required"                                   : "인증이 필요합니다.",
-   "auth_failed"                                     : "인증에 실패했습니다.",
-   "login_required"                                  : "로그인이 필요합니다.",
-   "tunein_required"                                 : "청취중이어야 합니다.",
-   "admin_required"                                  : "관리자만 사용할 수 있습니다.",
-   "dj_required"                                     : "DJ만 사용할 수 있습니다.",
-   "perks_required"                                  : "기부자 자격을 갖추어야 합니다.",
-   "unlocked_only"                                   : "%(station) 스테이션에서 %(lock_counter)곡 더 재생한 뒤에 사용할 수 있습니다.",
-   "internal_error"                                  : "서버 내부 오류가 발생했습니다.",
-   "song_does_not_exist"                             : "노래가 존재하지 않습니다.",
-   "db_error_retry"                                  : "데이터베이스 내부 오류가 발생했습니다. 다시 시도해 주세요.",
-   "db_error_permanent"                              : "서버 오류가 발생했습니다. 내부 데이터베이스가 꺼져 있습니다.",
-
-   "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
-
-   "fave_failed"                                     : "애청곡 등록에 실패했습니다.",
-   "request_failed"                                  : "곡 신청에 실패했습니다.",
-   "request_delete_failed"                           : "신청 내용 삭제에 실패했습니다..",
-   "request_unrated_failed"                          : "평점이 없는 모든 곡 신청에 실패했습니다.",
-   "request_favorited_failed"                        : "신청 가능한 애청곡이 없습니다.",
-   "too_many_requests"                               : "신청 목록이 가득 찼습니다.",
-   "same_request_exists"                             : "이미 신청된 곡입니다.",
-   "same_request_album"                              : "이미 신청된 앨범입니다.",
-   "song_not_requested"                              : "신청되지 않은 곡입니다.",
-   "station_offline"                                 : "스테이션이 현재 닫혀있습니다. 나중에 다시 찾아와주세요.",
-   "must_login_and_tune_in_to_request"               : "로그인 상태에서 청취중일 때 곡을 신청할 수 있습니다.",
-   "already_voted_for_song"                          : "이미 투표한 곡입니다.",
-   "cannot_rate_now"                                 : "지금은 평점을 줄 수 없습니다.",
-   "tunein_to_rate_current_song"                     : "청취중일 때 이 곡에 평점을 줄 수 있습니다.",
-   "rating_submitted"                                : "평점을 주었습니다.",
-   "rating_cleared"                                  : "평점을 지웠습니다.",
-   "unknown_error_message"                           : "죄송합니다.  다시 시도해 보시거나, 아래 디버그 정보를 담아 버그 신고를 해주세요.  (버그에 대한 정보를 서버에 기록했습니다)",
-   "debug_information"                               : "디버그 정보:",
-   "requests_reordered"                              : "신청곡의 순서를 바꾸었습니다.",
-   "request_queue_paused"                            : "곡 신청을 멈추었습니다.",
-   "request_queue_unpaused"                          : "곡 신청을 재개했습니다.",
-   "no_results"                                      : "결과가 없습니다.",
-   "empty_list"                                      : "빈 목록입니다.",
-   "no_search_results"                               : "해당되는 항목이 없습니다.",
-   "server_just_started"                             : "Rainwave 재가동중",
-   "station_paused"                                  : "DJ가 스테이션을 멈추었습니다.",
-   "album_on_other_station"                          : "여기에선 들을 수 없는 앨범입니다. 미안해요!",
-   "album_is_dj_only"                                : "이벤트 한정 앨범입니다. 미안해요!",
-   "locked_to_station"                               : "방금 전까지 %(locked_station)에서 투표하고 계셨군요. %(lock_counter)곡이 더 재생된 다음에 %(this_station)에서 투표하실 수 있습니다.",
-      "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
-   "search_string_too_short"                         : "3글자 이상의 검색어를 넣어주세요.",
-   "search_result_limit"                             : "(결과가 너무 많습니다. 조금 더 구체적인 검색어를 넣어주세요.)",
-
-   "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
-
-   "oops"                                            : "앗",
-   "something_went_wrong"                            : "정보를 불러오던 중 문제가 생겼습니다. :(",
-   "crash_happened"                                  : "Rainwave가 작동을 멈추었습니다. :(",
-   "report_sending"                                  : "서버로 리포트를 보내고 있습니다.",
-   "report_sent"                                     : "문제에 대한 보고를 받았으며, 확인해보도록 하겠습니다!",
-   "report_error"                                    : "에러 리포트 전송조차 실패했습니다! :(",
-   "please_refresh"                                  : "새로고침하여 페이지를 다시 불러오세요.",
-   "report_submitted"                                : "리포트 등록됨",
-
-   "__comment__"                 : "API Key Management",
-
-   "api_key_manager"                                 : "API Key 매니저",
-   "api_key"                                         : "API Key",
-   "qr_code"                                         : "QR Code",
-   "create_api_key"                                  : "API Key 생성",
-   "your_numeric_user_id"                            : "당신의 사용자 숫자 ID",
-
-   "__comment__"                 : "Menu",
-
-   "station_select_header"                           : "스테이션 선택",
-   "station_name_1"                                  : "Game",
-   "station_name_2"                                  : "OC ReMix",
-   "station_name_3"                                  : "Covers",
-   "station_name_4"                                  : "Chiptune",
-   "station_name_5"                                  : "All",
-
-   "login"                                           : "로그인",
-   "signup"                                          : "가입",
-   "chat"                                            : "채팅",
-   "search"                                          : "검색",
-   "previouslyplayed"                                : "이전 재생 곡",
-   "playback_history_link"                           : "재생 이력",
-   "special_event_alert"                             : "%(station)에서 이벤트 중: ",
-
-   "tunein"                                          : "청취 시작",
-   "stop"                                            : "정지",
-   "audio_error"                                     : "이 브라우저에서 청취를 시작할 수 없습니다!",
-   "audio_connect_error"                             : "현재 라디오 서버 접속이 원활하지 않습니다.",
-   "audio_connect_error_reattempting"                : "접속 상태에 문제가 있어 투표를 할 수 없습니다.  원활한 접속 상태를 확보하는 중입니다.",
-   "try_external_player"                             : "여기를 눌러서 앱을 통해 재생해보세요.",
-   "m3u_hijack_right_click"                          : "브라우저의 접속을 가로채려는 플러그인이 있습니다.  MP3나 Ogg M3U를 받아서 앱을 통해 재생해보세요.",
-
-   "listen_via_browser"                              : "브라우저에서 듣기",
-   "listen_via_mp3"                                  : "MP3로 듣기",
-   "listen_via_ogg"                                  : "Ogg로 듣기",
-   "chrome_mobile_takes_time"                        : "안드로이드에서는 재생 시작까지 최대 20초 정도 걸릴 수 있습니다.  아이콘이 오렌지색이면 작동중이라는 뜻입니다. 기다려주세요!",
-
-   "api_docs"                                        : "API 문서",
-   "github_repo"                                     : "GitHub",
-
-   "__comment__"                 : "Timeline Headers",
-
-   "coming_up"                                       : "이어서",
-   "vote_now"                                        : "투표하세요",
-   "now_playing"                                     : "재생 중",
-   "election"                                        : "투표 중입니다",
-   "power_hour"                                      : "Power Hour",
-
-   "__comment__"                 : "When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly",
-   "__comment__"                 : "we just use 'CONTINUED' instead, so the title of the power hour is only displayed once",
-   "__comment__"                 : "at the top of the timeline.  That's what this 'continued' line is for.",
-   "continued"                                       : "이벤트",
-
-   "__comment__"                 : "Timeline Song",
-
-   "vote_submitted"                                  : "투표 반영됨",
-   "cannot_vote_for_this_now"                        : "지금은 이 곡에 투표할 수 없습니다.",
-   "invalid_hotkey_vote"                             : "선택이 유효하지 않습니다.  다시 시도해주세요.",
-   "played_ago"                                      : "%(time) 전 재생",
-   "timeline_art__request_indicator"                 : "신청곡",
-   "timeline_art__your_request_indicator"            : "당신의 신청곡",
-   "num_votes"                                       : "%(num_votes) 표",
-   "vote"                                            : "투표",
-      "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
-   "voted"                                           : "투표",
-
-   "event_naming__oneup"                             : "%(name) Power Hour",
-
-   "__comment__"                 : "Tip Jar",
-
-   "Patreon"                                         : "Patreon",
-   "PayPal"                                          : "PayPal",
-   "tip_jar"                                         : "기부",
-   "tip_jar_opener"                                  : "팁 통이 비어있어도 Rainwave 서비스는 계속됩니다.  혹시 약간의 길이나 메세타를 기부할 의향이 있으시다면,",
-   "tip_jar_instruction_2"                           : "코멘트 란에 유저네임과 메세지를 써주세요.",
-   "tip_jar_instruction_3"                           : "익명으로 기부하기 원하실 경우 알려주세요.",
-   "tip_jar_opener_end"                              : "팁이 확인되면 기부자 자격을 부여해 드립니다. 기부자가 되면 더 많은 신청곡을 넣을 수 있고, 동시에 여러 곳에서 투표할 수 있습니다.",
-   "amount"                                          : "금액",
-   "message"                                         : "메세지",
-   "tip_jar_balance"                                 : "현재 잔액",
-   "tip_jar_all_donations"                           : "2007년 7월 이후 총 기부금",
-
-   "__comment__"                 : "User Detail",
-
-   "votes_by_station"                                : "투표를 넣은 스테이션 비율",
-   "votes_by_source_station"                         : "투표곡이 소속된 스테이션 비율",
-   "requests_by_station"                             : "곡을 신청한 스테이션 비율",
-   "requests_by_source_station"                      : "신청곡이 소속된 스테이션 비율",
-   "rating_counts_across_stations"                   : "스테이션 별 평점 부여 횟수",
-   "ratings_completion_rate"                         : "평점 완성률",
-   "rating_spread"                                   : "평점 분포",
-   "average_rating_by_station"                       : "스테이션 별 평균 평점",
-   "no_ratings"                                      : "없음",
-
-   "view_your"                                       : "보기: ",
-   "recent_votes"                                    : "최근 투표",
-   "request_history"                                 : "신청곡 이력",
-   "registered_in_year"                              : "%(year)년에 가입했습니다.",
-
-   "top_rated_albums"                                : "평점이 가장 높은 앨범",
-   "top_requested_albums"                            : "신청곡 횟수가 가장 많은 앨범",
-
-   "__comment__"                 : "Other",
-
-   "random_relay"                                    : "랜덤 릴레이",
-   "redownload_m3u"                                  : "청취중이신가요?  지금 막 로그인했고 외부 앱을 통해 들으신다면, MP3 나 Ogg M3U를 다시 받아주세요.",
-   "sync_stopped"                                    : "Rainwave가 작동을 멈췄습니다.  새로고침 후 다시 시도해 보세요.",
-   "lost_connection"                                 : "접속이 끊어졌습니다.",
-   "sync_retrying"                                   : "통신 상태가 좋지 않습니다.  기다려주세요...",
-   "mobile_sync_retrying"                            : "접속에 문제가 있습니다.  새로고침해 보시거나 나중에 찾아주세요.",
-   "async_error"                                     : "통신 오류가 발생했습니다.  다시 시도해 보시거나 새로고침해 보세요.",
-   "deeplink_error"                                  : "죄송합니다.  입력받은 URL을 이해할 수 없습니다.",
-
-   "Loading..."                                      : "불러오는 중...",
-   "Cancel"                                          : "취소",
-   "go"                                              : "확인",
-
-   "__comment__"                 : "Hotkey Mode",
-
-   "hotkey_mode"                                     : "1-5: 평점, A/S/D: 투표",
-   "invalid_hotkey"                                  : "유효하지 않은 핫키입니다.",
-   "not_an_election"                                 : "투표 중이 아닙니다.",
-   "rate_song_mobile_dialog"                         : "평점 주기",
-
-   "__comment__"                 : "Playlist View",
-
-   "playlist"                                        : "재생목록",
-   "library"                                         : "라이브러리",
-   "Filter..."                                       : "필터...",
-   "your_album_rating"                               : "이 앨범에 %(rating_user)의 평점을 주셨습니다.",
-   "album_rating_ranked_at_v2"                       : "평점 %(rating) (평점 갯수 %(rating_count)) - 앨범 순위 #(rank)",
-   "album_requests_ranked_at"                        : "곡 신청 횟수 %(count)번 - 신청곡 순위 #(rank)",
-   "album_year"                                      : "%(year)년에 발매되었습니다.",
-   "album_rating_detail"                             : "이 앨범에 대한 사용자 평점은 ",
-   "song_rating_detail"                              : "이 노래에 대한 사용자 평점은 ",
-   "rating_detail_numbers"                           : "%(rating)입니다. (%(percentile_message))",
-   "rating_percentile_top"                           : "상위 %(percentile_top)%",
-   "rating_percentile_bottom"                        : "하위 %(percentile)%",
-   "request_percentile_top"                          : "신청곡 빈도: 상위 %(percentile_top)%.",
-   "request_percentile_bottom"                       : "신청곡 빈도: 하위 %(percentile)%.",
-   "song_has_no_ratings"                             : "노래 평점이 없습니다.",
-   "Request"                                         : "신청곡",
-   "Albums"                                          : "앨범",
-   "Songs"                                           : "노래",
-   "Artists"                                         : "아티스트",
-   "Users"                                           : "사용자",
-   "Groups"                                          : "카테고리",
-   "Listeners"                                       : "청취자",
-   "songs_from"                                      : "%(station)",
-   "album_on_station"                                : "%(station): %(album)",
-   "groups_tab_title"                                : "카테고리",
-   "RequestLine"                                     : "신청곡 대기열",
-   "nobody_in_line"                                  : "대기열에 아무도 없습니다.",
-   "relevant_categories"                             : "관련 카테고리: ",
-   "relevant_category"                               : "카테고리: ",
-   "relevant_categories_rollover"                    : "관련 카테고리: 마우스를 올려 펼쳐보기",
-   "new_album"                                       : "새 앨범!",
-   "newish_album"                                    : "최근에 추가된 앨범",
-   "new_songs"                                       : "새 노래!",
-   "newish_songs"                                    : "최근에 추가된 노래",
-   "search..."                                       : "검색...",
-   "no_songs_on_this_station"                        : "%(station) 스테이션에는 이 앨범의 곡이 없습니다.",
-
-   "__comment__"                 : "Requests",
-
-   "clear_request_queue"                             : "모두 지우기",
-   "pause_request_queue"                             : "멈추기",
-   "unpause_request_queue"                           : "재개",
-   "request_fill_with_unrated"                       : "평점없는곡 채우기",
-   "request_fill_with_faves"                         : "애청곡 채우기",
-   "Suspend"                                         : "멈추기",
-   "Pause"                                           : "멈추기",
-   "Resume"                                          : "재개",
-   "Faves"                                           : "애청곡",
-   "Unrated"                                         : "평점없는곡",
-   "Clear"                                           : "비우기",
-
-   "Requests"                                        : "신청곡",
-   "#_requests"                                      : "신청곡 %(num_requests)곡",
-   "requests_all_on_cooldown"                        : "모두 쿨다운 중!",
-   "request_you_are_x_in_line"                       : "대기 순서: #(position)",
-   "request_grab_tag__paused"                        : "멈춤",
-
-   "request_on_cooldown_for"                         : "쿨다운 중입니다: %(cool_time).",
-   "request_on_cooldown_ends_soon"                   : "쿨다운이 곧 끝납니다.",
-   "request_in_election"                             : "해당 %(blocked_by) 대기열에 있습니다.",
-   "blocked_by_name__group"                          : "카테고리가",
-   "blocked_by_name__album"                          : "앨범이",
-   "blocked_by_name__in_election"                    : "곡이",
-   "request_only_on_x"                               : "해당 곡은 %(station) 스테이션에서 신청할 수 있습니다.",
-   "no_song_selected"                                : "(선곡 없음)",
-
-   "make_a_request"                                  : "라이브러리를 열고 곡 이름을 클릭하여 신청곡 대기열에 추가하세요.",
-
-   "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
-
-   "station_description_id_1"                        : "비디오 게임 OST 라디오입니다. 듣고 싶은 곡에 투표하세요!",
-   "station_description_id_2"                        : "최고의 비디오 게임 리믹스를 재생하는 OverClocked ReMix 라디오입니다. 가장 좋아하는 리믹스에 투표하세요!",
-   "station_description_id_3"                        : "오피셜 & 팬메이드 비디오 게임 음악을 24/7 방송합니다. 가장 좋아하는 아티스트에게 투표하세요!",
-   "station_description_id_4"                        : "비디오 게임 & 오리지널 칩튠 사운드트랙을 24/7 방송합니다. 듣고 싶은 곡에 투표하세요!",
-   "station_description_id_5"                        : "OST, 리믹스를 비롯한 비디오 게임 음악을 재생하는 라디오입니다. 듣고 싶은 곡에 투표하세요!",
-
-   "__comment__"                 : "Station Descriptions For The Menu (short messages)",
-
-   "station_menu_description_id_1"                   : "게임 속에서 듣던 바로 그 음악.",
-   "station_menu_description_id_2"                   : "오버클럭 리믹스와 앨범.",
-   "station_menu_description_id_3"                   : "오피셜 & 팬메이드 리믹스.",
-   "station_menu_description_id_4"                   : "고전 게임 음악과 고전 게임 음악 풍의 음악.",
-   "station_menu_description_id_5"                   : "Rainwave에 있는 모든 게임 음악과 리믹스.",
-   "now_playing_on_..."                              : "%(station)에서 현재 재생 중인 곡",
-
-   "__comment__"                 : "Preferences",
-
-   "preferences"                                     : "Preferences",
-   "Settings"                                        : "설정",
-   "yes"                                             : "네",
-   "no"                                              : "아뇨",
-   "site_mode"                                       : "사이트 모드",
-   "basic"                                           : "Basic",
-   "full"                                            : "Full",
-   "change_language"                                 : "언어",
-   "timeline_preferences"                            : "타임라인",
-   "tab_title_preferences"                           : "탭 제목",
-   "font_options"                                    : "폰트 옵션",
-   "prefs_roboto"                                    : "커스텀 폰트 사용하기",
-   "prefs_f_norm"                                    : "화면 너비에 따라 폰트 크기 줄이기",
-   "prefs_notify"                                    : "곡이 바뀔 때 데스크탑 알림 표시",
-   "prefs_t_clk"                                     : "탭 제목에 남은 시간 표시",
-   "prefs_t_rt"                                      : "탭 제목에 평점 표시",
-   "prefs_t_tl"                                      : "탭 제목에 곡명 표시",
-   "prefs_l_stksz"                                   : "이전 재생 곡 항상 표시",
-   "prefs_l_displose"                                : "투표에서 떨어진 곡 표시",
-   "playlist_preferences"                            : "앨범 목록",
-   "prefs_p_avup"                                    : "신청 가능한 앨범을 상위에 표시",
-   "prefs_p_favup"                                   : "애청곡을 상위에 표시",
-   "prefs_p_null1"                                   : "평점을 주지 않은 곡을 상위에 표시",
-   "prefs_p_fav1"                                    : "애청곡을 신청 가능한 곡보다 우선시",
-   "prefs_p_sort"                                    : "앨범 정렬 방법",
-   "prefs_sort_playlist_by_alpha"                    : "알파벳순",
-   "prefs_sort_playlist_by_rating_user"              : "평점순",
-   "rating_preferences"                              : "평점",
-   "prefs_r_incmplt"                                 : "평점이 완성되지 않은 앨범 표시",
-   "prefs_r_noglbl"                                  : "평점을 주지 않은 곡의 사용자 평점 가리기",
-   "prefs_r_clear"                                   : "평점 지우기 버튼 표시",
-   "prefs_pwr"                                       : "파워 유저 모드 켜기",
-   "prefs_hkm"                                       : "핫키 모드에 사용할 자판 배치",
-
-   "__comment__"                 : "Hotkey Mode - MAKE THEM VERY SHORT (and to test, activate power user mode and press backtick/tilde key)",
-
-   "waiting_for_hotkey"                              : "핫키 입력 대기 중",
-   "hotkeys_rate10"                                  : " = 평점 (1.0~5.0)",
-   "hotkeys_rate05"                                  : " = 평점 (1.5-4.5)",
-   "hotkeys_vote0"                                   : " = 첫번째 목록에 투표",
-   "hotkeys_vote1"                                   : " = 두번째 목록에 투표",
-   "hotkeys_fave"                                    : " = 현재 곡 애청곡 설정",
-   "hotkeys_play"                                    : " = 정지/재생",
-
-
-   "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
-
-   "timeformat_w"                                    : "주 ",
-   "timeformat_d"                                    : "일 ",
-   "timeformat_h"                                    : "시간 ",
-   "timeformat_m"                                    : "분 ",
-   "timeformat_s"                                    : "초 ",
-
-   "__comment__"                 : "Statistic Pages (see http://rainwave.cc/api4/ and scroll down)",
-
-   "unrated_songs"                                   : "핑점없는 곡",
-   "title"                                           : "제목",
-   "album_name"                                      : "앨범명",
-   "id"                                              : "ID",
-   "sid"                                             : "스테이션 ID",
-   "delete"                                          : "지우기",
-   "all_faves"                                       : "모든 애청곡",
-   "rating_user"                                     : "사용자 평점",
-   "fave"                                            : "애청곡",
-   "rating"                                          : "평균 평점",
-   "album_id"                                        : "앨범 ID",
-   "playback_history"                                : "이전 재생 곡 - 확장 보기",
-   "name"                                            : "이름",
-   "song_rating"                                     : "평점",
-   "top_100"                                         : "Top 100",
-   "song_rating_count"                               : "평점 갯수",
-   "origin_sid"                                      : "스테이션",
-   "user_recent_votes"                               : "당신이 최근 투표한 곡",
-   "user_requested_history"                          : "당신의 신청곡 이력",
-   "song_id"                                         : "노래 ID",
-   "user_id"                                         : "사용자 ID"
+  "language_name": "한국어",
+  "language_name_short": "한국어",
+  "missing_station_id": "스테이션 ID가 필요합니다.",
+  "invalid_station_id": "스테이션 ID가 유효하지 않습니다.",
+  "missing_argument": [
+    "인자가 필요합니다: '",
+    {
+      "type": "substitute",
+      "key": "argument"
+    },
+    "'."
+  ],
+  "invalid_argument": [
+    "'",
+    {
+      "type": "substitute",
+      "key": "argument"
+    },
+    "' 인자가 유효하지 않습니다: ",
+    {
+      "type": "substitute",
+      "key": "reason"
+    }
+  ],
+  "auth_required": "인증이 필요합니다.",
+  "auth_failed": "인증에 실패했습니다.",
+  "login_required": "로그인이 필요합니다.",
+  "tunein_required": "청취중이어야 합니다.",
+  "admin_required": "관리자만 사용할 수 있습니다.",
+  "dj_required": "DJ만 사용할 수 있습니다.",
+  "perks_required": "기부자 자격을 갖추어야 합니다.",
+  "unlocked_only": [
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    " 스테이션에서 ",
+    {
+      "type": "substitute",
+      "key": "lock_counter"
+    },
+    "곡 더 재생한 뒤에 사용할 수 있습니다."
+  ],
+  "internal_error": "서버 내부 오류가 발생했습니다.",
+  "song_does_not_exist": "노래가 존재하지 않습니다.",
+  "db_error_retry": "데이터베이스 내부 오류가 발생했습니다. 다시 시도해 주세요.",
+  "db_error_permanent": "서버 오류가 발생했습니다. 내부 데이터베이스가 꺼져 있습니다.",
+  "fave_failed": "애청곡 등록에 실패했습니다.",
+  "request_failed": "곡 신청에 실패했습니다.",
+  "request_delete_failed": "신청 내용 삭제에 실패했습니다..",
+  "request_unrated_failed": "평점이 없는 모든 곡 신청에 실패했습니다.",
+  "request_favorited_failed": "신청 가능한 애청곡이 없습니다.",
+  "too_many_requests": "신청 목록이 가득 찼습니다.",
+  "same_request_exists": "이미 신청된 곡입니다.",
+  "same_request_album": "이미 신청된 앨범입니다.",
+  "song_not_requested": "신청되지 않은 곡입니다.",
+  "station_offline": "스테이션이 현재 닫혀있습니다. 나중에 다시 찾아와주세요.",
+  "must_login_and_tune_in_to_request": "로그인 상태에서 청취중일 때 곡을 신청할 수 있습니다.",
+  "already_voted_for_song": "이미 투표한 곡입니다.",
+  "cannot_rate_now": "지금은 평점을 줄 수 없습니다.",
+  "tunein_to_rate_current_song": "청취중일 때 이 곡에 평점을 줄 수 있습니다.",
+  "rating_submitted": "평점을 주었습니다.",
+  "rating_cleared": "평점을 지웠습니다.",
+  "unknown_error_message": "죄송합니다.  다시 시도해 보시거나, 아래 디버그 정보를 담아 버그 신고를 해주세요.  (버그에 대한 정보를 서버에 기록했습니다)",
+  "debug_information": "디버그 정보:",
+  "requests_reordered": "신청곡의 순서를 바꾸었습니다.",
+  "request_queue_paused": "곡 신청을 멈추었습니다.",
+  "request_queue_unpaused": "곡 신청을 재개했습니다.",
+  "no_results": "결과가 없습니다.",
+  "empty_list": "빈 목록입니다.",
+  "no_search_results": "해당되는 항목이 없습니다.",
+  "server_just_started": "Rainwave 재가동중",
+  "station_paused": "DJ가 스테이션을 멈추었습니다.",
+  "album_on_other_station": "여기에선 들을 수 없는 앨범입니다. 미안해요!",
+  "album_is_dj_only": "이벤트 한정 앨범입니다. 미안해요!",
+  "locked_to_station": [
+    "방금 전까지 ",
+    {
+      "type": "substitute",
+      "key": "locked_station"
+    },
+    "에서 투표하고 계셨군요. ",
+    {
+      "type": "substitute",
+      "key": "lock_counter"
+    },
+    "곡이 더 재생된 다음에 ",
+    {
+      "type": "substitute",
+      "key": "this_station"
+    },
+    "에서 투표하실 수 있습니다."
+  ],
+  "search_string_too_short": "3글자 이상의 검색어를 넣어주세요.",
+  "search_result_limit": "(결과가 너무 많습니다. 조금 더 구체적인 검색어를 넣어주세요.)",
+  "oops": "앗",
+  "something_went_wrong": "정보를 불러오던 중 문제가 생겼습니다. :(",
+  "crash_happened": "Rainwave가 작동을 멈추었습니다. :(",
+  "report_sending": "서버로 리포트를 보내고 있습니다.",
+  "report_sent": "문제에 대한 보고를 받았으며, 확인해보도록 하겠습니다!",
+  "report_error": "에러 리포트 전송조차 실패했습니다! :(",
+  "please_refresh": "새로고침하여 페이지를 다시 불러오세요.",
+  "report_submitted": "리포트 등록됨",
+  "api_key_manager": "API Key 매니저",
+  "api_key": "API Key",
+  "qr_code": "QR Code",
+  "create_api_key": "API Key 생성",
+  "your_numeric_user_id": "당신의 사용자 숫자 ID",
+  "station_select_header": "스테이션 선택",
+  "station_name_1": "Game",
+  "station_name_2": "OC ReMix",
+  "station_name_3": "Covers",
+  "station_name_4": "Chiptune",
+  "station_name_5": "All",
+  "login": "로그인",
+  "signup": "가입",
+  "chat": "채팅",
+  "search": "검색",
+  "previouslyplayed": "이전 재생 곡",
+  "playback_history_link": "재생 이력",
+  "special_event_alert": [
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "에서 이벤트 중: "
+  ],
+  "tunein": "청취 시작",
+  "stop": "정지",
+  "audio_error": "이 브라우저에서 청취를 시작할 수 없습니다!",
+  "audio_connect_error": "현재 라디오 서버 접속이 원활하지 않습니다.",
+  "audio_connect_error_reattempting": "접속 상태에 문제가 있어 투표를 할 수 없습니다.  원활한 접속 상태를 확보하는 중입니다.",
+  "try_external_player": "여기를 눌러서 앱을 통해 재생해보세요.",
+  "m3u_hijack_right_click": "브라우저의 접속을 가로채려는 플러그인이 있습니다.  MP3나 Ogg M3U를 받아서 앱을 통해 재생해보세요.",
+  "listen_via_browser": "브라우저에서 듣기",
+  "listen_via_mp3": "MP3로 듣기",
+  "listen_via_ogg": "Ogg로 듣기",
+  "chrome_mobile_takes_time": "안드로이드에서는 재생 시작까지 최대 20초 정도 걸릴 수 있습니다.  아이콘이 오렌지색이면 작동중이라는 뜻입니다. 기다려주세요!",
+  "api_docs": "API 문서",
+  "github_repo": "GitHub",
+  "coming_up": "이어서",
+  "vote_now": "투표하세요",
+  "now_playing": "재생 중",
+  "election": "투표 중입니다",
+  "power_hour": "Power Hour",
+  "continued": "이벤트",
+  "vote_submitted": "투표 반영됨",
+  "cannot_vote_for_this_now": "지금은 이 곡에 투표할 수 없습니다.",
+  "invalid_hotkey_vote": "선택이 유효하지 않습니다.  다시 시도해주세요.",
+  "played_ago": [
+    {
+      "type": "substitute",
+      "key": "time"
+    },
+    " 전 재생"
+  ],
+  "timeline_art__request_indicator": "신청곡",
+  "timeline_art__your_request_indicator": "당신의 신청곡",
+  "num_votes": [
+    {
+      "type": "substitute",
+      "key": "num_votes"
+    },
+    " 표"
+  ],
+  "vote": "투표",
+  "voted": "투표",
+  "event_naming__oneup": [
+    {
+      "type": "substitute",
+      "key": "name"
+    },
+    " Power Hour"
+  ],
+  "Patreon": "Patreon",
+  "PayPal": "PayPal",
+  "tip_jar": "기부",
+  "tip_jar_opener": "팁 통이 비어있어도 Rainwave 서비스는 계속됩니다.  혹시 약간의 길이나 메세타를 기부할 의향이 있으시다면,",
+  "tip_jar_instruction_2": "코멘트 란에 유저네임과 메세지를 써주세요.",
+  "tip_jar_instruction_3": "익명으로 기부하기 원하실 경우 알려주세요.",
+  "tip_jar_opener_end": "팁이 확인되면 기부자 자격을 부여해 드립니다. 기부자가 되면 더 많은 신청곡을 넣을 수 있고, 동시에 여러 곳에서 투표할 수 있습니다.",
+  "amount": "금액",
+  "message": "메세지",
+  "tip_jar_balance": "현재 잔액",
+  "tip_jar_all_donations": "2007년 7월 이후 총 기부금",
+  "votes_by_station": "투표를 넣은 스테이션 비율",
+  "votes_by_source_station": "투표곡이 소속된 스테이션 비율",
+  "requests_by_station": "곡을 신청한 스테이션 비율",
+  "requests_by_source_station": "신청곡이 소속된 스테이션 비율",
+  "rating_counts_across_stations": "스테이션 별 평점 부여 횟수",
+  "ratings_completion_rate": "평점 완성률",
+  "rating_spread": "평점 분포",
+  "average_rating_by_station": "스테이션 별 평균 평점",
+  "no_ratings": "없음",
+  "view_your": "보기: ",
+  "recent_votes": "최근 투표",
+  "request_history": "신청곡 이력",
+  "registered_in_year": [
+    {
+      "type": "substitute",
+      "key": "year"
+    },
+    "년에 가입했습니다."
+  ],
+  "top_rated_albums": "평점이 가장 높은 앨범",
+  "top_requested_albums": "신청곡 횟수가 가장 많은 앨범",
+  "random_relay": "랜덤 릴레이",
+  "redownload_m3u": "청취중이신가요?  지금 막 로그인했고 외부 앱을 통해 들으신다면, MP3 나 Ogg M3U를 다시 받아주세요.",
+  "sync_stopped": "Rainwave가 작동을 멈췄습니다.  새로고침 후 다시 시도해 보세요.",
+  "lost_connection": "접속이 끊어졌습니다.",
+  "sync_retrying": "통신 상태가 좋지 않습니다.  기다려주세요...",
+  "mobile_sync_retrying": "접속에 문제가 있습니다.  새로고침해 보시거나 나중에 찾아주세요.",
+  "async_error": "통신 오류가 발생했습니다.  다시 시도해 보시거나 새로고침해 보세요.",
+  "deeplink_error": "죄송합니다.  입력받은 URL을 이해할 수 없습니다.",
+  "Loading...": "불러오는 중...",
+  "Cancel": "취소",
+  "go": "확인",
+  "hotkey_mode": "1-5: 평점, A/S/D: 투표",
+  "invalid_hotkey": "유효하지 않은 핫키입니다.",
+  "not_an_election": "투표 중이 아닙니다.",
+  "rate_song_mobile_dialog": "평점 주기",
+  "playlist": "재생목록",
+  "library": "라이브러리",
+  "Filter...": "필터...",
+  "your_album_rating": [
+    "이 앨범에 ",
+    {
+      "type": "substitute",
+      "key": "rating_user"
+    },
+    "의 평점을 주셨습니다."
+  ],
+  "album_rating_ranked_at_v2": [
+    "평점 ",
+    {
+      "type": "substitute",
+      "key": "rating"
+    },
+    " (평점 갯수 ",
+    {
+      "type": "substitute",
+      "key": "rating_count"
+    },
+    ") - 앨범 순위 ",
+    {
+      "type": "ordinal",
+      "key": "rank"
+    }
+  ],
+  "album_requests_ranked_at": [
+    "곡 신청 횟수 ",
+    {
+      "type": "substitute",
+      "key": "count"
+    },
+    "번 - 신청곡 순위 ",
+    {
+      "type": "ordinal",
+      "key": "rank"
+    }
+  ],
+  "album_year": [
+    {
+      "type": "substitute",
+      "key": "year"
+    },
+    "년에 발매되었습니다."
+  ],
+  "album_rating_detail": "이 앨범에 대한 사용자 평점은 ",
+  "song_rating_detail": "이 노래에 대한 사용자 평점은 ",
+  "rating_detail_numbers": [
+    {
+      "type": "substitute",
+      "key": "rating"
+    },
+    "입니다. (",
+    {
+      "type": "substitute",
+      "key": "percentile_message"
+    },
+    ")"
+  ],
+  "rating_percentile_top": [
+    "상위 ",
+    {
+      "type": "substitute",
+      "key": "percentile_top"
+    },
+    "%"
+  ],
+  "rating_percentile_bottom": [
+    "하위 ",
+    {
+      "type": "substitute",
+      "key": "percentile"
+    },
+    "%"
+  ],
+  "request_percentile_top": [
+    "신청곡 빈도: 상위 ",
+    {
+      "type": "substitute",
+      "key": "percentile_top"
+    },
+    "%."
+  ],
+  "request_percentile_bottom": [
+    "신청곡 빈도: 하위 ",
+    {
+      "type": "substitute",
+      "key": "percentile"
+    },
+    "%."
+  ],
+  "song_has_no_ratings": "노래 평점이 없습니다.",
+  "Request": "신청곡",
+  "Albums": "앨범",
+  "Songs": "노래",
+  "Artists": "아티스트",
+  "Users": "사용자",
+  "Groups": "카테고리",
+  "Listeners": "청취자",
+  "songs_from": [
+    {
+      "type": "substitute",
+      "key": "station"
+    }
+  ],
+  "album_on_station": [
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    ": ",
+    {
+      "type": "substitute",
+      "key": "album"
+    }
+  ],
+  "groups_tab_title": "카테고리",
+  "RequestLine": "신청곡 대기열",
+  "nobody_in_line": "대기열에 아무도 없습니다.",
+  "relevant_categories": "관련 카테고리: ",
+  "relevant_category": "카테고리: ",
+  "relevant_categories_rollover": "관련 카테고리: 마우스를 올려 펼쳐보기",
+  "new_album": "새 앨범!",
+  "newish_album": "최근에 추가된 앨범",
+  "new_songs": "새 노래!",
+  "newish_songs": "최근에 추가된 노래",
+  "search...": "검색...",
+  "no_songs_on_this_station": [
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    " 스테이션에는 이 앨범의 곡이 없습니다."
+  ],
+  "clear_request_queue": "모두 지우기",
+  "pause_request_queue": "멈추기",
+  "unpause_request_queue": "재개",
+  "request_fill_with_unrated": "평점없는곡 채우기",
+  "request_fill_with_faves": "애청곡 채우기",
+  "Suspend": "멈추기",
+  "Pause": "멈추기",
+  "Resume": "재개",
+  "Faves": "애청곡",
+  "Unrated": "평점없는곡",
+  "Clear": "비우기",
+  "Requests": "신청곡",
+  "#_requests": [
+    "신청곡 ",
+    {
+      "type": "substitute",
+      "key": "num_requests"
+    },
+    "곡"
+  ],
+  "requests_all_on_cooldown": "모두 쿨다운 중!",
+  "request_you_are_x_in_line": [
+    "대기 순서: ",
+    {
+      "type": "ordinal",
+      "key": "position"
+    }
+  ],
+  "request_grab_tag__paused": "멈춤",
+  "request_on_cooldown_for": [
+    "쿨다운 중입니다: ",
+    {
+      "type": "substitute",
+      "key": "cool_time"
+    },
+    "."
+  ],
+  "request_on_cooldown_ends_soon": "쿨다운이 곧 끝납니다.",
+  "request_in_election": [
+    "해당 ",
+    {
+      "type": "substitute",
+      "key": "blocked_by"
+    },
+    " 대기열에 있습니다."
+  ],
+  "blocked_by_name__group": "카테고리가",
+  "blocked_by_name__album": "앨범이",
+  "blocked_by_name__in_election": "곡이",
+  "request_only_on_x": [
+    "해당 곡은 ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    " 스테이션에서 신청할 수 있습니다."
+  ],
+  "no_song_selected": "(선곡 없음)",
+  "make_a_request": "라이브러리를 열고 곡 이름을 클릭하여 신청곡 대기열에 추가하세요.",
+  "station_description_id_1": "비디오 게임 OST 라디오입니다. 듣고 싶은 곡에 투표하세요!",
+  "station_description_id_2": "최고의 비디오 게임 리믹스를 재생하는 OverClocked ReMix 라디오입니다. 가장 좋아하는 리믹스에 투표하세요!",
+  "station_description_id_3": "오피셜 & 팬메이드 비디오 게임 음악을 24/7 방송합니다. 가장 좋아하는 아티스트에게 투표하세요!",
+  "station_description_id_4": "비디오 게임 & 오리지널 칩튠 사운드트랙을 24/7 방송합니다. 듣고 싶은 곡에 투표하세요!",
+  "station_description_id_5": "OST, 리믹스를 비롯한 비디오 게임 음악을 재생하는 라디오입니다. 듣고 싶은 곡에 투표하세요!",
+  "station_menu_description_id_1": "게임 속에서 듣던 바로 그 음악.",
+  "station_menu_description_id_2": "오버클럭 리믹스와 앨범.",
+  "station_menu_description_id_3": "오피셜 & 팬메이드 리믹스.",
+  "station_menu_description_id_4": "고전 게임 음악과 고전 게임 음악 풍의 음악.",
+  "station_menu_description_id_5": "Rainwave에 있는 모든 게임 음악과 리믹스.",
+  "now_playing_on_...": [
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "에서 현재 재생 중인 곡"
+  ],
+  "preferences": "Preferences",
+  "Settings": "설정",
+  "yes": "네",
+  "no": "아뇨",
+  "site_mode": "사이트 모드",
+  "basic": "Basic",
+  "full": "Full",
+  "change_language": "언어",
+  "timeline_preferences": "타임라인",
+  "tab_title_preferences": "탭 제목",
+  "font_options": "폰트 옵션",
+  "prefs_roboto": "커스텀 폰트 사용하기",
+  "prefs_f_norm": "화면 너비에 따라 폰트 크기 줄이기",
+  "prefs_notify": "곡이 바뀔 때 데스크탑 알림 표시",
+  "prefs_t_clk": "탭 제목에 남은 시간 표시",
+  "prefs_t_rt": "탭 제목에 평점 표시",
+  "prefs_t_tl": "탭 제목에 곡명 표시",
+  "prefs_l_stksz": "이전 재생 곡 항상 표시",
+  "prefs_l_displose": "투표에서 떨어진 곡 표시",
+  "playlist_preferences": "앨범 목록",
+  "prefs_p_avup": "신청 가능한 앨범을 상위에 표시",
+  "prefs_p_favup": "애청곡을 상위에 표시",
+  "prefs_p_null1": "평점을 주지 않은 곡을 상위에 표시",
+  "prefs_p_fav1": "애청곡을 신청 가능한 곡보다 우선시",
+  "prefs_p_sort": "앨범 정렬 방법",
+  "prefs_sort_playlist_by_alpha": "알파벳순",
+  "prefs_sort_playlist_by_rating_user": "평점순",
+  "rating_preferences": "평점",
+  "prefs_r_incmplt": "평점이 완성되지 않은 앨범 표시",
+  "prefs_r_noglbl": "평점을 주지 않은 곡의 사용자 평점 가리기",
+  "prefs_r_clear": "평점 지우기 버튼 표시",
+  "prefs_pwr": "파워 유저 모드 켜기",
+  "prefs_hkm": "핫키 모드에 사용할 자판 배치",
+  "waiting_for_hotkey": "핫키 입력 대기 중",
+  "hotkeys_rate10": " = 평점 (1.0~5.0)",
+  "hotkeys_rate05": " = 평점 (1.5-4.5)",
+  "hotkeys_vote0": " = 첫번째 목록에 투표",
+  "hotkeys_vote1": " = 두번째 목록에 투표",
+  "hotkeys_fave": " = 현재 곡 애청곡 설정",
+  "hotkeys_play": " = 정지/재생",
+  "timeformat_w": "주",
+  "timeformat_d": "일",
+  "timeformat_h": "시간",
+  "timeformat_m": "분",
+  "timeformat_s": "초",
+  "unrated_songs": "핑점없는 곡",
+  "title": "제목",
+  "album_name": "앨범명",
+  "id": "ID",
+  "sid": "스테이션 ID",
+  "delete": "지우기",
+  "all_faves": "모든 애청곡",
+  "rating_user": "사용자 평점",
+  "fave": "애청곡",
+  "rating": "평균 평점",
+  "album_id": "앨범 ID",
+  "playback_history": "이전 재생 곡 - 확장 보기",
+  "name": "이름",
+  "song_rating": "평점",
+  "top_100": "Top 100",
+  "song_rating_count": "평점 갯수",
+  "origin_sid": "스테이션",
+  "user_recent_votes": "당신이 최근 투표한 곡",
+  "user_requested_history": "당신의 신청곡 이력",
+  "song_id": "노래 ID",
+  "user_id": "사용자 ID"
 }

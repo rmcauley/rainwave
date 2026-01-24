@@ -15,6 +15,9 @@
   },
   "mypy.runUsingActiveInterpreter": true,
   "editor.defaultFormatter": "ms-python.black-formatter",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
   "python.analysis.autoImportCompletions": true,
   "python.analysis.typeCheckingMode": "strict",
   "python.analysis.diagnosticMode": "workspace",
@@ -22,5 +25,14 @@
   "python.analysis.useLibraryCodeForTypes": false,
   "python.linting.mypyEnabled": true,
   "python.linting.enabled": true,
-  "python.linting.mypyArgs": ["--config-file", "pyproject.toml"]
+  "python.linting.mypyArgs": ["--config-file", "pyproject.toml"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "emmet.showExpandedAbbreviation": "never",
+  "files.associations": {
+    "*.hbar": "handlebars"
+  }
 }

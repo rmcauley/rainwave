@@ -1,426 +1,624 @@
 {
-   "__comment__"                 : "language_name appears in the pulldown box for language options on Rainwave.",
-
-   "language_name"                                   : "Русский",
-   "language_name_short"                             : "RU",
-
-   "__comment__"                 : "API Errors, can be skipped if you only want to translate the website.",
-
-   "missing_station_id"                              : "Идентификатор станции отсутствует.",
-   "invalid_station_id"                              : "Недействительный идентификатор станции.",
-   "missing_argument"                                : "Отсутствует аргумент: '%(argument)'.",
-   "invalid_argument"                                : "Недействительный аргумент '%(argument)': %(reason)",
-   "auth_required"                                   : "Требуется авторизация.",
-   "auth_failed"                                     : "Авторизация не удалась.",
-   "login_required"                                  : "Требуется логин.",
-   "tunein_required"                                 : "Вы должны слушать радио.",
-   "admin_required"                                  : "Вы должны быть администратором.",
-   "dj_required"                                     : "Вы должны быть ДиДжеем.",
-   "perks_required"                                  : "Вы должны быть Донором.",
-   "unlocked_only"                                   : "Пользователь заблокирован на станции %(station) ещё на %(lock_counter) песни.",
-   "internal_error"                                  : "Внутренняя ошибка сервера.",
-   "song_does_not_exist"                             : "Такой песни не существует.",
-   "db_error_retry"                                  : "Ошибка внутренней базы данных - повторите попытку.",
-   "db_error_permanent"                              : "Ошибка сервера - внутренняя база данных отключена.",
-
-   "__comment__"                 : "API/Web errors - these are spit out by the API but will be shown on the website.",
-
-   "fave_failed"                                     : "Не удалось добавить в избранное.",
-   "request_failed"                                  : "Заявка не удалась.",
-   "request_delete_failed"                           : "Не удалось удалить заявку.",
-   "request_unrated_failed"                          : "Не удалось добавить в заявку треки без рейтинга.",
-   "request_is_blocked"                              : "Заблокировано на %(blocked_num) заявок.",
-   "request_favorited_failed"                        : "В избранном пусто.",
-   "too_many_requests"                               : "Слишком много заявок.",
-   "same_request_exists"                             : "Трек уже в заявке.",
-   "same_request_album"                              : "Альбом уже в заявке.",
-   "song_not_requested"                              : "Трек не добавлен в заявку.",
-   "station_offline"                                 : "Эта станция выключена.  Пожалуйста, попробуйте еще раз позднее.",
-   "must_login_and_tune_in_to_request"               : "Войдите на сайт и подключитесь к станции чтобы делать заявки.",
-   "already_voted_for_song"                          : "Вы уже проголосовали за этот трек.",
-   "cannot_rate_now"                                 : "В данный момент нельзя оценить трек.",
-   "tunein_to_rate_current_song"                     : "Вы должны быть подключены к станции чтобы оценить текущий трек.",
-   "rating_submitted"                                : "Оценка сохранена.",
-   "rating_cleared"                                  : "Оценка удалена.",
-   "unknown_error_message"                           : "Упс! Пожалуйста, попробуйте снова или заполните багрепорт включив туда следующую информацию (эта ошибка внесена в лог):",
-   "debug_information"                               : "Отладочная информация:",
-   "requests_reordered"                              : "Заявки отсортированы",
-   "request_queue_paused"                            : "Очередь заявок приостановлена.",
-   "request_queue_unpaused"                          : "Очередь заявок возобновлена.",
-   "no_results"                                      : "Нет результатов.",
-   "empty_list"                                      : "Список пуст.",
-   "no_search_results"                               : "Нет результата.",
-   "server_just_started"                             : "Rainwave.cc перезагружается",
-   "station_paused"                                  : "Трансляция станции приостановлена ДиДжем.",
-   "album_on_other_station"                          : "Извините, альбом не доступен на этой станции!",
-   "album_is_dj_only"                                : "Извините, альбом доступен только в этом событии!",
-   "locked_to_station"                               : "Вы только что проголосовали на %(locked_station), необходимо подождать %(lock_counter) &(lock_counter:песню/песен), чтобы проголосовать на %(this_station).",
-      "__comment__"                                          : "The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.",
-   "search_string_too_short"                         : "Поиск возможен от трех символов.",
-   "search_result_limit"                             : "(слишком много результатов. пожалуйста поправьте ваш запрос.)",
-   
-   "__comment__"                 : "Error pop-up when Rainwave goes crashes.",
-
-   "oops"                                            : "Ой!",
-   "something_went_wrong"                            : "Что-то пошло не так при загрузке с сервера. :(",
-   "crash_happened"                                  : "Rainwave упал. :(",
-   "report_sending"                                  : "Мы отсылаем отчет об этом на наш сервер.",
-   "report_sent"                                     : "Нам сообщили об ошибке и мы ей обязательно займемся!",
-   "report_error"                                    : "Мы даже не смогли отправить на наш сервер отчет об этом! :(",
-   "please_refresh"                                  : "Перегрузите страницу, чтобы вернуться на Rainwave.",
-   "report_submitted"                                : "Отчет отправлен",
-
-   "__comment__"                 : "API Key Management",
-
-   "api_key_manager"                                 : "Управление API ключами",
-   "api_key"                                         : "Ключ API",
-   "qr_code"                                         : "QR Код",
-   "create_api_key"                                  : "Создать API ключ",
-   "your_numeric_user_id"                            : "Ваш User ID",
-
-   "__comment__"                 : "Menu",
-
-   "station_select_header"                           : "Выбор станции",
-   "station_name_1"                                  : "Game",
-   "station_name_2"                                  : "OC ReMix",
-   "station_name_3"                                  : "Covers",
-   "station_name_4"                                  : "Chiptune",
-   "station_name_5"                                  : "All",
-
-   "login"                                           : "Вход",
-   "signup"                                          : "Зарегистрироваться",
-   "chat"                                            : "Чат",
-   "search"                                          : "Поиск",
-   "previouslyplayed"                                : "Недавние композиции",
-   "playback_history_link"                           : "Расширить",
-   "extended_history_header"                         : "Расширенная история",
-   "special_event_alert"                             : "Специальное событие на станции %(station): ",
-   
-   "tunein"                                          : "Подключиться",
-   "stop"                                            : "Стоп",
-   "audio_error"                                     : "Не удалось подключиться с вашего браузера",
-   "audio_connect_error"                             : "Проблемы с подключением к радио серверу.",
-   "audio_connect_error_reattempting"                : "Утеряна возможность голосовать из-за проблем с подключением.  Мы пытаемся подключить вас.",
-   "try_external_player"                             : "Нажмите здесь чтобы попробовать подключиться через стороннюю программу.",
-   "m3u_hijack_right_click"                          : "Проблемы между плагином и вашим браузером.  Пожалуйста, нажмите правой кнопкой и выберите 'Сохранить как' чтобы подключиться.",
-   
-   "listen_via_browser"                              : "Слушать в браузере",
-   "listen_via_mp3"                                  : "Слушать в MP3",
-   "listen_via_ogg"                                  : "Слушать в Ogg",
-   "chrome_mobile_takes_time"                        : "На ОС Android может занять до 20 секнуд. Оранжевая иконка говорит что все в порядке - ждите!",
-
-   "api_docs"                                        : "Документация API",
-   "github_repo"                                     : "GitHub",
-   
-   "__comment__"                 : "Timeline Headers",
-
-   "coming_up"                                       : "Скоро",
-   "continued"                                       : "Продолжаем",
-   "vote_now"                                        : "Голосуйте сейчас",
-   "now_playing"                                     : "Сейчас в эфире",
-   "election"                                        : "Голосование",
-   "power_hour"                                      : "Ударный час",
-
-   "__comment__"                 : "Timeline Song",
-
-   "vote_submitted"                                  : "Голос зарегистрирован",
-   "cannot_vote_for_this_now"                        : "Сейчас нельзя проголосовать за эту песню.",
-   "invalid_hotkey_vote"                             : "Неверный выбор, попробуйте снова.",
-   "played_ago"                                      : "Был в эфире %(time) назад",
-   "timeline_art__request_indicator"                 : "Заявки",
-   "timeline_art__your_request_indicator"            : "Ваши",
-   "num_votes"                                       : "%(num_votes) &(num_votes:Голос/Голосов)",
-   "vote"                                            : "Голосуй",
-      "__comment__"                                    : "The above 'Vote' is a verb, not a noun.",
-   "voted"                                           : "Выбрано",
-
-   "event_naming__oneup"                             : "Ударный час %(name)",
-
-   "__comment__"                 : "Tip Jar",
-
-   "Patreon"                                         : "Patreon",
-   "PayPal"                                          : "PayPal",
-   "tip_jar"                                         : "Копилка",
-   "tip_jar_opener"                                  : "Rainwave будет продолжать работать независимо от денег в копилке.  Если вы хотите нам помочь материально:",
-   "tip_jar_instruction_2"                           : "В комментарии укажите ваше имя пользователя и сообщение.",
-   "tip_jar_instruction_3"                           : "Укажите если вы желаете остаться анонимным.",
-   "tip_jar_opener_end"                              : "После того как мы обработаем заявку, мы выдадим вас статус Донора.  Это позволит вам добавлять больше треков в очередь заявок, а также голосовать более чем в одном голосовании одновременно.",
-   "amount"                                          : "Количество",
-   "message"                                         : "Сообщение",
-   "tip_jar_balance"                                 : "Текущий баланс",
-   "tip_jar_all_donations"                           : "Всего пожертвований начиная с июля 2007",
-
-   "__comment__"                 : "User Detail",
-
-   "votes_by_station"                                : "Голоса по станциям",
-   "votes_by_source_station"                         : "Голоса по изначальным станциям",
-   "requests_by_station"                             : "Заявки по станциям",
-   "requests_by_source_station"                      : "Заявки по изначальным станциям.",
-   "rating_counts_across_stations"                   : "Оценки по изначальным станциям.",
-   "ratings_completion_rate"                         : "Всего оценено",
-   "rating_spread"                                   : "Разброс оценок",
-   "average_rating_by_station"                       : "Средние оценки по станциям",
-   "no_ratings"                                      : "без рейтинга",
-
-   "view_your"                                       : "Посмотреть ваши: ",
-   "recent_votes"                                    : "Недавние голоса",
-   "request_history"                                 : "историю заявок",
-   "registered_in_year"                              : "С нами с %(year).",
-
-   "top_rated_albums"                                : "Альбомы с высокими оценками",
-   "top_requested_albums"                            : "Самые запрашиваемые альбомы",
-
-   "__comment__"                 : "Other",
-
-   "random_relay"                                    : "Случайный сервер",
-   "redownload_m3u"                                  : "Вы пытаетесь подключиться?  Если вы только что вошли на сайт, скачайте заново плейлист.",
-   "sync_stopped"                                    : "Rainwave прекратил работу.  Обновите страницу и попробуйте снова.",
-   "lost_connection"                                 : "Потеряно соединение с сервером.",
-   "sync_retrying"                                   : "Проблемы с сервером Rainwave, пожалуйста подождите...",
-   "mobile_sync_retrying"                            : "Таймаут соединения, обновите страницу или попробуйте позже.",
-   "async_error"                                     : "Ошибка обращения к серверу. Обновите страницу или попробуйте позж.",
-   "deeplink_error"                                  : "Ошибка восприятия введенного URL адреса.",
-
-   "Loading..."                                      : "Грузимся...",
-   "Cancel"                                          : "Отмена",
-   "go"                                              : "Вперед",
-   
-   "__comment__"                 : "Hotkey Mode",
-
-   "hotkey_mode"                                     : "Клавиши 1-5 чтобы оценить, A/S/D чтобы проголосовать",
-   "invalid_hotkey"                                  : "Неверная горячая клавиша.",
-   "not_an_election"                                 : "Нет голосования.",
-   "rate_song_mobile_dialog"                         : "Оценить песню",
-
-   "__comment__"                 : "Playlist View",
-
-   "playlist"                                        : "Плейлист",
-   "library"                                         : "Библиотека",
-   "Filter..."                                       : "Фильтр...",
-   "album_rating_ranked_at_v2"                       : "Оценено на %(rating) исходя из %(rating_count) оценок, занимает #(rank) место.",
-   "album_requests_ranked_at"                        : "Всего заявок: %(count), занимает #(rank) место.",
-   "album_year"                                      : "Выпущено в %(year) году.",
-   "album_rating_detail"                             : "Оценка альбома пользователями ",
-   "song_rating_detail"                              : "Оценка композиции пользователями ",
-   "rating_detail_numbers"                           : "%(rating). (%(percentile_message))",
-   "rating_percentile_top"                           : "лучшие %(percentile_top)%",
-   "rating_percentile_bottom"                        : "худшие %(percentile)%",
-   "request_percentile_top"                          : "Запрос по популярности: лучшие %(percentile_top)%.",
-   "request_percentile_bottom"                       : "запрос по популярности: худшие %(percentile)%.",
-   "song_has_no_ratings"                             : "Оценок нет.",
-   "Request"                                         : "Заявки",
-   "Albums"                                          : "Альбомы",
-   "Songs"                                           : "Копозиции",
-   "Artists"                                         : "Исполнители",
-   "Users"                                           : "Пользователи",
-   "Groups"                                          : "Группы",
-   "Listeners"                                       : "Слушатели",
-   "songs_from"                                      : "Треки от станции %(station)",
-   "album_on_station"                                : "На %(station): %(album)",
-   "groups_tab_title"                                : "Категории",
-   "RequestLine"                                     : "Очередь заявок",
-   "nobody_in_line"                                  : "Очередь пуста.",
-   "relevant_categories"                             : "Схожие категории: ",
-   "relevant_category"                               : "Категория: ",
-   "relevant_categories_rollover"                    : "Схожие категории: перейти к списку.",
-   "new_album"                                       : "Новый альбом!",
-   "newish_album"                                    : "недавно добавлен.",
-   "new_songs"                                       : "Новые композиции!",
-   "newish_songs"                                    : "Недавно обновлено.",
-   "search..."                                       : "Поиск...",
-   "no_songs_on_this_station"                        : "На станции %(station) нет песен из этого альбома.",
-   
-   "__comment__"                 : "Requests",
-
-   "clear_request_queue"                             : "Очистить всё",
-   "pause_request_queue"                             : "Пауза",
-   "unpause_request_queue"                           : "Продолжить",
-   "request_fill_with_unrated"                       : "Заполнить неоцененным",
-   "request_fill_with_faves"                         : "Заполнить избранным",
-   "Suspend"                                         : "Приостановить",
-   "Pause"                                           : "Пауза",
-   "Resume"                                          : "Продолжить",
-   "Faves"                                           : "Избранное",
-   "Unrated"                                         : "Без оценок",
-   "Clear"                                           : "Очистить",
-
-   "Requests"                                        : "Заявки",
-   "#_requests"                                      : "%(num_requests) &(num_requests:Заявка/Заявок)",
-   "requests_all_on_cooldown"                        : "Нет подходящих заявок",
-   "request_you_are_x_in_line"                       : "#(position) в очереди",
-   "request_grab_tag__paused"                        : "Приостановлено",
-
-   "request_on_cooldown_for"                         : "Недоступно в течении %(cool_time).",
-   "request_on_cooldown_ends_soon"                   : "Сейчас будет доступно.",
-   "request_in_election"                             : "%(blocked_by) в голосовании",
-   "blocked_by_name__group"                          : "Категория",
-   "blocked_by_name__album"                          : "Альбом",
-   "blocked_by_name__in_election"                    : "Трек",
-   "request_only_on_x"                               : "Доступно на станции %(station).",
-   "no_song_selected"                                : "(композиция не выбрана)",
-
-   "make_a_request"                                  : "Откройте библиотеку и выберите композицию, чтобы добавить ее в очередь заявок.",
-
-   "__comment__"                 : "Station Descriptions (long format, used for Google page descriptions)",
-
-   "station_description_id_1"                        : "Оригинальные саундтреки из игр. Голосуйте за следующий трек!",
-   "station_description_id_2"                        : "OverClocked ReMix радио, лучшие ремиксы на музыку из игр. Голосуйте за ваши любимые ремиксы!",
-   "station_description_id_3"                        : "Официальные и любительские ремиксы на музыку из игр, трансляция 24/7. Голосуйте за ваших любимых исполнителей!",
-   "station_description_id_4"                        : "Официальная чип-тюн музыка из игр и любительские треки, трансляция 24/7. Голосуйте за треки, которые хотите услышать!",
-   "station_description_id_5"                        : "Онлайн радио. Музыка из видеоигр, включая ремиксы и оригинальные саундтреки. Голосуйте за треки, которые хотите услышать!",
-   
-   "__comment__"                 : "Station Descriptions For The Menu (short messages)",
-
-   "station_menu_description_id_1"                   : "Оригинальная музыка из игр.",
-   "station_menu_description_id_2"                   : "Все официальные треки от OverClocked ReMix.",
-   "station_menu_description_id_3"                   : "Официальные и любительские ремиксы.",
-   "station_menu_description_id_4"                   : "Чиптюн музыка из игр, а также оригинальные композиции.",
-   "station_menu_description_id_5"                   : "Весь плейлист Rainwave.",
-   "now_playing_on_..."                              : "Сейчас играет на станции %(station)",
-
-   "__comment__"                 : "Preferences",
-
-   "preferences"                                     : "Опции",
-   "Settings"                                        : "Настройки",
-   "yes"                                             : "Да",
-   "no"                                              : "Нет",
-   "site_mode"                                       : "Режим сайта",
-   "basic"                                           : "Простой",
-   "full"                                            : "Полный",
-   "change_language"                                 : "Язык",
-   "timeline_preferences"                            : "Основной блок",
-   "tab_title_preferences"                           : "Заголовок вкладки",
-   "font_options"                                    : "Настройки шрифтов",
-   "prefs_roboto"                                    : "Использовать свой шрифт",
-   "prefs_f_norm"                                    : "Сжимать шрифт под размер экрана",
-   "prefs_notify"                                    : "Уведомлять на рабочий стол при смене композиции",
-   "prefs_t_clk"                                     : "Показывать время в заголовке",
-   "prefs_t_rt"                                      : "Показывать оценку в заголовке",
-   "prefs_t_tl"                                      : "Показывать название трека в заголовке",
-   "prefs_sticky_history_size"                       : "Количество треков в истории",
-   "prefs_l_displose"                                : "Показывать композиции, которые проиграли в голосовании",
-   "playlist_preferences"                            : "Список альбомов",
-   "prefs_playlist_sort_available_first"             : "Сначала доступные",
-   "prefs_playlist_sort_faves_first"                 : "Сначала избранное",
-   "prefs_p_null1"                                   : "Сначала без оценки",
-   "prefs_p_fav1"                                    : "Сначала избранное",
-   "prefs_p_sort"                                    : "Сортировка альбомов...",
-   "prefs_sort_playlist_by_alpha"                    : "по алфавиту",
-   "prefs_sort_playlist_by_rating_user"              : "по вашей оценке",
-   "rating_preferences"                              : "по общей оценке",
-   "prefs_r_incmplt"                                 : "Помечать неполные альбомы",
-   "prefs_r_noglbl"                                  : "Не показывать общую оценку, пока я не оценил",
-   "prefs_r_clear"                                   : "Отображать кнопку удаления рейтинга",
-   "prefs_pwr"                                       : "Включить расширенный режим",
-   "prefs_hkm"                                       : "Раскладка горячих клавиш",
-   
-   "__comment__"                 : "Hotkey Mode - MAKE THEM VERY SHORT (and to test, activate power user mode and press backtick/tilde key)",
-
-   "waiting_for_hotkey"                              : "Ожидаем горячей клавиши",
-   "hotkeys_rate10"                                  : " = Оценить 1.0-5.0",
-   "hotkeys_rate05"                                  : " = Оценить 1.5-4.5",
-   "hotkeys_vote0"                                   : " = Голос за 1",
-   "hotkeys_vote1"                                   : " = Голос за 2",
-   "hotkeys_fave"                                    : " = В избранное",
-   "hotkeys_play"                                    : " = Стоп/Играть",
-
-
-   "__comment__"                 : "Time formatting (e.g. 5w 2d 7h 9m)",
-
-   "timeformat_w"                                    : "н ",
-   "timeformat_d"                                    : "д ",
-   "timeformat_h"                                    : "ч ",
-   "timeformat_m"                                    : "м ",
-   "timeformat_s"                                    : "с ",
-
-   "__comment__"                 : "Statistic Pages (see http://rainwave.cc/api4/ and scroll down)",
-
-   "unrated_songs"                                   : "Треки без оценки",
-   "title"                                           : "Заголовок",
-   "album_name"                                      : "Название альбома",
-   "id"                                              : "ID",
-   "sid"                                             : "ID Станции",
-   "delete"                                          : "Удалить",
-   "all_faves"                                       : "Всё избранное",
-   "rating_user"                                     : "Оценка пользователей",
-   "fave"                                            : "В избранное",
-   "rating"                                          : "Средняя оценка",
-   "album_id"                                        : "ID альбома",
-   "playback_history"                                : "История - расширенная",
-   "name"                                            : "Название",
-   "song_rating"                                     : "Рейтинг",
-   "top_100"                                         : "Топ-100",
-   "song_rating_count"                               : "# оценок",
-   "origin_sid"                                      : "Станция",
-   "user_recent_votes"                               : "Ваши недавние голоса",
-   "user_requested_history"                          : "Ваша история заявок",
-   "request_line_result"                             : "Слушателей в очереди",
-   "song_id"                                         : "ID композиции",
-   "user_id"                                         : "ID пользователя",
-   "line_expiry_tune_in"                             : "Время истечения (если отключились)",
-   "line_expiry_election"                            : "Время истечения (если нет запросов)",
-   "line_wait_start"                                 : "Вошел в очередь (время эпохи)",
-   "artist_parseable"                                : "Исполнители (форматированный вывод)",
-   "song_played_at"                                  : "Проигрывалось (время эпохи)",
-   "logout"                                          : "Выйти",
-
-   "404": "Страница не найдена.",
-   "Artists_pluralized": "&(count:Artist/Artists)",
-   "Rate": "Оцените",
-   "album_all_cooldown": "Этот альбом недоступен.",
-   "album_has_cooldown": "Некоторые песни недоступны.",
-   "allow_api_auth": "Принять",
-   "app_would_like_to": "Это приложение хотело бы:",
-   "auth_failed_message": "Наша система авторизации вышла из строя! У нас была эта ошибка в последние несколько недель с анонимными пользователями. В наостоящее время мы переписываем систему аутентификации. Перезагрузите страницу или, что ещё лучше, ЗАРЕГИСТРИТУЙТЕСЬ И ВОЙДИТЕ, используя ссылку на форум ниже, которая решит проблему!",
-   "cd_album": "Альбом",
-   "cd_album_length": "6-48 часов",
-   "cd_album_size": "Размер альбома",
-   "cd_blue_bkg_is": "Когда у песни или альбома синий фон, они восстанавливаются и не могут быть воспроизведены прямо сейчас.",
-   "cd_category": "Категория",
-   "cd_category_length": "15 минут",
-   "cd_cooldown_length": "Время восстановления",
-   "cd_cooldowns_depend_on": "Время восстановления может зависеть от:",
-   "cd_example": "Пример",
-   "cd_higher_rating": "Выше оценка = короче время восстановления",
-   "cd_larger_album": "Больше альбом = короче время восстановления",
-   "cd_newer": "Новее = короче время восстановления",
-   "cd_rating": "Рейтинг",
-   "cd_recently_added": "Недавно добавленные",
-   "cd_song": "Песня",
-   "cd_song_length": "2-6 дней",
-   "cd_type_of_cooldown": "Тип восстановления",
-   "cd_what_is": "Что такое Восстановление?",
-   "cd_why_use_cooldown": "Восстановления используется для того, чтобы Rainwave не повторял песни и альбомы.",
-   "cool_end": "Восстановление закончено",
-   "discord_already_associated": "Другой аккаунт уже использует логин Discord'а.",
-   "end": "Окончание",
-   "fave_all_songs": "Добавить в избранное все песни",
-   "hold_to_rate": "Удерживайте, чтобы оценить",
-   "legacy_username": "Имя пользователя старого форума",
-   "link_discord": "Привядите аккаунт Discord",
-   "login_failed": "Неправильные логин или пароль.",
-   "login_limit": "Превышено количество попыток входа.",
-   "login_password_disabled": "Вход с паролем отключён для данной учётной записи.",
-   "login_too_old": "Ваш логин слишком старый, чтобы его можно было восстановить по паролю. Пожалуйста, поговорите с сотрудниками Discord.",
-   "login_with_legacy": "Устаревший вход",
-   "oauth_rejected": "Авторизация отклонена :(",
-   "page_title_on_google": "Радио Музыки из Видеоигр",
-   "password": "Пароль",
-   "password_required": "Пожалуйста введите ваш пароль.",
-   "power_hours": "Ударные Часы",
-   "prefs_l_stksz": "Постоянно видимая история",
-   "prefs_p_avup": "Поместить доступные наверх",
-   "prefs_p_favup": "Поместить избранные наверх",
-   "prefs_p_songsort": "Сортировать песни также, как альботмы",
-   "register_with_discord": "Войти/Зарегистрироваться через Discord",
-   "request_deleted": "Запрос удалён.",
-   "request_favorited_songs_success": "Избранные запрошены.",
-   "request_success": "Запрошено.",
-   "song_on_other_station": "Песня недоступна на %(station).",
-   "start": "Начать",
-   "tip_jar_instruction_1": "Отправьте подарок PayPal, используя ссылку ниже.",
-   "unfave_all_songs": "Убрать все песни из Избранного",
-   "username_required": "Пожалуйста введите ваше имя пользователя.",
-   "websocket_throttle": "Помедленнее!",
-   "your_album_rating": "Вы оценили этот альбом %(rating_user)."
+  "language_name": "Русский",
+  "language_name_short": "RU",
+  "missing_station_id": "Идентификатор станции отсутствует.",
+  "invalid_station_id": "Недействительный идентификатор станции.",
+  "missing_argument": [
+    "Отсутствует аргумент: '",
+    {
+      "type": "substitute",
+      "key": "argument"
+    },
+    "'."
+  ],
+  "invalid_argument": [
+    "Недействительный аргумент '",
+    {
+      "type": "substitute",
+      "key": "argument"
+    },
+    "': ",
+    {
+      "type": "substitute",
+      "key": "reason"
+    }
+  ],
+  "auth_required": "Требуется авторизация.",
+  "auth_failed": "Авторизация не удалась.",
+  "login_required": "Требуется логин.",
+  "tunein_required": "Вы должны слушать радио.",
+  "admin_required": "Вы должны быть администратором.",
+  "dj_required": "Вы должны быть ДиДжеем.",
+  "perks_required": "Вы должны быть Донором.",
+  "unlocked_only": [
+    "Пользователь заблокирован на станции ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    " ещё на ",
+    {
+      "type": "substitute",
+      "key": "lock_counter"
+    },
+    " песни."
+  ],
+  "internal_error": "Внутренняя ошибка сервера.",
+  "song_does_not_exist": "Такой песни не существует.",
+  "db_error_retry": "Ошибка внутренней базы данных - повторите попытку.",
+  "db_error_permanent": "Ошибка сервера - внутренняя база данных отключена.",
+  "fave_failed": "Не удалось добавить в избранное.",
+  "request_failed": "Заявка не удалась.",
+  "request_delete_failed": "Не удалось удалить заявку.",
+  "request_unrated_failed": "Не удалось добавить в заявку треки без рейтинга.",
+  "request_is_blocked": [
+    "Заблокировано на ",
+    {
+      "type": "substitute",
+      "key": "blocked_num"
+    },
+    " заявок."
+  ],
+  "request_favorited_failed": "В избранном пусто.",
+  "too_many_requests": "Слишком много заявок.",
+  "same_request_exists": "Трек уже в заявке.",
+  "same_request_album": "Альбом уже в заявке.",
+  "song_not_requested": "Трек не добавлен в заявку.",
+  "station_offline": "Эта станция выключена.  Пожалуйста, попробуйте еще раз позднее.",
+  "must_login_and_tune_in_to_request": "Войдите на сайт и подключитесь к станции чтобы делать заявки.",
+  "already_voted_for_song": "Вы уже проголосовали за этот трек.",
+  "cannot_rate_now": "В данный момент нельзя оценить трек.",
+  "tunein_to_rate_current_song": "Вы должны быть подключены к станции чтобы оценить текущий трек.",
+  "rating_submitted": "Оценка сохранена.",
+  "rating_cleared": "Оценка удалена.",
+  "unknown_error_message": "Упс! Пожалуйста, попробуйте снова или заполните багрепорт включив туда следующую информацию (эта ошибка внесена в лог):",
+  "debug_information": "Отладочная информация:",
+  "requests_reordered": "Заявки отсортированы",
+  "request_queue_paused": "Очередь заявок приостановлена.",
+  "request_queue_unpaused": "Очередь заявок возобновлена.",
+  "no_results": "Нет результатов.",
+  "empty_list": "Список пуст.",
+  "no_search_results": "Нет результата.",
+  "server_just_started": "Rainwave.cc перезагружается",
+  "station_paused": "Трансляция станции приостановлена ДиДжем.",
+  "album_on_other_station": "Извините, альбом не доступен на этой станции!",
+  "album_is_dj_only": "Извините, альбом доступен только в этом событии!",
+  "locked_to_station": [
+    "Вы только что проголосовали на ",
+    {
+      "type": "substitute",
+      "key": "locked_station"
+    },
+    ", необходимо подождать ",
+    {
+      "type": "substitute",
+      "key": "lock_counter"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "lock_counter",
+      "plurals": {
+        "one": "песню",
+        "other": "песен"
+      }
+    },
+    ", чтобы проголосовать на ",
+    {
+      "type": "substitute",
+      "key": "this_station"
+    },
+    "."
+  ],
+  "search_string_too_short": "Поиск возможен от трех символов.",
+  "search_result_limit": "(слишком много результатов. пожалуйста поправьте ваш запрос.)",
+  "oops": "Ой!",
+  "something_went_wrong": "Что-то пошло не так при загрузке с сервера. :(",
+  "crash_happened": "Rainwave упал. :(",
+  "report_sending": "Мы отсылаем отчет об этом на наш сервер.",
+  "report_sent": "Нам сообщили об ошибке и мы ей обязательно займемся!",
+  "report_error": "Мы даже не смогли отправить на наш сервер отчет об этом! :(",
+  "please_refresh": "Перегрузите страницу, чтобы вернуться на Rainwave.",
+  "report_submitted": "Отчет отправлен",
+  "api_key_manager": "Управление API ключами",
+  "api_key": "Ключ API",
+  "qr_code": "QR Код",
+  "create_api_key": "Создать API ключ",
+  "your_numeric_user_id": "Ваш User ID",
+  "station_select_header": "Выбор станции",
+  "station_name_1": "Game",
+  "station_name_2": "OC ReMix",
+  "station_name_3": "Covers",
+  "station_name_4": "Chiptune",
+  "station_name_5": "All",
+  "login": "Вход",
+  "signup": "Зарегистрироваться",
+  "chat": "Чат",
+  "search": "Поиск",
+  "previouslyplayed": "Недавние композиции",
+  "playback_history_link": "Расширить",
+  "extended_history_header": "Расширенная история",
+  "special_event_alert": [
+    "Специальное событие на станции ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    ": "
+  ],
+  "tunein": "Подключиться",
+  "stop": "Стоп",
+  "audio_error": "Не удалось подключиться с вашего браузера",
+  "audio_connect_error": "Проблемы с подключением к радио серверу.",
+  "audio_connect_error_reattempting": "Утеряна возможность голосовать из-за проблем с подключением.  Мы пытаемся подключить вас.",
+  "try_external_player": "Нажмите здесь чтобы попробовать подключиться через стороннюю программу.",
+  "m3u_hijack_right_click": "Проблемы между плагином и вашим браузером.  Пожалуйста, нажмите правой кнопкой и выберите 'Сохранить как' чтобы подключиться.",
+  "listen_via_browser": "Слушать в браузере",
+  "listen_via_mp3": "Слушать в MP3",
+  "listen_via_ogg": "Слушать в Ogg",
+  "chrome_mobile_takes_time": "На ОС Android может занять до 20 секнуд. Оранжевая иконка говорит что все в порядке - ждите!",
+  "api_docs": "Документация API",
+  "github_repo": "GitHub",
+  "coming_up": "Скоро",
+  "continued": "Продолжаем",
+  "vote_now": "Голосуйте сейчас",
+  "now_playing": "Сейчас в эфире",
+  "election": "Голосование",
+  "power_hour": "Ударный час",
+  "vote_submitted": "Голос зарегистрирован",
+  "cannot_vote_for_this_now": "Сейчас нельзя проголосовать за эту песню.",
+  "invalid_hotkey_vote": "Неверный выбор, попробуйте снова.",
+  "played_ago": [
+    "Был в эфире ",
+    {
+      "type": "substitute",
+      "key": "time"
+    },
+    " назад"
+  ],
+  "timeline_art__request_indicator": "Заявки",
+  "timeline_art__your_request_indicator": "Ваши",
+  "num_votes": [
+    {
+      "type": "substitute",
+      "key": "num_votes"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "num_votes",
+      "plurals": {
+        "one": "Голос",
+        "other": "Голосов"
+      }
+    }
+  ],
+  "vote": "Голосуй",
+  "voted": "Выбрано",
+  "event_naming__oneup": [
+    "Ударный час ",
+    {
+      "type": "substitute",
+      "key": "name"
+    }
+  ],
+  "Patreon": "Patreon",
+  "PayPal": "PayPal",
+  "tip_jar": "Копилка",
+  "tip_jar_opener": "Rainwave будет продолжать работать независимо от денег в копилке.  Если вы хотите нам помочь материально:",
+  "tip_jar_instruction_2": "В комментарии укажите ваше имя пользователя и сообщение.",
+  "tip_jar_instruction_3": "Укажите если вы желаете остаться анонимным.",
+  "tip_jar_opener_end": "После того как мы обработаем заявку, мы выдадим вас статус Донора.  Это позволит вам добавлять больше треков в очередь заявок, а также голосовать более чем в одном голосовании одновременно.",
+  "amount": "Количество",
+  "message": "Сообщение",
+  "tip_jar_balance": "Текущий баланс",
+  "tip_jar_all_donations": "Всего пожертвований начиная с июля 2007",
+  "votes_by_station": "Голоса по станциям",
+  "votes_by_source_station": "Голоса по изначальным станциям",
+  "requests_by_station": "Заявки по станциям",
+  "requests_by_source_station": "Заявки по изначальным станциям.",
+  "rating_counts_across_stations": "Оценки по изначальным станциям.",
+  "ratings_completion_rate": "Всего оценено",
+  "rating_spread": "Разброс оценок",
+  "average_rating_by_station": "Средние оценки по станциям",
+  "no_ratings": "без рейтинга",
+  "view_your": "Посмотреть ваши: ",
+  "recent_votes": "Недавние голоса",
+  "request_history": "историю заявок",
+  "registered_in_year": [
+    "С нами с ",
+    {
+      "type": "substitute",
+      "key": "year"
+    },
+    "."
+  ],
+  "top_rated_albums": "Альбомы с высокими оценками",
+  "top_requested_albums": "Самые запрашиваемые альбомы",
+  "random_relay": "Случайный сервер",
+  "redownload_m3u": "Вы пытаетесь подключиться?  Если вы только что вошли на сайт, скачайте заново плейлист.",
+  "sync_stopped": "Rainwave прекратил работу.  Обновите страницу и попробуйте снова.",
+  "lost_connection": "Потеряно соединение с сервером.",
+  "sync_retrying": "Проблемы с сервером Rainwave, пожалуйста подождите...",
+  "mobile_sync_retrying": "Таймаут соединения, обновите страницу или попробуйте позже.",
+  "async_error": "Ошибка обращения к серверу. Обновите страницу или попробуйте позж.",
+  "deeplink_error": "Ошибка восприятия введенного URL адреса.",
+  "Loading...": "Грузимся...",
+  "Cancel": "Отмена",
+  "go": "Вперед",
+  "hotkey_mode": "Клавиши 1-5 чтобы оценить, A/S/D чтобы проголосовать",
+  "invalid_hotkey": "Неверная горячая клавиша.",
+  "not_an_election": "Нет голосования.",
+  "rate_song_mobile_dialog": "Оценить песню",
+  "playlist": "Плейлист",
+  "library": "Библиотека",
+  "Filter...": "Фильтр...",
+  "album_rating_ranked_at_v2": [
+    "Оценено на ",
+    {
+      "type": "substitute",
+      "key": "rating"
+    },
+    " исходя из ",
+    {
+      "type": "substitute",
+      "key": "rating_count"
+    },
+    " оценок, занимает ",
+    {
+      "type": "ordinal",
+      "key": "rank"
+    },
+    " место."
+  ],
+  "album_requests_ranked_at": [
+    "Всего заявок: ",
+    {
+      "type": "substitute",
+      "key": "count"
+    },
+    ", занимает ",
+    {
+      "type": "ordinal",
+      "key": "rank"
+    },
+    " место."
+  ],
+  "album_year": [
+    "Выпущено в ",
+    {
+      "type": "substitute",
+      "key": "year"
+    },
+    " году."
+  ],
+  "album_rating_detail": "Оценка альбома пользователями ",
+  "song_rating_detail": "Оценка композиции пользователями ",
+  "rating_detail_numbers": [
+    {
+      "type": "substitute",
+      "key": "rating"
+    },
+    ". (",
+    {
+      "type": "substitute",
+      "key": "percentile_message"
+    },
+    ")"
+  ],
+  "rating_percentile_top": [
+    "лучшие ",
+    {
+      "type": "substitute",
+      "key": "percentile_top"
+    },
+    "%"
+  ],
+  "rating_percentile_bottom": [
+    "худшие ",
+    {
+      "type": "substitute",
+      "key": "percentile"
+    },
+    "%"
+  ],
+  "request_percentile_top": [
+    "Запрос по популярности: лучшие ",
+    {
+      "type": "substitute",
+      "key": "percentile_top"
+    },
+    "%."
+  ],
+  "request_percentile_bottom": [
+    "запрос по популярности: худшие ",
+    {
+      "type": "substitute",
+      "key": "percentile"
+    },
+    "%."
+  ],
+  "song_has_no_ratings": "Оценок нет.",
+  "Request": "Заявки",
+  "Albums": "Альбомы",
+  "Songs": "Копозиции",
+  "Artists": "Исполнители",
+  "Users": "Пользователи",
+  "Groups": "Группы",
+  "Listeners": "Слушатели",
+  "songs_from": [
+    "Треки от станции ",
+    {
+      "type": "substitute",
+      "key": "station"
+    }
+  ],
+  "album_on_station": [
+    "На ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    ": ",
+    {
+      "type": "substitute",
+      "key": "album"
+    }
+  ],
+  "groups_tab_title": "Категории",
+  "RequestLine": "Очередь заявок",
+  "nobody_in_line": "Очередь пуста.",
+  "relevant_categories": "Схожие категории: ",
+  "relevant_category": "Категория: ",
+  "relevant_categories_rollover": "Схожие категории: перейти к списку.",
+  "new_album": "Новый альбом!",
+  "newish_album": "недавно добавлен.",
+  "new_songs": "Новые композиции!",
+  "newish_songs": "Недавно обновлено.",
+  "search...": "Поиск...",
+  "no_songs_on_this_station": [
+    "На станции ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    " нет песен из этого альбома."
+  ],
+  "clear_request_queue": "Очистить всё",
+  "pause_request_queue": "Пауза",
+  "unpause_request_queue": "Продолжить",
+  "request_fill_with_unrated": "Заполнить неоцененным",
+  "request_fill_with_faves": "Заполнить избранным",
+  "Suspend": "Приостановить",
+  "Pause": "Пауза",
+  "Resume": "Продолжить",
+  "Faves": "Избранное",
+  "Unrated": "Без оценок",
+  "Clear": "Очистить",
+  "Requests": "Заявки",
+  "#_requests": [
+    {
+      "type": "substitute",
+      "key": "num_requests"
+    },
+    " ",
+    {
+      "type": "plural",
+      "key": "num_requests",
+      "plurals": {
+        "one": "Заявка",
+        "other": "Заявок"
+      }
+    }
+  ],
+  "requests_all_on_cooldown": "Нет подходящих заявок",
+  "request_you_are_x_in_line": [
+    {
+      "type": "ordinal",
+      "key": "position"
+    },
+    " в очереди"
+  ],
+  "request_grab_tag__paused": "Приостановлено",
+  "request_on_cooldown_for": [
+    "Недоступно в течении ",
+    {
+      "type": "substitute",
+      "key": "cool_time"
+    },
+    "."
+  ],
+  "request_on_cooldown_ends_soon": "Сейчас будет доступно.",
+  "request_in_election": [
+    {
+      "type": "substitute",
+      "key": "blocked_by"
+    },
+    " в голосовании"
+  ],
+  "blocked_by_name__group": "Категория",
+  "blocked_by_name__album": "Альбом",
+  "blocked_by_name__in_election": "Трек",
+  "request_only_on_x": [
+    "Доступно на станции ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "."
+  ],
+  "no_song_selected": "(композиция не выбрана)",
+  "make_a_request": "Откройте библиотеку и выберите композицию, чтобы добавить ее в очередь заявок.",
+  "station_description_id_1": "Оригинальные саундтреки из игр. Голосуйте за следующий трек!",
+  "station_description_id_2": "OverClocked ReMix радио, лучшие ремиксы на музыку из игр. Голосуйте за ваши любимые ремиксы!",
+  "station_description_id_3": "Официальные и любительские ремиксы на музыку из игр, трансляция 24/7. Голосуйте за ваших любимых исполнителей!",
+  "station_description_id_4": "Официальная чип-тюн музыка из игр и любительские треки, трансляция 24/7. Голосуйте за треки, которые хотите услышать!",
+  "station_description_id_5": "Онлайн радио. Музыка из видеоигр, включая ремиксы и оригинальные саундтреки. Голосуйте за треки, которые хотите услышать!",
+  "station_menu_description_id_1": "Оригинальная музыка из игр.",
+  "station_menu_description_id_2": "Все официальные треки от OverClocked ReMix.",
+  "station_menu_description_id_3": "Официальные и любительские ремиксы.",
+  "station_menu_description_id_4": "Чиптюн музыка из игр, а также оригинальные композиции.",
+  "station_menu_description_id_5": "Весь плейлист Rainwave.",
+  "now_playing_on_...": [
+    "Сейчас играет на станции ",
+    {
+      "type": "substitute",
+      "key": "station"
+    }
+  ],
+  "preferences": "Опции",
+  "Settings": "Настройки",
+  "yes": "Да",
+  "no": "Нет",
+  "site_mode": "Режим сайта",
+  "basic": "Простой",
+  "full": "Полный",
+  "change_language": "Язык",
+  "timeline_preferences": "Основной блок",
+  "tab_title_preferences": "Заголовок вкладки",
+  "font_options": "Настройки шрифтов",
+  "prefs_roboto": "Использовать свой шрифт",
+  "prefs_f_norm": "Сжимать шрифт под размер экрана",
+  "prefs_notify": "Уведомлять на рабочий стол при смене композиции",
+  "prefs_t_clk": "Показывать время в заголовке",
+  "prefs_t_rt": "Показывать оценку в заголовке",
+  "prefs_t_tl": "Показывать название трека в заголовке",
+  "prefs_sticky_history_size": "Количество треков в истории",
+  "prefs_l_displose": "Показывать композиции, которые проиграли в голосовании",
+  "playlist_preferences": "Список альбомов",
+  "prefs_playlist_sort_available_first": "Сначала доступные",
+  "prefs_playlist_sort_faves_first": "Сначала избранное",
+  "prefs_p_null1": "Сначала без оценки",
+  "prefs_p_fav1": "Сначала избранное",
+  "prefs_p_sort": "Сортировка альбомов...",
+  "prefs_sort_playlist_by_alpha": "по алфавиту",
+  "prefs_sort_playlist_by_rating_user": "по вашей оценке",
+  "rating_preferences": "по общей оценке",
+  "prefs_r_incmplt": "Помечать неполные альбомы",
+  "prefs_r_noglbl": "Не показывать общую оценку, пока я не оценил",
+  "prefs_r_clear": "Отображать кнопку удаления рейтинга",
+  "prefs_pwr": "Включить расширенный режим",
+  "prefs_hkm": "Раскладка горячих клавиш",
+  "waiting_for_hotkey": "Ожидаем горячей клавиши",
+  "hotkeys_rate10": " = Оценить 1.0-5.0",
+  "hotkeys_rate05": " = Оценить 1.5-4.5",
+  "hotkeys_vote0": " = Голос за 1",
+  "hotkeys_vote1": " = Голос за 2",
+  "hotkeys_fave": " = В избранное",
+  "hotkeys_play": " = Стоп/Играть",
+  "timeformat_w": "н",
+  "timeformat_d": "д",
+  "timeformat_h": "ч",
+  "timeformat_m": "м",
+  "timeformat_s": "с",
+  "unrated_songs": "Треки без оценки",
+  "title": "Заголовок",
+  "album_name": "Название альбома",
+  "id": "ID",
+  "sid": "ID Станции",
+  "delete": "Удалить",
+  "all_faves": "Всё избранное",
+  "rating_user": "Оценка пользователей",
+  "fave": "В избранное",
+  "rating": "Средняя оценка",
+  "album_id": "ID альбома",
+  "playback_history": "История - расширенная",
+  "name": "Название",
+  "song_rating": "Рейтинг",
+  "top_100": "Топ-100",
+  "song_rating_count": "# оценок",
+  "origin_sid": "Станция",
+  "user_recent_votes": "Ваши недавние голоса",
+  "user_requested_history": "Ваша история заявок",
+  "request_line_result": "Слушателей в очереди",
+  "song_id": "ID композиции",
+  "user_id": "ID пользователя",
+  "line_expiry_tune_in": "Время истечения (если отключились)",
+  "line_expiry_election": "Время истечения (если нет запросов)",
+  "line_wait_start": "Вошел в очередь (время эпохи)",
+  "artist_parseable": "Исполнители (форматированный вывод)",
+  "song_played_at": "Проигрывалось (время эпохи)",
+  "logout": "Выйти",
+  "404": "Страница не найдена.",
+  "Artists_pluralized": [
+    {
+      "type": "plural",
+      "key": "count",
+      "plurals": {
+        "one": "Artist",
+        "other": "Artists"
+      }
+    }
+  ],
+  "Rate": "Оцените",
+  "album_all_cooldown": "Этот альбом недоступен.",
+  "album_has_cooldown": "Некоторые песни недоступны.",
+  "allow_api_auth": "Принять",
+  "app_would_like_to": "Это приложение хотело бы:",
+  "auth_failed_message": "Наша система авторизации вышла из строя! У нас была эта ошибка в последние несколько недель с анонимными пользователями. В наостоящее время мы переписываем систему аутентификации. Перезагрузите страницу или, что ещё лучше, ЗАРЕГИСТРИТУЙТЕСЬ И ВОЙДИТЕ, используя ссылку на форум ниже, которая решит проблему!",
+  "cd_album": "Альбом",
+  "cd_album_length": "6-48 часов",
+  "cd_album_size": "Размер альбома",
+  "cd_blue_bkg_is": "Когда у песни или альбома синий фон, они восстанавливаются и не могут быть воспроизведены прямо сейчас.",
+  "cd_category": "Категория",
+  "cd_category_length": "15 минут",
+  "cd_cooldown_length": "Время восстановления",
+  "cd_cooldowns_depend_on": "Время восстановления может зависеть от:",
+  "cd_example": "Пример",
+  "cd_higher_rating": "Выше оценка = короче время восстановления",
+  "cd_larger_album": "Больше альбом = короче время восстановления",
+  "cd_newer": "Новее = короче время восстановления",
+  "cd_rating": "Рейтинг",
+  "cd_recently_added": "Недавно добавленные",
+  "cd_song": "Песня",
+  "cd_song_length": "2-6 дней",
+  "cd_type_of_cooldown": "Тип восстановления",
+  "cd_what_is": "Что такое Восстановление?",
+  "cd_why_use_cooldown": "Восстановления используется для того, чтобы Rainwave не повторял песни и альбомы.",
+  "cool_end": "Восстановление закончено",
+  "discord_already_associated": "Другой аккаунт уже использует логин Discord'а.",
+  "end": "Окончание",
+  "fave_all_songs": "Добавить в избранное все песни",
+  "hold_to_rate": "Удерживайте, чтобы оценить",
+  "legacy_username": "Имя пользователя старого форума",
+  "link_discord": "Привядите аккаунт Discord",
+  "login_failed": "Неправильные логин или пароль.",
+  "login_limit": "Превышено количество попыток входа.",
+  "login_password_disabled": "Вход с паролем отключён для данной учётной записи.",
+  "login_too_old": "Ваш логин слишком старый, чтобы его можно было восстановить по паролю. Пожалуйста, поговорите с сотрудниками Discord.",
+  "login_with_legacy": "Устаревший вход",
+  "oauth_rejected": "Авторизация отклонена :(",
+  "page_title_on_google": "Радио Музыки из Видеоигр",
+  "password": "Пароль",
+  "password_required": "Пожалуйста введите ваш пароль.",
+  "power_hours": "Ударные Часы",
+  "prefs_l_stksz": "Постоянно видимая история",
+  "prefs_p_avup": "Поместить доступные наверх",
+  "prefs_p_favup": "Поместить избранные наверх",
+  "prefs_p_songsort": "Сортировать песни также, как альботмы",
+  "register_with_discord": "Войти/Зарегистрироваться через Discord",
+  "request_deleted": "Запрос удалён.",
+  "request_favorited_songs_success": "Избранные запрошены.",
+  "request_success": "Запрошено.",
+  "song_on_other_station": [
+    "Песня недоступна на ",
+    {
+      "type": "substitute",
+      "key": "station"
+    },
+    "."
+  ],
+  "start": "Начать",
+  "tip_jar_instruction_1": "Отправьте подарок PayPal, используя ссылку ниже.",
+  "unfave_all_songs": "Убрать все песни из Избранного",
+  "username_required": "Пожалуйста введите ваше имя пользователя.",
+  "websocket_throttle": "Помедленнее!",
+  "your_album_rating": [
+    "Вы оценили этот альбом ",
+    {
+      "type": "substitute",
+      "key": "rating_user"
+    },
+    "."
+  ]
 }

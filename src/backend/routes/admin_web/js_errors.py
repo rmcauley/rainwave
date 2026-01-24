@@ -3,8 +3,8 @@ import datetime
 import tornado.escape
 from pytz import timezone
 
-import api_web.web
-from api_web.urls import handle_url
+import web_api.web
+from web_api.urls import handle_url
 
 from routes.admin.js_errors import JSErrors
 
@@ -23,7 +23,7 @@ def relative_time(epoch_time):
 
 
 @handle_url("/admin/album_list/js_errors")
-class JSErrorDisplay(api_web.web.PrettyPrintAPIMixin, JSErrors):
+class JSErrorDisplay(web_api.web.PrettyPrintAPIMixin, JSErrors):
     columns = [
         "user_id",
         "username",
@@ -39,7 +39,7 @@ class JSErrorDisplay(api_web.web.PrettyPrintAPIMixin, JSErrors):
 
     def get(self):  # pylint: disable=E0202,W0221
         if not isinstance(self._output, dict):
-            raise api_web.web.APIException("internal_error", http_code=500)
+            raise web_api.web.APIException("internal_error", http_code=500)
         for row in self._output[self.return_name]:
             row["time"] = row.get("time", None)
             if "stack" in row and row["stack"]:
@@ -59,7 +59,7 @@ class JSErrorDisplay(api_web.web.PrettyPrintAPIMixin, JSErrors):
 
 
 @handle_url("/admin/tools/js_errors")
-class JSErrorsDummy(api_web.web.HTMLRequest):
+class JSErrorsDummy(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):

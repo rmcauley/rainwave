@@ -4,14 +4,14 @@ import tornado.web
 import tornado.escape
 import datetime
 
-from src_backend.config import config
+from src.backend.config import config
 from libs import db
 from libs import cache
 
-import api_web.web
-from api_web.web import APIException
-from api_web.urls import handle_url
-from api_web import fieldtypes
+import web_api.web
+from web_api.web import APIException
+from web_api.urls import handle_url
+from web_api import fieldtypes
 
 import routes.playlist
 
@@ -42,7 +42,7 @@ class AdminRedirect(tornado.web.RequestHandler):
 
 
 @handle_url("/admin/")
-class AdminIndex(api_web.web.HTMLRequest):
+class AdminIndex(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):
@@ -61,7 +61,7 @@ class AdminIndex(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/dj")
-class DJIndex(api_web.web.HTMLRequest):
+class DJIndex(web_api.web.HTMLRequest):
     dj_preparation = True
 
     def get(self):
@@ -78,7 +78,7 @@ class DJIndex(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/tool_list")
-class ToolList(api_web.web.HTMLRequest):
+class ToolList(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):
@@ -116,7 +116,7 @@ class ToolList(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/station_list")
-class StationList(api_web.web.HTMLRequest):
+class StationList(web_api.web.HTMLRequest):
     admin_required = True
 
     def get(self):
@@ -131,7 +131,7 @@ class StationList(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/restrict_songs")
-class RestrictList(api_web.web.HTMLRequest):
+class RestrictList(web_api.web.HTMLRequest):
     dj_preparation = True
 
     def get(self):
@@ -160,7 +160,7 @@ class RestrictList(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/dj_election_list")
-class DJEventList(api_web.web.HTMLRequest):
+class DJEventList(web_api.web.HTMLRequest):
     dj_preparation = True
 
     def get(self):
@@ -184,7 +184,7 @@ class DJEventList(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/dj_tools")
-class DJTools(api_web.web.HTMLRequest):
+class DJTools(web_api.web.HTMLRequest):
     dj_required = True
 
     def get(self):
@@ -208,7 +208,7 @@ class DJTools(api_web.web.HTMLRequest):
 
 
 @handle_url("/admin/relay_status")
-class RelayStatus(api_web.web.HTMLRequest):
+class RelayStatus(web_api.web.HTMLRequest):
     dj_required = True
 
     def get(self):
@@ -241,7 +241,7 @@ class RelayStatus(api_web.web.HTMLRequest):
         self.write(self.render_string("basic_footer.html"))
 
 
-class AlbumList(api_web.web.HTMLRequest):
+class AlbumList(web_api.web.HTMLRequest):
     admin_required = True
     allow_get = True
     allow_sid_zero = True
@@ -294,7 +294,7 @@ class AlbumList(api_web.web.HTMLRequest):
         pass
 
 
-class SongList(api_web.web.PrettyPrintAPIMixin, routes.playlist.AlbumHandler):
+class SongList(web_api.web.PrettyPrintAPIMixin, routes.playlist.AlbumHandler):
     admin_required = True
     allow_sid_zero = True
     # fields are handled by AlbumHandler

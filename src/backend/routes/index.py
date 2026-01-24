@@ -3,12 +3,12 @@ import tornado.web
 import re
 import urllib.parse
 
-import api_web.web
-import src_backend.libs.locale
-from api_web.urls import handle_url, handle_api_url
+import web_api.web
+import src.backend.libs.locale
+from web_api.urls import handle_url, handle_api_url
 from routes import info
 
-from src_backend.config import config
+from src.backend.config import config
 from rainwave.user import User
 
 STATION_REGEX = "|".join(
@@ -25,7 +25,7 @@ index_file_location = os.path.join(
 
 
 @handle_url("/blank")
-class Blank(api_web.web.HTMLRequest):
+class Blank(web_api.web.HTMLRequest):
     auth_required = False
     login_required = False
 
@@ -163,7 +163,7 @@ class Blank(api_web.web.HTMLRequest):
 
 
 @handle_api_url("bootstrap")
-class Bootstrap(api_web.web.APIHandler):
+class Bootstrap(web_api.web.APIHandler):
     description = (
         "Bootstrap a Rainwave client.  Provides user info, API key, station info, relay info, and more.  "
         "If you run a GET query to this URL, you will receive a Javascript file containing a single variable called BOOTSTRAP.  While this is largely intended for the purposes of the main site, you may use this.  "
@@ -201,7 +201,7 @@ class Bootstrap(api_web.web.APIHandler):
 
     def finish(self, chunk=None):
         self.set_header("Content-Type", self.content_type)
-        super(api_web.web.APIHandler, self).finish(chunk)
+        super(web_api.web.APIHandler, self).finish(chunk)
 
     def get(self):  # pylint: disable=method-hidden
         self.write("var BOOTSTRAP=")
@@ -212,7 +212,7 @@ class Bootstrap(api_web.web.APIHandler):
         info.attach_info_to_request(self, live_voting=True)
         self.append("build_version", config.build_number)
         self.append("locale", self.locale.code)
-        self.append("locales", src_backend.libs.locale.locale_names)
+        self.append("locales", src.backend.libs.locale.locale_names)
         self.append("cookie_domain", config.get("cookie_domain"))
         self.append("on_init", [])
         self.append("on_measure", [])

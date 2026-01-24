@@ -1,16 +1,16 @@
 from time import time as timestamp
 
-from api_web import fieldtypes
-from api_web.web import RainwaveHandler
-from api_web.urls import handle_api_url
-from api_web.urls import handle_url
-from api_web.exceptions import APIException
+from web_api import fieldtypes
+from web_api.web import RainwaveHandler
+from web_api.urls import handle_api_url
+from web_api.urls import handle_url
+from web_api.exceptions import APIException
 
 from libs import cache
 from libs import log
 from libs import db
 from rainwave import user
-from api_song_changer import sync_to_front
+from song_change_api import sync_to_front
 
 # Sample Icecast query:
 # &server=myserver.com&port=8000&client=1&mount=/live&user=&pass=&ip=127.0.0.1&agent="My%20player"

@@ -1,10 +1,10 @@
-from api_web.urls import handle_url
-from api_web.web import HTMLRequest
-from api_web import fieldtypes
+from web_api.urls import handle_url
+from web_api.web import HTMLRequest
+from web_api import fieldtypes
 from libs import cache, db
 from routes.admin_web.index import AlbumList, SongList
 from rainwave.events.election import Election
-from src_backend.config import config
+from src.backend.config import config
 
 
 @handle_url("/admin/tools/dj_election")

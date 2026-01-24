@@ -1,7 +1,7 @@
 from time import time as timestamp
 import math
 
-from src_backend.config import config
+from src.backend.config import config
 from libs import log
 from libs import db
 

@@ -3,9 +3,9 @@ import math
 from pytz import timezone
 
 from libs import log
-from src_backend.config import config
-import api_web.web
-from api_web.urls import handle_url
+from src.backend.config import config
+import web_api.web
+from web_api.urls import handle_url
 from routes.admin_web.index import AlbumList
 from routes.admin_web.index import SongList
 
@@ -25,10 +25,10 @@ def get_ph_formatted_time(start_time, end_time, timezone_name):
 
 
 @handle_url("/admin/tools/power_hours")
-class WebListPowerHours(api_web.web.PrettyPrintAPIMixin, power_hours.ListPowerHours):
+class WebListPowerHours(web_api.web.PrettyPrintAPIMixin, power_hours.ListPowerHours):
     def get(self):  # pylint: disable=E0202
         if not isinstance(self._output, dict):
-            raise api_web.web.APIException("internal_error", http_code=500)
+            raise web_api.web.APIException("internal_error", http_code=500)
 
         self.write(
             self.render_string(
@@ -102,7 +102,7 @@ class WebListPowerHours(api_web.web.PrettyPrintAPIMixin, power_hours.ListPowerHo
 
 
 @handle_url("/admin/tools/power_hour_detail")
-class WebPowerHourDetail(api_web.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
+class WebPowerHourDetail(web_api.web.PrettyPrintAPIMixin, power_hours.GetPowerHour):
     def write_error(self, status_code, *args, **kwargs):
         self.write(self.render_string("bare_header.html", title="No Such Power Hour"))
         self.write(
@@ -113,7 +113,7 @@ class WebPowerHourDetail(api_web.web.PrettyPrintAPIMixin, power_hours.GetPowerHo
 
     def get(self):  # pylint: disable=E0202
         if not isinstance(self._output, dict):
-            raise api_web.web.APIException("internal_error", http_code=500)
+            raise web_api.web.APIException("internal_error", http_code=500)
 
         ph = self._output[self.return_name]
         self.write(self.render_string("bare_header.html", title="%s" % ph["name"]))

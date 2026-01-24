@@ -1,11 +1,11 @@
 from libs import db
-import api_web.web
-from api_web.urls import handle_api_url
-from api_web import fieldtypes
+import web_api.web
+from web_api.urls import handle_api_url
+from web_api import fieldtypes
 
 
 @handle_api_url("admin/set_song_cooldown")
-class SetSongCooldown(api_web.web.APIHandler):
+class SetSongCooldown(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     description = "Sets the song cooldown multiplier and override.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
@@ -67,7 +67,7 @@ class SetSongCooldown(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/reset_song_cooldown")
-class ResetSongCooldown(api_web.web.APIHandler):
+class ResetSongCooldown(web_api.web.APIHandler):
     admin_required = True
     sid_required = False
     description = (
@@ -84,7 +84,7 @@ class ResetSongCooldown(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/set_album_cooldown")
-class SetAlbumCooldown(api_web.web.APIHandler):
+class SetAlbumCooldown(web_api.web.APIHandler):
     admin_required = True
     description = "Sets the album cooldown multiplier and override PER STATION.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
     fields = {
@@ -154,7 +154,7 @@ class SetAlbumCooldown(api_web.web.APIHandler):
 
 
 @handle_api_url("admin/reset_album_cooldown")
-class ResetAlbumCooldown(api_web.web.APIHandler):
+class ResetAlbumCooldown(web_api.web.APIHandler):
     admin_required = True
     description = (
         "Sets album cooldown override to null and sets cooldown multiplier to 1."

@@ -10,7 +10,7 @@ from rainwave.playlist_objects.metadata import (
     MetadataNotFoundError,
     make_searchable_string,
 )
-from src_backend.config import config
+from src.backend.config import config
 
 num_albums = {}
 updated_album_ids = {}
