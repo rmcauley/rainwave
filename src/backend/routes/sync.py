@@ -231,7 +231,7 @@ last_vote_by = {}
 vote_once_every_seconds = 5  # how many seconds have to pass before a user has their vote live broadcast if they're spamming
 
 
-def init():
+def init() -> None:
     global sessions
     global websocket_allow_from
 
@@ -244,13 +244,13 @@ def init():
     zeromq.set_sub_callback(_on_zmq)
 
 
-def _keep_all_alive():
+def _keep_all_alive() -> None:
     global sessions
     for sid in sessions:
         sessions[sid].keep_alive()
 
 
-def _on_zmq(messages):
+def _on_zmq(messages: list[typing.Any]) -> None:
     global votes_by
     global last_vote_by
 
@@ -311,14 +311,14 @@ def _on_zmq(messages):
             return
 
 
-def delay_live_vote_removal(sid):
+def delay_live_vote_removal(sid: int) -> None:
     if delayed_live_vote_timers[sid]:
         tornado.ioloop.IOLoop.instance().remove_timeout(delayed_live_vote_timers[sid])
         delayed_live_vote[sid] = None
         delayed_live_vote_timers[sid] = None
 
 
-def delay_live_vote(message):
+def delay_live_vote(message: dict[str, typing.Any]) -> None:
     delayed_live_vote_timers[
         message["sid"]
     ] = tornado.ioloop.IOLoop.instance().add_timeout(
@@ -327,7 +327,7 @@ def delay_live_vote(message):
     )
 
 
-def process_delayed_live_vote(sid):
+def process_delayed_live_vote(sid: int) -> None:
     delayed_live_vote_timers[sid] = None
     if not delayed_live_vote[sid]:
         return

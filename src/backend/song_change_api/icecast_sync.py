@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 from xml.etree import ElementTree
+from typing import Any
 
 from libs import cache
 from src.backend.config import config
@@ -9,14 +10,16 @@ from libs import db
 
 
 class IcecastSyncCall:
-    def __init__(self, relay_name, relay_info, ftype, sid):
+    def __init__(
+        self, relay_name: str, relay_info: dict[str, Any], ftype: str, sid: int
+    ) -> None:
         self.relay_name = relay_name
         self.relay_info = relay_info
         self.sid = sid
         self.ftype = ftype
-        self.response = None
+        self.response: bytes | None = None
 
-    def get_listeners(self):
+    def get_listeners(self) -> list[Any] | int:
         if not self.response:
             return 0
         listeners = []
@@ -36,7 +39,7 @@ class IcecastSyncCall:
         )
         return listeners
 
-    async def request(self, client, url):
+    async def request(self, client: aiohttp.ClientSession, url: str) -> None:
         async with client.get(url, ssl=False) as response:
             if response.status != 200:
                 log.warn(
@@ -54,7 +57,7 @@ class IcecastSyncCall:
                 self.response = await response.read()
 
 
-async def _start():
+async def _start() -> None:
     loop = asyncio.get_running_loop()
 
     stream_names = {}
@@ -133,6 +136,6 @@ async def _start():
         log.exception("icecast_sync", "Could not finish counting listeners.", e)
 
 
-def start():
+def start() -> None:
     loop = asyncio.get_event_loop()
     loop.run_until_complete(_start())

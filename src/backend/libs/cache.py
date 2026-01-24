@@ -2,9 +2,10 @@ from src.backend.config import config
 from libs import db
 import pylibmc as libmc
 from web_api.exceptions import APIException
+from typing import Any, Iterable
 
-_memcache = None
-_memcache_ratings = None
+_memcache: libmc.Client | "TestModeCache" | None = None
+_memcache_ratings: libmc.Client | "TestModeCache" | None = None
 _memcache_behaviors = {
     "tcp_nodelay": True,
     "ketama": False,
@@ -15,24 +16,24 @@ _memcache_behaviors = {
     "receive_timeout": 5000000,
     "send_timeout": 5000000,
 }
-local = {}
+local: dict[str, Any] = {}
 
 
 class TestModeCache:
-    def __init__(self):
+    def __init__(self) -> None:
         self.vars = {}
 
-    def get(self, key):
+    def get(self, key: str) -> Any | None:
         if not key in self.vars:
             return None
         else:
             return self.vars[key]
 
-    def set(self, key, value):
+    def set(self, key: str, value: Any) -> None:
         self.vars[key] = value
 
 
-def connect():
+def connect() -> None:
     global _memcache
     global _memcache_ratings
 
@@ -59,7 +60,7 @@ def connect():
         _memcache_ratings.get("hello")
 
 
-def set_global(key, value, save_local=False):
+def set_global(key: str, value: Any, save_local: bool = False) -> None:
     if not _memcache:
         raise APIException("internal_error", "No memcache connection.", http_code=500)
     if save_local or key in local:
@@ -67,7 +68,7 @@ def set_global(key, value, save_local=False):
     _memcache.set(key, value)
 
 
-def get(key):
+def get(key: str) -> Any:
     if not _memcache:
         raise APIException("internal_error", "No memcache connection.", http_code=500)
     if key in local:
@@ -75,60 +76,62 @@ def get(key):
     return _memcache.get(key)
 
 
-def set_user(user, key, value):
+def set_user(user: Any, key: str, value: Any) -> None:
     if user.__class__.__name__ == "int" or user.__class__.__name__ == "long":
         set_global("u%s_%s" % (user, key), value)
     else:
         set_global("u%s_%s" % (user.id, key), value)
 
 
-def get_user(user, key):
+def get_user(user: Any, key: str) -> Any:
     if user.__class__.__name__ == "int" or user.__class__.__name__ == "long":
         return get("u%s_%s" % (user, key))
     else:
         return get("u%s_%s" % (user.id, key))
 
 
-def set_station(sid, key, value, save_local=False):
+def set_station(sid: int, key: str, value: Any, save_local: bool = False) -> None:
     set_global("sid%s_%s" % (sid, key), value, save_local)
 
 
-def get_station(sid, key):
+def get_station(sid: int, key: str) -> Any:
     return get("sid%s_%s" % (sid, key))
 
 
-def set_song_rating(song_id, user_id, rating):
+def set_song_rating(song_id: int, user_id: int, rating: Any) -> None:
     if not _memcache_ratings:
         raise APIException("internal_error", "No memcache connection.", http_code=500)
     _memcache_ratings.set("rating_song_%s_%s" % (song_id, user_id), rating)
 
 
-def get_song_rating(song_id, user_id):
+def get_song_rating(song_id: int, user_id: int) -> Any:
     if not _memcache_ratings:
         raise APIException("internal_error", "No memcache connection.", http_code=500)
     return _memcache_ratings.get("rating_song_%s_%s" % (song_id, user_id))
 
 
-def set_album_rating(sid, album_id, user_id, rating):
+def set_album_rating(sid: int, album_id: int, user_id: int, rating: Any) -> None:
     if not _memcache_ratings:
         raise APIException("internal_error", "No memcache connection.", http_code=500)
     _memcache_ratings.set("rating_album_%s_%s_%s" % (sid, album_id, user_id), rating)
 
 
-def set_album_faves(sid, album_id, user_id, fave):
+def set_album_faves(sid: int, album_id: int, user_id: int, fave: Any) -> None:
     rating = get_album_rating(sid, album_id, user_id)
     if rating:
         rating["album_fave"] = fave
         set_album_rating(sid, album_id, user_id, rating)
 
 
-def get_album_rating(sid, album_id, user_id):
+def get_album_rating(sid: int, album_id: int, user_id: int) -> Any:
     if not _memcache_ratings:
         raise APIException("internal_error", "No memcache connection.", http_code=500)
     return _memcache_ratings.get("rating_album_%s_%s_%s" % (sid, album_id, user_id))
 
 
-def prime_rating_cache_for_events(sid, events, songs=None):
+def prime_rating_cache_for_events(
+    sid: int, events: Iterable[Any], songs: Iterable[Any] | None = None
+) -> None:
     for e in events:
         for song in e.songs:
             prime_rating_cache_for_song(song, sid)
@@ -137,7 +140,7 @@ def prime_rating_cache_for_events(sid, events, songs=None):
             prime_rating_cache_for_song(song, sid)
 
 
-def prime_rating_cache_for_song(song, sid):
+def prime_rating_cache_for_song(song: Any, sid: int) -> None:
     for user_id, rating in song.get_all_ratings().items():
         set_song_rating(song.id, user_id, rating)
     if song.album:
@@ -145,20 +148,20 @@ def prime_rating_cache_for_song(song, sid):
             set_album_rating(sid, song.album.id, user_id, rating)
 
 
-def refresh_local(key):
+def refresh_local(key: str) -> None:
     if not _memcache:
         raise APIException("internal_error", "No memcache connection.", http_code=500)
     local[key] = _memcache.get(key)
 
 
-def refresh_local_station(sid, key):
+def refresh_local_station(sid: int, key: str) -> None:
     if not _memcache:
         raise APIException("internal_error", "No memcache connection.", http_code=500)
     # we can't use the normal get functions here since they'll ping what's already in local
     local["sid%s_%s" % (sid, key)] = _memcache.get("sid%s_%s" % (sid, key))
 
 
-def update_local_cache_for_sid(sid):
+def update_local_cache_for_sid(sid: int) -> None:
     refresh_local_station(sid, "album_diff")
     refresh_local_station(sid, "sched_next")
     refresh_local_station(sid, "sched_history")
@@ -179,7 +182,7 @@ def update_local_cache_for_sid(sid):
     set_global("all_stations_info", all_stations)
 
 
-def reset_station_caches():
+def reset_station_caches() -> None:
     set_global("request_expire_times", None, True)
     for sid in config.station_ids:
         set_station(sid, "album_diff", None, True)
@@ -193,7 +196,7 @@ def reset_station_caches():
         set_station(sid, "user_rating_acl_song_index", None, True)
 
 
-def update_user_rating_acl(sid, song_id):
+def update_user_rating_acl(sid: int, song_id: int) -> None:
     users = get_station(sid, "user_rating_acl")
     if not users:
         users = {}

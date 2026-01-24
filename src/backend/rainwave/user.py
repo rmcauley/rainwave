@@ -18,13 +18,13 @@ _AVATAR_PATH = "/forums/download/file.php?avatar=%s"
 _DEFAULT_AVATAR = "/static/images4/user.svg"
 
 
-def trim_listeners(sid):
+def trim_listeners(sid: int) -> None:
     db.c.update(
         "DELETE FROM r4_listeners WHERE sid = %s AND listener_purge = TRUE", (sid,)
     )
 
 
-def unlock_listeners(sid):
+def unlock_listeners(sid: int) -> None:
     db.c.update(
         "UPDATE r4_listeners SET listener_lock_counter = listener_lock_counter - 1 WHERE listener_lock = TRUE AND listener_lock_sid = %s",
         (sid,),
@@ -34,7 +34,7 @@ def unlock_listeners(sid):
     )
 
 
-def solve_avatar(avatar_type, avatar):
+def solve_avatar(avatar_type: str, avatar: str) -> str:
     if avatar_type == "avatar.driver.upload":
         return _AVATAR_PATH % avatar
     elif avatar_type == "avatar.driver.remote":

@@ -3,6 +3,7 @@ import re
 import time
 from datetime import datetime
 from urllib.parse import parse_qsl, urlparse
+from typing import Any
 
 from src.backend.config import config
 from libs import db
@@ -11,7 +12,7 @@ import rainwave.events.event
 string_error = "must be a string."
 
 
-def string(in_string, request=None):
+def string(in_string: Any, request: Any = None) -> str | None:
     if not in_string:
         return None
     if isinstance(in_string, bytes):
@@ -28,7 +29,7 @@ def string(in_string, request=None):
 numeric_error = "must be a number."
 
 
-def numeric(s, request=None):
+def numeric(s: Any, request: Any = None) -> int | float | str | None:
     if isinstance(s, (int, float)):
         return s
     if isinstance(s, bytes):
@@ -45,7 +46,7 @@ def numeric(s, request=None):
 integer_error = "must be a number."
 
 
-def integer(s, request=None):
+def integer(s: Any, request: Any = None) -> int | None:
     if isinstance(s, (int)):
         return s
     if isinstance(s, float):
@@ -64,7 +65,7 @@ def integer(s, request=None):
 song_id_error = "must be a valid song ID."
 
 
-def song_id(s, request=None):
+def song_id(s: Any, request: Any = None) -> int | None:
     this_id = integer(s)
     if not this_id:
         return None
@@ -84,7 +85,7 @@ song_id_matching_sid_error = (
 )
 
 
-def song_id_matching_sid(s, request):
+def song_id_matching_sid(s: Any, request: Any) -> int | None:
     this_id = integer(s)
     if not this_id or not request:
         return None
@@ -102,7 +103,7 @@ def song_id_matching_sid(s, request):
 album_id_error = "must be a valid album ID."
 
 
-def album_id(s, request=None):
+def album_id(s: Any, request: Any = None) -> int | None:
     this_id = integer(s)
     if not this_id:
         return None
@@ -117,7 +118,7 @@ def album_id(s, request=None):
 artist_id_error = "must be a valid artist ID."
 
 
-def artist_id(s, request=None):
+def artist_id(s: Any, request: Any = None) -> int | None:
     this_id = integer(s)
     if not this_id:
         return None
@@ -134,7 +135,7 @@ def artist_id(s, request=None):
 sched_id_error = "must be a valid schedule ID."
 
 
-def sched_id(s, request=None):
+def sched_id(s: Any, request: Any = None) -> int | None:
     this_id = integer(s)
     if not this_id:
         return None
@@ -151,7 +152,7 @@ def sched_id(s, request=None):
 elec_id_error = "must be a valid election ID."
 
 
-def elec_id(s, request=None):
+def elec_id(s: Any, request: Any = None) -> int | None:
     this_id = integer(s)
     if not this_id:
         return None
@@ -168,7 +169,7 @@ def elec_id(s, request=None):
 positive_integer_error = "must be a positive number."
 
 
-def positive_integer(s, request=None):
+def positive_integer(s: Any, request: Any = None) -> int | None:
     nmbr = integer(s)
     if not nmbr:
         return None
@@ -180,7 +181,7 @@ def positive_integer(s, request=None):
 zero_or_greater_integer_error = "must be positive number or zero."
 
 
-def zero_or_greater_integer(s, request=None):
+def zero_or_greater_integer(s: Any, request: Any = None) -> int | None:
     nmbr = integer(s)
     if nmbr == None:
         return None
@@ -192,7 +193,7 @@ def zero_or_greater_integer(s, request=None):
 float_num_error = "must be a number."
 
 
-def float_num(s, request=None):
+def float_num(s: Any, request: Any = None) -> float | None:
     f = numeric(s)
     if not f:
         return None
@@ -202,7 +203,7 @@ def float_num(s, request=None):
 long_num_error = "must be a number."
 
 
-def long_num(s, request=None):
+def long_num(s: Any, request: Any = None) -> int | None:
     l = numeric(s)
     if not l:
         return None
@@ -212,7 +213,7 @@ def long_num(s, request=None):
 rating_error = "must >= 1.0 and <= 5.0 in increments of	0.5."
 
 
-def rating(s, request=None):
+def rating(s: Any, request: Any = None) -> float | None:
     r = float_num(s)
     if not r:
         return None
@@ -226,7 +227,7 @@ def rating(s, request=None):
 boolean_error = "must be 'true' or 'false'."
 
 
-def boolean(s, request=None):
+def boolean(s: Any, request: Any = None) -> bool | None:
     if s == True:
         return True
     elif s == False:
@@ -241,7 +242,7 @@ def boolean(s, request=None):
 user_id_error = "must be a valid user ID."
 
 
-def user_id(s, request=None):
+def user_id(s: Any, request: Any = None) -> int | None:
     u = positive_integer(s, request)
     if not u:
         return None
@@ -253,7 +254,7 @@ def user_id(s, request=None):
 valid_relay_error = "must be a known and valid relay's IP address."
 
 
-def valid_relay(s, request=None):
+def valid_relay(s: Any, request: Any = None) -> str | None:
     if not s:
         return None
     for name, value in config.get("relays").items():
@@ -267,7 +268,7 @@ def valid_relay(s, request=None):
 sid_error = "must be a valid station ID."
 
 
-def sid(s, request=None):
+def sid(s: Any, request: Any = None) -> int | None:
     this_sid = zero_or_greater_integer(s, request)
     if not this_sid:
         return None
@@ -281,7 +282,7 @@ def sid(s, request=None):
 integer_list_error = "must be a comma-separated list of integers."
 
 
-def integer_list(s, request=None):
+def integer_list(s: Any, request: Any = None) -> list[int] | None:
     if isinstance(s, list):
         for i in s:
             if not isinstance(i, int):
@@ -306,7 +307,7 @@ def integer_list(s, request=None):
 string_list_error = "must be a comma-separated list of strings."
 
 
-def string_list(s, request=None):
+def string_list(s: Any, request: Any = None) -> list[str] | None:
     if isinstance(s, list):
         for i in s:
             if not isinstance(i, str):
@@ -322,7 +323,7 @@ def string_list(s, request=None):
 song_id_list_error = "must be a comma-separated list of valid song IDs."
 
 
-def song_id_list(s, request=None):
+def song_id_list(s: Any, request: Any = None) -> list[int] | None:
     l = integer_list(s)
     if not l:
         return None
@@ -342,7 +343,9 @@ def song_id_list(s, request=None):
 icecast_mount_error = "invalid Icecast mount."
 
 
-def icecast_mount(s, request=None):
+def icecast_mount(
+    s: Any, request: Any = None
+) -> tuple[str, int, str | None, str | None] | None:
     if not s:
         return None
     if isinstance(s, bytes):
@@ -425,7 +428,7 @@ def icecast_mount(s, request=None):
 ip_address_error = "invalid IP address."
 
 
-def ip_address(addr, request=None):
+def ip_address(addr: Any, request: Any = None) -> Any:
     if not addr:
         return None
     return addr
@@ -434,7 +437,7 @@ def ip_address(addr, request=None):
 media_player_error = None
 
 
-def media_player(s, request=None):
+def media_player(s: str, request: Any = None) -> str:
     ua = s.lower()
     if ua.find("firefox") > -1:
         return "Firefox"
@@ -496,7 +499,7 @@ def media_player(s, request=None):
 producer_type_error = None
 
 
-def producer_type(s, request=None):
+def producer_type(s: Any, request: Any = None) -> Any | None:
     if s not in rainwave.events.event.all_producers:
         return None
     return s
@@ -505,7 +508,7 @@ def producer_type(s, request=None):
 group_id_error = "must be a valid group ID."
 
 
-def group_id(s, request=None):
+def group_id(s: Any, request: Any = None) -> int | None:
     gid = integer(s)
     if (
         db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (gid,))
@@ -518,7 +521,7 @@ def group_id(s, request=None):
 date_error = "must be valid ISO 8601 date. (YYYY-MM-DD)"
 
 
-def date(s, request=None) -> datetime | None:
+def date(s: Any, request: Any = None) -> datetime | None:
     if not s:
         return None
     if isinstance(s, bytes):
@@ -532,7 +535,7 @@ def date(s, request=None) -> datetime | None:
 date_as_epoch_error = "must be valid ISO 8601 date. (YYYY-MM-DD)"
 
 
-def date_as_epoch(s, request=None):
+def date_as_epoch(s: Any, request: Any = None) -> float | None:
     dt = date(s, request)
     if not dt:
         return None

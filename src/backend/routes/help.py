@@ -1,6 +1,7 @@
 import tornado.web
 import web_api.web
 from src.backend.config import config
+from typing import Any
 
 help_classes: dict[
     str,
@@ -52,7 +53,7 @@ sections = {
 }
 
 
-def sectionize_requests():
+def sectionize_requests() -> None:
     for url, handler in help_classes.items():
         if getattr(handler, "help_hidden", False):
             pass
@@ -78,7 +79,7 @@ def sectionize_requests():
             sections["Other"][url] = handler
 
 
-def add_help_class(cls, url):
+def add_help_class(cls: type[Any], url: str) -> None:
     help_classes[url] = cls
 
 

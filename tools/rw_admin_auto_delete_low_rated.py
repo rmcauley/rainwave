@@ -13,7 +13,7 @@ from libs import log
 from rainwave.playlist_objects.song import Song
 
 
-def mkdir_p(path):
+def mkdir_p(path: str) -> None:
     try:
         os.makedirs(path)
     except OSError as exc:  # Python >2.5

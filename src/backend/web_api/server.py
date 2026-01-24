@@ -6,6 +6,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.process
 import tornado.websocket
+from typing import Any
 
 import web_api.web
 import src.backend.routes.help
@@ -27,7 +28,7 @@ from routes.auth.errors import OAuthNetworkError, OAuthRejectedError
 app = None
 
 
-def sentry_before_send(event, hint):
+def sentry_before_send(event: dict[str, Any], hint: dict[str, Any]) -> dict[str, Any] | None:
     if "exc_info" in hint:
         exc_type, exc_value, tb = hint["exc_info"]
         if isinstance(exc_value, APIException) and exc_value.code != 500:
@@ -40,10 +41,10 @@ def sentry_before_send(event, hint):
 
 
 class APIServer:
-    def __init__(self):
-        self.ioloop = None
+    def __init__(self) -> None:
+        self.ioloop: tornado.ioloop.IOLoop | None = None
 
-    def _listen(self, task_id):
+    def _listen(self, task_id: int) -> None:
         zeromq.init_pub()
         zeromq.init_sub()
 
@@ -130,7 +131,7 @@ class APIServer:
             log.info("stop", "Server has been shutdown.")
             log.close()
 
-    def start(self):
+    def start(self) -> None:
         src.backend.libs.locale.load_translations()
         src.backend.libs.locale.compile_static_language_files()
 

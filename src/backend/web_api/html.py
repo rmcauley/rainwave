@@ -1,6 +1,7 @@
 import tornado
 import traceback
 from http.client import responses
+from typing import Any
 
 from libs import db
 from src.backend.config import config
@@ -11,7 +12,7 @@ from web_api.exceptions import APIException
 from src.backend.libs import locale
 
 
-def html_write_error(self, status_code, **kwargs):
+def html_write_error(self, status_code: int, **kwargs: Any) -> None:
     if "exc_info" in kwargs:
         exc = kwargs["exc_info"][1]
 

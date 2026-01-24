@@ -13,7 +13,7 @@ from routes.admin import power_hours
 from routes.admin_web import index
 
 
-def get_ph_formatted_time(start_time, end_time, timezone_name):
+def get_ph_formatted_time(start_time: int, end_time: int, timezone_name: str) -> str:
     return "%s to %s" % (
         datetime.datetime.fromtimestamp(start_time, timezone(timezone_name)).strftime(
             "%a %b %d/%Y %H:%M"

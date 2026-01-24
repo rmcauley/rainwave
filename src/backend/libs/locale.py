@@ -3,6 +3,7 @@ import json  # We have some features of stdlib JSON we need here, don't use ujso
 import codecs
 import tornado.locale
 import tornado.escape
+from typing import Any
 
 from libs import buildtools
 from libs import log
@@ -68,7 +69,7 @@ locale_names = {}
 locale_names_json = ""
 
 
-def load_translations():
+def load_translations() -> None:
     global master
     global translations
     global locale_names
@@ -110,7 +111,7 @@ def load_translations():
     locale_names_json = tornado.escape.json_encode(locale_names)
 
 
-def compile_static_language_files():
+def compile_static_language_files() -> None:
     global translations
 
     buildtools.create_baked_directory()
@@ -164,17 +165,17 @@ def compile_static_language_files():
 # which has an entirely different setup
 class RainwaveLocale(tornado.locale.Locale):
     @classmethod
-    def exists(cls, code):
+    def exists(cls, code: str) -> bool:
         global translations
         return code in translations
 
     @classmethod
-    def get(cls, code):
+    def get(cls, code: str) -> "RainwaveLocale":
         global translations
         return translations[code]
 
     @classmethod
-    def get_closest(cls, *codes):
+    def get_closest(cls, *codes: Any) -> "RainwaveLocale":
         global translations
 
         if isinstance(codes, tuple):
@@ -190,7 +191,9 @@ class RainwaveLocale(tornado.locale.Locale):
 
         return translations["en_CA"]
 
-    def __init__(self, code, mster, translation):
+    def __init__(
+        self, code: str, mster: dict[str, Any], translation: dict[str, Any]
+    ) -> None:
         # remove lines that are no longer in the master file
         to_pop = []
         for k, v in translation.items():
@@ -212,7 +215,7 @@ class RainwaveLocale(tornado.locale.Locale):
             if k not in translation:
                 self.missing[k] = v
 
-    def translate(self, key, *args, **kwargs):
+    def translate(self, key: str, *args: Any, **kwargs: Any) -> str:
         if not key in self.dict:
             return "[[ " + key + " ]]"
         line = self.dict[key]
@@ -239,7 +242,7 @@ class RainwaveLocale(tornado.locale.Locale):
                         )
         return line
 
-    def get_suffixed_number(self, number):
+    def get_suffixed_number(self, number: int | float | str | bytes) -> str:
         if isinstance(number, bytes):
             number = number.decode()
         if not isinstance(number, str):

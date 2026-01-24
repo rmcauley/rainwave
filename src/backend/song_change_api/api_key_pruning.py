@@ -4,7 +4,7 @@ from libs import db
 from libs import log
 
 
-def api_key_pruning():
+def api_key_pruning() -> None:
     number_deleted = db.c.update(
         "DELETE FROM r4_api_keys WHERE user_id <= 1 AND api_expiry < %s", (timestamp(),)
     )

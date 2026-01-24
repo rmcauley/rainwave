@@ -9,7 +9,7 @@ from web_api.urls import handle_url
 from routes.admin.js_errors import JSErrors
 
 
-def relative_time(epoch_time):
+def relative_time(epoch_time: float) -> str:
     diff = datetime.timedelta(seconds=timestamp() - epoch_time)
     if diff.days > 0:
         return "%sd" % diff.days

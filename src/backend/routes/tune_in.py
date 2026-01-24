@@ -4,9 +4,12 @@ from web_api.urls import handle_url
 import web_api.web
 
 from src.backend.config import config
+from typing import Any
 
 
-def get_round_robin_url(sid, filetype="mp3", user=None):
+def get_round_robin_url(
+    sid: int, filetype: str = "mp3", user: Any | None = None
+) -> str:
     stream_url = config.get("round_robin_relay_protocol") + config.get(
         "round_robin_relay_host"
     )
@@ -16,7 +19,9 @@ def get_round_robin_url(sid, filetype="mp3", user=None):
     return stream_url
 
 
-def get_stream_filename(sid, filetype="mp3", user=None):
+def get_stream_filename(
+    sid: int, filetype: str = "mp3", user: Any | None = None
+) -> str:
     filename = config.get_station(sid, "stream_filename")
 
     if user is None or user.is_anonymous():

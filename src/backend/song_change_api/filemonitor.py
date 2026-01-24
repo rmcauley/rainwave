@@ -7,6 +7,7 @@ import traceback
 from PIL import Image
 import pyinotify
 from pyinotify import ProcessEvent, IN_DELETE, IN_MOVED_FROM
+from typing import Any
 
 from src.backend.config import config
 from libs import log
@@ -26,7 +27,7 @@ class AlbumArtNoAlbumFoundError(PassableScanError):
     pass
 
 
-def write_unmatched_art_log():
+def write_unmatched_art_log() -> None:
     with open(
         os.path.join(config.get_directory("log_dir"), "rw_unmatched_art.log"), "w"
     ) as unmatched_log:
@@ -35,12 +36,12 @@ def write_unmatched_art_log():
             unmatched_log.write("\n")
 
 
-def set_on_screen(on_screen: bool):
+def set_on_screen(on_screen: bool) -> None:
     global _on_screen
     _on_screen = on_screen
 
 
-def _common_init():
+def _common_init() -> None:
     try:
         p = psutil.Process(os.getpid())
         p.set_nice(10)
@@ -54,7 +55,7 @@ def _common_init():
         pass
 
 
-def full_music_scan(full_reset):
+def full_music_scan(full_reset: bool) -> None:
     _common_init()
     db.connect()
     cache.connect()
@@ -85,7 +86,7 @@ def full_music_scan(full_reset):
         raise
 
 
-def full_art_update():
+def full_art_update() -> None:
     _common_init()
     _scan_all_directories(art_only=True)
     _process_found_album_art()
@@ -93,14 +94,14 @@ def full_art_update():
     print()
 
 
-def _print_to_screen_inline(txt):
+def _print_to_screen_inline(txt: str) -> None:
     if _on_screen:
         txt += " " * (80 - len(txt))
         print("\r" + txt, end="")
         sys.stdout.flush()
 
 
-def _scan_all_directories(art_only=False):
+def _scan_all_directories(art_only: bool = False) -> None:
     total_files = 0
     file_counter = 0
     for directory, sids in config.get("song_dirs").items():
@@ -123,7 +124,7 @@ def _scan_all_directories(art_only=False):
         _print_to_screen_inline("\n")
 
 
-def _scan_directory(directory, sids):
+def _scan_directory(directory: str, sids: list[int]) -> None:
     # Normalize and add a trailing separator to the directory name
     directory = os.path.join(os.path.normpath(directory), "")
 
@@ -159,7 +160,7 @@ def _scan_directory(directory, sids):
         s.disable()
 
 
-def _scan_file(filename, sids):
+def _scan_file(filename: str, sids: list[int]) -> bool:
     s = None
     if _is_mp3(filename):
         new_mtime = None
@@ -212,7 +213,7 @@ def _scan_file(filename, sids):
 bad_extensions = (".tmp", ".filepart")
 
 
-def _is_bad_extension(filename):
+def _is_bad_extension(filename: str) -> bool:
     global bad_extensions
 
     if filename.split(".")[-1].lower() in bad_extensions:
@@ -220,7 +221,7 @@ def _is_bad_extension(filename):
     return False
 
 
-def _is_mp3(filename):
+def _is_mp3(filename: str) -> bool:
     if _is_bad_extension(filename):
         return False
 
@@ -234,7 +235,7 @@ def _is_mp3(filename):
     return False
 
 
-def _is_image(filename):
+def _is_image(filename: str) -> bool:
     if _is_bad_extension(filename):
         return False
 
@@ -244,7 +245,7 @@ def _is_image(filename):
     return False
 
 
-def _process_found_album_art(dirname=None):
+def _process_found_album_art(dirname: str | None = None) -> None:
     if dirname and not dirname.endswith(os.sep):
         dirname += os.sep
     matched_count = 0
@@ -267,7 +268,7 @@ def _process_found_album_art(dirname=None):
         _print_to_screen_inline("\n")
 
 
-def _process_album_art(filename, sids):
+def _process_album_art(filename: str, sids: list[int]) -> bool:
     # Processes album art by finding the album IDs that are associated with the songs that exist
     # in the same directory as the image file.
     if not config.get("album_art_enabled"):
@@ -363,7 +364,7 @@ def _process_album_art(filename, sids):
     return False
 
 
-def _disable_file(filename):
+def _disable_file(filename: str) -> None:
     # aka "delete this off the playlist"
     log.debug("scan", "Attempting to disable file: {}".format(filename))
     try:
@@ -378,7 +379,9 @@ def _disable_file(filename):
         _add_scan_error(filename, e)
 
 
-def _add_scan_error(filename, xception, full_exc=None):
+def _add_scan_error(
+    filename: str, xception: Exception, full_exc: Any | None = None
+) -> None:
     scan_errors = []
     try:
         scan_errors = cache.get("backend_scan_errors")
@@ -509,7 +512,7 @@ class FileEventHandler(ProcessEvent):
             _add_scan_error(event.pathname, xception)
 
 
-def monitor():
+def monitor() -> None:
     _common_init()
 
     mask = (

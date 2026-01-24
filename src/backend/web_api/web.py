@@ -64,7 +64,9 @@ class HTMLError404Handler(tornado.web.RequestHandler):
         self.finish()
 
 
-def get_browser_locale(handler, default="en_CA"):
+def get_browser_locale(
+    handler: tornado.web.RequestHandler, default: str = "en_CA"
+) -> locale.RainwaveLocale:
     """Determines the user's locale from ``Accept-Language`` header.  Copied from Tornado, adapted slightly.
 
     See https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4

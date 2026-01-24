@@ -1,6 +1,7 @@
 import psycopg2
 import psycopg2.extras
 import time
+from typing import Any, Mapping, Sequence
 
 from src.backend.config import config
 from libs import log
@@ -15,13 +16,13 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
     auto_retry = True
     disconnected = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.in_tx = False
         self.auto_retry = True
         self.disconnected = False
 
-    def execute(self, *args, **kwargs):
+    def execute(self, *args: Any, **kwargs: Any) -> Any:
         if self.disconnected:
             raise DatabaseDisconnectedError
 
@@ -37,7 +38,9 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
             else:
                 raise
 
-    def fetch_var(self, query, params=None):
+    def fetch_var(
+        self, query: str, params: Sequence[Any] | Mapping[str, Any] | None = None
+    ) -> Any | None:
         self.execute(query, params)
         if self.rowcount <= 0 or not self.rowcount:
             return None
@@ -46,19 +49,25 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
             return None
         return r[next(iter(r.keys()))]
 
-    def fetch_row(self, query, params=None):
+    def fetch_row(
+        self, query: str, params: Sequence[Any] | Mapping[str, Any] | None = None
+    ) -> dict[str, Any] | None:
         self.execute(query, params)
         if self.rowcount <= 0 or not self.rowcount:
             return None
         return self.fetchone()
 
-    def fetch_all(self, query, params=None):
+    def fetch_all(
+        self, query: str, params: Sequence[Any] | Mapping[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
         self.execute(query, params)
         if self.rowcount <= 0 or not self.rowcount:
             return []
         return self.fetchall()
 
-    def fetch_list(self, query, params=None) -> list:
+    def fetch_list(
+        self, query: str, params: Sequence[Any] | Mapping[str, Any] | None = None
+    ) -> list[Any]:
         self.execute(query, params)
         if self.rowcount <= 0 or not self.rowcount:
             return []
@@ -72,18 +81,25 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
             arr.append(row[col])
         return arr
 
-    def update(self, query, params=None):
+    def update(
+        self, query: str, params: Sequence[Any] | Mapping[str, Any] | None = None
+    ) -> int:
         self.execute(query, params)
         return self.rowcount
 
-    def get_next_id(self, table, column):
+    def get_next_id(self, table: str, column: str) -> Any | None:
         return self.fetch_var(
             "SELECT nextval('" + table + "_" + column + "_seq'::regclass)"
         )
 
     def create_delete_fk(
-        self, linking_table, foreign_table, key, create_idx=True, foreign_key=None
-    ):
+        self,
+        linking_table: str,
+        foreign_table: str,
+        key: str,
+        create_idx: bool = True,
+        foreign_key: str | None = None,
+    ) -> None:
         if not foreign_key:
             foreign_key = key
         if create_idx:
@@ -94,8 +110,13 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
         )
 
     def create_null_fk(
-        self, linking_table, foreign_table, key, create_idx=True, foreign_key=None
-    ):
+        self,
+        linking_table: str,
+        foreign_table: str,
+        key: str,
+        create_idx: bool = True,
+        foreign_key: str | None = None,
+    ) -> None:
         if not foreign_key:
             foreign_key = key
         if create_idx:
@@ -105,24 +126,24 @@ class PostgresCursor(psycopg2.extras.RealDictCursor):
             % (linking_table, linking_table, key, key, foreign_table, foreign_key)
         )
 
-    def create_idx(self, table, *args):
+    def create_idx(self, table: str, *args: Any) -> None:
         name = "%s_%s_idx" % (table, "_".join(map(str, args)))
         columns = ",".join(map(str, args))
         self.execute("CREATE INDEX %s ON %s (%s)" % (name, table, columns))
 
-    def start_transaction(self):
+    def start_transaction(self) -> None:
         if not self.in_tx:
             return
         self.execute("START TRANSACTION")
         self.in_tx = True
 
-    def commit(self):
+    def commit(self) -> None:
         if not self.in_tx:
             return
         self.execute("COMMIT")
         self.in_tx = False
 
-    def rollback(self):
+    def rollback(self) -> None:
         self.execute("ROLLBACK")
         self.in_tx = False
 
@@ -134,7 +155,7 @@ connection: psycopg2.extensions.connection = None  # type: ignore
 connection_errors = (psycopg2.OperationalError, psycopg2.InterfaceError)
 
 
-def connect(auto_retry=True, retry_only_this_time=False):
+def connect(auto_retry: bool = True, retry_only_this_time: bool = False) -> bool:
     global connection
     global c
 
@@ -180,7 +201,7 @@ def connect(auto_retry=True, retry_only_this_time=False):
     return True
 
 
-def close():
+def close() -> bool:
     global connection
     global c
 
@@ -198,7 +219,7 @@ def close():
     return True
 
 
-def connection_keepalive():
+def connection_keepalive() -> None:
     if c.disconnected:
         connect(auto_retry=False)
 
@@ -209,7 +230,7 @@ def connection_keepalive():
         connect(auto_retry=False)
 
 
-def create_tables():
+def create_tables() -> None:
     trgrm_exists = c.fetch_var(
         "SELECT extname FROM pg_extension WHERE extname = 'pg_trgm'"
     )
@@ -788,7 +809,7 @@ def create_tables():
     c.commit()
 
 
-def _create_group_sid_table():
+def _create_group_sid_table() -> None:
     c.update(
         " \
 		CREATE TABLE r4_group_sid( \
@@ -799,3 +820,62 @@ def _create_group_sid_table():
     )
     c.create_idx("r4_group_sid", "group_display")
     c.create_delete_fk("r4_group_sid", "r4_groups", "group_id")
+
+
+def _create_test_tables() -> None:
+    c.update(
+        " \
+		CREATE TABLE phpbb_users( \
+			user_id					SERIAL		PRIMARY KEY, \
+			group_id				INT			DEFAULT 1, \
+			username				TEXT 		DEFAULT 'Test', \
+			user_new_privmsg		INT			DEFAULT 0, \
+			user_avatar				TEXT		DEFAULT '', \
+			user_avatar_type		TEXT	    , \
+			user_colour             TEXT        DEFAULT 'FFFFFF', \
+			user_rank               INT 	    DEFAULT 0, \
+			user_regdate            INT         DEFAULT 0, \
+            user_password           TEXT \
+		)"
+    )
+
+    c.update(
+        "CREATE TABLE phpbb_sessions("
+        "session_user_id		INT,"
+        "session_id				TEXT,"
+        "session_last_visit		INT,"
+        "session_page			TEXT)"
+    )
+
+    c.update("CREATE TABLE phpbb_session_keys(key_id TEXT, user_id INT)")
+
+    c.update("CREATE TABLE phpbb_ranks(rank_id SERIAL PRIMARY KEY, rank_title TEXT)")
+
+
+def add_custom_fields() -> None:
+    c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_totalmindchange	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_totalratings	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_totalrequests	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_winningvotes	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_losingvotes		INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_winningrequests	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_losingrequests	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_last_active		INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_listenkey		TEXT		DEFAULT 'TESTKEY'")
+    c.update("ALTER TABLE phpbb_users ADD radio_inactive		BOOLEAN		DEFAULT TRUE")
+    c.update("ALTER TABLE phpbb_users ADD radio_requests_paused	BOOLEAN		DEFAULT FALSE")
+
+
+def _fill_test_tables() -> None:
+    c.update("INSERT INTO phpbb_ranks (rank_title) VALUES ('Test')")
+
+    # Anonymous user
+    c.update("INSERT INTO phpbb_users (user_id, username) VALUES (1, 'Anonymous')")
+    c.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (1, 'TESTKEY')")
+
+    # User ID 2: site admin
+    c.update(
+        "INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)"
+    )
+    c.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (2, 'TESTKEY')")

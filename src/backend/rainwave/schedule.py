@@ -3,6 +3,7 @@ from time import time as timestamp
 import datetime
 import requests
 import tornado.ioloop
+from typing import Any
 
 from song_change_api import sync_to_front
 from rainwave import events
@@ -42,7 +43,7 @@ class NoNextEventFound(Exception):
     pass
 
 
-def load():
+def load() -> None:
     for sid in config.station_ids:
         current[sid] = cache.get_station(sid, "sched_current")
         # If our cache is empty, pull from the DB
@@ -73,7 +74,7 @@ def load():
                     )
 
 
-def get_event_in_progress(sid):
+def get_event_in_progress(sid: int) -> BaseEvent | None:
     producer = get_current_producer(sid)
     evt = producer.load_event_in_progress()
     if not evt or not evt.songs:
@@ -82,11 +83,11 @@ def get_event_in_progress(sid):
     return evt
 
 
-def get_current_producer(sid):
+def get_current_producer(sid: int) -> BaseProducer:
     return get_producer_at_time(sid, int(timestamp()))
 
 
-def get_producer_at_time(sid, at_time):
+def get_producer_at_time(sid: int, at_time: int) -> BaseProducer:
     to_ret = None
     local_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(at_time))
     time_ahead = int((at_time - timestamp()) / 60)
@@ -131,28 +132,28 @@ def get_producer_at_time(sid, at_time):
     return to_ret
 
 
-def get_advancing_file(sid):
+def get_advancing_file(sid: int) -> str:
     return upnext[sid][0].get_filename()
 
 
-def get_advancing_event(sid):
+def get_advancing_event(sid: int) -> BaseEvent | None:
     return upnext[sid][0]
 
 
-def get_current_file(sid):
+def get_current_file(sid: int) -> str:
     return current[sid].get_filename()
 
 
-def get_current_event(sid):
+def get_current_event(sid: int) -> BaseEvent | None:
     return current[sid]
 
 
-def set_upnext_crossfade(sid, crossfade):
+def set_upnext_crossfade(sid: int, crossfade: bool | int) -> None:
     if sid in upnext and upnext[sid][0]:
         upnext[sid][0].use_crossfade = crossfade
 
 
-def advance_station(sid):
+def advance_station(sid: int) -> None:
     db.c.start_transaction()
     try:
         log.debug("advance", "Advancing station %s." % sid)
@@ -189,7 +190,7 @@ def advance_station(sid):
         raise
 
 
-def post_process(sid):
+def post_process(sid: int) -> None:
     try:
         db.c.start_transaction()
         start_time = timestamp()
@@ -308,7 +309,7 @@ def post_process(sid):
                 log.exception("advance", "Could not update TuneIn.", e)
 
 
-def _get_schedule_stats(sid):
+def _get_schedule_stats(sid: int) -> dict[str, Any]:
     global upnext
     global current
 
@@ -346,7 +347,7 @@ def _get_schedule_stats(sid):
     return (max_sched_id, max_elec_id, num_elections, end_time)
 
 
-def manage_next(sid):
+def manage_next(sid: int) -> None:
     _max_sched_id, max_elec_id, num_elections, max_future_time = _get_schedule_stats(
         sid
     )
@@ -424,7 +425,9 @@ def manage_next(sid):
             evt.update_vote_counts()
 
 
-def _get_or_create_election(sid, target_length=None):
+def _get_or_create_election(
+    sid: int, target_length: int | None = None
+) -> BaseEvent:
     _max_sched_id, max_elec_id, _num_elections, _next_end_time = _get_schedule_stats(
         sid
     )
@@ -432,7 +435,7 @@ def _get_or_create_election(sid, target_length=None):
     return ep.load_next_event(target_length=target_length, min_elec_id=max_elec_id)
 
 
-def _trim(sid):
+def _trim(sid: int) -> None:
     # Deletes any events in the schedule and elections tables that are old, according to the config
     current_time = int(timestamp())
     db.c.update(
@@ -450,7 +453,7 @@ def _trim(sid):
     )
 
 
-def _update_schedule_memcache(sid):
+def _update_schedule_memcache(sid: int) -> None:
     cache.set_station(sid, "sched_current", current[sid], True)
     cache.set_station(sid, "sched_next", upnext[sid], True)
     cache.set_station(sid, "sched_history", history[sid], True)
@@ -486,7 +489,7 @@ def _update_schedule_memcache(sid):
     cache.set_station(sid, "all_station_info", all_station, True)
 
 
-def update_memcache(sid):
+def update_memcache(sid: int) -> None:
     _update_schedule_memcache(sid)
     update_live_voting(sid)
     cache.prime_rating_cache_for_events(
@@ -517,7 +520,7 @@ def update_memcache(sid):
     cache.set_station(sid, "dj_user_ids", potential_dj_ids)
 
 
-def update_live_voting(sid):
+def update_live_voting(sid: int) -> None:
     live_voting = {}
     upnext_sid = cache.get_station(sid, "sched_next")
     if not upnext_sid:
@@ -532,7 +535,7 @@ def update_live_voting(sid):
     return live_voting
 
 
-def get_elec_id_for_entry(sid, entry_id):
+def get_elec_id_for_entry(sid: int, entry_id: int) -> int | None:
     sched_next = cache.get_station(sid, "sched_next")
     if sched_next:
         for event in sched_next:

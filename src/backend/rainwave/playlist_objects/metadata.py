@@ -3,7 +3,7 @@ from libs import db
 from unidecode import unidecode
 
 
-def make_searchable_string(s):
+def make_searchable_string(s: str | bytes) -> str:
     if isinstance(s, bytes):
         s = s.decode()
     if not isinstance(s, str):

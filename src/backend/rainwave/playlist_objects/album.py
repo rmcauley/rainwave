@@ -1,6 +1,7 @@
 import math
 import os
 from time import time as timestamp
+from typing import Any
 
 from libs import cache, db, log
 from rainwave import rating
@@ -17,12 +18,12 @@ updated_album_ids = {}
 max_album_ids = {}
 
 
-def clear_updated_albums(sid):
+def clear_updated_albums(sid: int) -> None:
     global updated_album_ids
     updated_album_ids[sid] = {}
 
 
-def get_updated_albums_dict(sid):
+def get_updated_albums_dict(sid: int) -> list[dict[str, Any]]:
     global updated_album_ids
     if not sid in updated_album_ids:
         return []
@@ -46,7 +47,7 @@ def get_updated_albums_dict(sid):
     return album_diff
 
 
-def warm_cooled_albums(sid):
+def warm_cooled_albums(sid: int) -> None:
     if sid == 0:
         return
     global updated_album_ids
