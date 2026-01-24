@@ -100,7 +100,7 @@ raw_js_functions = ["$l"]
 
 
 def compile_templates_v2(source_dir: str, dest_file: str) -> None:
-    with open(dest_file, "w") as output_js:
+    with open(dest_file + ".js", "w") as output_js:
         with open(dest_file + ".d.ts", "w") as output_d_ts:
             output_js.write(js_start())
             output_d_ts.write(d_ts_start())
@@ -166,7 +166,7 @@ class RainwaveParserV2(HTMLParser):
         self._current_js_variable_name = "v1"
         self._input_buffer = ""
 
-        (start_buffer, start_d_ts_buffer) = self._get_start_buffers(
+        start_buffer, start_d_ts_buffer = self._get_start_buffers(
             template_name, self._current_js_variable_name
         )
         self.buffer = start_buffer
@@ -201,7 +201,7 @@ class RainwaveParserV2(HTMLParser):
                 "%s unclosed template tree: %s" % (self.name, repr(self._template_tree))
             )
 
-        (buffer_end, d_ts_buffer_end) = self._get_end_buffers()
+        buffer_end, d_ts_buffer_end = self._get_end_buffers()
         self.buffer += buffer_end
         self.buffer_d_ts += d_ts_buffer_end
 
@@ -322,14 +322,6 @@ class RainwaveParserV2(HTMLParser):
         js_variable_name = self._get_next_js_variable_name()
 
         bind = attrs.get("bind")
-        branch: TemplateControlBranch = {
-            "type": "control",
-            "tag": "for",
-            "js_variable_name": js_variable_name,
-            "condition_or_each": self._parse_context_key(attrs.get("each") or ""),
-            "bind": bind,
-        }
-        self._template_tree.append(branch)
 
         start_buffers = self._get_start_buffers(
             f"{js_variable_name}Loop",
@@ -338,7 +330,16 @@ class RainwaveParserV2(HTMLParser):
         self.buffer += start_buffers[0]
 
         if bind:
-            self.buffer_d_ts += '%s: Array<{ "$root": DocumentFragment; ' % bind
+            self._write_d_ts_bind(bind, 'Array<{ "$root": DocumentFragment;')
+
+        branch: TemplateControlBranch = {
+            "type": "control",
+            "tag": "for",
+            "js_variable_name": js_variable_name,
+            "condition_or_each": self._parse_context_key(attrs.get("each") or ""),
+            "bind": bind,
+        }
+        self._template_tree.append(branch)
 
     def _handle_end_for_tag(self, branch: TemplateControlBranch):
         self.buffer += "}"
@@ -383,7 +384,7 @@ class RainwaveParserV2(HTMLParser):
                 parent["js_variable_name"],
                 bind,
             )
-            self.buffer_d_ts += "%s: ReturnType<%s>;" % (bind, template_name)
+            self._write_d_ts_bind(bind, "ReturnType<%s>;")
         else:
             self.buffer += "%s.appendChild(%s(context));\n" % (
                 parent["js_variable_name"],
@@ -416,15 +417,6 @@ class RainwaveParserV2(HTMLParser):
 
         ts_type = HTML_ELEMENT_TYPES.get(tag, "HTMLElement")
 
-        if is_branch:
-            branch: TemplateHtmlBranch = {
-                "type": "html",
-                "js_variable_name": js_variable_name,
-                "tag": tag,
-                "ts_type": ts_type,
-            }
-            self._template_tree.append(branch)
-
         # Process attributes
         for attr_name, attr_val in attrs:
             if attr_val is None:
@@ -435,7 +427,7 @@ class RainwaveParserV2(HTMLParser):
             if attr_name == "bind":
                 bind_name = attr_val.strip() if attr_val else attr_name
                 self.buffer += "$binds['%s'] = %s;\n" % (bind_name, js_variable_name)
-                self.buffer_d_ts += "%s: %s;" % (bind_name, ts_type)
+                self._write_d_ts_bind(bind_name, f"{ts_type};")
             elif attr_name == "class" and tag != "svg":
                 self.buffer += "%s.className=%s;\n" % (
                     js_variable_name,
@@ -453,6 +445,15 @@ class RainwaveParserV2(HTMLParser):
                     attr_name,
                     attr_val_parsed or r'""',
                 )
+
+        if is_branch:
+            branch: TemplateHtmlBranch = {
+                "type": "html",
+                "js_variable_name": js_variable_name,
+                "tag": tag,
+                "ts_type": ts_type,
+            }
+            self._template_tree.append(branch)
 
     def _get_parent_html_branch(self) -> TemplateBranch:
         """Find the closest HTML element in the stack"""
@@ -542,6 +543,12 @@ class RainwaveParserV2(HTMLParser):
                 )
 
         self._input_buffer = ""
+
+    def _write_d_ts_bind(self, bind_name: str, ts_type: str) -> None:
+        self.buffer_d_ts += bind_name
+        if self._template_tree[-1]["tag"] == "if":
+            self.buffer_d_ts += "?"
+        self.buffer_d_ts += ": %s" % ts_type
 
 
 if __name__ == "__main__":

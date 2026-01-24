@@ -4,8 +4,9 @@
   "description": "rainwave.cc",
   "scripts": {
     "prepare": "husky",
-    "rw_templates": "uv run ./tools/rw_templates_v2.py --templatedir ./src/frontend/templates/test --outfile ./src/frontend/compiled.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "rw_templates": "uv run ./tools/rw_templates.py --templatedir ./src/frontend/templates --outfile ./src/frontend/templates/index",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:fix": "uv run black . && eslint --fix . && prettier --write ."
   },
   "repository": {
     "type": "git",

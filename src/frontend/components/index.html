@@ -1,0 +1,40 @@
+<div bind="measure_box" class="measure_box">
+  <div bind="scroller_size" style="width: 100px; height: 100px; overflow: scroll"></div>
+  <div class="list measure_list"><div class="item" bind="list_item">Reference</div></div>
+</div>
+
+<template use="menu" />
+
+<div bind="sizeable_area" class="sizeable">
+  <div bind="timeline"></div>
+  <div class="requests panel songlist_panel" bind="requests_container"></div>
+  <div class="search_panel panel" bind="search_container">
+    <template use="search" />
+  </div>
+  <div bind="lists" class="lists panel">
+    <div class="close" bind="list_close">
+      <img src="/static/images4/cancel.png" alt="X" />
+    </div>
+    <ul class="panel_header">
+      <a href="#!/album"><li class="album_tab">{{ $l("Albums") }}</li></a>
+      <a href="#!/artist"><li class="artist_tab">{{ $l("Artists") }}</li></a>
+      <a href="#!/group"><li class="group_tab">{{ $l("groups_tab_title") }}</li></a>
+      <a href="#!/request_line"><li class="listener_tab">{{ $l("RequestLine") }}</li></a>
+    </ul>
+    <div bind="album_list" class="list album_list"></div>
+    <div bind="artist_list" class="list artist_list"></div>
+    <div bind="group_list" class="list group_list"></div>
+    <div bind="listener_list" class="list listener_list"></div>
+  </div>
+  <div bind="detail_container" class="detail panel">
+    <div class="close" bind="detail_close">
+      <img src="/static/images4/cancel.png" alt="X" />
+    </div>
+    <ul class="panel_header selectable" bind="detail_header_container">
+      <li class="open">
+        <span bind="detail_header"></span>
+      </li>
+    </ul>
+    <div bind="detail"></div>
+  </div>
+</div>

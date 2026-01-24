@@ -449,9 +449,8 @@ def create_tables():
 			sid 					SMALLINT	NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
 			album_rating_user		REAL		, \
-			album_rating_complete	BOOLEAN		DEFAULT FALSE,  \
-            PRIMARY KEY (user_id, album_id, sid) \
-            ) "
+			album_rating_complete	BOOLEAN		DEFAULT FALSE \
+            ) PRIMARY KEY (user_id, album_id, sid) "
     )
     c.create_idx(
         "r4_album_ratings", "user_id", "album_id", "sid"
@@ -462,12 +461,11 @@ def create_tables():
 
     c.update(
         " \
-        CREATE TABLE r4_album_faves ( \
-            album_id				INTEGER		NOT NULL, \
-            user_id					INTEGER		NOT NULL, \
-            album_fave				BOOLEAN, \
-            PRIMARY KEY (user_id, album_id) \
-        )"
+		CREATE TABLE r4_album_faves ( \
+			album_id				INTEGER		NOT NULL, \
+			user_id					INTEGER		NOT NULL, \
+			album_fave				BOOLEAN \
+		) PRIMARY KEY (user_id, album_id, sid) "
     )
     c.create_idx(
         "r4_album_faves", "user_id", "album_id"

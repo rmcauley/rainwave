@@ -1,0 +1,30 @@
+<div bind="hotkey">
+  <div id="hotkey_error"></div>
+  <div id="hotkey">
+    <div>{{ $l("waiting_for_hotkey") }}</div>
+    <div style="float: left">
+      <span bind="hotkeys_rate10">1-5</span>
+      <span>{{ $l("hotkeys_rate10") }}</span>
+    </div>
+    <div style="float: right; margin-left: 10px">
+      <span bind="hotkeys_vote0">A,S,D</span>
+      <span>{{ $l("hotkeys_vote0") }}</span>
+    </div>
+    <div style="float: left; clear: both">
+      <span bind="hotkeys_rate05">Q-R</span>
+      <span>{{ $l("hotkeys_rate05") }}</span>
+    </div>
+    <div style="float: right; margin-left: 10px">
+      <span bind="hotkeys_vote1">Z,X,C</span>
+      <span>{{ $l("hotkeys_vote1") }}</span>
+    </div>
+    <div style="clear: both">
+      <span bind="hotkeys_fave">F</span>
+      <span>{{ $l("hotkeys_fave") }}</span>
+    </div>
+    <div style="clear: both">
+      <span bind="hotkeys_play">Space</span>
+      <span>{{ $l("hotkeys_play") }}</span>
+    </div>
+  </div>
+</div>

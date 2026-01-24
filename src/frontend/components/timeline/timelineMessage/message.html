@@ -1,0 +1,10 @@
+<div bind="el" class="timeline_event timeline_message">
+  <if condition="closeable">
+    <div class="close" bind="close">
+      <img src="/static/images4/cancel.png" alt="X" />
+    </div>
+  </if>
+  <div class="message_text" bind="message">
+    <span>{{ text }}</span>
+  </div>
+</div>

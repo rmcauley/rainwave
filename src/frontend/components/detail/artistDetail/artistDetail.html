@@ -1,0 +1,9 @@
+<for each="albums" bind="albums">
+  <if condition="openable">
+    <h2><a href="#!/album/{{ id }}">{{ name }}</a></h2>
+  </if>
+  <else>
+    <h2>{{ name }}</h2>
+  </else>
+  <template use="detail.songtable" />
+</for>
