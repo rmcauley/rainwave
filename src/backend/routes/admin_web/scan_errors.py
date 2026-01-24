@@ -7,7 +7,7 @@ from web_api.urls import handle_url
 from routes.admin.scan_errors import BackendScanErrors
 
 
-def relative_time(epoch_time):
+def relative_time(epoch_time: float) -> str:
     diff = datetime.timedelta(seconds=timestamp() - epoch_time)
     if diff.days > 0:
         return "%sd" % diff.days

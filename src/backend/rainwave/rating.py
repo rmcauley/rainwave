@@ -1,4 +1,5 @@
 from time import time as timestamp
+from typing import Any, Iterable
 
 from libs import db
 from libs import log
@@ -6,7 +7,7 @@ from libs import cache
 from src.backend.config import config
 
 
-def rating_calculator(ratings):
+def rating_calculator(ratings: Iterable[dict[str, Any]]) -> tuple[float, float]:
     """
     Send in an SQL cursor that's the entire result of a query that has 2 columns: 'rating' and 'count'.
     Uses "rating_map" from config to map each rating tier's to the fraction of point(s) it should get.
@@ -27,7 +28,7 @@ def rating_calculator(ratings):
     return (points, potential_points)
 
 
-def get_song_rating(song_id, user_id):
+def get_song_rating(song_id: int, user_id: int) -> dict[str, Any]:
     rating = cache.get_song_rating(song_id, user_id)
     if not rating:
         rating = db.c.fetch_row(
@@ -40,7 +41,7 @@ def get_song_rating(song_id, user_id):
     return rating
 
 
-def get_album_rating(sid, album_id, user_id):
+def get_album_rating(sid: int, album_id: int, user_id: int) -> dict[str, Any]:
     rating = cache.get_album_rating(sid, album_id, user_id)
     if not rating:
         rating = db.c.fetch_row(
@@ -65,7 +66,13 @@ def get_album_rating(sid, album_id, user_id):
 CLEAR_RATING_FLAG = "__clear_rating__"
 
 
-def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
+def set_song_rating(
+    sid: int,
+    song_id: int,
+    user_id: int,
+    rating: float | str | None = None,
+    fave: bool | None = None,
+) -> list[dict[str, Any]]:
     db.c.start_transaction()
     try:
         existing_rating = db.c.fetch_row(
@@ -119,11 +126,11 @@ def set_song_rating(sid, song_id, user_id, rating=None, fave=None):
         raise
 
 
-def clear_song_rating(sid, song_id, user_id):
+def clear_song_rating(sid: int, song_id: int, user_id: int) -> list[dict[str, Any]]:
     return set_song_rating(sid, song_id, user_id, rating=CLEAR_RATING_FLAG)
 
 
-def set_song_fave(song_id, user_id, fave):
+def set_song_fave(song_id: int, user_id: int, fave: bool) -> bool:
     db.c.start_transaction()
     exists = db.c.fetch_row(
         "SELECT * FROM r4_song_ratings WHERE song_id = %s AND user_id = %s",
@@ -168,7 +175,7 @@ def set_song_fave(song_id, user_id, fave):
     return True
 
 
-def set_album_fave(sid, album_id, user_id, fave):
+def set_album_fave(sid: int, album_id: int, user_id: int, fave: bool) -> bool:
     db.c.start_transaction()
     exists = db.c.fetch_row(
         "SELECT * FROM r4_album_faves WHERE album_id = %s AND user_id = %s",
@@ -214,7 +221,9 @@ def set_album_fave(sid, album_id, user_id, fave):
     return True
 
 
-def update_album_ratings(target_sid, song_id, user_id):
+def update_album_ratings(
+    target_sid: int, song_id: int, user_id: int
+) -> list[dict[str, Any]]:
     toret = []
     for row in db.c.fetch_all(
         "SELECT r4_songs.album_id, sid, album_song_count FROM r4_songs JOIN r4_album_sid USING (album_id) WHERE r4_songs.song_id = %s AND album_exists = TRUE",

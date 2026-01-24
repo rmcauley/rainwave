@@ -1,5 +1,6 @@
 from time import time as timestamp
 import random
+from typing import Any
 
 from libs import db
 from libs import log
@@ -31,7 +32,7 @@ class NoAvailableSongsException(Exception):
     pass
 
 
-def update_num_songs():
+def update_num_songs() -> None:
     num_songs["_total"] = db.c.fetch_var(
         "SELECT COUNT(song_id) FROM r4_songs WHERE song_verified = TRUE"
     )
@@ -54,11 +55,13 @@ def update_num_songs():
         )
 
 
-def get_average_song_length(sid):
+def get_average_song_length(sid: int) -> int | float:
     return cooldown.cooldown_config[sid]["average_song_length"]
 
 
-def get_random_song_timed(sid, target_seconds=None, target_delta=None):
+def get_random_song_timed(
+    sid: int, target_seconds: int | None = None, target_delta: int | None = None
+) -> Song:
     """
     Fetch a random song abiding by all election block, request block, and
     availability rules, but giving priority to the target song length
@@ -113,7 +116,7 @@ def get_random_song_timed(sid, target_seconds=None, target_delta=None):
         return Song.load_from_id(song_id, sid)
 
 
-def get_random_song(sid):
+def get_random_song(sid: int) -> Song:
     """
     Fetch a random song, abiding by all election block, request block, and
     availability rules.  Falls back to get_random_ignore_requests on failure.
@@ -150,7 +153,7 @@ def get_random_song(sid):
         return Song.load_from_id(song_id, sid)
 
 
-def get_shortest_song(sid):
+def get_shortest_song(sid: int) -> Song:
     """
     Fetch the shortest song available abiding by election block and availability rules.
     """
@@ -168,7 +171,7 @@ def get_shortest_song(sid):
     return Song.load_from_id(song_id, sid)
 
 
-def get_random_song_ignore_requests(sid):
+def get_random_song_ignore_requests(sid: int) -> Song:
     """
     Fetch a random song abiding by election block and availability rules,
     but ignoring request blocking rules.
@@ -199,7 +202,7 @@ def get_random_song_ignore_requests(sid):
         return Song.load_from_id(song_id, sid)
 
 
-def get_random_song_ignore_all(sid):
+def get_random_song_ignore_all(sid: int) -> Song:
     """
     Fetches the most stale song (longest time since it's been played) in the db,
     ignoring all availability and election block rules.
@@ -222,7 +225,7 @@ def get_random_song_ignore_all(sid):
         return Song.load_from_id(song_id, sid)
 
 
-def warm_cooled_songs(sid):
+def warm_cooled_songs(sid: int) -> None:
     """
     Makes songs whose cooldowns have expired available again.
     """
@@ -236,7 +239,7 @@ def warm_cooled_songs(sid):
     )
 
 
-def remove_all_locks(sid):
+def remove_all_locks(sid: int) -> None:
     """
     Removes all cooldown & election locks on songs.
     """
@@ -250,7 +253,9 @@ def remove_all_locks(sid):
     )
 
 
-def get_all_albums_list_sql(sid, user):
+def get_all_albums_list_sql(
+    sid: int, user: Any
+) -> tuple[str, tuple[Any, ...]]:
     if not user or user.id == 1:
         return (
             (
@@ -277,12 +282,12 @@ def get_all_albums_list_sql(sid, user):
         )
 
 
-def get_all_albums_list(sid, user=None):
+def get_all_albums_list(sid: int, user: Any | None = None) -> list[dict[str, Any]]:
     sql, args = get_all_albums_list_sql(sid, user)
     return db.c.fetch_all(sql + " ORDER BY album_name", args)
 
 
-def get_all_artists_list(sid):
+def get_all_artists_list(sid: int) -> list[dict[str, Any]]:
     return db.c.fetch_all(
         "SELECT artist_name AS name, artist_id AS id, COUNT(*) AS song_count "
         "FROM r4_artists JOIN r4_song_artist USING (artist_id) JOIN r4_song_sid using (song_id) "
@@ -293,7 +298,7 @@ def get_all_artists_list(sid):
     )
 
 
-def get_all_groups_list(sid):
+def get_all_groups_list(sid: int) -> list[dict[str, Any]]:
     return db.c.fetch_all(
         "SELECT group_name AS name, r4_groups.group_id AS id "
         "FROM r4_group_sid "
@@ -304,7 +309,7 @@ def get_all_groups_list(sid):
     )
 
 
-def get_all_groups_for_power(sid):
+def get_all_groups_for_power(sid: int) -> list[dict[str, Any]]:
     return db.c.fetch_all(
         "SELECT group_name AS name, group_id AS id, COUNT(*) AS song_count "
         "FROM ("
@@ -328,7 +333,7 @@ def get_all_groups_for_power(sid):
     )
 
 
-def reduce_song_blocks(sid):
+def reduce_song_blocks(sid: int) -> None:
     db.c.update(
         "UPDATE r4_song_sid SET song_elec_blocked_num = song_elec_blocked_num - 1 WHERE song_elec_blocked = TRUE AND sid = %s",
         (sid,),
@@ -339,7 +344,9 @@ def reduce_song_blocks(sid):
     )
 
 
-def get_unrated_songs_for_user(user_id, limit="LIMIT ALL"):
+def get_unrated_songs_for_user(
+    user_id: int, limit: str = "LIMIT ALL"
+) -> list[dict[str, Any]]:
     return db.c.fetch_all(
         "SELECT r4_songs.song_id AS id, song_title AS title, album_name "
         "FROM r4_songs JOIN r4_albums USING (album_id) "
@@ -350,7 +357,7 @@ def get_unrated_songs_for_user(user_id, limit="LIMIT ALL"):
     )
 
 
-def _get_requested_albums_sql():
+def _get_requested_albums_sql() -> str:
     return (
         "WITH requested_albums AS ("
         "SELECT r4_songs.album_id "
@@ -363,7 +370,7 @@ def _get_requested_albums_sql():
     )
 
 
-def get_unrated_songs_for_requesting(user_id, sid, limit):
+def get_unrated_songs_for_requesting(user_id: int, sid: int, limit: int) -> list[int]:
     # This insane bit of SQL fetches the user's largest unrated albums that aren't on cooldown
     unrated = []
     for row in db.c.fetch_all(
@@ -392,7 +399,9 @@ def get_unrated_songs_for_requesting(user_id, sid, limit):
     return unrated
 
 
-def get_unrated_songs_on_cooldown_for_requesting(user_id, sid, limit):
+def get_unrated_songs_on_cooldown_for_requesting(
+    user_id: int, sid: int, limit: int
+) -> list[int]:
     # Similar to the above, but this time we take whatever's on shortest cooldown (ignoring album unrated count)
     unrated = []
     for album_row in db.c.fetch_all(
@@ -434,7 +443,9 @@ def get_unrated_songs_on_cooldown_for_requesting(user_id, sid, limit):
     return unrated
 
 
-def get_favorited_songs_for_requesting(user_id, sid, limit):
+def get_favorited_songs_for_requesting(
+    user_id: int, sid: int, limit: int
+) -> list[int]:
     # This SQL fetches ALL favourites, then shuffles between just the favourites, to get 1 fav per album.
     # It then does the same for any song rated >= 4.5 by the user.
     # Favourites are bubbled to the top of the heap.  The rest is randomly sorted. (but always above 4.5!)

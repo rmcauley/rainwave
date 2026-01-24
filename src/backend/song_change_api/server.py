@@ -5,6 +5,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.process
 import tornado.options
+from typing import Any
 
 from song_change_api import sync_to_front
 from rainwave import schedule
@@ -22,7 +23,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
     success = False
     sid = None
 
-    def get(self, sid):
+    def get(self, sid: str) -> None:
         self.success = False
         self.sid = None
         if int(sid) in config.station_ids:
@@ -64,7 +65,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
         if not cache.get_station(self.sid, "get_next_socket_timeout"):
             self.write(to_send)
 
-    def _get_pause_file(self):
+    def _get_pause_file(self) -> str:
         if not config.get("liquidsoap_annotations"):
             log.debug(
                 "backend", "Station is paused, using: %s" % config.get("pause_file")
@@ -80,7 +81,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
         log.debug("backend", "Station is paused, using: %s" % string)
         return string
 
-    def _get_annotated(self, e):
+    def _get_annotated(self, e: Any) -> str:
         string = 'annotate:crossfade="'
         if e.use_crossfade == True:
             string += "1"
@@ -110,7 +111,7 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
 
 
 class BackendServer:
-    def _listen(self, sid):
+    def _listen(self, sid: int) -> None:
         log.init(
             "%s/rw_%s.log"
             % (
@@ -155,7 +156,7 @@ class BackendServer:
             log.info("stop", "Backend has been shutdown.")
             log.close()
 
-    def _import_cron_modules(self):
+    def _import_cron_modules(self) -> None:
         # pylint: disable=import-outside-toplevel,unused-import
         # This method breaks pylint and quite on purpose, its job is to just load
         # the cron jobs that run occasionally.
@@ -165,7 +166,7 @@ class BackendServer:
 
         # pylint: enable=import-outside-toplevel,unused-import
 
-    def start(self):
+    def start(self) -> None:
         stations = list(config.station_ids)
         tornado.process.fork_processes(len(stations))
 

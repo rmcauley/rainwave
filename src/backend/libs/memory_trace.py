@@ -23,7 +23,7 @@ from src.backend.config import config
 _prefix = ""
 
 
-def setup(unique_prefix):
+def setup(unique_prefix: str) -> None:
     global _prefix
     _prefix = unique_prefix
 
@@ -34,7 +34,7 @@ def setup(unique_prefix):
     record_loop.start()
 
 
-def record_sizes():
+def record_sizes() -> None:
     global _prefix
 
     gc.collect()

@@ -1,4 +1,4 @@
-from typing import TypeVar, Type
+from typing import TypeVar, Type, Any
 from time import time as timestamp
 from rainwave.playlist_objects.song import Song
 
@@ -8,13 +8,13 @@ from libs import log
 all_producers = {}
 
 
-def register_producer(cls):
+def register_producer(cls: type[Any]) -> type[Any]:
     global all_producers
     all_producers[cls.__name__] = cls
     return cls
 
 
-def get_admin_creatable_producers():
+def get_admin_creatable_producers() -> list[str]:
     types = []
     for key in all_producers.keys():
         if key not in ("ShortestElectionProducer", "OneUpProducer"):

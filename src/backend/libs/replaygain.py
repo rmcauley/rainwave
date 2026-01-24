@@ -10,7 +10,7 @@ ref_level = 89
 # init_gstreamer()
 
 
-def get_gain_for_song(file):
+def get_gain_for_song(file: str) -> str:
     if config.has("disable_replaygain") and config.get("disable_replaygain"):
         return "0.0 dB"
 

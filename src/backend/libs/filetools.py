@@ -2,8 +2,8 @@ import os
 
 
 # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python/377028#377028
-def which(program):
-    def is_exe(fpath):
+def which(program: str) -> str | None:
+    def is_exe(fpath: str) -> bool:
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
     fpath, _fname = os.path.split(program)
@@ -21,7 +21,7 @@ def which(program):
 
 
 # http://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
-def check_file_is_in_directory(filename, directory):
+def check_file_is_in_directory(filename: str, directory: str) -> bool:
     # make both absolute
     directory = os.path.join(os.path.realpath(directory), "")
     filename = os.path.realpath(filename)

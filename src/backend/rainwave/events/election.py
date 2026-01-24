@@ -36,7 +36,7 @@ class ElectionEmptyException(Exception):
     pass
 
 
-def force_request(sid):
+def force_request(sid: int) -> None:
     global _request_interval
     global _request_sequence
     _request_interval[sid] = 0

@@ -1,8 +1,9 @@
 import logging
 import logging.handlers
 import datetime
+from typing import Any
 
-log = None
+log: logging.Logger | None = None
 
 
 class LogNotInitializedError(Exception):
@@ -10,7 +11,7 @@ class LogNotInitializedError(Exception):
 
 
 class RWFormatter(logging.Formatter):
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         msg = logging.Formatter.format(self, record)
         return "%s - %s - %s" % (
             datetime.datetime.now().strftime("%m-%d %H:%M:%S"),
@@ -19,7 +20,7 @@ class RWFormatter(logging.Formatter):
         )
 
 
-def init(logfile=None, loglevel="warning"):
+def init(logfile: str | None = None, loglevel: str = "warning") -> None:
     global log
     logging.getLogger().setLevel(logging.DEBUG)
     logging.getLogger("scss").setLevel(logging.DEBUG)
@@ -70,11 +71,11 @@ def init(logfile=None, loglevel="warning"):
     critical("test", "Critical test.")
 
 
-def close():
+def close() -> None:
     logging.shutdown()
 
 
-def _massage_line(key, message, user):
+def _massage_line(key: str, message: str, user: Any | None) -> str:
     user_info = ""
     if user and user.user_id > 1:
         user_info = "u%s" % user.user_id
@@ -83,37 +84,37 @@ def _massage_line(key, message, user):
     return " %-15s [%-15s] %s" % (user_info, key, message)
 
 
-def debug(key, message, user=None):
+def debug(key: str, message: str, user: Any | None = None) -> None:
     if not log:
         raise LogNotInitializedError
     log.debug(_massage_line(key, message, user))
 
 
-def warn(key, message, user=None):
+def warn(key: str, message: str, user: Any | None = None) -> None:
     if not log:
         raise LogNotInitializedError
     log.warning(_massage_line(key, message, user))
 
 
-def info(key, message, user=None):
+def info(key: str, message: str, user: Any | None = None) -> None:
     if not log:
         raise LogNotInitializedError
     log.info(_massage_line(key, message, user))
 
 
-def error(key, message, user=None):
+def error(key: str, message: str, user: Any | None = None) -> None:
     if not log:
         raise LogNotInitializedError
     log.error(_massage_line(key, message, user))
 
 
-def critical(key, message, user=None):
+def critical(key: str, message: str, user: Any | None = None) -> None:
     if not log:
         raise LogNotInitializedError
     log.critical(_massage_line(key, message, user))
 
 
-def exception(key, message, e):
+def exception(key: str, message: str, e: BaseException) -> None:
     if not log:
         raise LogNotInitializedError
     log.critical(_massage_line(key, message, None), exc_info=e)

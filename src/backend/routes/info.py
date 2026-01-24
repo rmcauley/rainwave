@@ -12,7 +12,7 @@ from libs import cache
 from src.backend.config import config
 
 
-def attach_dj_info_to_request(request):
+def attach_dj_info_to_request(request: APIHandler) -> None:
     request.append(
         "dj_info",
         {
@@ -28,8 +28,11 @@ def attach_dj_info_to_request(request):
 
 
 def attach_info_to_request(
-    request: APIHandler, extra_list=None, all_lists=False, live_voting=False
-):
+    request: APIHandler,
+    extra_list: str | None = None,
+    all_lists: bool = False,
+    live_voting: bool = False,
+) -> None:
     # Front-load all non-animated content ahead of the schedule content
     # Since the schedule content is the most animated on R3, setting this content to load
     # first has a good impact on the perceived animation smoothness since table redrawing
@@ -165,7 +168,7 @@ def attach_info_to_request(
         request.append("live_voting", cache.get_station(request.sid, "live_voting"))
 
 
-def check_sync_status(sid, offline_ack: bool | None = False):
+def check_sync_status(sid: int, offline_ack: bool | None = False) -> None:
     if not cache.get_station(sid, "backend_ok") and not offline_ack:
         raise APIException("station_offline")
     if cache.get_station(sid, "backend_paused") and not offline_ack:

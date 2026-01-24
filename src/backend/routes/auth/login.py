@@ -6,7 +6,7 @@ from routes.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 
 
-def phpbb_passwd_compare(password: str, db_password: str):
+def phpbb_passwd_compare(password: str, db_password: str) -> bool:
     hashed_password = bcrypt.hashpw(
         password.encode(), db_password[:29].encode()
     ).decode("utf-8")

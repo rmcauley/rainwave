@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, Any
 import math
 
 from web_api.web import APIHandler
@@ -23,22 +23,22 @@ from web_api.exceptions import APIException
 PAGE_LIMIT = 1000
 
 
-def get_all_albums(sid, user=None):
+def get_all_albums(sid: int, user: Any | None = None) -> Any:
     if not user or user.is_anonymous():
         return cache.get_station(sid, "all_albums")
     else:
         return playlist.get_all_albums_list(sid, user)
 
 
-def get_all_artists(sid):
+def get_all_artists(sid: int) -> list[playlist.Artist]:
     return cast(list[playlist.Artist], cache.get_station(sid, "all_artists"))
 
 
-def get_all_groups(sid):
+def get_all_groups(sid: int) -> list[playlist.SongGroup]:
     return cast(list[playlist.SongGroup], cache.get_station(sid, "all_groups"))
 
 
-def get_all_groups_power(sid):
+def get_all_groups_power(sid: int) -> list[playlist.SongGroup]:
     return cast(list[playlist.SongGroup], cache.get_station(sid, "all_groups_power"))
 
 

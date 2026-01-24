@@ -24,7 +24,7 @@ shell_args = parser.parse_args()
 config.set_value("scanner_use_tracknumbers", True)
 
 
-def scan_file(args, filename):
+def scan_file(args: argparse.Namespace, filename: str) -> None:
     if _is_mp3(filename):
         update_tag(args, filename)
 
@@ -47,13 +47,13 @@ def scan_file(args, filename):
         )
 
 
-def scan_directory(args, dirname):
+def scan_directory(args: argparse.Namespace, dirname: str) -> None:
     for root, _subdirs, files in os.walk(dirname, followlinks=True):
         for filename in files:
             scan_file(args, os.path.join(root, filename))
 
 
-def update_tag(args, filename):
+def update_tag(args: argparse.Namespace, filename: str) -> None:
     if args.album or args.artist or args.group or args.title:
         s = EasyMP3(filename)
         if args.album:

@@ -1,4 +1,5 @@
 from time import time as timestamp
+from typing import Any
 from libs import db
 from libs import cache
 from libs import log
@@ -8,13 +9,13 @@ from rainwave.user import User
 LINE_SQL = "SELECT COALESCE(radio_username, username) AS username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start, line_has_had_valid FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start"
 
 
-def update_line(sid):
+def update_line(sid: int) -> None:
     # Get everyone in the line
     line = db.c.fetch_all(LINE_SQL, (sid,))
     _process_line(line, sid)
 
 
-def _process_line(line, sid):
+def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
     new_line = []
     # user_positions has user_id as a key and position as the value, this is cached for quick lookups by API requests
     # so users know where they are in line
@@ -146,7 +147,7 @@ def _process_line(line, sid):
     return new_line
 
 
-def update_expire_times():
+def update_expire_times() -> None:
     expiry_times = {}
     for row in db.c.fetch_all("SELECT * FROM r4_request_line"):
         expiry_times[row["user_id"]] = None
@@ -163,7 +164,9 @@ def update_expire_times():
     cache.set_global("request_expire_times", expiry_times, True)
 
 
-def get_next_entry(sid):
+def get_next_entry(
+    sid: int,
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]] | None]:
     line = cache.get_station(sid, "request_line")
     if not line:
         return None, None
@@ -187,7 +190,13 @@ def get_next_entry(sid):
     return None, None
 
 
-def mark_request_filled(sid, user, song, entry, line):
+def mark_request_filled(
+    sid: int,
+    user: User,
+    song: playlist.Song,
+    entry: dict[str, Any],
+    line: list[dict[str, Any]],
+) -> None:
     log.debug(
         "request",
         "Fulfilling %s's request for %s." % (user.data["name"], song.filename),
@@ -226,7 +235,7 @@ def mark_request_filled(sid, user, song, entry, line):
     song.update_request_count(sid)
 
 
-def get_next(sid):
+def get_next(sid: int) -> playlist.Song | None:
     entry, line = get_next_entry(sid)
     if not entry:
         return None
@@ -239,7 +248,7 @@ def get_next(sid):
     return song
 
 
-def get_next_ignoring_cooldowns(sid):
+def get_next_ignoring_cooldowns(sid: int) -> playlist.Song | None:
     line = db.c.fetch_all(LINE_SQL, (sid,))
 
     if not line or len(line) == 0:

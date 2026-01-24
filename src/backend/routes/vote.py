@@ -16,7 +16,7 @@ from libs import db
 from libs import zeromq
 
 
-def append_success_to_request(request, elec_id, entry_id):
+def append_success_to_request(request: APIHandler, elec_id: int, entry_id: int) -> None:
     request.append_standard(
         "vote_submitted", return_name="vote_result", elec_id=elec_id, entry_id=entry_id
     )

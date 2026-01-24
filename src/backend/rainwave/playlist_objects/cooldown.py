@@ -8,7 +8,7 @@ from libs import db
 cooldown_config = {}
 
 
-def prepare_cooldown_algorithm(sid):
+def prepare_cooldown_algorithm(sid: int) -> None:
     """
     Prepares pre-calculated variables that relate to calculating cooldown.
     Should pull all variables fresh from the DB, for algorithm
@@ -120,7 +120,7 @@ def prepare_cooldown_algorithm(sid):
     ] * config.get_station(sid, "cooldown_song_min_multiplier")
 
 
-def get_age_cooldown_multiplier(added_on):
+def get_age_cooldown_multiplier(added_on: int) -> float:
     age_weeks = (int(timestamp()) - added_on) / 604800.0
     cool_age_multiplier = 1.0
     if age_weeks < config.get("cooldown_age_threshold"):

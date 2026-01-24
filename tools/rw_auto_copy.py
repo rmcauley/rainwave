@@ -11,7 +11,7 @@ from datetime import datetime
 from libs import config
 
 
-def mkdir_p(path):
+def mkdir_p(path: str) -> None:
     try:
         os.makedirs(path)
     except OSError as exc:  # Python >2.5

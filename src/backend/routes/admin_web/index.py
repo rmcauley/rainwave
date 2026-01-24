@@ -14,9 +14,12 @@ from web_api.urls import handle_url
 from web_api import fieldtypes
 
 import routes.playlist
+from typing import Any
 
 
-def write_html_time_form(request, html_id, at_time=None):
+def write_html_time_form(
+    request: Any, html_id: str, at_time: int | None = None
+) -> None:
     current_time = calendar.timegm(time.gmtime())
     if not at_time:
         at_time = current_time

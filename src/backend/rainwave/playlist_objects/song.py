@@ -1,5 +1,6 @@
 import copy
 import os
+from typing import Any
 
 from src.backend.config import config
 
@@ -26,12 +27,12 @@ num_songs = {}
 num_origin_songs = {}
 
 
-def set_umask():
+def set_umask() -> None:
     os.setpgrp()
     os.umask(0o02)
 
 
-def zip_metadata(tag_metadata, kept_metadata):
+def zip_metadata(tag_metadata: list[Any], kept_metadata: list[Any]) -> list[Any]:
     new_metadata = copy.copy(tag_metadata)
     for kept in kept_metadata:
         found = False

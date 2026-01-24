@@ -5,7 +5,7 @@ import tempfile
 import os
 
 
-def inactive_checking():
+def inactive_checking() -> None:
     last_time = 0
     if os.path.isfile("%s/r4_inactive_check" % tempfile.gettempdir()):
         f = open("%s/r4_inactive_check" % tempfile.gettempdir())
@@ -19,7 +19,7 @@ def inactive_checking():
         _update_inactive()
 
 
-def _update_inactive():
+def _update_inactive() -> None:
     f = open("%s/r4_inactive_check" % tempfile.gettempdir(), "w")
     f.write(str(int(timestamp())))
     f.close()
