@@ -389,11 +389,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
 
         self.user.refresh(self.sid)
 
-        if self.user and config.get("store_prefs"):
-            self.user.save_preferences(
-                self.request.remote_ip, self.get_cookie("r4_prefs", None)
-            )
-
         self.permission_checks()
 
     # works without touching cookies or headers, primarily used for websocket requests

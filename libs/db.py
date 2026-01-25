@@ -266,8 +266,47 @@ def create_tables():
 		"""
         )
 
-    if config.get("standalone_mode"):
-        _create_test_tables()
+    c.update(
+        " \
+		CREATE TABLE phpbb_users( \
+			user_id					SERIAL		PRIMARY KEY, \
+			group_id				INT			DEFAULT 1, \
+			username				TEXT 		DEFAULT 'Test', \
+			user_new_privmsg		INT			DEFAULT 0, \
+			user_avatar				TEXT		DEFAULT '', \
+			user_avatar_type		TEXT	    , \
+			user_colour             TEXT        DEFAULT 'FFFFFF', \
+			user_rank               INT 	    DEFAULT 0, \
+			user_regdate            INT         DEFAULT 0, \
+            user_password           TEXT \
+		)"
+    )
+    c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_totalmindchange	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_totalratings	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_totalrequests	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_winningvotes	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_losingvotes		INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_winningrequests	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_losingrequests	INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_last_active		INTEGER		DEFAULT 0")
+    c.update("ALTER TABLE phpbb_users ADD radio_listenkey		TEXT		DEFAULT 'TESTKEY'")
+    c.update("ALTER TABLE phpbb_users ADD radio_inactive		BOOLEAN		DEFAULT TRUE")
+    c.update("ALTER TABLE phpbb_users ADD radio_requests_paused	BOOLEAN		DEFAULT FALSE")
+    c.update("ALTER TABLE phpbb_users ADD radio_username		TEXT		DEFAULT ''")
+    c.update("ALTER TABLE phpbb_users ADD discord_user_id		TEXT		DEFAULT ''")
+
+    c.update(
+        "CREATE TABLE phpbb_sessions("
+        "session_user_id		INT,"
+        "session_id				TEXT,"
+        "session_last_visit		INT,"
+        "session_page			TEXT)"
+    )
+
+    c.update("CREATE TABLE phpbb_session_keys(key_id TEXT, user_id INT)")
+
+    c.update("CREATE TABLE phpbb_ranks(rank_id SERIAL PRIMARY KEY, rank_title TEXT)")
 
     c.update(
         " \
@@ -410,8 +449,9 @@ def create_tables():
 			sid 					SMALLINT	NOT NULL, \
 			user_id					INTEGER		NOT NULL, \
 			album_rating_user		REAL		, \
-			album_rating_complete	BOOLEAN		DEFAULT FALSE \
-            ) PRIMARY KEY (user_id, album_id, sid) "
+			album_rating_complete	BOOLEAN		DEFAULT FALSE,  \
+            PRIMARY KEY (user_id, album_id, sid) \
+            ) "
     )
     c.create_idx(
         "r4_album_ratings", "user_id", "album_id", "sid"
@@ -422,11 +462,12 @@ def create_tables():
 
     c.update(
         " \
-		CREATE TABLE r4_album_faves ( \
-			album_id				INTEGER		NOT NULL, \
-			user_id					INTEGER		NOT NULL, \
-			album_fave				BOOLEAN \
-		) PRIMARY KEY (user_id, album_id, sid) "
+        CREATE TABLE r4_album_faves ( \
+            album_id				INTEGER		NOT NULL, \
+            user_id					INTEGER		NOT NULL, \
+            album_fave				BOOLEAN, \
+            PRIMARY KEY (user_id, album_id) \
+        )"
     )
     c.create_idx(
         "r4_album_faves", "user_id", "album_id"
@@ -746,25 +787,6 @@ def create_tables():
     c.create_idx("r4_song_history", "sid")
     c.create_delete_fk("r4_song_history", "r4_songs", "song_id")
 
-    try:
-        c.update(
-            " \
-			CREATE TABLE r4_pref_storage ( \
-				user_id 				INT 		, \
-				ip_address 				TEXT 		, \
-				prefs 					JSONB \
-			)"
-        )
-        c.create_delete_fk("r4_pref_storage", "phpbb_users", "user_id")
-    except:
-        log.critical(
-            "init_db",
-            "Could not create r4_pref_storage - feature requires Pg 9.4 or higher.  See README.",
-        )
-
-    if config.get("standalone_mode"):
-        _fill_test_tables()
-
     c.commit()
 
 
@@ -779,62 +801,3 @@ def _create_group_sid_table():
     )
     c.create_idx("r4_group_sid", "group_display")
     c.create_delete_fk("r4_group_sid", "r4_groups", "group_id")
-
-
-def _create_test_tables():
-    c.update(
-        " \
-		CREATE TABLE phpbb_users( \
-			user_id					SERIAL		PRIMARY KEY, \
-			group_id				INT			DEFAULT 1, \
-			username				TEXT 		DEFAULT 'Test', \
-			user_new_privmsg		INT			DEFAULT 0, \
-			user_avatar				TEXT		DEFAULT '', \
-			user_avatar_type		TEXT	    , \
-			user_colour             TEXT        DEFAULT 'FFFFFF', \
-			user_rank               INT 	    DEFAULT 0, \
-			user_regdate            INT         DEFAULT 0, \
-            user_password           TEXT \
-		)"
-    )
-
-    c.update(
-        "CREATE TABLE phpbb_sessions("
-        "session_user_id		INT,"
-        "session_id				TEXT,"
-        "session_last_visit		INT,"
-        "session_page			TEXT)"
-    )
-
-    c.update("CREATE TABLE phpbb_session_keys(key_id TEXT, user_id INT)")
-
-    c.update("CREATE TABLE phpbb_ranks(rank_id SERIAL PRIMARY KEY, rank_title TEXT)")
-
-
-def add_custom_fields():
-    c.update("ALTER TABLE phpbb_users ADD radio_totalvotes		INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_totalmindchange	INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_totalratings	INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_totalrequests	INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_winningvotes	INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_losingvotes		INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_winningrequests	INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_losingrequests	INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_last_active		INTEGER		DEFAULT 0")
-    c.update("ALTER TABLE phpbb_users ADD radio_listenkey		TEXT		DEFAULT 'TESTKEY'")
-    c.update("ALTER TABLE phpbb_users ADD radio_inactive		BOOLEAN		DEFAULT TRUE")
-    c.update("ALTER TABLE phpbb_users ADD radio_requests_paused	BOOLEAN		DEFAULT FALSE")
-
-
-def _fill_test_tables():
-    c.update("INSERT INTO phpbb_ranks (rank_title) VALUES ('Test')")
-
-    # Anonymous user
-    c.update("INSERT INTO phpbb_users (user_id, username) VALUES (1, 'Anonymous')")
-    c.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (1, 'TESTKEY')")
-
-    # User ID 2: site admin
-    c.update(
-        "INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)"
-    )
-    c.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (2, 'TESTKEY')")
