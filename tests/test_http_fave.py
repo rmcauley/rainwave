@@ -7,6 +7,8 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
+import pytest
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
 class TestFave(AsyncHTTPTestCase):
@@ -28,7 +30,7 @@ class TestFave(AsyncHTTPTestCase):
         return json.loads(response.body.decode("utf-8"))
 
     def _auth_data(self, **extra):
-        data = {"user_id": 2, "key": "TESTKEY", "sid": 1}
+        data = {"user_id": SITE_ADMIN_USER_ID, "key": SITE_ADMIN_API_KEY, "sid": 1}
         data.update(extra)
         return data
 
@@ -39,6 +41,58 @@ class TestFave(AsyncHTTPTestCase):
     def _first_song_id(self, album_id):
         response = self._post("/api4/album", self._auth_data(id=album_id))
         return self._payload(response)["album"]["songs"][0]["id"]
+
+    def _info_payload(self):
+        response = self._post("/api4/info", self._auth_data())
+        return self._payload(response)
+
+    def _find_event_with_songs(self, payload, min_count=1):
+        current = payload.get("sched_current") or {}
+        if current.get("songs") and len(current["songs"]) >= min_count:
+            return current
+        for event in payload.get("sched_next") or []:
+            if event.get("songs") and len(event["songs"]) >= min_count:
+                return event
+        pytest.skip("No schedule event with enough songs to run fave tests.")
+
+    def _find_song(self, payload, song_id):
+        for event in [payload.get("sched_current")] + (payload.get("sched_next") or []):
+            if not event or not event.get("songs"):
+                continue
+            for song in event["songs"]:
+                if song.get("id") == song_id:
+                    return song
+        return None
+
+    def test_info_song_fave_toggle(self):
+        payload = self._info_payload()
+        event = self._find_event_with_songs(payload, min_count=1)
+        song = event["songs"][0]
+        song_id = song["id"]
+
+        response = self._post(
+            "/api4/fave_song",
+            self._auth_data(song_id=song_id, fave="true"),
+        )
+        payload = self._payload(response)
+        assert payload["fave_song_result"]["success"] is True
+
+        payload = self._info_payload()
+        song = self._find_song(payload, song_id)
+        assert song is not None
+        assert song["fave"] is True
+
+        response = self._post(
+            "/api4/fave_song",
+            self._auth_data(song_id=song_id, fave="false"),
+        )
+        payload = self._payload(response)
+        assert payload["fave_song_result"]["success"] is True
+
+        payload = self._info_payload()
+        song = self._find_song(payload, song_id)
+        assert song is not None
+        assert song["fave"] is False
 
     def test_fave_song_toggle(self):
         album_id = self._first_album_id()
@@ -79,6 +133,37 @@ class TestFave(AsyncHTTPTestCase):
         assert payload["fave_album_result"]["success"] is True
         assert payload["fave_album_result"]["fave"] is False
 
+    def test_info_album_fave_toggle(self):
+        payload = self._info_payload()
+        event = self._find_event_with_songs(payload, min_count=1)
+        song = event["songs"][0]
+        album = song["albums"][0]
+        album_id = album["id"]
+
+        response = self._post(
+            "/api4/fave_album",
+            self._auth_data(album_id=album_id, fave="true"),
+        )
+        payload = self._payload(response)
+        assert payload["fave_album_result"]["success"] is True
+
+        payload = self._info_payload()
+        song = self._find_song(payload, song["id"])
+        assert song is not None
+        assert song["albums"][0]["fave"] is True
+
+        response = self._post(
+            "/api4/fave_album",
+            self._auth_data(album_id=album_id, fave="false"),
+        )
+        payload = self._payload(response)
+        assert payload["fave_album_result"]["success"] is True
+
+        payload = self._info_payload()
+        song = self._find_song(payload, song["id"])
+        assert song is not None
+        assert song["albums"][0]["fave"] is False
+
     def test_fave_all_songs_unfave(self):
         album_id = self._first_album_id()
         response = self._post(
@@ -89,3 +174,34 @@ class TestFave(AsyncHTTPTestCase):
         assert payload["fave_all_songs_result"]["success"] is True
         assert payload["fave_all_songs_result"]["fave"] is False
         assert len(payload["fave_all_songs_result"]["song_ids"]) == 20
+
+    def test_info_fave_all_songs_toggle(self):
+        payload = self._info_payload()
+        event = self._find_event_with_songs(payload, min_count=2)
+        song = event["songs"][1]
+        album = song["albums"][0]
+        album_id = album["id"]
+
+        response = self._post(
+            "/api4/fave_all_songs",
+            self._auth_data(album_id=album_id, fave="true"),
+        )
+        payload = self._payload(response)
+        assert payload["fave_all_songs_result"]["success"] is True
+
+        payload = self._info_payload()
+        song = self._find_song(payload, song["id"])
+        assert song is not None
+        assert song["fave"] is True
+
+        response = self._post(
+            "/api4/fave_all_songs",
+            self._auth_data(album_id=album_id, fave="false"),
+        )
+        payload = self._payload(response)
+        assert payload["fave_all_songs_result"]["success"] is True
+
+        payload = self._info_payload()
+        song = self._find_song(payload, song["id"])
+        assert song is not None
+        assert song["fave"] is False

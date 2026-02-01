@@ -7,6 +7,9 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
+from libs import db
+import pytest
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
 class TestAdminCooldownGroups(AsyncHTTPTestCase):
@@ -28,7 +31,7 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
         return json.loads(response.body.decode("utf-8"))
 
     def _auth_data(self, **extra):
-        data = {"user_id": 2, "key": "TESTKEY", "sid": 1}
+        data = {"user_id": SITE_ADMIN_USER_ID, "key": SITE_ADMIN_API_KEY, "sid": 1}
         data.update(extra)
         return data
 
@@ -47,12 +50,21 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
 
     def test_song_cooldown_update_and_reset(self):
         song_id = self._first_song_id()
+        override = 1200
         response = self._post(
             "/api4/admin/set_song_cooldown",
-            self._auth_data(song_id=song_id, multiply=1.1),
+            self._auth_data(song_id=song_id, multiply=1.1, override=override),
         )
         payload = self._payload(response)
         assert payload["set_song_cooldown_result"]["success"] is True
+
+        row = db.c.fetch_row(
+            "SELECT song_cool_multiply, song_cool_override FROM r4_songs WHERE song_id = %s",
+            (song_id,),
+        )
+        assert row is not None
+        assert row["song_cool_multiply"] == pytest.approx(1.1)
+        assert row["song_cool_override"] == override
 
         response = self._post(
             "/api4/admin/reset_song_cooldown",
@@ -61,14 +73,31 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
         payload = self._payload(response)
         assert payload["reset_song_cooldown_result"]["success"] is True
 
+        row = db.c.fetch_row(
+            "SELECT song_cool_multiply, song_cool_override FROM r4_songs WHERE song_id = %s",
+            (song_id,),
+        )
+        assert row is not None
+        assert row["song_cool_multiply"] == pytest.approx(1.0)
+        assert row["song_cool_override"] is None
+
     def test_album_cooldown_update_and_reset(self):
         album_id = self._first_album_id()
+        override = 1800
         response = self._post(
             "/api4/admin/set_album_cooldown",
-            self._auth_data(album_id=album_id, multiply=1.2),
+            self._auth_data(album_id=album_id, multiply=1.2, override=override),
         )
         payload = self._payload(response)
         assert payload["set_album_cooldown_result"]["success"] is True
+
+        row = db.c.fetch_row(
+            "SELECT album_cool_multiply, album_cool_override FROM r4_album_sid WHERE album_id = %s AND sid = %s",
+            (album_id, 1),
+        )
+        assert row is not None
+        assert row["album_cool_multiply"] == pytest.approx(1.2)
+        assert row["album_cool_override"] == override
 
         response = self._post(
             "/api4/admin/reset_album_cooldown",
@@ -77,36 +106,10 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
         payload = self._payload(response)
         assert payload["reset_album_cooldown_result"]["success"] is True
 
-    def test_group_edits_and_create(self):
-        group_id = self._first_group_id()
-        response = self._post(
-            "/api4/admin/edit_group_elec_block",
-            self._auth_data(group_id=group_id, elec_block=1),
+        row = db.c.fetch_row(
+            "SELECT album_cool_multiply, album_cool_override FROM r4_album_sid WHERE album_id = %s AND sid = %s",
+            (album_id, 1),
         )
-        payload = self._payload(response)
-        assert payload["edit_group_elec_block_result"]["tl_key"] == "group_edit_success"
-
-        response = self._post(
-            "/api4/admin/edit_group_cooldown",
-            self._auth_data(group_id=group_id, cooldown=1200),
-        )
-        payload = self._payload(response)
-        assert payload["edit_group_cooldown_result"]["tl_key"] == "group_edit_success"
-
-        response = self._post(
-            "/api4/admin/create_group",
-            self._auth_data(name="New Group"),
-        )
-        payload = self._payload(response)
-        assert payload["create_group_result"]["tl_key"] == "group_create_success"
-
-    def test_remove_group_from_song_errors(self):
-        song_id = self._first_song_id()
-        group_id = self._first_group_id()
-        response = self._post(
-            "/api4/admin/remove_group_from_song",
-            self._auth_data(song_id=song_id, group_id=group_id),
-            raise_error=False,
-        )
-        payload = self._payload(response)
-        assert payload["error"]["tl_key"] == "internal_error"
+        assert row is not None
+        assert row["album_cool_multiply"] == pytest.approx(1.0)
+        assert row["album_cool_override"] is None

@@ -63,6 +63,7 @@ def rainwave_db(rainwave_config_path):
     cooldown.prepare_cooldown_algorithm(1)
     schedule.load()
     schedule.advance_station(1)
+    schedule.post_process(1)
     playlist.update_num_songs()
     cache.set_station(1, "all_albums", playlist.get_all_albums_list(1), True)
     cache.set_station(1, "all_artists", playlist.get_all_artists_list(1), True)

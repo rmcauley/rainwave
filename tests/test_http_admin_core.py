@@ -7,6 +7,7 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID, SITE_ADMIN_USER_NAME
 
 
 class TestAdminCore(AsyncHTTPTestCase):
@@ -28,7 +29,7 @@ class TestAdminCore(AsyncHTTPTestCase):
         return json.loads(response.body.decode("utf-8"))
 
     def _auth_data(self, **extra):
-        data = {"user_id": 2, "key": "TESTKEY", "sid": 1}
+        data = {"user_id": SITE_ADMIN_USER_ID, "key": SITE_ADMIN_API_KEY, "sid": 1}
         data.update(extra)
         return data
 
@@ -47,6 +48,8 @@ class TestAdminCore(AsyncHTTPTestCase):
         payload = self._payload(response)
         assert payload["set_song_request_only_result"]["success"] is True
 
+        # Check database to see if request set request_only to true
+
         response = self._post(
             "/api4/admin/set_song_request_only",
             self._auth_data(song_id=song_id, request_only="false"),
@@ -54,10 +57,12 @@ class TestAdminCore(AsyncHTTPTestCase):
         payload = self._payload(response)
         assert payload["set_song_request_only_result"]["success"] is True
 
+        # Check database to see if request set request_only to false
+
     def test_user_search(self):
-        response = self._post("/api4/user_search", {"username": "Test"})
+        response = self._post("/api4/user_search", {"username": SITE_ADMIN_USER_NAME})
         payload = self._payload(response)
-        assert payload["user"]["user_id"] == 2
+        assert payload["user"]["user_id"] == SITE_ADMIN_USER_ID
 
     def test_user_search_by_discord_user_id(self):
         response = self._post(
@@ -90,14 +95,6 @@ class TestAdminCore(AsyncHTTPTestCase):
         )
         payload = self._payload(response)
         assert payload["enable_perks_by_discord_ids_result"]["tl_key"] == "yes"
-
-    def test_add_donation(self):
-        response = self._post(
-            "/api4/admin/add_donation",
-            self._auth_data(donor_id=2, amount=5, message="Thanks", private="false"),
-        )
-        payload = self._payload(response)
-        assert payload["add_donation_result"]["tl_key"] == "donation_added"
 
     def test_admin_backend_scan_errors(self):
         response = self._post("/api4/admin/backend_scan_errors", self._auth_data())

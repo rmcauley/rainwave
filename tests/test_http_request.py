@@ -7,6 +7,7 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
 class TestRequest(AsyncHTTPTestCase):
@@ -28,7 +29,7 @@ class TestRequest(AsyncHTTPTestCase):
         return json.loads(response.body.decode("utf-8"))
 
     def _auth_data(self, **extra):
-        data = {"user_id": 2, "key": "TESTKEY", "sid": 1}
+        data = {"user_id": SITE_ADMIN_USER_ID, "key": SITE_ADMIN_API_KEY, "sid": 1}
         data.update(extra)
         return data
 
@@ -37,17 +38,6 @@ class TestRequest(AsyncHTTPTestCase):
         album_id = self._payload(response)["all_albums"][0]["id"]
         response = self._post("/api4/album", self._auth_data(id=album_id))
         return self._payload(response)["album"]["songs"][0]["id"]
-
-    # def test_request_add_requires_tunein(self):
-    #     song_id = self._first_song_id()
-    #     response = self._post(
-    #         "/api4/request",
-    #         self._auth_data(song_id=song_id),
-    #         raise_error=False,
-    #     )
-    #     assert response.code == 403
-    #     payload = self._payload(response)
-    #     assert payload["request_result"]["tl_key"] == "tunein_required"
 
     def test_delete_request_fails_when_missing(self):
         response = self._post(

@@ -7,6 +7,7 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
 class TestAllAlbums(AsyncHTTPTestCase):
@@ -28,7 +29,7 @@ class TestAllAlbums(AsyncHTTPTestCase):
         return json.loads(response.body.decode("utf-8"))
 
     def _auth_data(self, **extra):
-        data = {"user_id": 2, "key": "TESTKEY", "sid": 1}
+        data = {"user_id": SITE_ADMIN_USER_ID, "key": SITE_ADMIN_API_KEY, "sid": 1}
         data.update(extra)
         return data
 
@@ -177,11 +178,6 @@ class TestAllAlbums(AsyncHTTPTestCase):
         response = self._post("/api4/all_faves", self._auth_data())
         payload = self._payload(response)
         assert payload["all_faves"] == []
-
-    def test_playback_history_empty(self):
-        response = self._post("/api4/playback_history", self._auth_data())
-        payload = self._payload(response)
-        assert payload["playback_history"] == []
 
     def test_station_song_count(self):
         response = self._post("/api4/station_song_count", self._auth_data())

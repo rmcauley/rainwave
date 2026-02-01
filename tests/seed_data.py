@@ -2,26 +2,76 @@ from __future__ import annotations
 
 import random
 
+ANONYMOUS_USER_ID = 1
+TUNED_IN_ANONYMOUS_IP = "127.0.0.1"
+TUNED_OUT_ANONYMOUS_IP = "127.0.0.2"
+ANONYMOUS_API_KEY = "ANON"
+ANONYMOUS_USER_NAME = "Anonymous"
 
-def populate_test_data(cursor, sid=1, seed=1337):
+SITE_ADMIN_USER_ID = 2
+SITE_ADMIN_API_KEY = "ADMIN"
+SITE_ADMIN_USER_NAME = "Admin"
+
+TUNED_IN_LOGGED_IN_USER_ID = 3
+TUNED_IN_LOGGED_IN_API_KEY = "TINLIN"
+TUNED_IN_LOGGED_IN_USER_NAME = "Tuned In Logged In"
+
+TUNED_OUT_LOGGED_IN_USER_ID = 4
+TUNED_OUT_LOGGED_IN_API_KEY = "TOUTLIN"
+TUNED_OUT_LOGGED_IN_USER_NAME = "Tuned In Logged Out"
+
+TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID = 5
+TUNED_IN_LOCKED_TO_OTHER_STATION_API_KEY = "LOCKED"
+TUNED_IN_LOCKED_TO_OTHER_STATION_USER_NAME = "Tuned In Locked In"
+
+
+def populate_test_data(cursor, sid=1):
+    rng = random.Random()
+
     cursor.update("INSERT INTO phpbb_ranks (rank_title) VALUES ('Test')")
 
-    # Anonymous user
-    cursor.update("INSERT INTO phpbb_users (user_id, username) VALUES (1, 'Anonymous')")
-    cursor.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (1, 'TESTKEY')")
-
-    # User ID 2: site admin
     cursor.update(
-        "INSERT INTO phpbb_users (user_id, username, group_id) VALUES (2, 'Test', 5)"
+        f"INSERT INTO phpbb_users (user_id, username) VALUES ({ANONYMOUS_USER_ID}, '{ANONYMOUS_USER_NAME}')"
     )
-    cursor.update("INSERT INTO r4_api_keys (user_id, api_key) VALUES (2, 'TESTKEY')")
+    cursor.update(
+        f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({ANONYMOUS_USER_ID}, '{ANONYMOUS_API_KEY}')"
+    )
+    cursor.update(
+        f"INSERT INTO r4_listeners (user_id, sid, listener_icecast_id, listener_ip) VALUES ({ANONYMOUS_USER_ID}, 1, 3, '{TUNED_IN_ANONYMOUS_IP}')"
+    )
 
-    rng = random.Random(seed)
+    cursor.update(
+        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({SITE_ADMIN_USER_ID}, '{SITE_ADMIN_USER_NAME}', 5)"
+    )
+    cursor.update(
+        f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({SITE_ADMIN_USER_ID}, '{SITE_ADMIN_API_KEY}')"
+    )
 
-    cursor.update("INSERT INTO phpbb_users (user_id, username) VALUES (3, 'User3')")
-    cursor.fetch_var(
-        "SELECT setval(pg_get_serial_sequence('phpbb_users', 'user_id'), "
-        "(SELECT MAX(user_id) FROM phpbb_users))"
+    cursor.update(
+        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_IN_LOGGED_IN_USER_ID}, '{TUNED_IN_LOGGED_IN_USER_NAME}', 5)"
+    )
+    cursor.update(
+        f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({TUNED_IN_LOGGED_IN_USER_ID}, '{TUNED_IN_LOGGED_IN_API_KEY}')"
+    )
+    cursor.update(
+        f"INSERT INTO r4_listeners (user_id, sid, listener_icecast_id) VALUES ({TUNED_IN_LOGGED_IN_USER_ID}, 1, 1)"
+    )
+
+    cursor.update(
+        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_OUT_LOGGED_IN_USER_ID}, '{TUNED_OUT_LOGGED_IN_USER_NAME}', 5)"
+    )
+    cursor.update(
+        f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({TUNED_OUT_LOGGED_IN_USER_ID}, '{TUNED_OUT_LOGGED_IN_API_KEY}')"
+    )
+
+    cursor.update(
+        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID}, '{TUNED_IN_LOCKED_TO_OTHER_STATION_USER_NAME}', 5)"
+    )
+    cursor.update(
+        f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID}, '{TUNED_IN_LOCKED_TO_OTHER_STATION_API_KEY}')"
+    )
+    cursor.update(
+        f"INSERT INTO r4_listeners (user_id, sid, listener_icecast_id, listener_lock, listener_lock_sid, listener_lock_counter) VALUES ({TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID}, 1, 2, TRUE, 2, 5)"
     )
 
     group_ids = []

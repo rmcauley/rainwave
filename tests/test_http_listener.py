@@ -7,6 +7,7 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
 class TestListener(AsyncHTTPTestCase):
@@ -28,15 +29,18 @@ class TestListener(AsyncHTTPTestCase):
         return json.loads(response.body.decode("utf-8"))
 
     def _auth_data(self, **extra):
-        data = {"user_id": 2, "key": "TESTKEY", "sid": 1}
+        data = {"user_id": SITE_ADMIN_USER_ID, "key": SITE_ADMIN_API_KEY, "sid": 1}
         data.update(extra)
         return data
 
     def test_listener_detail(self):
-        response = self._post("/api4/listener", self._auth_data(id=2))
+        response = self._post(
+            "/api4/listener",
+            self._auth_data(id=SITE_ADMIN_USER_ID),
+        )
         payload = self._payload(response)
         listener = payload["listener"]
-        assert listener["user_id"] == 2
+        assert listener["user_id"] == SITE_ADMIN_USER_ID
         assert "top_albums" in listener
         assert "rating_spread" in listener
 
@@ -49,4 +53,4 @@ class TestListener(AsyncHTTPTestCase):
     def test_user_info(self):
         response = self._post("/api4/user_info", self._auth_data())
         payload = self._payload(response)
-        assert payload["user_info"]["id"] == 2
+        assert payload["user_info"]["id"] == SITE_ADMIN_USER_ID

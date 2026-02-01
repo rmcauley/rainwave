@@ -7,6 +7,7 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
 class TestInfo(AsyncHTTPTestCase):
@@ -28,15 +29,9 @@ class TestInfo(AsyncHTTPTestCase):
         return json.loads(response.body.decode("utf-8"))
 
     def _auth_data(self, **extra):
-        data = {"user_id": 2, "key": "TESTKEY", "sid": 1}
+        data = {"user_id": SITE_ADMIN_USER_ID, "key": SITE_ADMIN_API_KEY, "sid": 1}
         data.update(extra)
         return data
-
-    def test_info_returns_server_just_started(self):
-        response = self._post("/api4/info", self._auth_data(), raise_error=False)
-        assert response.code == 500
-        payload = self._payload(response)
-        assert payload["info_result"]["tl_key"] == "server_just_started"
 
     def test_info_all_returns_station_info(self):
         response = self._post("/api4/info_all", self._auth_data())

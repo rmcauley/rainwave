@@ -7,6 +7,7 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
 class TestErrorReport(AsyncHTTPTestCase):
@@ -26,8 +27,8 @@ class TestErrorReport(AsyncHTTPTestCase):
 
     def test_error_report_accepts_localhost_referer(self):
         data = {
-            "user_id": 2,
-            "key": "TESTKEY",
+            "user_id": SITE_ADMIN_USER_ID,
+            "key": SITE_ADMIN_API_KEY,
             "name": "TestError",
             "message": "Something went wrong",
             "stack": "stack trace",
