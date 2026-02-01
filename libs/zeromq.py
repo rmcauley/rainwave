@@ -1,6 +1,6 @@
 import zmq
 import zmq.devices
-from zmq.eventloop import ioloop, zmqstream
+from zmq.eventloop.zmqstream import ZMQStream
 from libs import config
 from api.web import APIException
 
@@ -11,8 +11,6 @@ except ImportError:
 
 _pub = None
 _sub_stream = None
-
-ioloop.install()
 
 
 def init_pub():
@@ -28,7 +26,7 @@ def init_sub():
     sub = context.socket(zmq.SUB)
     sub.connect(config.get("zeromq_sub"))
     sub.setsockopt(zmq.SUBSCRIBE, b"")
-    _sub_stream = zmqstream.ZMQStream(sub)
+    _sub_stream = ZMQStream(sub)
 
 
 def set_sub_callback(methd):

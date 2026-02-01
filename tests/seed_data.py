@@ -33,6 +33,10 @@ def populate_test_data(cursor, sid=1, seed=1337):
             (name, name.lower(), 0, 900),
         )
         group_ids.append(group_id)
+        cursor.update(
+            "INSERT INTO r4_group_sid (group_id, sid, group_display) VALUES (%s, %s, %s)",
+            (group_id, sid, True),
+        )
 
     artist_ids = []
     for idx in range(1, 101):

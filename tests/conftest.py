@@ -13,9 +13,10 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from api import locale as api_locale  # noqa: E402
-from libs import cache, config, db, log  # noqa: E402
-from rainwave import playlist  # noqa: E402
+from libs import cache, config, db, log, zeromq  # noqa: E402
+from rainwave import playlist, schedule  # noqa: E402
 from tests.seed_data import populate_test_data  # noqa: E402
+from rainwave.playlist_objects import cooldown
 
 TEMPLATE_CONFIG = Path(__file__).parent / "fixtures" / "rainwave_test.template.json"
 
@@ -58,7 +59,29 @@ def rainwave_db(rainwave_config_path):
     populate_test_data(db.c, sid=1)
     cache.connect()
     api_locale.load_translations()
+    zeromq.init_pub()
+    cooldown.prepare_cooldown_algorithm(1)
+    schedule.load()
+    schedule.advance_station(1)
+    playlist.update_num_songs()
     cache.set_station(1, "all_albums", playlist.get_all_albums_list(1), True)
+    cache.set_station(1, "all_artists", playlist.get_all_artists_list(1), True)
+    cache.set_station(1, "all_groups", playlist.get_all_groups_list(1), True)
+    cache.set_station(1, "all_groups_power", playlist.get_all_groups_for_power(1), True)
+    cache.set_global(
+        "all_stations_info",
+        {
+            1: {
+                "title": None,
+                "album": None,
+                "art": None,
+                "artists": None,
+                "event_name": None,
+                "event_type": None,
+            }
+        },
+        save_local=True,
+    )
     yield
     db.close()
     log.close()
