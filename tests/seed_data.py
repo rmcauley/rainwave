@@ -24,6 +24,10 @@ TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID = 5
 TUNED_IN_LOCKED_TO_OTHER_STATION_API_KEY = "LOCKED"
 TUNED_IN_LOCKED_TO_OTHER_STATION_USER_NAME = "Tuned In Locked In"
 
+TUNED_OUT_DONOR_USER_ID = 6
+TUNED_OUT_DONOR_API_KEY = "DONOR"
+TUNED_OUT_DONOR_USER_NAME = "Donor"
+
 
 def populate_test_data(cursor, sid=1):
     rng = random.Random()
@@ -34,12 +38,13 @@ def populate_test_data(cursor, sid=1):
         f"INSERT INTO phpbb_users (user_id, username) VALUES ({ANONYMOUS_USER_ID}, '{ANONYMOUS_USER_NAME}')"
     )
     cursor.update(
-        f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({ANONYMOUS_USER_ID}, '{ANONYMOUS_API_KEY}')"
+        f"INSERT INTO r4_api_keys (user_id, api_key, api_key_listen_key) VALUES ({ANONYMOUS_USER_ID}, '{ANONYMOUS_API_KEY}', 'ANONLSTN')"
     )
     cursor.update(
         f"INSERT INTO r4_listeners (user_id, sid, listener_icecast_id, listener_ip) VALUES ({ANONYMOUS_USER_ID}, 1, 3, '{TUNED_IN_ANONYMOUS_IP}')"
     )
 
+    # Group ID 5 for this user is the old phpBB "global administrator" group
     cursor.update(
         f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({SITE_ADMIN_USER_ID}, '{SITE_ADMIN_USER_NAME}', 5)"
     )
@@ -72,6 +77,14 @@ def populate_test_data(cursor, sid=1):
     )
     cursor.update(
         f"INSERT INTO r4_listeners (user_id, sid, listener_icecast_id, listener_lock, listener_lock_sid, listener_lock_counter) VALUES ({TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID}, 1, 2, TRUE, 2, 5)"
+    )
+
+    # Group ID 8 for this user is the old phpBB "donor" group.
+    cursor.update(
+        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_OUT_DONOR_USER_ID}, '{TUNED_OUT_DONOR_USER_NAME}', 8)"
+    )
+    cursor.update(
+        f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({TUNED_OUT_DONOR_USER_ID}, '{TUNED_OUT_DONOR_API_KEY}')"
     )
 
     group_ids = []

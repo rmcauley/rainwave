@@ -7,7 +7,12 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
-from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
+from tests.seed_data import (
+    ANONYMOUS_API_KEY,
+    ANONYMOUS_USER_ID,
+    SITE_ADMIN_API_KEY,
+    SITE_ADMIN_USER_ID,
+)
 
 
 class TestRequest(AsyncHTTPTestCase):
@@ -33,6 +38,11 @@ class TestRequest(AsyncHTTPTestCase):
         data.update(extra)
         return data
 
+    def _anon_auth_data(self, **extra):
+        return self._auth_data(
+            user_id=ANONYMOUS_USER_ID, key=ANONYMOUS_API_KEY, **extra
+        )
+
     def _first_song_id(self):
         response = self._post("/api4/all_albums", self._auth_data())
         album_id = self._payload(response)["all_albums"][0]["id"]
@@ -42,12 +52,22 @@ class TestRequest(AsyncHTTPTestCase):
     def test_delete_request_fails_when_missing(self):
         response = self._post(
             "/api4/delete_request",
-            self._auth_data(song_id=999999),
+            self._auth_data(song_id=5),
             raise_error=False,
         )
-        assert response.code == 400
         payload = self._payload(response)
-        assert payload["delete_request_result"]["tl_key"] == "invalid_argument"
+        print(payload)
+        assert response.code == 200
+        assert payload["delete_request_result"]["tl_key"] == "song_not_requested"
+
+        response = self._post(
+            "/api4/delete_request",
+            self._anon_auth_data(song_id=5),
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["delete_request_result"]["tl_key"] == "login_required"
 
     def test_request_favorited_fails(self):
         response = self._post(
@@ -62,15 +82,44 @@ class TestRequest(AsyncHTTPTestCase):
             == "request_favorited_failed"
         )
 
+        response = self._post(
+            "/api4/request_favorited_songs",
+            self._anon_auth_data(),
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["request_favorited_songs_result"]["tl_key"] == "login_required"
+
     def test_clear_requests(self):
         response = self._post("/api4/clear_requests", self._auth_data())
         payload = self._payload(response)
         assert "requests" in payload
 
+        response = self._post(
+            "/api4/clear_requests",
+            self._anon_auth_data(),
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["clear_requests_result"]["tl_key"] == "login_required"
+
     def test_clear_requests_on_cooldown(self):
         response = self._post("/api4/clear_requests_on_cooldown", self._auth_data())
         payload = self._payload(response)
         assert "requests" in payload
+
+        response = self._post(
+            "/api4/clear_requests_on_cooldown",
+            self._anon_auth_data(),
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert (
+            payload["clear_requests_on_cooldown_result"]["tl_key"] == "login_required"
+        )
 
     def test_pause_unpause_request_queue(self):
         response = self._post("/api4/pause_request_queue", self._auth_data())
@@ -80,6 +129,24 @@ class TestRequest(AsyncHTTPTestCase):
         response = self._post("/api4/unpause_request_queue", self._auth_data())
         payload = self._payload(response)
         assert "user" in payload
+
+        response = self._post(
+            "/api4/pause_request_queue",
+            self._anon_auth_data(),
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["pause_request_queue_result"]["tl_key"] == "login_required"
+
+        response = self._post(
+            "/api4/unpause_request_queue",
+            self._anon_auth_data(),
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["unpause_request_queue_result"]["tl_key"] == "login_required"
 
     def test_request_line(self):
         response = self._post("/api4/request_line", self._auth_data())

@@ -78,11 +78,13 @@ class User:
         self.api_key = api_key
 
         if not bypass and (api_key and not re.match(r"^[\w\d]+$", api_key)):
+            print("bad api key")
             return
 
         if self.id > 1:
             self._auth_registered_user(api_key, bypass)
         else:
+            print("auth anon user")
             self._auth_anon_user(api_key, bypass)
 
     def get_all_api_keys(self):
@@ -152,21 +154,29 @@ class User:
 
     def _auth_anon_user(self, api_key: str | None, bypass=False):
         if not bypass:
+            print("not bypassing")
             cache_key = unicodedata.normalize(
                 "NFKD", "api_key_listen_key_%s" % api_key
             ).encode("ascii", "ignore")
+            print("A")
             listen_key = cache.get(cache_key)
+            print("B")
             if not listen_key:
                 listen_key = db.c.fetch_var(
                     "SELECT api_key_listen_key FROM r4_api_keys WHERE api_key = %s AND user_id = 1",
                     (self.api_key,),
                 )
+                print("c")
                 if not listen_key:
+                    print("d")
                     return
                 else:
+                    print("e")
                     self.data["listen_key"] = listen_key
             else:
+                print("f")
                 self.data["listen_key"] = listen_key
+        print("all should be good!")
         self.authorized = True
 
     def get_tuned_in_sid(self):

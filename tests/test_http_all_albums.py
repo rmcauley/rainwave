@@ -7,7 +7,12 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
-from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
+from tests.seed_data import (
+    SITE_ADMIN_API_KEY,
+    SITE_ADMIN_USER_ID,
+    ANONYMOUS_USER_ID,
+    ANONYMOUS_API_KEY,
+)
 
 
 class TestAllAlbums(AsyncHTTPTestCase):
@@ -33,10 +38,25 @@ class TestAllAlbums(AsyncHTTPTestCase):
         data.update(extra)
         return data
 
+    def _anon_auth_data(self, **extra):
+        data = {"user_id": ANONYMOUS_USER_ID, "key": ANONYMOUS_API_KEY, "sid": 1}
+        data.update(extra)
+        return data
+
     def test_all_albums_returns_list(self):
         response = self._post(
             "/api4/all_albums",
             self._auth_data(),
+        )
+        payload = self._payload(response)
+        assert "all_albums" in payload
+        assert isinstance(payload["all_albums"], list)
+        assert len(payload["all_albums"]) == 100
+
+    def test_all_albums_returns_list_anonymous(self):
+        response = self._post(
+            "/api4/all_albums",
+            self._anon_auth_data(),
         )
         payload = self._payload(response)
         assert "all_albums" in payload
@@ -75,8 +95,27 @@ class TestAllAlbums(AsyncHTTPTestCase):
         assert result["progress"] == 100
         assert result["next"] == 1000
 
+    def test_all_albums_paginated_anonymous(self):
+        response = self._post(
+            "/api4/all_albums_paginated", self._anon_auth_data(after=0)
+        )
+        payload = self._payload(response)
+        result = payload["all_albums_paginated"]
+        assert len(result["data"]) == 100
+        assert result["has_more"] is False
+        assert result["progress"] == 100
+        assert result["next"] == 1000
+
     def test_all_artists_returns_list(self):
         response = self._post("/api4/all_artists", self._auth_data())
+        payload = self._payload(response)
+        assert "all_artists" in payload
+        assert isinstance(payload["all_artists"], list)
+        assert len(payload["all_artists"]) == 100
+        assert {"id", "name", "song_count"}.issubset(payload["all_artists"][0].keys())
+
+    def test_all_artists_returns_list_anonymous(self):
+        response = self._post("/api4/all_artists", self._anon_auth_data())
         payload = self._payload(response)
         assert "all_artists" in payload
         assert isinstance(payload["all_artists"], list)
@@ -92,6 +131,17 @@ class TestAllAlbums(AsyncHTTPTestCase):
         assert result["progress"] == 100
         assert result["next"] == 1000
 
+    def test_all_artists_paginated_anonymous(self):
+        response = self._post(
+            "/api4/all_artists_paginated", self._anon_auth_data(after=0)
+        )
+        payload = self._payload(response)
+        result = payload["all_artists_paginated"]
+        assert len(result["data"]) == 100
+        assert result["has_more"] is False
+        assert result["progress"] == 100
+        assert result["next"] == 1000
+
     def test_all_groups_returns_list(self):
         response = self._post("/api4/all_groups", self._auth_data())
         payload = self._payload(response)
@@ -100,8 +150,27 @@ class TestAllAlbums(AsyncHTTPTestCase):
         assert len(payload["all_groups"]) == 10
         assert {"id", "name"}.issubset(payload["all_groups"][0].keys())
 
+    def test_all_groups_returns_list_anonymous(self):
+        response = self._post("/api4/all_groups", self._anon_auth_data())
+        payload = self._payload(response)
+        assert "all_groups" in payload
+        assert isinstance(payload["all_groups"], list)
+        assert len(payload["all_groups"]) == 10
+        assert {"id", "name"}.issubset(payload["all_groups"][0].keys())
+
     def test_all_groups_paginated(self):
         response = self._post("/api4/all_groups_paginated", self._auth_data(after=0))
+        payload = self._payload(response)
+        result = payload["all_groups_paginated"]
+        assert len(result["data"]) == 10
+        assert result["has_more"] is False
+        assert result["progress"] == 100
+        assert result["next"] == 1000
+
+    def test_all_groups_paginated_anonymous(self):
+        response = self._post(
+            "/api4/all_groups_paginated", self._anon_auth_data(after=0)
+        )
         payload = self._payload(response)
         result = payload["all_groups_paginated"]
         assert len(result["data"]) == 10
@@ -119,12 +188,32 @@ class TestAllAlbums(AsyncHTTPTestCase):
         assert payload["artist"]["id"] == artist_id
         assert "all_songs" in payload["artist"]
 
+    def test_artist_details_anonymous(self):
+        artists = self._payload(
+            self._post("/api4/all_artists", self._anon_auth_data())
+        )["all_artists"]
+        artist_id = artists[0]["id"]
+        response = self._post("/api4/artist", self._anon_auth_data(id=artist_id))
+        payload = self._payload(response)
+        assert payload["artist"]["id"] == artist_id
+        assert "all_songs" in payload["artist"]
+
     def test_group_details(self):
         groups = self._payload(self._post("/api4/all_groups", self._auth_data()))[
             "all_groups"
         ]
         group_id = groups[0]["id"]
         response = self._post("/api4/group", self._auth_data(id=group_id))
+        payload = self._payload(response)
+        assert payload["group"]["id"] == group_id
+        assert "all_songs_for_sid" in payload["group"]
+
+    def test_group_details_anonymous(self):
+        groups = self._payload(self._post("/api4/all_groups", self._anon_auth_data()))[
+            "all_groups"
+        ]
+        group_id = groups[0]["id"]
+        response = self._post("/api4/group", self._anon_auth_data(id=group_id))
         payload = self._payload(response)
         assert payload["group"]["id"] == group_id
         assert "all_songs_for_sid" in payload["group"]
@@ -139,6 +228,16 @@ class TestAllAlbums(AsyncHTTPTestCase):
         assert payload["album"]["id"] == album_id
         assert len(payload["album"]["songs"]) == 20
 
+    def test_album_details_anonymous(self):
+        albums = self._payload(self._post("/api4/all_albums", self._anon_auth_data()))[
+            "all_albums"
+        ]
+        album_id = albums[0]["id"]
+        response = self._post("/api4/album", self._anon_auth_data(id=album_id))
+        payload = self._payload(response)
+        assert payload["album"]["id"] == album_id
+        assert len(payload["album"]["songs"]) == 20
+
     def test_song_details(self):
         albums = self._payload(self._post("/api4/all_albums", self._auth_data()))[
             "all_albums"
@@ -149,6 +248,23 @@ class TestAllAlbums(AsyncHTTPTestCase):
         ]
         song_id = album["songs"][0]["id"]
         response = self._post("/api4/song", self._auth_data(id=song_id))
+        payload = self._payload(response)
+        song = payload["song"]
+        assert song["id"] == song_id
+        assert song["albums"]
+        assert song["artists"]
+        assert song["groups"]
+
+    def test_song_details_anonymous(self):
+        albums = self._payload(self._post("/api4/all_albums", self._anon_auth_data()))[
+            "all_albums"
+        ]
+        album_id = albums[0]["id"]
+        album = self._payload(
+            self._post("/api4/album", self._anon_auth_data(id=album_id))
+        )["album"]
+        song_id = album["songs"][0]["id"]
+        response = self._post("/api4/song", self._anon_auth_data(id=song_id))
         payload = self._payload(response)
         song = payload["song"]
         assert song["id"] == song_id

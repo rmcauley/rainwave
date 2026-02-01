@@ -7,7 +7,12 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
-from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
+from tests.seed_data import (
+    ANONYMOUS_API_KEY,
+    ANONYMOUS_USER_ID,
+    SITE_ADMIN_API_KEY,
+    SITE_ADMIN_USER_ID,
+)
 
 
 class TestInfo(AsyncHTTPTestCase):
@@ -33,8 +38,19 @@ class TestInfo(AsyncHTTPTestCase):
         data.update(extra)
         return data
 
+    def _anon_auth_data(self, **extra):
+        return self._auth_data(
+            user_id=ANONYMOUS_USER_ID, key=ANONYMOUS_API_KEY, **extra
+        )
+
     def test_info_all_returns_station_info(self):
         response = self._post("/api4/info_all", self._auth_data())
+        payload = self._payload(response)
+        assert "all_stations_info" in payload
+        assert "1" in payload["all_stations_info"]
+
+    def test_info_all_returns_station_info_anonymous(self):
+        response = self._post("/api4/info_all", self._anon_auth_data())
         payload = self._payload(response)
         assert "all_stations_info" in payload
         assert "1" in payload["all_stations_info"]
