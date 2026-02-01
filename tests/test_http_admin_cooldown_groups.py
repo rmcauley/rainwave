@@ -9,7 +9,12 @@ from tornado.testing import AsyncHTTPTestCase
 from api.urls import request_classes
 from libs import db
 import pytest
-from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
+from tests.seed_data import (
+    SITE_ADMIN_API_KEY,
+    SITE_ADMIN_USER_ID,
+    TUNED_IN_LOGGED_IN_API_KEY,
+    TUNED_IN_LOGGED_IN_USER_ID,
+)
 
 
 class TestAdminCooldownGroups(AsyncHTTPTestCase):
@@ -113,3 +118,47 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
         assert row is not None
         assert row["album_cool_multiply"] == pytest.approx(1.0)
         assert row["album_cool_override"] is None
+
+    def test_admin_cooldown_commands_require_admin_user(self):
+        song_id = self._first_song_id()
+        album_id = self._first_album_id()
+        auth_data = self._auth_data(
+            user_id=TUNED_IN_LOGGED_IN_USER_ID,
+            key=TUNED_IN_LOGGED_IN_API_KEY,
+        )
+
+        response = self._post(
+            "/api4/admin/set_song_cooldown",
+            {**auth_data, "song_id": song_id, "multiply": 1.1, "override": 1200},
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["set_song_cooldown_result"]["tl_key"] == "admin_required"
+
+        response = self._post(
+            "/api4/admin/reset_song_cooldown",
+            {**auth_data, "song_id": song_id},
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["reset_song_cooldown_result"]["tl_key"] == "admin_required"
+
+        response = self._post(
+            "/api4/admin/set_album_cooldown",
+            {**auth_data, "album_id": album_id, "multiply": 1.2, "override": 1800},
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["set_album_cooldown_result"]["tl_key"] == "admin_required"
+
+        response = self._post(
+            "/api4/admin/reset_album_cooldown",
+            {**auth_data, "album_id": album_id},
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["reset_album_cooldown_result"]["tl_key"] == "admin_required"

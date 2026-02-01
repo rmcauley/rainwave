@@ -48,7 +48,7 @@ def populate_test_data(cursor, sid=1):
     )
 
     cursor.update(
-        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_IN_LOGGED_IN_USER_ID}, '{TUNED_IN_LOGGED_IN_USER_NAME}', 5)"
+        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_IN_LOGGED_IN_USER_ID}, '{TUNED_IN_LOGGED_IN_USER_NAME}', 2)"
     )
     cursor.update(
         f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({TUNED_IN_LOGGED_IN_USER_ID}, '{TUNED_IN_LOGGED_IN_API_KEY}')"
@@ -58,14 +58,14 @@ def populate_test_data(cursor, sid=1):
     )
 
     cursor.update(
-        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_OUT_LOGGED_IN_USER_ID}, '{TUNED_OUT_LOGGED_IN_USER_NAME}', 5)"
+        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_OUT_LOGGED_IN_USER_ID}, '{TUNED_OUT_LOGGED_IN_USER_NAME}', 2)"
     )
     cursor.update(
         f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({TUNED_OUT_LOGGED_IN_USER_ID}, '{TUNED_OUT_LOGGED_IN_API_KEY}')"
     )
 
     cursor.update(
-        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID}, '{TUNED_IN_LOCKED_TO_OTHER_STATION_USER_NAME}', 5)"
+        f"INSERT INTO phpbb_users (user_id, username, group_id) VALUES ({TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID}, '{TUNED_IN_LOCKED_TO_OTHER_STATION_USER_NAME}', 2)"
     )
     cursor.update(
         f"INSERT INTO r4_api_keys (user_id, api_key) VALUES ({TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID}, '{TUNED_IN_LOCKED_TO_OTHER_STATION_API_KEY}')"

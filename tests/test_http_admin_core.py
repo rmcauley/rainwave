@@ -7,7 +7,13 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.urls import request_classes
-from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID, SITE_ADMIN_USER_NAME
+from tests.seed_data import (
+    SITE_ADMIN_API_KEY,
+    SITE_ADMIN_USER_ID,
+    SITE_ADMIN_USER_NAME,
+    TUNED_IN_LOGGED_IN_API_KEY,
+    TUNED_IN_LOGGED_IN_USER_ID,
+)
 
 
 class TestAdminCore(AsyncHTTPTestCase):
@@ -107,3 +113,37 @@ class TestAdminCore(AsyncHTTPTestCase):
         assert payload["request_line"] is None or isinstance(
             payload["request_line"], list
         )
+
+    def test_admin_commands_require_admin_user(self):
+        song_id = self._first_song_id()
+        auth_data = self._auth_data(
+            user_id=TUNED_IN_LOGGED_IN_USER_ID,
+            key=TUNED_IN_LOGGED_IN_API_KEY,
+        )
+
+        response = self._post(
+            "/api4/admin/set_song_request_only",
+            {**auth_data, "song_id": song_id, "request_only": "true"},
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["set_song_request_only_result"]["tl_key"] == "admin_required"
+
+        response = self._post(
+            "/api4/admin/backend_scan_errors",
+            auth_data,
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["backend_scan_errors"]["tl_key"] == "admin_required"
+
+        response = self._post(
+            "/api4/admin/request_line",
+            auth_data,
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self._payload(response)
+        assert payload["request_line"]["tl_key"] == "admin_required"
