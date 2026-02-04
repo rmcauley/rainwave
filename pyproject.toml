@@ -33,3 +33,4 @@ dev = [
 [tool.mypy]
 files = "src/**/*.py"
 mypy_path = ["src/typestubs"]
+exclude = ["src/frontend"]

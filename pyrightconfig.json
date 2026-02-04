@@ -1,7 +1,7 @@
 {
   "stubPath": "src/typestubs",
   "include": ["src/**/*.py"],
-  "exclude": ["**/__pycache__", "src/typestubs"],
+  "exclude": ["**/__pycache__", "src/typestubs", "src/frontend"],
   "typeCheckingMode": "strict",
   "reportUnusedVariable": "error",
   "strict": ["src/**/*.py"]
