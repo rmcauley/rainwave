@@ -278,7 +278,7 @@ class RainwaveApi extends RainwaveEventListener<RainwaveResponseTypes> {
 
     if (!json) {
       this._debug(JSON.stringify(message));
-      this._debug('Response from Rainwave API was blank!');
+      this._debug('Response from src.backend.rainwave API was blank!');
       this._reconnectSocket();
 
       return;

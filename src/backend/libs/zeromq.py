@@ -2,7 +2,7 @@ import zmq
 import zmq.devices
 from zmq.eventloop import ioloop, zmqstream
 from typing import Any, Callable
-from src.backend.config import config
+from src.backend import config
 from web_api.web import APIException
 
 try:

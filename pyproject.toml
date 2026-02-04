@@ -12,7 +12,7 @@ dependencies = [
     "mutagen==1.47.0",
     "orjson==3.11.7",
     "pillow==12.1.0",
-    "psycopg-binary==3.3.2",
+    "psycopg[binary]==3.3.2",
     "pyinotify==0.9.6",
     "pytz>=2025.2",
     "pyzmq==27.1.0",
@@ -31,4 +31,5 @@ dev = [
 ]
 
 [tool.mypy]
-mypy_path = ["src/backend/typing_stubs"]
+files = "src/**/*.py"
+mypy_path = ["src/typestubs"]
