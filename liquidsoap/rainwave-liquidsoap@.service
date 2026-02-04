@@ -1,0 +1,13 @@
+[Unit]
+Description=Liquidsoap for Rainwave (%i)
+After=network.target
+Documentation=https://www.liquidsoap.info/
+
+[Service]
+ExecStart=/usr/bin/liquidsoap %i.liq
+User=rainwave
+Restart=always
+WorkingDirectory=/opt/rainwave/liquidsoap
+
+[Install]
+WantedBy=multi-user.target

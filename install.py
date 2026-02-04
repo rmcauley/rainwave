@@ -24,6 +24,7 @@ copy_dirs = [
     "etc",
     "lang",
     "libs",
+    "liquidsoap",
     "rainwave",
     "static",
     "templates",
