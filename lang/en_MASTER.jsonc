@@ -1,3 +1,7 @@
+// When updating languages:
+// Update this master template file, then remove the comments and save it as en_MASTER.json
+// This is because Typescript does not support JSONC files for inclusion and typing.
+
 {
   // language_name appears in the pulldown box for language options on Rainwave.
   // Please put them in your actual language. (i.e. use kanji!) Short version should be < 4 characters.

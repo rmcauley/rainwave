@@ -4,7 +4,7 @@ import subprocess
 # from rgain3 import rgcalc, util
 # from rgain3.script import init_gstreamer
 
-from src.backend.config import config
+from src.backend import config
 
 ref_level = 89
 # init_gstreamer()

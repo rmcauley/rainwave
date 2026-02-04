@@ -1,0 +1,15 @@
+[Unit]
+Description=Rainwave Internet Radio Web API
+Wants=network.target
+Requires=postgresql.service memcached.service memcached_ratings.service
+
+[Service]
+Type=simple
+User=rainwave
+Group=www-data
+WorkingDirectory=/home/rainwave
+ExecStart=/home/rainwave/.local/bin/uv run rw_web_api.py
+LimitNOFILE=32767
+
+[Install]
+WantedBy=multi-user.target

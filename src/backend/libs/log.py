@@ -1,7 +1,9 @@
+from os import path
 import logging
 import logging.handlers
 import datetime
 from typing import Any
+from src.backend import config
 
 log: logging.Logger | None = None
 
@@ -28,9 +30,9 @@ def init(logfile: str | None = None, loglevel: str = "warning") -> None:
     logging.getLogger("tornado.access").setLevel(logging.CRITICAL)
 
     handler = None
-    if logfile:
+    if logfile and config.log_dir:
         handler = logging.handlers.RotatingFileHandler(
-            logfile, maxBytes=10000000, backupCount=1
+            path.join(config.log_dir, logfile), maxBytes=10000000, backupCount=1
         )
         handler.setFormatter(RWFormatter())
 
@@ -42,16 +44,13 @@ def init(logfile: str | None = None, loglevel: str = "warning") -> None:
         loglevel = "print"
         handler = print_handler
 
-    logging.getLogger("scss").addHandler(handler)
-    logging.getLogger("scss.compiler").addHandler(handler)
     logging.getLogger("tornado.general").addHandler(handler)
     log = logging.getLogger("tornado.application")
     log.addHandler(handler)
 
     if loglevel == "print":
         log.addHandler(print_handler)
-        logging.getLogger("scss").addHandler(print_handler)
-        logging.getLogger("scss.compiler").addHandler(print_handler)
+
         logging.getLogger("tornado.general").addHandler(print_handler)
 
     if loglevel == "critical":

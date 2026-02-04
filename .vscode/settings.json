@@ -6,7 +6,8 @@
     ".venv": true,
     "uv.lock": true,
     ".mypy_cache": true,
-    "node_modules": true
+    "node_modules": true,
+    ".pytest_cache": true
   },
   "editor.formatOnSave": true,
   "files.insertFinalNewline": true,
@@ -19,10 +20,7 @@
     "source.fixAll.eslint": "always"
   },
   "python.analysis.autoImportCompletions": true,
-  "python.analysis.typeCheckingMode": "strict",
   "python.analysis.diagnosticMode": "workspace",
-  "python.analysis.stubPath": "stubs",
-  "python.analysis.useLibraryCodeForTypes": false,
   "python.linting.mypyEnabled": true,
   "python.linting.enabled": true,
   "python.linting.mypyArgs": ["--config-file", "pyproject.toml"],
@@ -32,7 +30,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "emmet.showExpandedAbbreviation": "never",
-  "files.associations": {
-    "*.hbar": "handlebars"
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

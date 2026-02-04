@@ -27,6 +27,7 @@
 *.log
 *.sql
 *.sqlite
+*.sqlite-journal
 
 # OS generated files #
 ######################
@@ -35,24 +36,19 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-*.pyc
-static/baked
-etc/*.conf
-etc/buildnum
-!etc/rainwave_dev.conf
-!etc/rainwave_reference.conf
-*.sqlite-journal
-out.json
+**/*.pyc
+**/__pycache__
+.venv
+.mypy_cache
+node_modules
+.pytest_cache
 
 .idea
 .vagrant
 *.sublime-workspace
-node_modules
-.mypy_cache
 
 ### venv files
 
-.venv
 rainwave/bin
 rainwave/lib
 rainwave/pyvenv.cfg
