@@ -1,0 +1,66 @@
+def crossfade(~start_next=5., ~fade_in=3., ~fade_out=3., ~width=2., s)
+  high = -20.
+  medium = -32.
+  margin = 4.
+
+  let fade.out = fun (s) -> fade.out(type="sin", duration=fade_out, s)
+  let fade.in = fun (s) -> fade.in(type="sin", duration=fade_in, s)
+  add = fun (a, b) -> add(normalize=false, [b, a])
+  log = fun (~level=3, a) -> log(level=level, label="crossfade", a)
+
+  def transition(a, b)
+    list.iter(fun (x)-> log(level=4, "Before: #{x}"), a.metadata)
+    list.iter(fun (x)-> log(level=4, "After : #{x}"), b.metadata)
+    sequence([a.source, b.source])
+
+    if
+      # If A and B and not too loud and close,
+      # fully cross-fade them.
+      a.db_level <= medium
+      and b.db_level <= medium
+      and abs(a.db_level - b.db_level) <= margin
+    then
+      log("Transition: crossed, fade-in, fade-out.")
+      add(fade.out(a.source), fade.in(b.source))
+
+    elsif
+      # If B is significantly louder than A,
+      # only fade-out A.
+      # We don't want to fade almost silent things,
+      # ask for >medium.
+      b.db_level >= a.db_level + margin
+      and a.db_level >= medium
+      and b.db_level <= high
+    then
+      log("Transition: crossed, fade-out.")
+      add(fade.out(a.source), b.source)
+
+    elsif
+      # Do not fade if it's already very low.
+      b.db_level >= a.db_level + margin
+      and a.db_level <= medium and b.db_level <= high
+    then
+      log("Transition: crossed, no fade-out.")
+      add(a.source, b.source)
+
+    elsif
+      # Opposite as the previous one.
+      a.db_level >= b.db_level + margin
+      and b.db_level >= medium and a.db_level <= high
+    then
+      log("Transition: crossed, fade-in.")
+      add(a.source, fade.in(b.source))
+
+    else
+      # Otherwise, A and B are just too loud
+      # to overlap nicely, or the difference
+      # between them is too large and
+      # overlapping would completely mask one
+      # of them.
+      log("No transition: just sequencing.")
+      sequence([a.source, b.source])
+    end
+  end
+
+  cross(width=width, duration=start_next, transition, s)
+end
