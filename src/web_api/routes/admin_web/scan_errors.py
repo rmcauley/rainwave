@@ -22,7 +22,7 @@ def relative_time(epoch_time: float) -> str:
 
 @handle_url("/admin/album_list/scan_results")
 class ScanResults(web_api.web.PrettyPrintAPIMixin, BackendScanErrors):
-    dj_preparation = True
+    admin_required = True
 
     def get(self):  # pylint: disable=E0202
         if not isinstance(self._output, dict):
@@ -46,7 +46,7 @@ class ScanResults(web_api.web.PrettyPrintAPIMixin, BackendScanErrors):
 
 @handle_url("/admin/tools/scan_results")
 class LatestSongs(web_api.web.HTMLRequest):
-    dj_preparation = True
+    admin_required = True
 
     def get(self):
         self.write(self.render_string("basic_header.html", title="Latest Songs"))

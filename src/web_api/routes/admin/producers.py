@@ -87,7 +87,6 @@ class CreateProducer(web_api.web.APIHandler):
         "start_utc_time": (fieldtypes.positive_integer, True),
         "end_utc_time": (fieldtypes.positive_integer, True),
         "url": (fieldtypes.string, None),
-        "dj_user_id": (fieldtypes.user_id, None),
         "fill_unrated": (fieldtypes.boolean, False),
     }
 
@@ -98,7 +97,6 @@ class CreateProducer(web_api.web.APIHandler):
             end=self.get_argument("end_utc_time"),
             name=self.get_argument("name"),
             url=self.get_argument("url"),
-            dj_user_id=self.get_argument("dj_user_id"),
         )
         if self.get_argument("fill_unrated") and getattr(p, "fill_unrated", False):
             end_time = self.get_argument_int("end_utc_time")

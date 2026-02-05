@@ -111,10 +111,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
     tunein_required = False
     # Validate user's logged in status first.
     login_required = False
-    # User must be a DJ for the next, current, or history[0] event
-    dj_required = False
-    # User must have an unused DJ-able event in the future
-    dj_preparation = False
     # Validate user is a station administrator.
     admin_required = False
     # Do we need a valid SID as part of the submitted form?
@@ -289,7 +285,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
             raise APIException("invalid_station_id", http_code=400)
 
     def permission_checks(self) -> None:
-        if (self.login_required or self.admin_required or self.dj_required) and (
+        if (self.login_required or self.admin_required) and (
             not self.user or self.user.is_anonymous()
         ):
             raise APIException("login_required", http_code=403)

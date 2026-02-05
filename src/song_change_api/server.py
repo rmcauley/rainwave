@@ -131,7 +131,6 @@ class SongChangeApiServer:
         # the cron jobs that run occasionally.
         import song_change_api.api_key_pruning
         import song_change_api.inactive
-        import get_next_server.dj_heartbeat
 
         # pylint: enable=import-outside-toplevel,unused-import
 

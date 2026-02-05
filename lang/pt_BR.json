@@ -28,7 +28,6 @@
   "login_required": "Login required.",
   "tunein_required": "You must be tuned in.",
   "admin_required": "You must be an admin.",
-  "dj_required": "You must be a DJ.",
   "perks_required": "You must be a donor.",
   "unlocked_only": [
     "User locked to ",
@@ -80,9 +79,7 @@
   "empty_list": "Lista vazia.",
   "no_search_results": "Nenhum resultado.",
   "server_just_started": "A Rainwave está sendo reiniciada",
-  "station_paused": "A estação está pausada pelo DJ.",
   "album_on_other_station": "Álbum não disponível nessa estação.",
-  "album_is_dj_only": "Álbum exclusivo para esse evento.",
   "locked_to_station": [
     "Você estava votando na ",
     {

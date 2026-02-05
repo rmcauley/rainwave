@@ -127,7 +127,7 @@ memcache_connect_timeout = 1.0
 memcache_timeout = 5.0
 
 # How long do you want to keep old data around? (in seconds)
-# How long to keep 'events' for e.g. DJ hosting blocks, power hours/playlists
+# How long to keep 'events' for e.g. power hours
 trim_event_age = 2592000
 # How long to keep decided elections for
 trim_election_age = 86400

@@ -179,11 +179,6 @@ function rainwaveInit() {
   template = RWTemplates.index({ stations: Stations });
 
   API.add_callback("user", function (json) {
-    if (json.dj) {
-      document.body.classList.add("is_dj");
-    } else {
-      document.body.classList.remove("is_dj");
-    }
     User = json;
   });
 

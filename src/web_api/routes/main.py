@@ -88,8 +88,3 @@ class Bootstrap(web_api.web.APIHandler):
         else:
             self.append("mobile", False)
         self.write_output()
-
-
-@handle_api_url("bootstrap_dj")
-class DJBootstrap(Bootstrap):
-    dj_required = True

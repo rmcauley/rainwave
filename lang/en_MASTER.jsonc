@@ -39,7 +39,6 @@
   "login_required": "Login required.",
   "tunein_required": "You must be tuned in.",
   "admin_required": "You must be an admin.",
-  "dj_required": "You must be a DJ.",
   "perks_required": "You must be a donor.",
   "unlocked_only": [
     "User locked to ",
@@ -90,7 +89,6 @@
   "empty_list": "Empty list.",
   "no_search_results": "No search results.",
   "server_just_started": "Rainwave is Rebooting",
-  "station_paused": "Station is currently paused by the DJ.",
   "album_on_other_station": "Album is not available on this station, sorry!",
   "song_on_other_station": [
     "Song is not available on ",
@@ -100,7 +98,6 @@
     },
     "."
   ],
-  "album_is_dj_only": "Album is exclusive to this event, sorry!",
   "locked_to_station": [
     "You were just voting on ",
     {
@@ -211,7 +208,7 @@
   "election": "Election",
   "power_hour": "Power Hour",
 
-  // When a Power Hour or DJ Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly
+  // When a Power Hour or Event happens, instead of saying 'NEW MUSIC POWER HOUR' repeatedly
   // we just use 'CONTINUED' instead, so the title of the power hour is only displayed once
   // at the top of the timeline.  That's what this 'continued' line is for.
   "continued": "Continued",

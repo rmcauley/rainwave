@@ -20,7 +20,7 @@ var lastOpenId;
 var detailHeader;
 var resetCacheOnNextRequest = false;
 var requestInFlight = false;
-var tabOrder = ["album", "artist", "group", "request_line"];
+var tabOrder = ['album', 'artist', 'group', 'request_line'];
 var forceCloseDetail = false;
 
 var resetCache = function () {
@@ -42,7 +42,7 @@ var resetCache = function () {
   }
 
   if (detailHeader) {
-    detailHeader.textContent = "";
+    detailHeader.textContent = '';
   }
 };
 
@@ -70,37 +70,36 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
   }
 
   resetCache();
-  API.add_callback("wsthrottle", resetCache);
+  API.add_callback('wsthrottle', resetCache);
 
   el = rootTemplate.detail;
   detailHeader = rootTemplate.detail_header;
 
-  rootTemplate.lists.addEventListener("click", function (e) {
+  rootTemplate.lists.addEventListener('click', function (e) {
     if (
       Sizing.simple &&
-      document.body.classList.contains("detail") &&
-      !document.body.classList.contains("desktop")
+      document.body.classList.contains('detail') &&
+      !document.body.classList.contains('desktop')
     ) {
       change(currentType);
     }
     e.stopPropagation();
   });
 
-  rootTemplate.detail_container.addEventListener("click", function (e) {
+  rootTemplate.detail_container.addEventListener('click', function (e) {
     e.stopPropagation();
   });
 
-  rootTemplate.sizeable_area.addEventListener("click", function (e) {
+  rootTemplate.sizeable_area.addEventListener('click', function (e) {
     if (
       Sizing.simple &&
-      (e.target.nodeName.toLowerCase() != "a" ||
-        !e.target.getAttribute("href"))
+      (e.target.nodeName.toLowerCase() != 'a' || !e.target.getAttribute('href'))
     ) {
       change();
     }
   });
 
-  rootTemplate.list_close.addEventListener("click", function () {
+  rootTemplate.list_close.addEventListener('click', function () {
     // this code broke on Chrome for some reason?!
     // also not even sure if this is a desired effect
     // so, it gets removed.
@@ -118,7 +117,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
     }
   });
 
-  rootTemplate.detail_close.addEventListener("click", function () {
+  rootTemplate.detail_close.addEventListener('click', function () {
     if (lists[currentType]) {
       change(currentType);
     } else {
@@ -126,14 +125,14 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
     }
   });
 
-  API.add_callback("_SYNC_SCHEDULE_COMPLETE", function () {
+  API.add_callback('_SYNC_SCHEDULE_COMPLETE', function () {
     if (requestInFlight) {
       resetCacheOnNextRequest = true;
     } else {
       renderedType = null;
       renderedId = null;
       resetCache();
-      if (currentOpenType && currentId && document.body.classList.contains("detail")) {
+      if (currentOpenType && currentId && document.body.classList.contains('detail')) {
         openView(currentOpenType, currentId);
       }
     }
@@ -152,8 +151,7 @@ INIT_TASKS.on_draw.push(function (rootTemplate) {
   scroll = Scrollbar.create(el, false, !Sizing.simple);
   Sizing.detailArea = scroll.scrollblock;
   scroll.reposition_hook = function () {
-    if (currentType && currentId)
-      scrollPositions[currentType][currentId] = scroll.scroll_top;
+    if (currentType && currentId) scrollPositions[currentType][currentId] = scroll.scroll_top;
   };
 });
 
@@ -172,8 +170,8 @@ var scrollABit = function () {
 
 var getCurrentUrl = function () {
   var deeplinkurl = decodeURI(location.href);
-  if (deeplinkurl.indexOf("#!/") >= 0) {
-    return deeplinkurl.substring(deeplinkurl.indexOf("#!/") + 3);
+  if (deeplinkurl.indexOf('#!/') >= 0) {
+    return deeplinkurl.substring(deeplinkurl.indexOf('#!/') + 3);
   }
   return null;
 };
@@ -203,14 +201,13 @@ var detectUrlChange = function () {
     oldUrl = location.href;
     var newRoute = getCurrentUrl();
     if (!newRoute) {
-      document.body.classList.remove("search_open");
-      document.body.classList.remove("dj_open");
+      document.body.classList.remove('search_open');
       if (Sizing.simple) {
-        document.body.classList.remove("playlist");
-        document.body.classList.remove("requests");
-        document.body.classList.remove("detail");
+        document.body.classList.remove('playlist');
+        document.body.classList.remove('requests');
+        document.body.classList.remove('detail');
         for (var i in tabs) {
-          document.body.classList.remove("playlist_" + i);
+          document.body.classList.remove('playlist_' + i);
         }
       }
       if (activeList && activeList._keyHandle) {
@@ -221,25 +218,20 @@ var detectUrlChange = function () {
       currentOpenType = null;
       return false;
     }
-    newRoute = newRoute.split("/");
-    document.body.classList.remove("requests");
-    document.body.classList.remove("search_open");
-    document.body.classList.remove("dj_open");
+    newRoute = newRoute.split('/');
+    document.body.classList.remove('requests');
+    document.body.classList.remove('search_open');
     if (tabs[newRoute[0]] || views[newRoute[0]]) {
       openRoute(newRoute[0], newRoute[1]);
       return true;
-    } else if (newRoute[0] == "requests") {
+    } else if (newRoute[0] == 'requests') {
       openRoute();
-      document.body.classList.add("requests");
+      document.body.classList.add('requests');
       return true;
-    } else if (newRoute[0] == "search") {
+    } else if (newRoute[0] == 'search') {
       openRoute();
-      document.body.classList.add("search_open");
+      document.body.classList.add('search_open');
       setTimeout(SearchPanel.focus, 300);
-      return true;
-    } else if (newRoute[0] == "dj") {
-      openRoute();
-      document.body.classList.add("dj_open");
       return true;
     } else {
       // TODO: show error
@@ -255,9 +247,9 @@ var actuallyOpen = function (typ, id) {
 
   requestInFlight = false;
 
-  if (!document.body.classList.contains("detail")) {
+  if (!document.body.classList.contains('detail')) {
     // console.log("Sliding out.");
-    document.body.classList.add("detail");
+    document.body.classList.add('detail');
   }
 
   if (renderedType == typ && renderedId == id) return;
@@ -268,7 +260,7 @@ var actuallyOpen = function (typ, id) {
   // console.log("Rendering.");
 
   for (var i = 0; i < el.childNodes.length; i++) {
-    el.childNodes[i].style.display = "none";
+    el.childNodes[i].style.display = 'none';
   }
   activeDetail = null;
   removeExcessHeaderContent();
@@ -279,10 +271,10 @@ var actuallyOpen = function (typ, id) {
   } else if (cache[typ][id]._root) {
     // console.log(typ + "/" + id + ": Appending existing cache.");
     el.appendChild(cache[typ][id]._root);
-    cache[typ][id]._root.style.display = "block";
+    cache[typ][id]._root.style.display = 'block';
     activeDetail = cache[typ][id];
     detailHeader.textContent = cache[typ][id]._headerText;
-    detailHeader.setAttribute("title", cache[typ][id]._headerText);
+    detailHeader.setAttribute('title', cache[typ][id]._headerText);
     if (cache[typ][id]._headerFormatting) {
       cache[typ][id]._headerFormatting(detailHeader);
     }
@@ -290,14 +282,14 @@ var actuallyOpen = function (typ, id) {
     // console.log(typ + "/" + id + ": Rendering detail.");
     t = views[typ](cache[typ][id], el);
     detailHeader.textContent = t._headerText;
-    detailHeader.setAttribute("title", t._headerText);
+    detailHeader.setAttribute('title', t._headerText);
     if (t._headerFormatting) {
       t._headerFormatting(detailHeader);
     }
     if (t._root.parentNode != el) {
       el.appendChild(t._root);
     }
-    if (t._root && t._root.tagName && t._root.tagName.toLowerCase() == "div") {
+    if (t._root && t._root.tagName && t._root.tagName.toLowerCase() == 'div') {
       cache[typ][id] = t;
       cache[typ][id]._scroll = scroll;
       activeDetail = cache[typ][id];
@@ -307,9 +299,7 @@ var actuallyOpen = function (typ, id) {
         cps = cachePageStack.shift();
         if (cache[cps.typ][cps.id]) {
           if (cache[cps.typ][cps.id]._root.parentNode) {
-            cache[cps.typ][cps.id]._root.parentNode.removeChild(
-              cache[cps.typ][cps.id]._root,
-            );
+            cache[cps.typ][cps.id]._root.parentNode.removeChild(cache[cps.typ][cps.id]._root);
           }
           delete cache[cps.typ][cps.id];
         }
@@ -351,7 +341,7 @@ var openView = function (typ, id) {
 
     if (
       !tabs[typ] ||
-      (!document.body.classList.contains("playlist") && !lists[typ].loaded) ||
+      (!document.body.classList.contains('playlist') && !lists[typ].loaded) ||
       API.isSlow
     ) {
       // console.log("Clearing detail.");
@@ -360,10 +350,10 @@ var openView = function (typ, id) {
       renderedId = false;
       requestInFlight = true;
       for (var i = 0; i < el.childNodes.length; i++) {
-        el.childNodes[i].style.display = "none";
+        el.childNodes[i].style.display = 'none';
       }
       activeDetail = null;
-      if (!document.body.classList.contains("detail")) {
+      if (!document.body.classList.contains('detail')) {
         setTimeout(function () {
           // console.log("Slide finished.");
           if (currentOpenType === typ && currentId === id) {
@@ -371,12 +361,12 @@ var openView = function (typ, id) {
             readyToRender = true;
           }
         }, 300);
-        document.body.classList.add("detail");
+        document.body.classList.add('detail');
       } else {
         readyToRender = true;
       }
     } else {
-      document.body.classList.add("detail");
+      document.body.classList.add('detail');
       readyToRender = true;
     }
 
@@ -390,8 +380,8 @@ var openView = function (typ, id) {
       cache[typ][id] = true;
       var params = { id: id };
       var req = typ;
-      if (req == "request_line") {
-        req = "listener";
+      if (req == 'request_line') {
+        req = 'listener';
       }
       API.async_get(req, params, function (json) {
         cache[typ][id] = json[req];
@@ -410,7 +400,7 @@ var openView = function (typ, id) {
 };
 
 var removeExcessHeaderContent = function () {
-  detailHeader.parentNode.className = "open";
+  detailHeader.parentNode.className = 'open';
   var cs = detailHeader.parentNode.childNodes;
   for (var i = cs.length - 1; i >= 0; i--) {
     if (cs[i] != detailHeader) {
@@ -422,15 +412,14 @@ var removeExcessHeaderContent = function () {
 var openRoute = function (typ, id) {
   if (
     lists[typ] &&
-    ((!document.body.classList.contains("playlist") && !lists[typ].loaded) ||
-      API.isSlow)
+    ((!document.body.classList.contains('playlist') && !lists[typ].loaded) || API.isSlow)
   ) {
     readyToRender = false;
   }
 
   if (Sizing.simple || lists[typ]) {
     for (var i in tabs) {
-      document.body.classList.remove("playlist_" + i);
+      document.body.classList.remove('playlist_' + i);
     }
   }
   var closeDetail = true;
@@ -438,19 +427,19 @@ var openRoute = function (typ, id) {
     Prefs.set_new_list(typ);
     lastOpen = typ;
     lastOpenId = id;
-    document.body.classList.add("playlist");
-    document.body.classList.add("playlist_" + typ);
+    document.body.classList.add('playlist');
+    document.body.classList.add('playlist_' + typ);
     if (activeList && activeList._keyHandle) {
       activeList.keyNavBlur();
     }
     activeList = lists[typ];
-    if (typ != currentType && document.body.classList.contains("normal")) {
+    if (typ != currentType && document.body.classList.contains('normal')) {
       closeDetail = false;
     }
     currentType = typ;
     KeyHandler.routeToLists();
   } else if (Sizing.simple) {
-    document.body.classList.remove("playlist");
+    document.body.classList.remove('playlist');
   }
 
   if (typ in lists && id && !isNaN(id)) {
@@ -462,9 +451,8 @@ var openRoute = function (typ, id) {
     if (!readyToRender) {
       removeExcessHeaderContent();
       detailHeader.textContent =
-        (lists[typ] && lists[typ].getTitleFromId
-          ? lists[typ].getTitleFromId(id)
-          : false) || $l("Loading...");
+        (lists[typ] && lists[typ].getTitleFromId ? lists[typ].getTitleFromId(id) : false) ||
+        $l('Loading...');
     }
     var scrolled = false;
     if (!readyToRender && lists[typ] && lists[typ].loaded) {
@@ -478,7 +466,7 @@ var openRoute = function (typ, id) {
       }
     }
   } else if (Sizing.simple && (closeDetail || forceCloseDetail)) {
-    document.body.classList.remove("detail");
+    document.body.classList.remove('detail');
     forceCloseDetail = false;
   }
 
@@ -494,16 +482,16 @@ var openRoute = function (typ, id) {
 };
 
 var change = function () {
-  var r = "";
+  var r = '';
   for (var i = 0; i < arguments.length; i++) {
-    if (r) r += "/";
+    if (r) r += '/';
     r += arguments[i];
   }
   var newUrl = decodeURI(location.href);
-  if (newUrl.indexOf("#") >= 0) {
-    newUrl = newUrl.substring(0, newUrl.indexOf("#")) + "#!/" + r;
+  if (newUrl.indexOf('#') >= 0) {
+    newUrl = newUrl.substring(0, newUrl.indexOf('#')) + '#!/' + r;
   } else {
-    newUrl = newUrl + "#!/" + r;
+    newUrl = newUrl + '#!/' + r;
   }
   if (oldUrl == newUrl) {
     oldUrl = null;
@@ -515,7 +503,7 @@ var change = function () {
 
 var openLast = function () {
   forceCloseDetail = true;
-  change(lastOpen || "album");
+  change(lastOpen || 'album');
 };
 
 var openLastId = function () {

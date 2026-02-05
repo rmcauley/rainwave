@@ -25,8 +25,6 @@ def attach_info_to_request(
 
     if request.user:
         request.append("user", request.user.to_private_dict())
-        if request.user.is_dj():
-            attach_dj_info_to_request(request)
 
     if not request.mobile:
         if (
@@ -161,19 +159,15 @@ def check_sync_status(sid: int, offline_ack: bool | None = False) -> None:
 @handle_api_url("info")
 class InfoRequest(APIHandler):
     auth_required = False
-    description = "Returns current user and station information.  all_albums will append a list of all albums to the request (will slow down your request).  current_listeners will add a list of all current listeners to your request.  Setting 'status' to true will have the response change if the station is currently being DJed. (not recommended to set this to true)"
+    description = "Returns current user and station information.  all_albums will append a list of all albums to the request (will slow down your request).  current_listeners will add a list of all current listeners to your request."
     fields = {
         "all_albums": (fieldtypes.boolean, False),
         "current_listeners": (fieldtypes.boolean, False),
-        "status": (fieldtypes.boolean, None),
     }
     allow_get = True
     allow_cors = True
 
     def post(self):
-        if self.get_argument("status"):
-            check_sync_status(self.sid)
-
         attach_info_to_request(self)
 
 

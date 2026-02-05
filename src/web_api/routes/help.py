@@ -26,7 +26,6 @@ url_properties = (
         "login",
         "User must be logged in to a registered account to use command.",
     ),
-    ("dj_required", "dj", "User must be the active DJ for the station to use command."),
     ("admin_required", "admin", "User must be an administrator to use command."),
     (
         "pagination",
@@ -61,17 +60,17 @@ def sectionize_requests() -> None:
             if config.developer_mode:
                 sections["Other"][url] = handler
         elif getattr(handler, "is_pretty_print_html", False):
-            if handler.admin_required or handler.dj_required or handler.dj_preparation:
+            if handler.admin_required:
                 sections["Admin HTML"][url] = handler
             else:
                 sections["Statistic HTML"][url] = handler
         elif getattr(handler, "is_html", False):
-            if handler.admin_required or handler.dj_required or handler.dj_preparation:
+            if handler.admin_required:
                 sections["Admin HTML"][url] = handler
             else:
                 sections["HTML Pages"][url] = handler
         elif getattr(handler, "is_api_handler", False):
-            if handler.admin_required or handler.dj_required or handler.dj_preparation:
+            if handler.admin_required:
                 sections["Admin JSON"][url] = handler
             else:
                 sections["Core JSON"][url] = handler
@@ -104,15 +103,6 @@ class IndexRequest(web_api.web.HTMLRequest):
                 handler, "auth_required", False
             ):
                 self.write("<td class='auth requirement'>API key</td>")
-            elif (
-                prop[0] == "dj_required"
-                and not getattr(handler, "admin_required", False)
-                and (
-                    getattr(handler, "dj_required", False)
-                    or getattr(handler, "dj_preparation", False)
-                )
-            ):
-                self.write("<td class='dj requirement'>dj</td>")
             else:
                 self.write_property(prop[0], handler, prop[1])
         display_url = url
@@ -140,7 +130,7 @@ class IndexRequest(web_api.web.HTMLRequest):
         for section in order:
             self.write("<tr><th colspan='11'>%s</th></tr>" % section)
             self.write(
-                "<tr><th>Allows GET</th><th>Allow CORS</th><th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>DJ</th><th>Admin</th><th>Pagination</th><th>URL</th><th>Link</th></tr>"
+                "<tr><th>Allows GET</th><th>Allow CORS</th><th>Auth Required</th><th>Station ID Required</th><th>Tune In Required</th><th>Login Required</th><th>Admin</th><th>Pagination</th><th>URL</th><th>Link</th></tr>"
             )
             for url, handler in sorted(sections[section].items()):
                 self.write_class_properties(url, handler)

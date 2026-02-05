@@ -134,25 +134,6 @@ class SessionBank:
 
         self.clear()
 
-    def update_dj(self):
-        for session in self.websockets:
-            if session.user.is_dj():
-                try:
-                    session.update_dj_only()
-                    log.debug(
-                        "sync_update_dj", "Updated user %s session." % session.user.id
-                    )
-                except Exception as e:
-                    try:
-                        session.rw_finish()
-                    except:
-                        pass
-                    log.exception(
-                        "sync_update_dj",
-                        "Session failed to be updated during update_dj.",
-                        e,
-                    )
-
     # this function is only called when the user's tune_in status changes
     # though it does send an update for the whole user() object if the situation
     # is correct
@@ -295,8 +276,6 @@ def _on_zmq(messages: list[typing.Any]) -> None:
             elif message["action"] == "update_user":
                 for sid in sessions:
                     sessions[sid].update_user(message["user_id"])
-            elif message["action"] == "update_dj":
-                sessions[message["sid"]].update_dj()
             elif message["action"] == "ping":
                 log.debug("zeromq", "Pong")
             elif message["action"] == "vote_by":
@@ -351,16 +330,10 @@ class Sync(APIHandler):
         "known_event_id": (fieldtypes.positive_integer, None),
     }
     is_websocket = False
-    dj = False
     wait_future = None
 
     async def post(self):
         global sessions
-
-        if self.user.is_dj():
-            self.dj = True
-        else:
-            self.dj = False
 
         routes.info.check_sync_status(self.sid, self.get_argument_bool("offline_ack"))
 
@@ -873,8 +846,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
             self.refresh_user()
             routes.info.attach_info_to_request(handler, live_voting=True)
-            if self.user.is_dj():
-                routes.info.attach_dj_info_to_request(handler)
             handler.append("user", self.user.to_private_dict())
             handler.append(
                 "api_info",

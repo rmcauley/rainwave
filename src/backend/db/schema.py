@@ -431,7 +431,6 @@ async def create_tables() -> None:
                 sched_type				TEXT		, \
                 sched_name				TEXT		, \
                 sched_url				TEXT 		, \
-                sched_dj_user_id        INT         , \
                 sid						SMALLINT	NOT NULL, \
                 sched_public			BOOLEAN		DEFAULT TRUE, \
                 sched_timed				BOOLEAN		DEFAULT TRUE, \
@@ -446,14 +445,6 @@ async def create_tables() -> None:
         await create_index(cursor, "r4_schedule", ["sched_in_progress"])
         await create_index(cursor, "r4_schedule", ["sched_public"])
         await create_index(cursor, "r4_schedule", ["sched_start_actual"])
-        await create_delete_fk(
-            cursor,
-            "r4_schedule",
-            "phpbb_users",
-            "sched_dj_user_id",
-            foreign_key="user_id",
-            create_idx=False,
-        )
 
         await cursor.update(
             " \
