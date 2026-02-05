@@ -60,7 +60,7 @@ async def create_null_fk(
 async def create_tables() -> None:
     with get_cursor() as cursor:
         trgrm_exists = await cursor.fetch_var(
-            "SELECT extname FROM pg_extension WHERE extname = 'pg_trgm'", as_type=str
+            "SELECT extname FROM pg_extension WHERE extname = 'pg_trgm'", var_type=str
         )
         if not trgrm_exists or not trgrm_exists == "pg_trgm":
             try:
@@ -78,7 +78,7 @@ async def create_tables() -> None:
         # From: https://wiki.postgresql.org/wiki/First_%28aggregate%29
         # Used in rainwave/playlist.py
         first_exists = await cursor.fetch_var(
-            "SELECT proname FROM pg_proc WHERE proname = 'first'", as_type=str
+            "SELECT proname FROM pg_proc WHERE proname = 'first'", var_type=str
         )
         if not first_exists or first_exists != "first":
             await cursor.update(
@@ -99,7 +99,7 @@ async def create_tables() -> None:
             )
 
         last_exists = await cursor.fetch_var(
-            "SELECT proname FROM pg_proc WHERE proname = 'last'", as_type=str
+            "SELECT proname FROM pg_proc WHERE proname = 'last'", var_type=str
         )
         if not last_exists or last_exists != "last":
             await cursor.update(

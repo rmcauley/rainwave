@@ -5,8 +5,8 @@ from web_api.urls import handle_api_url
 from web_api.urls import handle_api_html_url
 import web_api.web
 from web_api.web import PrettyPrintAPIMixin
-from src.backend.libs import db
-from src.backend import config
+from backend.libs import db
+from backend import config
 
 from routes.admin_web.power_hours import get_ph_formatted_time
 

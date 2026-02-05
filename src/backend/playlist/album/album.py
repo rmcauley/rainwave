@@ -1,70 +1,21 @@
 import math
 import os
 from time import time as timestamp
-from typing import Any
 
-from backend.cache import cache
-from libs import db, log
-from src.backend.rainwave import rating
-from src.backend.rainwave.playlist_objects import cooldown
-from src.backend.rainwave.playlist_objects.metadata import (
+from backend.libs import log
+from backend.rainwave import rating
+from backend.rainwave.playlist_objects import cooldown
+from backend.rainwave.playlist_objects.metadata import (
     AssociatedMetadata,
     MetadataNotFoundError,
     make_searchable_string,
 )
-from src.backend import config
+from backend import config
 
-num_albums = {}
-updated_album_ids = {}
-max_album_ids = {}
+num_albums: dict[int, int] = {}
 
 
-def clear_updated_albums(sid: int) -> None:
-    global updated_album_ids
-    updated_album_ids[sid] = {}
-
-
-def get_updated_albums_dict(sid: int) -> list[dict[str, Any]]:
-    global updated_album_ids
-    if not sid in updated_album_ids:
-        return []
-
-    previous_newest_album = cache.get_station(sid, "newest_album")
-    if not previous_newest_album:
-        cache.set_station(sid, "newest_album", timestamp())
-    else:
-        newest_albums = db.c.fetch_list(
-            "SELECT album_id FROM r4_albums JOIN r4_album_sid USING (album_id) WHERE sid = %s AND album_added_on > %s",
-            (sid, previous_newest_album),
-        )
-        for album_id in newest_albums:
-            updated_album_ids[sid][album_id] = True
-        cache.set_station(sid, "newest_album", timestamp())
-    album_diff = []
-    for album_id in updated_album_ids[sid]:
-        album = Album.load_from_id_sid(album_id, sid)
-        album.solve_cool_lowest(sid)
-        album_diff.append(album.to_album_diff())
-    return album_diff
-
-
-def warm_cooled_albums(sid: int) -> None:
-    if sid == 0:
-        return
-    global updated_album_ids
-    album_list = db.c.fetch_list(
-        "SELECT album_id FROM r4_album_sid WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE",
-        (sid, timestamp()),
-    )
-    for album_id in album_list:
-        updated_album_ids[sid][album_id] = True
-    db.c.update(
-        "UPDATE r4_album_sid SET album_cool = FALSE WHERE sid = %s AND album_cool_lowest <= %s AND album_cool = TRUE",
-        (sid, timestamp()),
-    )
-
-
-class Album(AssociatedMetadata):
+class Album:
     sid = 0
     rating_precise = 0
 

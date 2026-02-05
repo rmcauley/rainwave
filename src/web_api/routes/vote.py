@@ -6,13 +6,13 @@ from web_api.web import APIHandler
 from web_api.exceptions import APIException
 from web_api.urls import handle_api_url
 import rainwave.schedule
-from src.backend.rainwave.events.event import BaseEvent
-from src.backend.rainwave.events.election import Election
+from backend.rainwave.events.event import BaseEvent
+from backend.rainwave.events.election import Election
 
 from libs import cache
-from src.backend import config
+from backend import config
 from libs import log
-from src.backend.libs import db
+from backend.libs import db
 from libs import zeromq
 
 

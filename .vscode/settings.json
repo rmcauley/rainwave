@@ -7,7 +7,8 @@
     "uv.lock": true,
     ".mypy_cache": true,
     "node_modules": true,
-    ".pytest_cache": true
+    ".pytest_cache": true,
+    "src/rainwave.egg-info": true
   },
   "editor.formatOnSave": true,
   "files.insertFinalNewline": true,
@@ -32,5 +33,6 @@
   "emmet.showExpandedAbbreviation": "never",
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
 }

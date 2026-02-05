@@ -3,7 +3,7 @@ import os
 from typing import Any
 
 from backend.cache import cache
-from src.backend import config
+from backend import config
 
 try:
     import ujson as json
@@ -14,15 +14,15 @@ from time import time as timestamp
 
 from libs import db, log, replaygain
 from mutagen.mp3 import MP3
-from src.backend.rainwave import rating
-from src.backend.rainwave.playlist_objects import cooldown
-from src.backend.rainwave.playlist_objects.album import Album
-from src.backend.rainwave.playlist_objects.artist import Artist
-from src.backend.rainwave.playlist_objects.metadata import (
+from backend.rainwave import rating
+from backend.rainwave.playlist_objects import cooldown
+from backend.rainwave.playlist_objects.album import Album
+from backend.rainwave.playlist_objects.artist import Artist
+from backend.rainwave.playlist_objects.metadata import (
     MetadataUpdateError,
     make_searchable_string,
 )
-from src.backend.rainwave.playlist_objects.songgroup import SongGroup
+from backend.rainwave.playlist_objects.songgroup import SongGroup
 
 num_songs = {}
 num_origin_songs = {}

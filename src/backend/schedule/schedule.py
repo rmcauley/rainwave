@@ -6,18 +6,18 @@ import tornado.ioloop
 from typing import Any
 
 from song_change_api import sync_to_front
-from src.backend.rainwave import events
-from src.backend.rainwave import playlist
+from backend.rainwave import events
+from backend.rainwave import playlist
 import rainwave.playlist_objects.album
-from src.backend.rainwave import listeners
-from src.backend.rainwave import request
-from src.backend.rainwave import user
-from src.backend.libs import db
-from src.backend import config
+from backend.rainwave import listeners
+from backend.rainwave import request
+from backend.rainwave import user
+from backend.libs import db
+from backend import config
 from backend.cache import cache
 from libs import log
 
-from src.backend.rainwave.events import election
+from backend.rainwave.events import election
 
 # This is to make sure the code gets loaded and producers get registered
 import rainwave.events.oneup
@@ -26,8 +26,8 @@ import rainwave.events.pvpelection_no_cooldown
 import rainwave.events.shortest_election
 import rainwave.events.singlesong
 
-from src.backend.rainwave.events.singlesong import SingleSong
-from src.backend.rainwave.events.event import BaseProducer, BaseEvent
+from backend.rainwave.events.singlesong import SingleSong
+from backend.rainwave.events.event import BaseProducer, BaseEvent
 
 # Events for each station
 current = {}

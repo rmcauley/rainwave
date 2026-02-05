@@ -2,10 +2,10 @@
 
 import argparse
 from libs import config
-from src.backend.libs import db
+from backend.libs import db
 from libs import cache
 from libs import log
-from src.song_change_api import icecast_sync
+from song_change_api import icecast_sync
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

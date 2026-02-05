@@ -1,7 +1,7 @@
 import bcrypt
 from web_api.urls import handle_url
 from web_api.web import HTMLRequest
-from src.backend.libs import db
+from backend.libs import db
 from routes.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 

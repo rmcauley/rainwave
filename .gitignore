@@ -52,3 +52,5 @@ node_modules
 rainwave/bin
 rainwave/lib
 rainwave/pyvenv.cfg
+
+src/rainwave.egg-info

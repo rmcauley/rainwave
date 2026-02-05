@@ -1,8 +1,8 @@
-from src.backend.libs import db
-from src.backend import config
+from backend.libs import db
+from backend import config
 from typing import Any
 
-from src.backend.rainwave.playlist_objects.metadata import (
+from backend.rainwave.playlist_objects.metadata import (
     AssociatedMetadata,
     MetadataUpdateError,
     make_searchable_string,

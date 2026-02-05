@@ -3,7 +3,7 @@ from web_api.web import PrettyPrintAPIMixin
 from web_api.urls import handle_api_url
 from web_api.urls import handle_api_html_url
 
-from src.backend.libs import db
+from backend.libs import db
 
 
 @handle_api_url("tip_jar")

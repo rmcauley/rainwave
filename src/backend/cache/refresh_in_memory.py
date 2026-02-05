@@ -1,6 +1,6 @@
 import asyncio
-from src.web_api.exceptions import APIException
-from src.backend import config
+from web_api.exceptions import APIException
+from backend import config
 from .cache import client, in_memory, cache_set
 from .station_cache import cache_get_station
 

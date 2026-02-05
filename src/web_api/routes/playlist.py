@@ -13,11 +13,11 @@ except ImportError:
     import json
 
 from libs import cache
-from src.backend.libs import db
-from src.backend import config
+from backend.libs import db
+from backend import config
 from libs.pretty_date import pretty_date
-from src.backend.rainwave import playlist
-from src.backend.rainwave.playlist_objects.metadata import MetadataNotFoundError
+from backend.rainwave import playlist
+from backend.rainwave.playlist_objects.metadata import MetadataNotFoundError
 from web_api.exceptions import APIException
 
 PAGE_LIMIT = 1000

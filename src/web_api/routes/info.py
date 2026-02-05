@@ -6,10 +6,10 @@ from web_api.urls import handle_api_url
 import routes.vote
 import routes.playlist
 import routes.tune_in
-from src.backend.rainwave.events.event import BaseEvent
+from backend.rainwave.events.event import BaseEvent
 
 from libs import cache
-from src.backend import config
+from backend import config
 
 
 def attach_info_to_request(

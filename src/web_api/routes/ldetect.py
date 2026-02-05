@@ -8,8 +8,8 @@ from web_api.exceptions import APIException
 
 from libs import cache
 from libs import log
-from src.backend.libs import db
-from src.backend.rainwave import user
+from backend.libs import db
+from backend.rainwave import user
 from song_change_api import sync_to_front
 
 # Sample Icecast query:

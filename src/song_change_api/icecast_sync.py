@@ -4,9 +4,9 @@ from xml.etree import ElementTree
 from typing import Any
 
 from libs import cache
-from src.backend import config
+from backend import config
 from libs import log
-from src.backend.libs import db
+from backend.libs import db
 
 
 class IcecastSyncCall:

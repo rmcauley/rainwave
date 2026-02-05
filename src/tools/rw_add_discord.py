@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from src.backend.libs import db
+from backend.libs import db
 from libs import cache
 from libs import config
 from libs import log

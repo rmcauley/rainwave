@@ -1,5 +1,5 @@
-from src.backend.libs import db
-from src.backend import config
+from backend.libs import db
+from backend import config
 
 num_songs_total = 0
 num_songs: dict[int, int] = {}

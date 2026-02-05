@@ -1,6 +1,6 @@
-from src.backend import config
+from backend import config
 from libs import cache
-from src.backend.libs import db
+from backend.libs import db
 
 import web_api.web
 import web_api.fieldtypes
@@ -9,7 +9,7 @@ from web_api.urls import handle_api_url
 from routes.admin_web.index import AlbumList
 from routes.admin_web.index import SongList
 
-from src.backend.rainwave.playlist import Song, Album, SongGroup
+from backend.rainwave.playlist import Song, Album, SongGroup
 
 
 @handle_api_url("admin/associate_groups_add_song")

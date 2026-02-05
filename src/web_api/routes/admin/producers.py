@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 from pytz import timezone
 from time import time as timestamp
-from src.backend.libs import db
+from backend.libs import db
 import web_api.web
 from web_api.urls import handle_api_url
 from web_api.exceptions import APIException
 from web_api import fieldtypes
-from src.backend.rainwave.events import event
-from src.backend.rainwave.events.event import BaseProducer
+from backend.rainwave.events import event
+from backend.rainwave.events.event import BaseProducer
 
 
 @handle_api_url("admin/list_producers")

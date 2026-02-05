@@ -1,10 +1,10 @@
 from typing import cast
-from src.backend.libs import db
+from backend.libs import db
 import web_api.web
 from web_api.urls import handle_api_url
 from web_api import fieldtypes
 from web_api.exceptions import APIException
-from src.backend import config
+from backend import config
 
 PRIVILEGED_GROUP_IDS = (18, 5, 4)
 

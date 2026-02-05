@@ -3,15 +3,15 @@ import math
 from time import time as timestamp
 from typing import Any
 
-from src.backend.libs import db
-from src.backend import config
+from backend.libs import db
+from backend import config
 from backend.cache import cache
 from libs import log
-from src.backend.playlist import playlist
-from src.backend.rainwave import request
-from src.backend.rainwave.user import User
-from src.backend.rainwave.events import event
-from src.backend.rainwave.playlist_objects.song import SongNonExistent
+from backend.playlist import playlist
+from backend.rainwave import request
+from backend.rainwave.user import User
+from backend.rainwave.events import event
+from backend.rainwave.playlist_objects.song import SongNonExistent
 
 _request_interval = {}
 _request_sequence = {}

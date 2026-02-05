@@ -12,13 +12,13 @@ import web_api.web
 import src.web_api.routes.help
 import backend.locale.locale
 from libs import log
-from src.backend.config import config
-from src.backend.libs import db
+from backend.config import config
+from backend.libs import db
 from libs import cache
 from libs import memory_trace
 from libs import zeromq
-from src.backend.rainwave import playlist
-from src.backend.rainwave import schedule
+from backend.rainwave import playlist
+from backend.rainwave import schedule
 import rainwave.request
 
 from routes.index import request_classes

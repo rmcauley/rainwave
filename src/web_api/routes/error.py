@@ -9,7 +9,7 @@ from web_api.web import APIHandler
 from web_api.exceptions import APIException
 from web_api.urls import handle_api_url
 from libs import cache
-from src.backend import config
+from backend import config
 from libs import log
 import json
 
@@ -20,7 +20,7 @@ class ErrorReport(APIHandler):
     tunein_required = False
     sid_required = False
     help_hidden = True
-    description = "Handles taking automated error reports from src.backend.rainwave."
+    description = "Handles taking automated error reports from backend.rainwave."
     return_name = "error_report_result"
     fields = {
         "name": (fieldtypes.string, True),

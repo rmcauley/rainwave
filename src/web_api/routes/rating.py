@@ -4,8 +4,8 @@ from web_api.exceptions import APIException
 from web_api.urls import handle_api_url
 
 from libs import cache
-from src.backend.rainwave import rating as ratinglib
-from src.backend.rainwave import playlist
+from backend.rainwave import rating as ratinglib
+from backend.rainwave import playlist
 
 
 @handle_api_url("rate")

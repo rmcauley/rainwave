@@ -3,10 +3,10 @@
 import argparse
 
 from libs import config
-from src.backend.libs import db
+from backend.libs import db
 from libs import log
 from libs import cache
-from src.backend.rainwave.playlist import Album
+from backend.rainwave.playlist import Album
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

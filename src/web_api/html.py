@@ -3,8 +3,8 @@ import traceback
 from http.client import responses
 from typing import Any
 
-from src.backend.libs import db
-from src.backend import config
+from backend.libs import db
+from backend import config
 
 from routes.auth.errors import OAuthRejectedError
 

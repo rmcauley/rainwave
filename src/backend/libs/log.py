@@ -3,7 +3,7 @@ import logging
 import logging.handlers
 import datetime
 from typing import Any
-from src.backend import config
+from backend import config
 
 log: logging.Logger | None = None
 

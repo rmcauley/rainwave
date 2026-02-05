@@ -1,16 +1,6 @@
-from libs import log
-from src.backend.libs import db
-from unidecode import unidecode
-from typing import Any, TypeVar, Type
-
-
-def make_searchable_string(s: str | bytes) -> str:
-    if isinstance(s, bytes):
-        s = s.decode()
-    if not isinstance(s, str):
-        s = str(s)
-    s = unidecode(s).lower()
-    return "".join(e for e in s if (e.isalnum() or e == " "))
+from backend.db.cursor import RainwaveCursor
+from backend.libs import log
+from typing import Any
 
 
 class MetadataInsertionError(Exception):
@@ -45,7 +35,9 @@ class AssociatedMetadata:
     has_song_id_query = None  # two arguments: song_id, self.id
 
     @classmethod
-    def load_from_name(cls, name: str) -> "AssociatedMetadata":
+    async def load_from_name(
+        cls, cursor: RainwaveCursor, name: str
+    ) -> "AssociatedMetadata":
         instance = cls()
         data = db.c.fetch_row(cls.select_by_name_query, (name,))
         if data:

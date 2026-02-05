@@ -1,7 +1,7 @@
 from web_api.urls import handle_url
 from web_api.web import HTMLRequest
 from routes.main import Bootstrap
-from src.backend.libs import db
+from backend.libs import db
 
 
 @handle_url("/oauth/debug")

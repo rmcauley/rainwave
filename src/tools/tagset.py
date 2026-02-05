@@ -5,8 +5,8 @@ import math
 import os
 from mutagen.mp3 import EasyMP3
 
-from src.backend.rainwave.playlist import Song
-from src.scanner.filemonitor import _is_mp3
+from backend.rainwave.playlist import Song
+from scanner.filemonitor import _is_mp3
 from libs import config
 
 parser = argparse.ArgumentParser(

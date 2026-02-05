@@ -5,8 +5,8 @@ from web_api.web import APIHandler
 from web_api.exceptions import APIException
 from web_api.urls import handle_api_url
 
-from src.backend import config
-from src.backend.libs import db
+from backend import config
+from backend.libs import db
 
 
 @handle_api_url(r"test/create_anon_tuned_in/(\d+)")

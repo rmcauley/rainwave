@@ -5,9 +5,9 @@ from datetime import datetime
 from urllib.parse import parse_qsl, urlparse
 from typing import Any
 
-from src.backend import config
-from src.backend.libs import db
-from src.backend.events import event
+from backend import config
+from backend.libs import db
+from backend.events import event
 
 string_error = "must be a string."
 

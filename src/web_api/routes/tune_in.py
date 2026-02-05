@@ -3,7 +3,7 @@ import tornado.web
 from web_api.urls import handle_url
 import web_api.web
 
-from src.backend import config
+from backend import config
 from typing import Any
 
 

@@ -1,5 +1,5 @@
 from typing import Any
-from src.backend.libs import db
+from backend.libs import db
 
 
 def get_listeners_dict(sid: int) -> list[dict[str, Any]]:

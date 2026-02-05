@@ -1,8 +1,8 @@
 import web_api.web
 from web_api.urls import handle_api_url
 from web_api import fieldtypes
-from src.backend.rainwave.playlist import Song
-from src.backend.rainwave.playlist import SongGroup
+from backend.rainwave.playlist import Song
+from backend.rainwave.playlist import SongGroup
 
 
 @handle_api_url("admin/remove_group_from_song")

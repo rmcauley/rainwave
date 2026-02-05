@@ -1,4 +1,4 @@
-from src.backend import config
+from backend import config
 import web_api.web
 from web_api.urls import handle_url
 from routes.admin_web.index import AlbumList

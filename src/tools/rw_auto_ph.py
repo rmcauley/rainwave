@@ -7,11 +7,11 @@ from datetime import datetime, timedelta
 from pytz import timezone
 
 from libs import config
-from src.backend.libs import db
+from backend.libs import db
 from libs import cache
 from libs import log
 
-from src.backend.rainwave.events import oneup
+from backend.rainwave.events import oneup
 
 TARGET_SID = 5
 TARGET_LENGTH = 120 * 60

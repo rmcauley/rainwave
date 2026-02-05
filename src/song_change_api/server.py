@@ -7,11 +7,11 @@ import tornado.options
 from typing import Any
 
 from song_change_api import sync_to_front
-from src.backend.rainwave import schedule
-from src.backend.rainwave import playlist
+from backend.rainwave import schedule
+from backend.rainwave import playlist
 from libs import log
-from src.backend import config
-from src.backend.libs import db
+from backend import config
+from backend.libs import db
 from libs import cache
 from libs import memory_trace
 from libs import zeromq
