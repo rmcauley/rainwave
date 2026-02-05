@@ -39,6 +39,22 @@ class RainwaveCursorBase:
             return None
         return r[next(iter(r.keys()))]
 
+    async def fetch_guaranteed[T](
+        self,
+        query: QueryNoTemplate,
+        params: Sequence[Any] | Mapping[str, Any],
+        default: T,
+        *,
+        var_type: type[T],
+    ) -> T:
+        await self._cursor.execute(query, params)
+        if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
+            return default
+        r = await self._cursor.fetchone()
+        if not r:
+            return default
+        return r[next(iter(r.keys()))]
+
     async def fetch_row[T](
         self,
         query: QueryNoTemplate,

@@ -6,179 +6,20 @@ import unicodedata
 from urllib import parse
 from typing import Any
 
-from libs import log
+from backend.libs import log
 from backend.cache import cache
-from backend.libs import db
 from backend import config
 
-from backend.rainwave import playlist
-
+from backend.user.user_data_type import UserData
 from web_api.exceptions import APIException
-
-_AVATAR_PATH = "/forums/download/file.php?avatar=%s"
-_DEFAULT_AVATAR = "/static/images4/user.svg"
-
-
-def trim_listeners(sid: int) -> None:
-    db.c.update(
-        "DELETE FROM r4_listeners WHERE sid = %s AND listener_purge = TRUE", (sid,)
-    )
-
-
-def unlock_listeners(sid: int) -> None:
-    db.c.update(
-        "UPDATE r4_listeners SET listener_lock_counter = listener_lock_counter - 1 WHERE listener_lock = TRUE AND listener_lock_sid = %s",
-        (sid,),
-    )
-    db.c.update(
-        "UPDATE r4_listeners SET listener_lock = FALSE WHERE listener_lock_counter <= 0"
-    )
-
-
-def solve_avatar(avatar_type: str, avatar: str) -> str:
-    if avatar_type == "avatar.driver.upload":
-        return _AVATAR_PATH % avatar
-    elif avatar_type == "avatar.driver.remote":
-        return avatar
-    else:
-        return _DEFAULT_AVATAR
 
 
 class User:
-    def __init__(self, user_id: int):
-        self.id = user_id
-        self.authorized = False
-        self.ip_address = None
+    _data: UserData
 
-        self.api_key = False
-
-        self.data = {}
-        self.data["admin"] = False
-        self.data["tuned_in"] = False
-        self.data["perks"] = False
-        self.data["request_position"] = 0
-        self.data["request_expires_at"] = 0
-        self.data["rate_anything"] = False
-        self.data["requests_paused"] = False
-        self.data["avatar"] = _DEFAULT_AVATAR
-        self.data["new_privmsg"] = 0
-        self.data["listen_key"] = None
-        self.data["id"] = 1
-        self.data["name"] = "Anonymous"
-        self.data["display_name"] = self.data["name"]
-        self.data["sid"] = 0
-        self.data["lock"] = False
-        self.data["lock_in_effect"] = False
-        self.data["lock_sid"] = None
-        self.data["lock_counter"] = 0
-        self.data["voted_entry"] = 0
-        self.data["listener_id"] = 0
-        self.data["_group_id"] = None
-
-    def authorize(self, sid: int, api_key: str | None, bypass: bool = False) -> None:
-        self.api_key = api_key
-
-        if not bypass and (api_key and not re.match(r"^[\w\d]+$", api_key)):
-            print("bad api key")
-            return
-
-        if self.id > 1:
-            self._auth_registered_user(api_key, bypass)
-        else:
-            print("auth anon user")
-            self._auth_anon_user(api_key, bypass)
-
-    def get_all_api_keys(self) -> list[str]:
-        if self.id > 1:
-            keys = db.c.fetch_list(
-                "SELECT api_key FROM r4_api_keys WHERE user_id = %s ", (self.id,)
-            )
-            cache.set_user(self, "api_keys", keys)
-            return keys
-        return []
-
-    def _auth_registered_user(self, api_key: str | None, bypass: bool = False) -> None:
-        if not bypass:
-            keys = cache.get_user(self, "api_keys")
-            if keys and api_key in keys:
-                pass
-            elif not api_key in self.get_all_api_keys():
-                log.debug(
-                    "auth", "Invalid user ID %s and/or API key %s." % (self.id, api_key)
-                )
-                return
-
-        # Set as authorized and begin populating information
-        # Pay attention to the "AS _variable" names in the SQL fields, they won't get exported to private JSONable dict
-        self.authorized = True
-        user_data = None
-        if not user_data:
-            user_data = db.c.fetch_row(
-                "SELECT user_id AS id, COALESCE(radio_username, username) AS name, user_avatar AS avatar, radio_requests_paused AS requests_paused, "
-                "user_avatar_type AS _avatar_type, radio_listenkey AS listen_key, group_id AS _group_id, radio_totalratings AS _total_ratings, discord_user_id AS _discord_user_id "
-                "FROM phpbb_users WHERE user_id = %s",
-                (self.id,),
-            )
-
-        if not user_data:
-            log.debug("auth", "Invalid user ID %s not found in DB." % (self.id,))
-            return
-
-        self.data.update(user_data)
-
-        self.data["avatar"] = solve_avatar(
-            self.data["_avatar_type"], self.data["avatar"]
-        )
-        self.data.pop("_avatar_type")
-
-        # Privileged folk - donors, admins, etc - get perks.
-        # The numbers are the phpBB group IDs.
-        if self.data["_group_id"] in (5, 4, 8, 18):
-            self.data["perks"] = True
-
-        # Admin and station manager groups
-        if self.data["_group_id"] in (5, 18):
-            self.data["admin"] = True
-        self.data.pop("_group_id")
-
-        if self.data["perks"]:
-            self.data["rate_anything"] = True
-        elif self.data["_total_ratings"] > config.rating_allow_all_threshold:
-            self.data["rate_anything"] = True
-        self.data.pop("_total_ratings")
-
-        if not self.data["listen_key"]:
-            self.generate_listen_key()
-
-        self.data["uses_oauth"] = True if self.data["_discord_user_id"] else False
-        self.data.pop("_discord_user_id")
-
-    def _auth_anon_user(self, api_key: str | None, bypass: bool = False) -> None:
-        if not bypass:
-            print("not bypassing")
-            cache_key = unicodedata.normalize(
-                "NFKD", "api_key_listen_key_%s" % api_key
-            ).encode("ascii", "ignore")
-            print("A")
-            listen_key = cache.get(cache_key)
-            print("B")
-            if not listen_key:
-                listen_key = db.c.fetch_var(
-                    "SELECT api_key_listen_key FROM r4_api_keys WHERE api_key = %s AND user_id = 1",
-                    (self.api_key,),
-                )
-                print("c")
-                if not listen_key:
-                    print("d")
-                    return
-                else:
-                    print("e")
-                    self.data["listen_key"] = listen_key
-            else:
-                print("f")
-                self.data["listen_key"] = listen_key
-        print("all should be good!")
-        self.authorized = True
+    def __init__(self, user_data: UserData):
+        self.id = user_data["id"]
+        self._data = user_data
 
     def get_tuned_in_sid(self) -> int | None:
         if "sid" in self.data and self.data["sid"]:
@@ -187,32 +28,6 @@ class User:
         if lrecord and "sid" in lrecord:
             return lrecord["sid"]
         return None
-
-    def get_listener_record(self, use_cache: bool = True) -> dict[str, Any] | None:
-        listener = None
-        if self.id > 1:
-            # listener = cache.get_user(self.id, "listener_record")
-            if not listener or not use_cache:
-                listener = db.c.fetch_row(
-                    "SELECT "
-                    "listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry "
-                    "FROM r4_listeners "
-                    "WHERE user_id = %s AND listener_purge = FALSE",
-                    (self.id,),
-                )
-        else:
-            listener = db.c.fetch_row(
-                "SELECT "
-                "listener_id, sid, listener_lock AS lock, listener_lock_sid AS lock_sid, listener_lock_counter AS lock_counter, listener_voted_entry AS voted_entry, listener_key AS listen_key "
-                "FROM r4_listeners "
-                "WHERE listener_ip = %s AND listener_purge = FALSE AND user_id = 1",
-                (self.ip_address,),
-            )
-        if listener:
-            self.data.update(listener)
-        # if self.id > 1:
-        # cache.set_user(self.id, "listener_record", listener)
-        return listener
 
     def refresh(self, sid: int) -> None:
         self.data["tuned_in"] = False

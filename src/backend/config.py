@@ -188,7 +188,7 @@ round_robin_relay_port = ""
 # Configure a station block for every station you need.
 # IDs are converted to integers; strings are not allowed and will break the app.
 # This array is sensitive - do not add extra data as it could cause Rainwave to not start.
-stations: "StationsConfig" = {
+stations: StationsConfig = {
     1: {
         # Station name to display to users
         "name": "Station",

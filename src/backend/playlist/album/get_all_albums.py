@@ -1,4 +1,7 @@
-def get_all_albums_list_sql(sid: int, user: Any) -> tuple[str, tuple[Any, ...]]:
+from typing import Literal
+
+
+def get_all_albums_list_sql(sid: int, user: Any) -> tuple[Literal, tuple[Any, ...]]:
     if not user or user.id == 1:
         return (
             (
