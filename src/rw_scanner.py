@@ -9,7 +9,7 @@ from scanner.filemonitor import (
 )
 from backend import config
 from backend.libs import log, db
-from backend.playlist.album.album import clear_updated_albums
+from backend.playlist.album.album_model import clear_updated_albums
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Rainwave song scanning daemon.")

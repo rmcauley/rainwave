@@ -9,7 +9,7 @@ import tornado.web
 import tornado.httputil
 
 from backend.cache import cache
-from backend.user import User
+from backend.user.user_model import User
 from backend.playlist.song.song import SongNonExistent
 
 from web_api import fieldtypes

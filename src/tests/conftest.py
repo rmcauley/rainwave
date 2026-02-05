@@ -16,7 +16,7 @@ from backend.libs import log, zeromq
 from backend.playlist import playlist
 from backend.schedule import schedule
 from .seed_data import populate_test_data
-from backend import cooldown
+from backend.playlist import get_age_cooldown_multiplier
 
 
 @pytest.fixture(scope="session")
@@ -44,7 +44,7 @@ async def rainwave_db():
     populate_test_data(db.c, sid=1)
     api_locale.load_translations()
     zeromq.init_pub()
-    cooldown.prepare_cooldown_algorithm(1)
+    get_age_cooldown_multiplier.prepare_cooldown_algorithm(1)
     schedule.load()
     schedule.advance_station(1)
     schedule.post_process(1)
