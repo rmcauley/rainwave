@@ -3,6 +3,6 @@
   "include": ["src/**/*.py"],
   "exclude": ["**/__pycache__", "src/typestubs", "src/frontend"],
   "typeCheckingMode": "strict",
-  "reportUnusedVariable": "error",
-  "strict": ["src/**/*.py"]
+  "strict": ["src/**/*.py"],
+  "reportMissingModuleSource": "none"
 }

@@ -29,7 +29,6 @@
   "login_required": "Authentification requise.",
   "tunein_required": "La radio doit jouer!",
   "admin_required": "Vous devez être administrateur.",
-  "dj_required": "Vous devez être le dj.",
   "perks_required": "Vous devez être donateur.",
   "unlocked_only": [
     "Utilisateur restreint à la station ",
@@ -74,9 +73,7 @@
   "empty_list": "Liste vide.",
   "no_search_results": "Aucun résultat de recherche.",
   "server_just_started": "Rainwave redémarre",
-  "station_paused": "La liste de lecture est suspendue par le dj.",
   "album_on_other_station": "Cet album n'est pas disponible sur cette station, désolé!",
-  "album_is_dj_only": "Cet album est exclusif à cet événement, désolé!",
   "locked_to_station": [
     "Vous venez de voter sur la station ",
     {

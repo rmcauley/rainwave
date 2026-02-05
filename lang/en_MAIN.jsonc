@@ -1,5 +1,5 @@
 // When updating languages:
-// Update this master template file, then remove the comments and save it as en_MASTER.json
+// Update this main template file, then remove the comments and save it as en_MAIN.json
 // This is because Typescript does not support JSONC files for inclusion and typing.
 
 {

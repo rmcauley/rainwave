@@ -1,16 +1,17 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
-def pretty_date(time: int | datetime | bool = False) -> str:
+def pretty_date(time: int | datetime | None) -> str:
     """
     Get a datetime object or a int() Epoch timestamp and return a
     pretty string like 'an hour ago', 'Yesterday', '3 months ago',
     'just now', etc
     """
     now = datetime.now()
+    diff = timedelta(0)
     if isinstance(time, int):
         diff = now - datetime.fromtimestamp(time)
-    elif isinstance(time, datetime):
+    elif time:
         diff = now - time
     elif not time:
         diff = now - now

@@ -29,7 +29,6 @@
   "login_required": "Necesita iniciar sesión.",
   "tunein_required": "Necesita estar sintonizado.",
   "admin_required": "Necesita ser administrador.",
-  "dj_required": "Necesita ser un DJ.",
   "perks_required": "Debe ser un donante.",
   "unlocked_only": [
     "Usuario aislado en ",
@@ -75,9 +74,7 @@
   "empty_list": "Lista vacía.",
   "no_search_results": "Búsqueda sin resultados.",
   "server_just_started": "Rainwave se está Reiniciando",
-  "station_paused": "La estación ha sido pausada por el DJ.",
   "album_on_other_station": "Lo sentimos, este álbum no está disponible en esta estación.",
-  "album_is_dj_only": "Lo sentimos, este álbum es exclusivo de este evento.",
   "song_on_other_station": [
     "La canción no está disponible en ",
     {

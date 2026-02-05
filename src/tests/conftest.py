@@ -11,7 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from backend.cache import cache
 from src.backend.libs.db.connection import db_connect
 from src.backend.libs.db.schema import create_tables
-from src.backend.libs import locale as api_locale
+from backend.locale import locale as api_locale
 from src.backend.libs import log, zeromq
 from src.backend.playlist import playlist
 from backend.schedule import schedule

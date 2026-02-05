@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager, contextmanager
 from typing import Any, Sequence, Mapping, cast
 from psycopg import AsyncCursor
-from psycopg._typeinfo import dict_row
+from psycopg.rows import dict_row
 from psycopg.abc import QueryNoTemplate
 from .connection import db_connection
 

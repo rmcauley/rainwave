@@ -4,7 +4,7 @@ import re
 import urllib.parse
 
 import web_api.web
-import src.backend.libs.locale
+import backend.locale.locale
 from web_api.urls import handle_url, handle_api_url
 from routes import info
 
@@ -74,7 +74,7 @@ class Bootstrap(web_api.web.APIHandler):
         info.attach_info_to_request(self, live_voting=True)
         self.append("build_version", config.build_number)
         self.append("locale", self.locale.code)
-        self.append("locales", src.backend.libs.locale.locale_names)
+        self.append("locales", backend.locale.locale.locale_names)
         self.append("cookie_domain", config.cookie_domain)
         self.append("on_init", [])
         self.append("on_measure", [])

@@ -128,7 +128,6 @@ class ElectionProducer(event.BaseProducer):
                 return self.load_next_event()
             elec.name = self.name
             elec.url = self.url
-            elec.dj_user_id = self.dj_user_id
             return elec
         else:
             return self.load_next_event()
@@ -144,7 +143,6 @@ class ElectionProducer(event.BaseProducer):
             elec = self.elec_class.create(self.sid, self.id)
             elec.url = self.url
             elec.name = self.name
-            elec.dj_user_id = self.dj_user_id
             elec.fill(target_length, skip_requests)
             if elec.length() == 0:
                 raise Exception("Created zero-length election.")
@@ -161,7 +159,6 @@ class Election(event.BaseEvent):
     public = True
     timed = False
     sched_id = None
-    dj_user_id = None
 
     @classmethod
     def load_by_id(cls, elec_id: int) -> "Election":
