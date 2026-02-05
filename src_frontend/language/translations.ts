@@ -1,15 +1,15 @@
-import translationDeDe from '../../../lang/de_DE.json';
-import translationEnCa from '../../../lang/en_CA.json';
-import baseEnglish from '../../../lang/en_MASTER.json';
-import translationEsCl from '../../../lang/es_CL.json';
-import translationFiFi from '../../../lang/fi_FI.json';
-import translationFrCa from '../../../lang/fr_CA.json';
-import translationKoKo from '../../../lang/ko_KO.json';
-import translationNlNl from '../../../lang/nl_NL.json';
-import translationPlPl from '../../../lang/pl_PL.json';
-import translationPtBr from '../../../lang/pt_BR.json';
-import translationPtPt from '../../../lang/pt_PT.json';
-import translationRuRu from '../../../lang/ru_RU.json';
+import translationDeDe from '../../lang/de_DE.json';
+import translationEnCa from '../../lang/en_CA.json';
+import baseEnglish from '../../lang/en_MAIN.json';
+import translationEsCl from '../../lang/es_CL.json';
+import translationFiFi from '../../lang/fi_FI.json';
+import translationFrCa from '../../lang/fr_CA.json';
+import translationKoKo from '../../lang/ko_KO.json';
+import translationNlNl from '../../lang/nl_NL.json';
+import translationPlPl from '../../lang/pl_PL.json';
+import translationPtBr from '../../lang/pt_BR.json';
+import translationPtPt from '../../lang/pt_PT.json';
+import translationRuRu from '../../lang/ru_RU.json';
 
 type RainwaveLocale =
   | 'de-DE'
