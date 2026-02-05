@@ -10,7 +10,7 @@ from typing import Any
 
 import web_api.web
 import src.web_api.routes.help
-import src.backend.libs.locale
+import backend.locale.locale
 from libs import log
 from src.backend.config import config
 from src.backend.libs import db
@@ -134,8 +134,8 @@ class APIServer:
             log.close()
 
     def start(self) -> None:
-        src.backend.libs.locale.load_translations()
-        src.backend.libs.locale.compile_static_language_files()
+        backend.locale.locale.load_translations()
+        backend.locale.locale.compile_static_language_files()
 
         # Setup variables for the long poll module
         # Bypass Tornado's forking processes if num_processes is set to 1

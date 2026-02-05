@@ -13,7 +13,7 @@ from src.backend.user import User
 from backend.playlist.song.song import SongNonExistent
 
 from web_api import fieldtypes
-from src.backend.libs import locale
+from backend.locale import locale
 from web_api.exceptions import APIException
 from src.backend import config
 from src.backend.libs import log, db

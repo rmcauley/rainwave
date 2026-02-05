@@ -4,7 +4,7 @@ import tornado.web
 
 import web_api.web
 from web_api.urls import handle_url
-from src.backend.libs import locale
+from backend.locale import locale
 
 
 @handle_url("/locale/")

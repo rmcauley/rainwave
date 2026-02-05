@@ -9,7 +9,7 @@ from src.backend import config
 from routes.auth.errors import OAuthRejectedError
 
 from web_api.exceptions import APIException
-from src.backend.libs import locale
+from backend.locale import locale
 
 
 def html_write_error(self, status_code: int, **kwargs: Any) -> None:

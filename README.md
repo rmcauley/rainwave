@@ -31,18 +31,12 @@ If using LiquidSoap, LiquidSoap 1.1 or above is required.
 
 ### Prerequisites on Debian/Ubuntu
 
-Rainwave is designed to run on Python 3.14 using `uv`. It also requires installation
-of various media libraries to run volume analysis on its files.
+Rainwave is designed to run on Python 3.14 using `uv`.
 
 ```
 git clone https://github.com/rmcauley/rainwave.git
 cd rainwave
-sudo apt-get install libpq-dev libmemcached-dev
-sudo apt-get install gir1.2-gstreamer-1.0 \
-     gstreamer1.0-plugins-base \
-     gstreamer1.0-plugins-good \
-     libcairo2-dev \
-     libgirepository1.0-dev
+sudo apt install libicu-dev
 uv sync
 ```
 

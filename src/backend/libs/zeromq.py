@@ -1,14 +1,10 @@
+import orjson
 import zmq
 import zmq.devices
-from zmq.eventloop import ioloop, zmqstream
+from zmq.eventloop.zmqstream import ZMQStream
 from typing import Any, Callable
 from src.backend import config
 from web_api.web import APIException
-
-try:
-    import ujson as json
-except ImportError:
-    import json
 
 _pub = None
 _sub_stream = None
@@ -39,7 +35,9 @@ def set_sub_callback(methd: Callable[..., Any]) -> None:
 def publish(dct: dict[str, Any]) -> None:
     if not _pub:
         raise APIException("internal_error", http_code=500)
-    _pub.send_string(json.dumps(dct))
+    _pub.send_string(  # pyright: ignore[reportUnknownMemberType]
+        orjson.dumps(dct).decode("utf-8")
+    )
 
 
 def init_proxy() -> None:

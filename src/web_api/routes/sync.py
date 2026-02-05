@@ -26,7 +26,7 @@ from web_api.web import get_browser_locale
 from web_api.urls import api_endpoints
 from web_api.urls import handle_api_url
 from src.backend.rainwave.user import User
-import src.backend.libs.locale
+import backend.locale.locale
 import routes.info
 import rainwave.playlist
 import rainwave.schedule
@@ -475,7 +475,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     is_websocket = True
     local_only = False
     help_hidden = False
-    locale: src.backend.libs.locale.RainwaveLocale
+    locale: backend.locale.locale.RainwaveLocale
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
