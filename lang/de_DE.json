@@ -29,7 +29,6 @@
   "login_required": "Login erforderlich.",
   "tunein_required": "Du musst den Sender hören.",
   "admin_required": "Du musst Administrator sein.",
-  "dj_required": "Du musst ein DJ sein.",
   "perks_required": "Du musst ein Spender sein.",
   "unlocked_only": [
     "Benutzer ist noch für ",
@@ -74,7 +73,6 @@
   "empty_list": "Leere Liste.",
   "no_search_results": "Keine Suchergebnisse.",
   "server_just_started": "Rainwave startet gerade neu",
-  "station_paused": "Station ist aktuell vom DJ pausiert.",
   "album_on_other_station": "Album ist auf dieser Station nicht verfügbar, tut uns leid!",
   "song_on_other_station": [
     "Song ist auf ",
@@ -84,7 +82,6 @@
     },
     " nicht verfügbar."
   ],
-  "album_is_dj_only": "Album ist ein exklusiver Teil dieser Veranstaltung, tut uns leid!",
   "locked_to_station": [
     "Du hast gerade erst auf ",
     {

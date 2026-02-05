@@ -28,7 +28,6 @@
   "login_required": "Wymagany login.",
   "tunein_required": "Musisz być Podłączony.",
   "admin_required": "Musisz być adminem.",
-  "dj_required": "Musisz być DJ-em.",
   "perks_required": "Musisz być donatorem.",
   "unlocked_only": [
     "User locked to ",
@@ -486,7 +485,6 @@
   "Unrated": "Nieocenione",
   "album_all_cooldown": "Ten album jest w oczekiwaniu.",
   "album_has_cooldown": "Kilka utworów jest w oczekiwaniu.",
-  "album_is_dj_only": "Album zastrzeżony dla wydarzenia, wybacz!",
   "album_on_other_station": "Album nie jest dostępny na tej stacji, wybacz!",
   "album_rating_detail": "Użytkownicy ocenili ten album ",
   "allow_api_auth": "Brzmi Dobrze",
@@ -687,7 +685,6 @@
     "."
   ],
   "song_rating_detail": "Użytkownicy ocenili ten utwór ",
-  "station_paused": "Stacja jest aktualnia zatrzymana przez DJ'a.",
   "top_rated_albums": "Najwyżej Oceniane Albumy",
   "top_requested_albums": "Najczęściej Głosowane Albumy",
   "unpause_request_queue": "Wznów",

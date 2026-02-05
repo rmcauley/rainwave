@@ -503,20 +503,6 @@ def update_memcache(sid: int) -> None:
         sid, "all_groups_power", playlist.get_all_groups_for_power(sid), True
     )
 
-    potential_dj_ids = []
-    if getattr(current[sid], "dj_user_id", None):
-        potential_dj_ids.append(current[sid].dj_user_id)
-    for evt in upnext[sid]:
-        if getattr(evt, "dj_user_id", None):
-            potential_dj_ids.append(evt.dj_user_id)
-    if (
-        history[sid]
-        and history[sid][-1]
-        and getattr(history[sid][-1], "dj_user_id", None)
-    ):
-        potential_dj_ids.append(history[sid][-1].dj_user_id)
-    cache.set_station(sid, "dj_user_ids", potential_dj_ids)
-
 
 def update_live_voting(sid: int) -> None:
     live_voting = {}

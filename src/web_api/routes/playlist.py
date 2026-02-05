@@ -220,12 +220,10 @@ class AlbumHandler(APIHandler):
         except MetadataNotFoundError:
             self.return_name = "album_error"
             valid_sids = db.c.fetch_list(
-                "SELECT sid FROM r4_album_sid WHERE album_id = %s AND sid != 0 ORDER BY sid",
+                "SELECT sid FROM r4_album_sid WHERE album_id = %s ORDER BY sid",
                 (self.get_argument("id"),),
             )
-            if not valid_sids:
-                raise APIException("album_is_dj_only")
-            elif config.default_station in valid_sids:
+            if config.default_station in valid_sids:
                 raise APIException(
                     "album_on_other_station",
                     available_station=config.station_id_friendly[

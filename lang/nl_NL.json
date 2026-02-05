@@ -29,7 +29,6 @@
   "login_required": "Inloggen vereist.",
   "tunein_required": "U moet naar een station luisteren.",
   "admin_required": "U moet een admin zijn.",
-  "dj_required": "U moet een DJ zijn.",
   "perks_required": "U moet een donor zijn.",
   "unlocked_only": [
     "Gebruiker vergrendeld op ",
@@ -78,7 +77,6 @@
   "empty_list": "Leeg lijst.",
   "no_search_results": "Geen zoekresultaten.",
   "server_just_started": "Rainwave is aan het herstarten.",
-  "station_paused": "Station is momenteel gepauzeerd door de DJ.",
   "album_on_other_station": "Album is niet beschikbaar op dit station, sorry!",
   "song_on_other_station": [
     "Nummer is niet beschikbaar op ",
@@ -88,7 +86,6 @@
     },
     "."
   ],
-  "album_is_dj_only": "Album is exclusief geselecteerd voor dit evenement, sorry!",
   "locked_to_station": [
     "U was aan het stemmen op ",
     {

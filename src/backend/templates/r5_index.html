@@ -15,11 +15,7 @@
 	{% end %}
 
 	<script src="/static/baked/{{ revision_number }}/all_languages.js"></script>
-	{% if dj %}
-		<script src="/api4/bootstrap_dj?sid={{ request.sid }}"></script>
-	{% else %}
-		<script src="/api4/bootstrap?sid={{ request.sid }}"></script>
-	{% end %}
+	<script src="/api4/bootstrap?sid={{ request.sid }}"></script>
 
 	{% if jsfiles %}
 		<script src="/static/baked/{{ revision_number }}/templates5b.js"></script>
@@ -29,15 +25,6 @@
 	{% else %}
 		<script src="/static/baked/{{ revision_number }}/templates5.js"></script>
 		<script src="/static/baked/{{ revision_number }}/script5.js"></script>
-	{% end %}
-
-	{% if dj %}
-		<script src="/static/js_dj/adapter.js"></script>
-		<script src="/static/js_dj/libshine.js"></script>
-		<script src="/static/js_dj/libsamplerate.js"></script>
-		<script src="/static/js_dj/libmad.js"></script>
-		<script src="/static/js_dj/webcast.js"></script>
-		<script src="/static/js_dj/dj.js"></script>
 	{% end %}
 
 	<meta name="msapplication-TileColor" content="#1978B7">
