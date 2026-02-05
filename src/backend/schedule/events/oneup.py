@@ -2,10 +2,10 @@ import random
 from time import time as timestamp
 from typing import Any
 
-from src.backend.libs import db
-from src.backend import config
-from src.backend.rainwave import playlist
-from src.backend.rainwave.events import event
+from backend.libs import db
+from backend import config
+from backend.rainwave import playlist
+from backend.rainwave.events import event
 
 
 @event.register_producer

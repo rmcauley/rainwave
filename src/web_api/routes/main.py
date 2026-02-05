@@ -8,8 +8,8 @@ import backend.locale.locale
 from web_api.urls import handle_url, handle_api_url
 from routes import info
 
-from src.backend import config
-from src.backend.rainwave.user import User
+from backend import config
+from backend.rainwave.user import User
 
 STATION_REGEX = "|".join(
     stream_filename for stream_filename in config.stream_filename_to_sid.keys()

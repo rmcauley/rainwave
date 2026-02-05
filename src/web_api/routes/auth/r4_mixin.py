@@ -3,8 +3,8 @@
 ### Typing ignored for whole file
 
 import uuid
-from src.backend.libs import db
-from src.backend.rainwave.user import User
+from backend.libs import db
+from backend.rainwave.user import User
 from web_api.web import RainwaveHandler
 
 ALLOWED_DESTINATIONS = ("web", "rw", "app", "rwpath")

@@ -9,14 +9,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from backend.cache import cache
-from src.backend.libs.db.connection import db_connect
-from src.backend.libs.db.schema import create_tables
+from backend.libs.db.connection import db_connect
+from backend.libs.db.schema import create_tables
 from backend.locale import locale as api_locale
-from src.backend.libs import log, zeromq
-from src.backend.playlist import playlist
+from backend.libs import log, zeromq
+from backend.playlist import playlist
 from backend.schedule import schedule
 from .seed_data import populate_test_data
-from src.backend import cooldown
+from backend import cooldown
 
 
 @pytest.fixture(scope="session")

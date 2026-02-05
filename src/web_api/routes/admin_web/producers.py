@@ -1,9 +1,9 @@
-from src.backend import config
+from backend import config
 import web_api.web
 from web_api import fieldtypes
 from web_api.urls import handle_url
 from routes.admin import producers
-from src.backend.rainwave.events import event
+from backend.rainwave.events import event
 from routes.admin_web import index
 from routes.admin_web.power_hours import get_ph_formatted_time
 
@@ -11,7 +11,7 @@ from routes.admin_web.power_hours import get_ph_formatted_time
 # and registered correctly with their parent class
 # it is critical to make sure this module works correctly
 # do not remove, that pylint ignore is there for a good reason
-from src.backend.rainwave import schedule  # pylint: disable=W0611
+from backend.rainwave import schedule  # pylint: disable=W0611
 
 
 @handle_url("/admin/tools/producers")

@@ -1,5 +1,5 @@
-from src.backend.rainwave.events import election
-from src.backend.rainwave.events import event
+from backend.rainwave.events import election
+from backend.rainwave.events import event
 
 
 @event.register_producer

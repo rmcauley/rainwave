@@ -1,14 +1,14 @@
 import argparse
 
 from backend.cache import cache
-from src.scanner.filemonitor import (
+from scanner.filemonitor import (
     monitor,
     set_on_screen,
     full_art_update,
     full_music_scan,
 )
-from src.backend import config
-from src.backend.libs import log, db
+from backend import config
+from backend.libs import log, db
 from backend.playlist.album.album import clear_updated_albums
 
 if __name__ == "__main__":

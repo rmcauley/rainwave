@@ -5,7 +5,7 @@ import socket
 from http.client import HTTPConnection
 from urllib import parse
 from backend.cache import cache
-from src.backend import config
+from backend import config
 
 parser = argparse.ArgumentParser(
     description="Fetches the next song from a Rainwave backend daemon."

@@ -1,9 +1,10 @@
 import subprocess
 
 
-from src.backend import config
+from backend import config
 
-ref_level = 89
+# Reference volume (that is, target volume) in dB
+reference_level = 89
 
 
 def get_gain_for_song(file: str) -> str:
@@ -11,7 +12,7 @@ def get_gain_for_song(file: str) -> str:
         return "0.0 dB"
 
     output = subprocess.run(
-        ["replaygain", "-d", f"-r {ref_level}", f"{file}"],
+        ["replaygain", "-d", f"-r {reference_level}", f"{file}"],
         capture_output=True,
         check=True,
     )

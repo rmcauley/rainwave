@@ -5,7 +5,7 @@ import tornado.escape
 
 from .locale_types import RainwaveTranslationFile, RainwaveTranslationFileModel
 from .rainwave_locale import RainwaveLocale
-from src.backend.libs import log
+from backend.libs import log
 
 en_main = None
 translations: dict[str, RainwaveLocale] = {}
@@ -24,7 +24,7 @@ def get_translation_file(filename: str) -> RainwaveTranslationFile:
         translation_file = RainwaveTranslationFileModel.model_validate(
             orjson.loads(raw_file.read())
         )
-        return translation_file.root
+    return translation_file.root
 
 
 def load_translations() -> None:

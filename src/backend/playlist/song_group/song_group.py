@@ -1,12 +1,12 @@
 from time import time as timestamp
 from typing import Any
 
-from src.backend.libs import db
+from backend.libs import db
 from libs import log
-from src.backend import config
+from backend import config
 
-from src.backend.rainwave.playlist_objects.metadata import AssociatedMetadata
-from src.backend.rainwave.playlist_objects.metadata import make_searchable_string
+from backend.rainwave.playlist_objects.metadata import AssociatedMetadata
+from backend.rainwave.playlist_objects.metadata import make_searchable_string
 
 
 class SongGroup(AssociatedMetadata):

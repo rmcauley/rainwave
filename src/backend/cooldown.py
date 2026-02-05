@@ -1,9 +1,9 @@
 from time import time as timestamp
 import math
 
-from src.backend import config
+from backend import config
 from libs import log
-from src.backend.libs import db
+from backend.libs import db
 
 cooldown_config = {}
 

@@ -1,6 +1,6 @@
 import asyncio
 from .station_cache import cache_get_station, cache_set_station
-from src.backend.db.cursor import RainwaveCursor
+from backend.db.cursor import RainwaveCursor
 from typing import TypeAlias
 
 UserRatingACL: TypeAlias = dict[int, dict[int, bool]]
@@ -27,7 +27,7 @@ async def update_user_rating_acl(
     for user_id in await cursor.fetch_list(
         "SELECT user_id FROM r4_listeners WHERE sid = %s AND user_id > 1",
         (sid,),
-        as_type=int,
+        row_type=int,
     ):
         user_rating_acl[song_id][user_id] = True
 

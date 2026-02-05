@@ -1,6 +1,6 @@
 import tornado.web
 import web_api.web
-from src.backend import config
+from backend import config
 from typing import Any
 
 help_classes: dict[
@@ -214,7 +214,7 @@ class HelpRequest(tornado.web.RequestHandler):
         for prop in url_properties:
             if prop[0] == "auth_required" and getattr(cls, "phpbb_auth", False):
                 self.write(
-                    "<li>User must be requesting from src.backend.rainwave.cc and logged in to the Rainwave.cc forum system."
+                    "<li>User must be requesting from backend.rainwave.cc and logged in to the Rainwave.cc forum system."
                 )
             elif getattr(cls, prop[0], False):
                 self.write("<li>" + prop[2] + "</li>")

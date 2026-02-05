@@ -7,7 +7,7 @@ import tornado.web
 
 from web_api.web import HTMLRequest
 from web_api.urls import handle_url
-from src.backend import config
+from backend import config
 
 
 @handle_url("/manifest.json")

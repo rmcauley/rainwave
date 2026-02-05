@@ -1,10 +1,10 @@
 from time import time as timestamp
 from typing import Any
-from src.backend.libs import db
+from backend.libs import db
 from backend.cache import cache
 from libs import log
-from src.backend.rainwave import playlist
-from src.backend.rainwave.user import User
+from backend.rainwave import playlist
+from backend.rainwave.user import User
 
 LINE_SQL = "SELECT COALESCE(radio_username, username) AS username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start, line_has_had_valid FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start"
 

@@ -6,7 +6,7 @@ from psycopg.abc import QueryNoTemplate
 from .connection import db_connection
 
 
-class RainwaveCursor:
+class RainwaveCursorBase:
     auto_retry = True
     disconnected = False
 
@@ -21,12 +21,15 @@ class RainwaveCursor:
     ) -> None:
         await self._cursor.execute(query, params)
 
+    async def fetch_next_row[T](self, *, row_type: type[T]) -> T:
+        return cast(T, await self._cursor.fetchone())
+
     async def fetch_var[T](
         self,
         query: QueryNoTemplate,
         params: Sequence[Any] | Mapping[str, Any] | None = None,
         *,
-        as_type: type[T],
+        var_type: type[T],
     ) -> T | None:
         await self._cursor.execute(query, params)
         if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
@@ -41,7 +44,7 @@ class RainwaveCursor:
         query: QueryNoTemplate,
         params: Sequence[Any] | Mapping[str, Any] | None = None,
         *,
-        as_type: type[T],
+        row_type: type[T],
     ) -> T | None:
         await self._cursor.execute(query, params)
         if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
@@ -53,7 +56,7 @@ class RainwaveCursor:
         query: QueryNoTemplate,
         params: Sequence[Any] | Mapping[str, Any] | None = None,
         *,
-        as_type: type[T],
+        row_type: type[T],
     ) -> list[T]:
         await self._cursor.execute(query, params)
         if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
@@ -65,7 +68,7 @@ class RainwaveCursor:
         query: QueryNoTemplate,
         params: Sequence[Any] | Mapping[str, Any] | None = None,
         *,
-        as_type: type[T],
+        row_type: type[T],
     ) -> list[T]:
         await self._cursor.execute(query, params)
         if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
@@ -89,6 +92,14 @@ class RainwaveCursor:
         return self._cursor.rowcount
 
 
+class RainwaveCursor(RainwaveCursorBase):
+    pass
+
+
+class RainwaveCursorTx(RainwaveCursorBase):
+    pass
+
+
 @contextmanager
 def get_cursor():
     cursor = RainwaveCursor()
@@ -97,7 +108,7 @@ def get_cursor():
 
 @asynccontextmanager
 async def get_tx_cursor():
-    cursor = RainwaveCursor()
+    cursor = RainwaveCursorTx()
     await cursor.execute("BEGIN")
     try:
         yield cursor

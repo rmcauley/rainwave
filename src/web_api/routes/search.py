@@ -1,8 +1,8 @@
 from web_api.web import APIHandler
 from web_api import fieldtypes
 from web_api.urls import handle_api_url
-from src.backend.libs import db
-from src.backend.rainwave.playlist_objects.metadata import make_searchable_string
+from backend.libs import db
+from backend.rainwave.playlist_objects.metadata import make_searchable_string
 from web_api.exceptions import APIException
 
 

@@ -25,7 +25,7 @@ from web_api.web import APIHandler
 from web_api.web import get_browser_locale
 from web_api.urls import api_endpoints
 from web_api.urls import handle_api_url
-from src.backend.rainwave.user import User
+from backend.rainwave.user import User
 import backend.locale.locale
 import routes.info
 import rainwave.playlist
@@ -33,7 +33,7 @@ import rainwave.schedule
 
 from libs import cache
 from libs import log
-from src.backend import config
+from backend import config
 from libs import zeromq
 
 

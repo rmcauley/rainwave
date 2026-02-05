@@ -1,7 +1,7 @@
 import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
-from src.web_api.urls import request_classes
+from web_api.urls import request_classes
 
 
 class TestKeyManagement(AsyncHTTPTestCase):

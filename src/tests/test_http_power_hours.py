@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
-from src.web_api.urls import request_classes
+from web_api.urls import request_classes
 
 
 class TestPowerHours(AsyncHTTPTestCase):

@@ -1,6 +1,6 @@
 import argparse
 
-from src.web_api.server import APIServer
+from web_api.server import APIServer
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Rainwave API server.")

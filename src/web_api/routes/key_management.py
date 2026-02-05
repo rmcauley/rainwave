@@ -2,7 +2,7 @@ import web_api.web
 from web_api.urls import handle_url
 from web_api import fieldtypes
 
-from src.backend.libs import db
+from backend.libs import db
 
 qr_service = (
     "http://chart.apis.google.com/chart?cht=qr&chs=350x350&choe=ISO-8859-1&chl=%s"

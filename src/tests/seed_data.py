@@ -1,6 +1,6 @@
 import random
 
-from src.backend.libs.db.cursor import RainwaveCursor
+from backend.libs.db.cursor import RainwaveCursor
 
 ANONYMOUS_USER_ID = 1
 TUNED_IN_ANONYMOUS_IP = "127.0.0.1"

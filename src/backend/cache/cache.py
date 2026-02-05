@@ -1,7 +1,7 @@
 import pickle
 import emcache
-from src.backend import config
-from src.web_api.exceptions import APIException
+from backend import config
+from web_api.exceptions import APIException
 from typing import Any
 from .test_mode_cache import TestModeCache
 

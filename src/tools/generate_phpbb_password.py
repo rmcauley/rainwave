@@ -1,5 +1,5 @@
 import bcrypt
-from src.web_api.routes.auth.login import phpbb_passwd_compare
+from web_api.routes.auth.login import phpbb_passwd_compare
 
 pw = input("Password: ")
 h = bcrypt.hashpw(pw.encode(), bcrypt.gensalt())

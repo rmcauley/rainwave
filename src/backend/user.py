@@ -8,10 +8,10 @@ from typing import Any
 
 from libs import log
 from backend.cache import cache
-from src.backend.libs import db
-from src.backend import config
+from backend.libs import db
+from backend import config
 
-from src.backend.rainwave import playlist
+from backend.rainwave import playlist
 
 from web_api.exceptions import APIException
 

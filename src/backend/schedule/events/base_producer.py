@@ -1,7 +1,7 @@
 from typing import TypeVar, Type, Any
 from time import time as timestamp
 
-from src.backend.libs import db
+from backend.libs import db
 
 all_producers = {}
 

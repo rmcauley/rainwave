@@ -21,8 +21,17 @@ dependencies = [
     "requests==2.32.5",
     "tornado==6.5.4",
     "types-requests==2.32.4.20260107",
-    "unidecode==1.4.0",
 ]
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [dependency-groups]
 dev = [

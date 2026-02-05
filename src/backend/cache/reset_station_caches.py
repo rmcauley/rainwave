@@ -1,4 +1,4 @@
-from src.backend import config
+from backend import config
 from .cache import cache_set
 from .station_cache import cache_set_station
 

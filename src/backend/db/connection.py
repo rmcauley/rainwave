@@ -1,8 +1,8 @@
 from psycopg import AsyncConnection, OperationalError, InterfaceError
 import time
 
-from src.backend import config
-from libs import log
+from backend import config
+from backend.libs import log
 
 db_connection: AsyncConnection = None  # type: ignore
 connected = False

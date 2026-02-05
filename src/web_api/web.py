@@ -9,14 +9,14 @@ import tornado.web
 import tornado.httputil
 
 from backend.cache import cache
-from src.backend.user import User
+from backend.user import User
 from backend.playlist.song.song import SongNonExistent
 
 from web_api import fieldtypes
 from backend.locale import locale
 from web_api.exceptions import APIException
-from src.backend import config
-from src.backend.libs import log, db
+from backend import config
+from backend.libs import log, db
 
 from web_api.html import html_write_error
 

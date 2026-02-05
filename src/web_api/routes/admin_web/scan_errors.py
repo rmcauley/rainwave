@@ -1,6 +1,6 @@
 from time import time as timestamp
 import datetime
-from src.backend.libs import db
+from backend.libs import db
 import web_api.web
 from web_api.urls import handle_url
 

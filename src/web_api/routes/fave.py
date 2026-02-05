@@ -2,9 +2,9 @@ from web_api import fieldtypes
 from web_api.web import APIHandler
 from web_api.exceptions import APIException
 from web_api.urls import handle_api_url
-from src.backend.libs import db
+from backend.libs import db
 
-from src.backend.rainwave import rating
+from backend.rainwave import rating
 
 
 @handle_api_url("fave_song")

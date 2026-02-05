@@ -1,5 +1,5 @@
-from src.backend.rainwave.events.event import BaseEvent
-from src.backend.rainwave import playlist
+from backend.rainwave.events.event import BaseEvent
+from backend.rainwave import playlist
 
 
 class SingleSong(BaseEvent):

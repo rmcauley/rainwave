@@ -4,8 +4,8 @@ from web_api import fieldtypes
 from web_api.urls import handle_api_html_url, handle_api_url
 from web_api.web import APIHandler, PrettyPrintAPIMixin, APIException
 from libs import cache, db
-from src.backend.rainwave import playlist
-from src.backend.rainwave import user as UserLib
+from backend.rainwave import playlist
+from backend.rainwave import user as UserLib
 
 
 @handle_api_url("listener")
