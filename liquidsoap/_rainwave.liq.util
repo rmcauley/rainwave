@@ -6,7 +6,18 @@ def r4_backend() =
   request.create(result)
 end
 
-r4_auto = request.dynamic(r4_backend)
+r4_auto = request.dynamic(prefetch=0, timeout=2.0, r4_backend)
+r4_auto.fetch()
+
+def queue(remaining, _) =
+  log("Queueing with #{remaining} seconds remaining")
+  if not r4_auto.fetch() then
+    log("Fetching next song failed")
+  end
+end
+
+r4_auto = source.on_end(delay=5., r4_auto, queue)
+
 r4_auto = amplify(0.7, override="replay_gain", stereo(r4_auto))
 r4_auto = crossfade(r4_auto)
 
@@ -26,7 +37,7 @@ output.icecast(
   genre=relay_genre,
   url=r4_dest_url,
   description=r4_dest_desc,
-  source.drop.metadata(merge_tracks(r4_auto))
+  source.drop.metadata(r4_auto)
 )
 
 output.icecast(
