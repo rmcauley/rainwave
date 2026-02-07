@@ -200,8 +200,17 @@ def mark_request_filled(
         (song.id, user.id),
     )
     db.c.update(
-        "INSERT INTO r4_request_history (user_id, song_id, request_wait_time, request_line_size, request_at_count, sid) "
-        "VALUES (%s, %s, %s, %s, %s, %s)",
+        """
+        INSERT INTO r4_request_history (
+            user_id,
+            song_id,
+            request_wait_time,
+            request_line_size,
+            request_at_count,
+            sid
+        )
+        VALUES (%s, %s, %s, %s, %s, %s)
+""",
         (
             user.id,
             song.id,

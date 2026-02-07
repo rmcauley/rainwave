@@ -37,12 +37,18 @@ async def update_album_ratings(
         sid = row["sid"]
         num_songs = row["album_song_count"]
         user_data = await cursor.fetch_row(
-            "SELECT ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS rating_user, "
-            "COUNT(song_rating_user) AS rating_user_count "
-            "FROM r4_songs "
-            "JOIN r4_song_sid USING (song_id) "
-            "JOIN r4_song_ratings USING (song_id) "
-            "WHERE album_id = %s AND sid = %s AND song_exists = TRUE AND user_id = %s",
+            """
+            SELECT
+                ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1) AS rating_user,
+                COUNT(song_rating_user) AS rating_user_count
+            FROM r4_songs
+                JOIN r4_song_sid USING (song_id)
+                JOIN r4_song_ratings USING (song_id)
+            WHERE album_id = %s
+                AND sid = %s
+                AND song_exists = TRUE
+                AND user_id = %s
+""",
             (album_id, sid, user_id),
             row_type=GetUpdatedAlbumRatingRow,
         )

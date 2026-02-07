@@ -111,9 +111,16 @@ class AddListener(IcecastHandler):
         )
         if tunedin:
             db.c.update(
-                "UPDATE r4_listeners "
-                "SET sid = %s, listener_ip = %s, listener_purge = FALSE, listener_icecast_id = %s, listener_relay = %s, listener_agent = %s "
-                "WHERE user_id = %s",
+                """
+                UPDATE r4_listeners
+                SET sid = %s,
+                    listener_ip = %s,
+                    listener_purge = FALSE,
+                    listener_icecast_id = %s,
+                    listener_relay = %s,
+                    listener_agent = %s
+                WHERE user_id = %s
+""",
                 (
                     sid,
                     self.listener_ip,
@@ -138,9 +145,16 @@ class AddListener(IcecastHandler):
             self.failed = False
         else:
             db.c.update(
-                "INSERT INTO r4_listeners "
-                "(sid, user_id, listener_ip, listener_icecast_id, listener_relay, listener_agent) "
-                "VALUES (%s, %s, %s, %s, %s, %s)",
+                """
+                    INSERT INTO r4_listeners
+                    (sid,
+                        user_id,
+                        listener_ip,
+                        listener_icecast_id,
+                        listener_relay,
+                        listener_agent)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+""",
                 (
                     sid,
                     self.user_id,
@@ -181,9 +195,17 @@ class AddListener(IcecastHandler):
         )
         if len(records) == 0:
             db.c.update(
-                "INSERT INTO r4_listeners "
-                "(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id, listener_key) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                """
+                INSERT INTO r4_listeners
+                (sid,
+                    listener_ip,
+                    user_id,
+                    listener_relay,
+                    listener_agent,
+                    listener_icecast_id,
+                    listener_key)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+""",
                 (
                     sid,
                     self.listener_ip,
@@ -218,9 +240,17 @@ class AddListener(IcecastHandler):
                     "DELETE FROM r4_listeners WHERE listener_id = %s", (popped,)
                 )
             db.c.update(
-                "UPDATE r4_listeners "
-                "SET sid = %s, listener_ip = %s, listener_relay = %s, listener_agent = %s, listener_icecast_id = %s, listener_key = %s, listener_purge = FALSE "
-                "WHERE listener_id = %s",
+                """
+                    UPDATE r4_listeners
+                    SET sid = %s,
+                        listener_ip = %s,
+                        listener_relay = %s,
+                        listener_agent = %s,
+                        listener_icecast_id = %s,
+                        listener_key = %s,
+                        listener_purge = FALSE
+                    WHERE listener_id = %s
+""",
                 (
                     sid,
                     self.listener_ip,

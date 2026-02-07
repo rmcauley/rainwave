@@ -49,12 +49,18 @@ class SongGroup:
 
     async def reconcile_sids(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
         new_sids_all = cursor.fetch_all(
-            "SELECT sid, COUNT(DISTINCT album_id) "
-            "FROM r4_song_group "
-            "JOIN r4_song_sid USING (song_id) "
-            "JOIN r4_songs USING (song_id) "
-            "WHERE group_id = %s AND song_exists = TRUE AND song_verified = TRUE "
-            "GROUP BY sid ",
+            """
+                SELECT
+                    sid,
+                    COUNT(DISTINCT album_id)
+                FROM r4_song_group
+                    JOIN r4_song_sid USING (song_id)
+                    JOIN r4_songs USING (song_id)
+                WHERE group_id = %s
+                    AND song_exists = TRUE
+                    AND song_verified = TRUE
+                GROUP BY sid
+""",
             (self.id,),
         )
         new_sids = [row["sid"] for row in new_sids_all]
@@ -94,30 +100,50 @@ class SongGroup:
         )
         # Make sure to update both the if and else SQL statements if doing any updates
         db.c.update(
-            "UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s "
-            "FROM r4_song_group "
-            "WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
-            "AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s ",
+            """
+UPDATE r4_song_sid
+SET song_cool = TRUE,
+    song_cool_end = %s
+FROM r4_song_group
+WHERE r4_song_sid.song_id = r4_song_group.song_id
+    AND r4_song_group.group_id = %s
+    AND r4_song_sid.sid = %s
+    AND r4_song_sid.song_exists = TRUE
+    AND r4_song_sid.song_cool_end <= %s
+""",
             (cool_end, self.id, sid, cool_end),
         )
         request_only_end = cool_end + 300
         db.c.update(
-            "UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s "
-            "FROM r4_song_group "
-            "WHERE r4_song_sid.song_id = r4_song_group.song_id AND r4_song_group.group_id = %s "
-            "AND r4_song_sid.sid = %s AND r4_song_sid.song_exists = TRUE AND r4_song_sid.song_cool_end <= %s "
-            "AND song_request_only_end IS NOT NULL",
+            """
+UPDATE r4_song_sid
+SET song_request_only = TRUE,
+    song_request_only_end = %s
+FROM r4_song_group
+WHERE r4_song_sid.song_id = r4_song_group.song_id
+    AND r4_song_group.group_id = %s
+    AND r4_song_sid.sid = %s
+    AND r4_song_sid.song_exists = TRUE
+    AND r4_song_sid.song_cool_end <= %s
+    AND song_request_only_end IS NOT NULL
+""",
             (request_only_end, self.id, sid, cool_end),
         )
 
     def _start_election_block_db(self, sid: int, num_elections: int) -> None:
         # refer to song.set_election_block for base SQL
         db.c.update(
-            "UPDATE r4_song_sid "
-            "SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
-            "FROM r4_song_group "
-            "WHERE r4_song_sid.song_id = r4_song_group.song_id AND "
-            "r4_song_group.group_id = %s AND r4_song_sid.sid = %s AND song_elec_blocked_num < %s",
+            """
+UPDATE r4_song_sid
+SET song_elec_blocked = TRUE,
+    song_elec_blocked_by = %s,
+    song_elec_blocked_num = %s
+FROM r4_song_group
+WHERE r4_song_sid.song_id = r4_song_group.song_id
+    AND r4_song_group.group_id = %s
+    AND r4_song_sid.sid = %s
+    AND song_elec_blocked_num < %s
+""",
             ("group", num_elections, self.id, sid, num_elections),
         )
 
@@ -135,25 +161,38 @@ class SongGroup:
 
     def load_songs_from_sid(self, sid: int, user_id: int) -> None:
         all_songs = db.c.fetch_all(
-            "SELECT r4_song_group.song_id AS id, song_title AS title, "
-            "CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, "
-            "TRUE AS requestable, "
-            "song_length AS length, "
-            "song_cool AS cool, "
-            "song_cool_end AS cool_end, "
-            "song_url as url, song_link_text as link_text, "
-            "song_artist_parseable AS artist_parseable, "
-            "COALESCE(song_rating_user, 0) AS rating_user, "
-            "COALESCE(song_fave, FALSE) AS fave, "
-            "album_name, r4_albums.album_id "
-            "FROM r4_song_group "
-            "JOIN r4_song_sid ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
-            "JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id) "
-            "JOIN r4_albums USING (album_id) "
-            "LEFT JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s) "
-            "LEFT JOIN r4_song_ratings ON (r4_song_group.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-            "WHERE r4_song_group.group_id = %s AND r4_songs.song_verified = TRUE AND r4_song_sid.song_exists = TRUE "
-            "ORDER BY album_name, song_title",
+            """
+SELECT
+    r4_song_group.song_id AS id,
+    song_title AS title,
+    CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
+    TRUE AS requestable,
+    song_length AS length,
+    song_cool AS cool,
+    song_cool_end AS cool_end,
+    song_url as url,
+    song_link_text as link_text,
+    song_artist_parseable AS artist_parseable,
+    COALESCE(song_rating_user, 0) AS rating_user,
+    COALESCE(song_fave, FALSE) AS fave,
+    album_name,
+    r4_albums.album_id
+FROM r4_song_group
+JOIN r4_song_sid
+    ON (r4_song_group.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s)
+JOIN r4_songs
+    ON (r4_song_group.song_id = r4_songs.song_id)
+JOIN r4_albums USING (album_id)
+LEFT JOIN r4_album_sid
+    ON (r4_albums.album_id = r4_album_sid.album_id AND r4_album_sid.sid = %s)
+LEFT JOIN r4_song_ratings
+    ON (r4_song_group.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s)
+WHERE r4_song_group.group_id = %s
+    AND r4_songs.song_verified = TRUE
+    AND r4_song_sid.song_exists = TRUE
+ORDER BY album_name,
+    song_title
+""",
             (sid, sid, user_id, self.id),
         )
         # And of course, now we have to burn extra CPU cycles to make sure the right album name is used and that we present the data

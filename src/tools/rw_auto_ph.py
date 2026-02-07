@@ -33,14 +33,20 @@ if __name__ == "__main__":
     cache.connect()
 
     songs_today = db.c.fetch_all(
-        "SELECT r4_songs.song_id, r4_songs.song_length "
-        "FROM r4_song_sid "
-        "JOIN r4_songs ON (r4_song_sid.song_id = r4_songs.song_id) "
-        "WHERE song_new_played = FALSE "
-        "AND song_verified = TRUE "
-        "AND sid = %s "
-        "AND song_origin_sid != 2 "  # no ocremix per request of jf
-        "ORDER BY random() ",
+        """
+        SELECT
+            r4_songs.song_id,
+            r4_songs.song_length
+        FROM r4_song_sid
+        JOIN r4_songs ON (
+            r4_song_sid.song_id = r4_songs.song_id
+        )
+        WHERE song_new_played = FALSE
+            AND song_verified = TRUE
+            AND sid = %s
+            AND song_origin_sid != 2
+        ORDER BY random()
+""",
         (TARGET_SID,),
     )
 

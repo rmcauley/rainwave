@@ -186,15 +186,17 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             )
             db.c.update(
                 (
-                    "UPDATE phpbb_users SET "
-                    "  discord_user_id = %s, "
-                    "  radio_username = %s, "
-                    "  user_avatar_type = %s, "
-                    "  user_avatar = %s, "
-                    "  user_password = '', "
-                    "  user_email = '', "
-                    "  user_email_hash = 0 "
-                    "WHERE user_id = %s"
+                    """
+                    UPDATE phpbb_users
+                    SET discord_user_id = %s,
+                        radio_username = %s,
+                        user_avatar_type = %s,
+                        user_avatar = %s,
+                        user_password = '',
+                        user_email = '',
+                        user_email_hash = 0
+                    WHERE user_id = %s
+"""
                 ),
                 (
                     discord_user_id,
@@ -208,10 +210,17 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             log.debug("discord", f"Creating new user from Discord {discord_user_id}")
             db.c.update(
                 (
-                    "INSERT INTO phpbb_users "
-                    "  (username, username_clean, discord_user_id, radio_username, user_avatar_type, user_avatar) "
-                    "  VALUES "
-                    "  (%s      , %s,             %s             , %s            , %s              , %s)"
+                    """
+                    INSERT INTO phpbb_users (
+                        username,
+                        username_clean,
+                        discord_user_id,
+                        radio_username,
+                        user_avatar_type,
+                        user_avatar
+                    )
+                    VALUES (%s , %s, %s , %s , %s , %s)
+"""
                 ),
                 (
                     username,

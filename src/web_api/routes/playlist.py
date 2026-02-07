@@ -326,13 +326,29 @@ class Top100Songs(APIHandler):
             self.append(
                 self.return_name,
                 db.c.fetch_all(
-                    "SELECT DISTINCT ON (song_rating, song_id) "
-                    "song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS song_rating, song_rating_count "
-                    "FROM r4_song_sid "
-                    "JOIN r4_songs USING (song_id) "
-                    "JOIN r4_albums USING (album_id) "
-                    "WHERE r4_song_sid.sid = %s AND song_rating_count > 20 AND song_verified = TRUE "
-                    "ORDER BY song_rating DESC, song_id, song_rating_count DESC, song_id LIMIT 100",
+                    """
+                    SELECT
+                        DISTINCT ON (song_rating, song_id) 
+                        song_origin_sid AS origin_sid,
+                        song_id AS id,
+                        song_title AS title,
+                        album_name,
+                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS song_rating,
+                        song_rating_count
+                    FROM r4_song_sid
+                        JOIN r4_songs USING (song_id)
+                        JOIN r4_albums USING (album_id)
+                    WHERE 
+                        r4_song_sid.sid = %s
+                        AND song_rating_count > 20
+                        AND song_verified = TRUE
+                    ORDER BY 
+                        song_rating DESC,
+                        song_id,
+                        song_rating_count DESC,
+                        song_id
+                    LIMIT 100
+""",
                     (self.sid,),
                 ),
             )
@@ -340,13 +356,26 @@ class Top100Songs(APIHandler):
             self.append(
                 self.return_name,
                 db.c.fetch_all(
-                    "SELECT DISTINCT ON (song_rating, song_id) "
-                    "song_origin_sid AS origin_sid, song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS song_rating, song_rating_count "
-                    "FROM r4_songs "
-                    "JOIN r4_song_sid USING (song_id) "
-                    "JOIN r4_albums USING (album_id) "
-                    "WHERE song_rating_count > 20 AND song_verified = TRUE "
-                    "ORDER BY song_rating DESC, song_id LIMIT 100"
+                    """
+                    SELECT
+                        DISTINCT ON (song_rating, song_id) 
+                        song_origin_sid AS origin_sid,
+                        song_id AS id,
+                        song_title AS title,
+                        album_name,
+                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS song_rating,
+                        song_rating_count
+                    FROM r4_songs
+                        JOIN r4_song_sid USING (song_id)
+                        JOIN r4_albums USING (album_id)
+                    WHERE 
+                        song_rating_count > 20
+                        AND song_verified = TRUE
+                    ORDER BY 
+                        song_rating DESC,
+                        song_id
+                    LIMIT 100
+"""
                 ),
             )
 
@@ -370,12 +399,30 @@ class AllFavHandler(APIHandler):
             self.append(
                 self.return_name,
                 db.c.fetch_all(
-                    "SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave, r4_song_sid.song_cool_end AS cool_end "
-                    "FROM r4_song_ratings "
-                    "JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
-                    "JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id) "
-                    "JOIN r4_albums USING (album_id) "
-                    "WHERE user_id = %s AND song_exists = TRUE AND song_fave = TRUE ORDER BY album_name, song_title "
+                    """
+                    SELECT
+                        r4_song_ratings.song_id AS id,
+                        song_title AS title,
+                        r4_albums.album_id,
+                        album_name,
+                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
+                        COALESCE(song_rating_user, 0) AS rating_user,
+                        song_fave AS fave,
+                        r4_song_sid.song_cool_end AS cool_end
+                    FROM r4_song_ratings
+                    JOIN r4_song_sid ON (
+                        r4_song_ratings.song_id = r4_song_sid.song_id 
+                        AND r4_song_sid.sid = %s
+                    )
+                    JOIN r4_songs ON (
+                        r4_song_ratings.song_id = r4_songs.song_id
+                    )
+                    JOIN r4_albums USING (album_id)
+                    WHERE user_id = %s
+                        AND song_exists = TRUE
+                        AND song_fave = TRUE
+                    ORDER BY album_name, song_title
+"""
                     + self.get_sql_limit_string(),
                     (self.sid, self.user.id),
                 ),
@@ -384,9 +431,23 @@ class AllFavHandler(APIHandler):
             self.append(
                 self.return_name,
                 db.c.fetch_all(
-                    "SELECT r4_song_ratings.song_id AS id, song_title AS title, r4_albums.album_id, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, COALESCE(song_rating_user, 0) AS rating_user, song_fave AS fave "
-                    "FROM r4_song_ratings JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
-                    "WHERE user_id = %s AND song_verified = TRUE AND song_fave = TRUE ORDER BY album_name, song_title "
+                    """
+                    SELECT
+                        r4_song_ratings.song_id AS id,
+                        song_title AS title,
+                        r4_albums.album_id,
+                        album_name,
+                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
+                        COALESCE(song_rating_user, 0) AS rating_user,
+                        song_fave AS fave
+                    FROM r4_song_ratings
+                        JOIN r4_songs USING (song_id)
+                        JOIN r4_albums USING (album_id)
+                    WHERE user_id = %s
+                        AND song_verified = TRUE
+                        AND song_fave = TRUE
+                    ORDER BY album_name, song_title
+"""
                     + self.get_sql_limit_string(),
                     (self.user.id,),
                 ),
@@ -412,10 +473,23 @@ class PlaybackHistory(APIHandler):
             self.append(
                 self.return_name,
                 db.c.fetch_all(
-                    "SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating "
-                    "FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
-                    "WHERE r4_song_history.sid = %s "
-                    "ORDER BY songhist_id DESC " + self.get_sql_limit_string(),
+                    """
+                    SELECT
+                        r4_song_history.song_id AS id,
+                        song_title AS title,
+                        album_id,
+                        album_name,
+                        songhist_time AS song_played_at,
+                        song_artist_parseable AS artist_parseable,
+                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating
+                    FROM r4_song_history
+                    JOIN r4_song_sid USING (song_id, sid)
+                    JOIN r4_songs USING (song_id)
+                    JOIN r4_albums USING (album_id)
+                    WHERE r4_song_history.sid = %s
+                    ORDER BY songhist_id DESC
+"""
+                    + self.get_sql_limit_string(),
                     (self.sid,),
                 ),
             )
@@ -423,11 +497,28 @@ class PlaybackHistory(APIHandler):
             self.append(
                 self.return_name,
                 db.c.fetch_all(
-                    "SELECT r4_song_history.song_id AS id, song_title AS title, album_id, album_name, song_rating_user AS rating_user, song_fave AS fave, songhist_time AS song_played_at, song_artist_parseable AS artist_parseable, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_rating_user AS rating_user "
-                    "FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) "
-                    "LEFT JOIN r4_song_ratings ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s "
-                    "WHERE r4_song_history.sid = %s "
-                    "ORDER BY songhist_id DESC " + self.get_sql_limit_string(),
+                    """
+                    SELECT
+                        r4_song_history.song_id AS id,
+                        song_title AS title,
+                        album_id,
+                        album_name,
+                        song_rating_user AS rating_user,
+                        song_fave AS fave,
+                        songhist_time AS song_played_at,
+                        song_artist_parseable AS artist_parseable,
+                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
+                        song_rating_user AS rating_user
+                    FROM r4_song_history
+                    JOIN r4_song_sid USING (song_id, sid)
+                    JOIN r4_songs USING (song_id)
+                    JOIN r4_albums USING (album_id)
+                    LEFT JOIN r4_song_ratings
+                        ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s
+                    WHERE r4_song_history.sid = %s
+                    ORDER BY songhist_id DESC
+"""
+                    + self.get_sql_limit_string(),
                     (self.user.id, self.sid),
                 ),
             )
@@ -475,8 +566,14 @@ class StationSongCountRequest(APIHandler):
         self.append(
             self.return_name,
             db.c.fetch_all(
-                "SELECT song_origin_sid AS sid, COUNT(song_id) AS song_count "
-                "FROM r4_songs WHERE song_verified = TRUE GROUP BY song_origin_sid"
+                """
+                SELECT
+                    song_origin_sid AS sid,
+                    COUNT(song_id) AS song_count
+                FROM r4_songs
+                WHERE song_verified = TRUE
+                GROUP BY song_origin_sid
+"""
             ),
         )
 
@@ -493,14 +590,27 @@ class AllRequestedSongs(APIHandler):
         self.append(
             self.return_name,
             db.c.fetch_all(
-                "SELECT "
-                "r4_songs.song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_rating_user AS rating_user, song_fave AS fave "
-                "FROM r4_request_history "
-                "JOIN r4_song_sid USING (song_id, sid) "
-                "JOIN r4_songs USING (song_id) "
-                "JOIN r4_albums USING (album_id) "
-                "LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = r4_request_history.user_id) "
-                "WHERE r4_request_history.sid = %s AND r4_request_history.user_id = %s AND song_verified = TRUE ORDER BY request_fulfilled_at DESC "
+                """
+                SELECT
+                    r4_songs.song_id AS id,
+                    song_title AS title,
+                    album_name,
+                    CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
+                    song_rating_user AS rating_user,
+                    song_fave AS fave
+                FROM r4_request_history
+                    JOIN r4_song_sid USING (song_id, sid)
+                    JOIN r4_songs USING (song_id)
+                    JOIN r4_albums USING (album_id)
+                    LEFT JOIN r4_song_ratings ON (
+                        r4_songs.song_id = r4_song_ratings.song_id AND 
+                        r4_song_ratings.user_id = r4_request_history.user_id
+                    )
+                WHERE r4_request_history.sid = %s
+                    AND r4_request_history.user_id = %s
+                    AND song_verified = TRUE
+                ORDER BY request_fulfilled_at DESC
+"""
                 + self.get_sql_limit_string(),
                 (self.sid, self.user.id),
             ),
@@ -524,14 +634,27 @@ class RecentlyVotedSongs(APIHandler):
         self.append(
             self.return_name,
             db.c.fetch_all(
-                "SELECT "
-                "r4_songs.song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_rating_user AS rating_user, song_fave AS fave "
-                "FROM r4_vote_history "
-                "JOIN r4_song_sid USING (song_id, sid) "
-                "JOIN r4_songs USING (song_id) "
-                "JOIN r4_albums USING (album_id) "
-                "LEFT JOIN r4_song_ratings ON (r4_songs.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = r4_vote_history.user_id) "
-                "WHERE r4_vote_history.sid = %s AND r4_vote_history.user_id = %s AND song_verified = TRUE ORDER BY vote_id DESC "
+                """
+                SELECT
+                    r4_songs.song_id AS id,
+                    song_title AS title,
+                    album_name,
+                    CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
+                    song_rating_user AS rating_user,
+                    song_fave AS fave
+                FROM r4_vote_history
+                    JOIN r4_song_sid USING (song_id, sid)
+                    JOIN r4_songs USING (song_id)
+                    JOIN r4_albums USING (album_id)
+                    LEFT JOIN r4_song_ratings ON (
+                        r4_songs.song_id = r4_song_ratings.song_id 
+                        AND r4_song_ratings.user_id = r4_vote_history.user_id
+                    )
+                WHERE r4_vote_history.sid = %s
+                    AND r4_vote_history.user_id = %s
+                    AND song_verified = TRUE
+                ORDER BY vote_id DESC
+"""
                 + self.get_sql_limit_string(),
                 (self.sid, self.user.id),
             ),

@@ -162,8 +162,16 @@ class SubmitVote(APIHandler):
                     )
                 else:
                     db.c.update(
-                        "INSERT INTO r4_vote_history (elec_id, entry_id, user_id, song_id, sid) "
-                        "VALUES (%s, %s, %s, %s, %s)",
+                        """
+                        INSERT INTO r4_vote_history (
+                            elec_id,
+                            entry_id,
+                            user_id,
+                            song_id,
+                            sid
+                        )
+                        VALUES (%s, %s, %s, %s, %s)
+""",
                         (
                             event.id,
                             entry_id,

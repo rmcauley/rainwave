@@ -159,18 +159,30 @@ class AlbumOnStation:
         )
         await asyncio.gather(
             cursor.update(
-                "UPDATE r4_song_sid "
-                "SET song_cool = TRUE, song_cool_end = %s "
-                "FROM r4_songs "
-                "WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end <= %s ",
+                """
+                UPDATE r4_song_sid
+                SET song_cool = TRUE,
+                    song_cool_end = %s
+                FROM r4_songs
+                WHERE r4_song_sid.song_id = r4_songs.song_id
+                    AND album_id = %s
+                    AND sid = %s
+                    AND song_cool_end <= %s
+""",
                 (cool_end, self.album_id, self.sid, cool_end),
             ),
             cursor.update(
-                "UPDATE r4_song_sid "
-                "SET song_request_only = TRUE, song_request_only_end = %s "
-                "FROM r4_songs "
-                "WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_cool_end <= %s "
-                "AND song_request_only_end IS NOT NULL",
+                """
+                UPDATE r4_song_sid
+                SET song_request_only = TRUE,
+                    song_request_only_end = %s
+                FROM r4_songs
+                WHERE r4_song_sid.song_id = r4_songs.song_id
+                    AND album_id = %s
+                    AND sid = %s
+                    AND song_cool_end <= %s
+                    AND song_request_only_end IS NOT NULL
+""",
                 (request_only_end, self.album_id, self.sid, cool_end),
             ),
         )
@@ -212,10 +224,17 @@ class AlbumOnStation:
     ) -> None:
         # refer to song.set_election_block for base SQL
         await cursor.update(
-            "UPDATE r4_song_sid "
-            "SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s "
-            "FROM r4_songs "
-            "WHERE r4_song_sid.song_id = r4_songs.song_id AND album_id = %s AND sid = %s AND song_elec_blocked_num <= %s",
+            """
+                UPDATE r4_song_sid
+                SET song_elec_blocked = TRUE,
+                    song_elec_blocked_by = %s,
+                    song_elec_blocked_num = %s
+                FROM r4_songs
+                WHERE r4_song_sid.song_id = r4_songs.song_id
+                    AND album_id = %s
+                    AND sid = %s
+                    AND song_elec_blocked_num <= %s
+""",
             ("album", num_elections, self.album_id, self.sid, num_elections),
         )
 
@@ -256,13 +275,26 @@ class AlbumOnStation:
         )
 
         histogram_rows = await cursor.fetch_all(
-            "SELECT song_rating_user, COUNT(song_rating) AS rating_count "
-            "FROM r4_song_ratings "
-            "JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE) "
-            "JOIN r4_song_sid ON (r4_song_ratings.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
-            "JOIN r4_songs ON (r4_song_ratings.song_id = r4_songs.song_id AND r4_songs.song_verified = TRUE) "
-            "WHERE album_id = %s "
-            "GROUP BY song_rating_user",
+            """
+                SELECT
+                    song_rating_user,
+                    COUNT(song_rating) AS rating_count
+                FROM r4_song_ratings
+                JOIN phpbb_users ON (
+                    r4_song_ratings.user_id = phpbb_users.user_id 
+                    AND phpbb_users.radio_inactive = FALSE
+                )
+                JOIN r4_song_sid ON (
+                    r4_song_ratings.song_id = r4_song_sid.song_id 
+                    AND r4_song_sid.sid = %s
+                )
+                JOIN r4_songs ON (
+                    r4_song_ratings.song_id = r4_songs.song_id 
+                    AND r4_songs.song_verified = TRUE
+                )
+                WHERE album_id = %s
+                GROUP BY song_rating_user
+""",
             (self.sid, self.album_id),
             row_type=AlbumOnStationExtraDetailsHistogramRow,
         )

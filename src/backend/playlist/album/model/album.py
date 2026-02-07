@@ -128,22 +128,39 @@ class Album:
         ):
             num_songs = await self.get_num_songs_for_station(cursor, sid)
             await cursor.update(
-                "INSERT "
-                "  INTO r4_album_ratings (sid, album_id, user_id, album_rating_user, album_rating_complete) "
-                "  SELECT "
-                "     sid, album_id, user_id, "
-                "     NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) AS album_rating_user, "
-                "     CASE WHEN COUNT(song_rating_user) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete "
-                "   FROM ("
-                "    SELECT song_id, sid, r4_songs.album_id "
-                "      FROM r4_songs JOIN r4_song_sid USING (song_id) "
-                "      WHERE r4_songs.album_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_verified = TRUE "
-                "    ) AS r4_song_sid "
-                "    LEFT JOIN r4_song_ratings USING (song_id) "
-                "    WHERE r4_song_ratings.song_rating_user IS NOT NULL "
-                "    GROUP BY album_id, sid, user_id "
-                "    HAVING NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) IS NOT NULL "
-                "  ON CONFLICT DO NOTHING",
+                """
+                INSERT INTO r4_album_ratings (
+                    sid, 
+                    album_id, 
+                    user_id,
+                    album_rating_user, 
+                    album_rating_complete
+                )
+                SELECT 
+                    sid, 
+                    album_id, 
+                    user_id, 
+                    NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) AS album_rating_user, 
+                    CASE WHEN COUNT(song_rating_user) >= %s THEN TRUE ELSE FALSE END AS album_rating_complete 
+                FROM
+                    (SELECT 
+                        song_id, 
+                        sid, 
+                        r4_songs.album_id 
+                    FROM r4_songs 
+                        JOIN r4_song_sid USING (song_id) 
+                    WHERE 
+                        r4_songs.album_id = %s 
+                        AND r4_song_sid.sid = %s 
+                        AND song_exists = TRUE 
+                        AND song_verified = TRUE 
+                    ) AS r4_song_sid 
+                    LEFT JOIN r4_song_ratings USING (song_id) 
+                WHERE r4_song_ratings.song_rating_user IS NOT NULL 
+                GROUP BY album_id, sid, user_id 
+                HAVING NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) IS NOT NULL 
+                ON CONFLICT DO NOTHING
+""",
                 (num_songs, self.id, sid),
             )
 

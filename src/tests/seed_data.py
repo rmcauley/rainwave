@@ -91,8 +91,15 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1):
     for idx in range(1, 11):
         name = f"Group {idx}"
         group_id = await cursor.fetch_var(
-            "INSERT INTO r4_groups (group_name, group_name_searchable, group_elec_block, group_cool_time) "
-            "VALUES (%s, %s, %s, %s) RETURNING group_id",
+            """
+            INSERT INTO r4_groups (
+                group_name,
+                group_name_searchable,
+                group_elec_block,
+                group_cool_time
+            )
+            VALUES (%s, %s, %s, %s) RETURNING group_id
+""",
             (name, name.lower(), 0, 900),
             as_type=int,
         )
@@ -119,8 +126,14 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1):
         name = f"Album {idx}"
         year = 2000 + (idx % 20)
         album_id = await cursor.fetch_var(
-            "INSERT INTO r4_albums (album_name, album_name_searchable, album_year) "
-            "VALUES (%s, %s, %s) RETURNING album_id",
+            """
+            INSERT INTO r4_albums (
+                album_name,
+                album_name_searchable,
+                album_year
+            )
+            VALUES (%s, %s, %s) RETURNING album_id
+""",
             (name, name.lower(), year),
             as_type=int,
         )
@@ -140,9 +153,20 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1):
                 f"/tmp/rainwave_test/music/album_{album_id}/track_{track:02d}.mp3"
             )
             song_id = await cursor.fetch_var(
-                "INSERT INTO r4_songs (album_id, song_origin_sid, song_filename, song_title, "
-                "song_title_searchable, song_length, song_track_number, song_disc_number, song_year) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING song_id",
+                """
+                INSERT INTO r4_songs (
+                    album_id,
+                    song_origin_sid,
+                    song_filename,
+                    song_title,
+                    song_title_searchable,
+                    song_length,
+                    song_track_number,
+                    song_disc_number,
+                    song_year)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING song_id
+""",
                 (album_id, sid, filename, title, title.lower(), 180, track, 1, year),
                 as_type=int,
             )
@@ -151,8 +175,15 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1):
                 (song_id, sid),
             )
             await cursor.update(
-                "INSERT INTO r4_song_artist (song_id, artist_id, artist_order, artist_is_tag) "
-                "VALUES (%s, %s, %s, %s)",
+                """
+                INSERT INTO r4_song_artist (
+                    song_id,
+                    artist_id,
+                    artist_order,
+                    artist_is_tag
+                )
+                VALUES (%s, %s, %s, %s)
+""",
                 (song_id, artist_id, 0, True),
             )
             await cursor.update(

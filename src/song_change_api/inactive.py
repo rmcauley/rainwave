@@ -25,8 +25,12 @@ def _update_inactive() -> None:
     f.close()
     time_threshold = timestamp() - (86400 * 30)
     db.c.update(
-        "UPDATE phpbb_users SET radio_inactive = TRUE "
-        "WHERE radio_inactive = FALSE AND radio_last_active < %s",
+        """
+        UPDATE phpbb_users
+        SET radio_inactive = TRUE
+        WHERE radio_inactive = FALSE
+            AND radio_last_active < %s
+""",
         (time_threshold,),
     )
 

@@ -693,13 +693,17 @@ class Song:
 
         self.data["rating_histogram"] = {}
         histo = db.c.fetch_all(
-            "SELECT "
-            "ROUND(((song_rating_user * 10) - (CAST(song_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_user_rnd, "
-            "COUNT(song_rating_user) AS rating_user_count "
-            "FROM r4_song_ratings JOIN phpbb_users USING (user_id) "
-            "WHERE radio_inactive = FALSE AND song_id = %s "
-            "GROUP BY rating_user_rnd "
-            "ORDER BY rating_user_rnd",
+            """
+                SELECT
+                    ROUND(((song_rating_user * 10) - (CAST(song_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_user_rnd,
+                    COUNT(song_rating_user) AS rating_user_count
+                FROM r4_song_ratings
+                    JOIN phpbb_users USING (user_id)
+                WHERE radio_inactive = FALSE
+                    AND song_id = %s
+                GROUP BY rating_user_rnd
+                ORDER BY rating_user_rnd
+""",
             (self.id,),
         )
         for point in histo:

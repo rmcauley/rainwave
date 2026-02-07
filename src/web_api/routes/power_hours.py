@@ -22,9 +22,19 @@ class ListPowerHours(web_api.web.APIHandler):
         self.append(
             self.return_name,
             db.c.fetch_all(
-                "SELECT sid, sched_id AS id, sched_name AS name, sched_start AS start, sched_end AS end, sched_url AS url "
-                "FROM r4_schedule "
-                "WHERE sched_type = 'OneUpProducer' AND sched_start > %s ORDER BY sched_start ASC",
+                """
+                SELECT
+                    sid,
+                    sched_id AS id,
+                    sched_name AS name,
+                    sched_start AS start,
+                    sched_end AS end,
+                    sched_url AS url
+                FROM r4_schedule
+                WHERE sched_type = 'OneUpProducer'
+                    AND sched_start > %s
+                ORDER BY sched_start ASC
+""",
                 (timestamp(),),
             ),
         )

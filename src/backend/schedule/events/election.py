@@ -345,11 +345,13 @@ class Election(event.BaseEvent):
             if total_votes > 0:
                 for song in self.songs:
                     db.c.update(
-                        "UPDATE r4_songs SET "
-                        "song_vote_share = ((song_vote_count + %s) / (song_votes_seen + %s)), "
-                        "song_vote_count = song_vote_count + %s, "
-                        "song_votes_seen = song_votes_seen + %s "
-                        "WHERE song_id = %s",
+                        """
+                            UPDATE r4_songs
+                            SET song_vote_share = ((song_vote_count + %s) / (song_votes_seen + %s)),
+                                song_vote_count = song_vote_count + %s,
+                                song_votes_seen = song_votes_seen + %s
+                            WHERE song_id = %s
+""",
                         (
                             song.data["entry_votes"],
                             total_votes,
@@ -360,11 +362,14 @@ class Election(event.BaseEvent):
                     )
                     if song.album:
                         db.c.update(
-                            "UPDATE r4_album_sid SET "
-                            "album_vote_share = ((album_vote_count + %s) / (album_votes_seen + %s)), "
-                            "album_vote_count = album_vote_count + %s, "
-                            "album_votes_seen = album_votes_seen + %s "
-                            "WHERE album_id = %s AND sid = %s",
+                            """
+UPDATE r4_album_sid
+SET album_vote_share = ((album_vote_count + %s) / (album_votes_seen + %s)),
+    album_vote_count = album_vote_count + %s,
+    album_votes_seen = album_votes_seen + %s
+WHERE album_id = %s
+    AND sid = %s
+""",
                             (
                                 song.data["entry_votes"],
                                 total_votes,

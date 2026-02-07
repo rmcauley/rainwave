@@ -92,11 +92,16 @@ def get_producer_at_time(sid: int, at_time: int) -> BaseProducer:
     local_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(at_time))
     time_ahead = int((at_time - timestamp()) / 60)
     sched_id = db.c.fetch_var(
-        "SELECT sched_id "
-        "FROM r4_schedule "
-        "WHERE sid = %s AND sched_start <= %s AND sched_end > %s "
-        "ORDER BY sched_id DESC "
-        "LIMIT 1",
+        """
+            SELECT
+                sched_id
+            FROM r4_schedule
+            WHERE sid = %s
+                AND sched_start <= %s
+                AND sched_end > %s
+            ORDER BY sched_id DESC
+            LIMIT 1
+""",
         (sid, at_time + 20, at_time),
     )
     try:

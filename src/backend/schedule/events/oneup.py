@@ -183,11 +183,21 @@ class OneUpProducer(event.BaseProducer):
     def fill_unrated(self, sid: int, max_length: int) -> None:
         total_time = 0
         rows = db.c.fetch_all(
-            "SELECT song_id, song_length "
-            "FROM r4_song_sid JOIN r4_songs USING (song_id) "
-            "WHERE sid = %s AND song_rating = 0 AND song_exists = TRUE AND song_verified = TRUE "
-            "ORDER BY song_rating_count, song_added_on, random() "
-            "LIMIT 100",
+            """
+                SELECT
+                    song_id,
+                    song_length
+                FROM r4_song_sid
+                JOIN r4_songs USING (song_id)
+                WHERE sid = %s
+                    AND song_rating = 0
+                    AND song_exists = TRUE
+                    AND song_verified = TRUE
+                ORDER BY song_rating_count,
+                    song_added_on,
+                    random()
+                LIMIT 100
+""",
             (sid,),
         )
         for row in rows:

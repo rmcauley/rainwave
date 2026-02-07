@@ -182,12 +182,25 @@ class GroupEditGroupList(web_api.web.HTMLRequest):
         self.write("<h2>Group List</h2>")
         self.write("<table>")
         groups = db.c.fetch_all(
-            "SELECT COUNT(r4_song_group.song_id) AS num_songs, r4_groups.group_id AS id, group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time "
-            "FROM r4_groups "
-            "JOIN r4_song_group USING (group_id) "
-            "JOIN r4_songs ON (r4_song_group.song_id = r4_songs.song_id AND song_verified = TRUE) "
-            "GROUP BY r4_groups.group_id, group_name, group_elec_block, group_cool_time "
-            "ORDER BY group_name",
+            """
+            SELECT
+                COUNT(r4_song_group.song_id) AS num_songs,
+                r4_groups.group_id AS id,
+                group_name AS name,
+                group_elec_block AS elec_block,
+                group_cool_time AS cool_time
+            FROM r4_groups
+                JOIN r4_song_group USING (group_id)
+                JOIN r4_songs ON (
+                    r4_song_group.song_id = r4_songs.song_id 
+                    AND song_verified = TRUE
+                )
+            GROUP BY r4_groups.group_id,
+                group_name,
+                group_elec_block,
+                group_cool_time
+            ORDER BY group_name
+""",
             (self.sid,),
         )
         for row in groups:

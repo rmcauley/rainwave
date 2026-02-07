@@ -35,10 +35,12 @@ class UpdateUserAvatarByDiscordId(web_api.web.APIHandler):
         if possible_id:
             db.c.update(
                 (
-                    "UPDATE phpbb_users SET "
-                    "  user_avatar_type = %s, "
-                    "  user_avatar = %s "
-                    "WHERE user_id = %s"
+                    """
+                    UPDATE phpbb_users
+                    SET user_avatar_type = %s,
+                        user_avatar = %s
+                    WHERE user_id = %s
+"""
                 ),
                 (
                     user_avatar_type,

@@ -92,22 +92,47 @@ class BaseProducer:
         evt.use_crossfade = use_crossfade
         evt.use_tag_suffix = use_tag_suffix
         db.c.update(
-            "INSERT INTO r4_schedule "
-            "(sched_id, sched_start, sched_end, sched_type, sched_name, sid, sched_public, sched_timed, sched_url, sched_use_crossfade, sched_use_tag_suffix) VALUES "
-            "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (
-                evt.id,
-                evt.start,
-                evt.end,
-                evt.type,
-                evt.name,
-                evt.sid,
-                evt.public,
-                evt.timed,
-                evt.url,
-                evt.use_crossfade,
-                evt.use_tag_suffix,
-            ),
+            """
+                INSERT INTO r4_schedule (
+                    sched_id,
+                    sched_start,
+                    sched_end,
+                    sched_type,
+                    sched_name,
+                    sid,
+                    sched_public,
+                    sched_timed,
+                    sched_url,
+                    sched_use_crossfade,
+                    sched_use_tag_suffix
+                )
+                VALUES (
+                    %(sched_id)s,
+                    %(sched_start)s,
+                    %(sched_end)s,
+                    %(sched_type)s,
+                    %(sched_name)s,
+                    %(sid)s,
+                    %(sched_public)s,
+                    %(sched_timed)s,
+                    %(sched_url)s,
+                    %(sched_use_crossfade)s,
+                    %(sched_use_tag_suffix)s
+                )
+""",
+            {
+                "sched_id": evt.id,
+                "sched_start": evt.start,
+                "sched_end": evt.end,
+                "sched_type": evt.type,
+                "sched_name": evt.name,
+                "sid": evt.sid,
+                "sched_public": evt.public,
+                "sched_timed": evt.timed,
+                "sched_url": evt.url,
+                "sched_use_crossfade": evt.use_crossfade,
+                "sched_use_tag_suffix": evt.use_tag_suffix,
+            },
         )
         return evt
 

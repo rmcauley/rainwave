@@ -34,9 +34,11 @@ class UpdateUserNicknameByDiscordId(web_api.web.APIHandler):
         if possible_id:
             db.c.update(
                 (
-                    "UPDATE phpbb_users SET "
-                    "  radio_username = %s "
-                    "WHERE user_id = %s"
+                    """
+                    UPDATE phpbb_users
+                    SET radio_username = %s
+                    WHERE user_id = %s
+"""
                 ),
                 (
                     nickname,

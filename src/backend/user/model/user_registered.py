@@ -348,25 +348,58 @@ class RegisteredUser(UserBase):
 
     def get_requests(self, sid: int) -> list[dict[str, Any]]:
         requests = db.c.fetch_all(
-            "SELECT r4_request_store.song_id AS id, COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid, r4_songs.song_origin_sid AS origin_sid, "
-            "r4_request_store.reqstor_order AS order, r4_request_store.reqstor_id AS request_id, "
-            "CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_title AS title, song_length AS length, "
-            "r4_song_sid.song_cool AS cool, r4_song_sid.song_cool_end AS cool_end, song_exists AS good, "
-            "r4_song_sid.song_elec_blocked AS elec_blocked, r4_song_sid.song_elec_blocked_by AS elec_blocked_by, "
-            "r4_song_sid.song_elec_blocked_num AS elec_blocked_num, r4_song_sid.song_exists AS valid, "
-            "COALESCE(song_rating_user, 0) AS rating_user, COALESCE(album_rating_user, 0) AS album_rating_user, "
-            "song_fave AS fave, album_fave AS album_fave, "
-            "r4_songs.album_id AS album_id, r4_albums.album_name, r4_album_sid.album_rating AS album_rating, album_rating_complete "
-            "FROM r4_request_store "
-            "JOIN r4_songs USING (song_id) "
-            "JOIN r4_albums USING (album_id) "
-            "JOIN r4_album_sid ON (r4_albums.album_id = r4_album_sid.album_id AND r4_request_store.sid = r4_album_sid.sid) "
-            "LEFT JOIN r4_song_sid ON (r4_request_store.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s) "
-            "LEFT JOIN r4_song_ratings ON (r4_request_store.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) "
-            "LEFT JOIN r4_album_ratings ON (r4_songs.album_id = r4_album_ratings.album_id AND r4_album_ratings.user_id = %s AND r4_album_ratings.sid = %s) "
-            "LEFT JOIN r4_album_faves ON (r4_songs.album_id = r4_album_faves.album_id AND r4_album_faves.user_id = %s) "
-            "WHERE r4_request_store.user_id = %s "
-            "ORDER BY reqstor_order, reqstor_id",
+            """
+            SELECT
+                r4_request_store.song_id AS id,
+                COALESCE(r4_song_sid.sid, r4_request_store.sid) AS sid,
+                r4_songs.song_origin_sid AS origin_sid,
+                r4_request_store.reqstor_order AS order,
+                r4_request_store.reqstor_id AS request_id,
+                CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
+                song_title AS title,
+                song_length AS length,
+                r4_song_sid.song_cool AS cool,
+                r4_song_sid.song_cool_end AS cool_end,
+                song_exists AS good,
+                r4_song_sid.song_elec_blocked AS elec_blocked,
+                r4_song_sid.song_elec_blocked_by AS elec_blocked_by,
+                r4_song_sid.song_elec_blocked_num AS elec_blocked_num,
+                r4_song_sid.song_exists AS valid,
+                COALESCE(song_rating_user, 0) AS rating_user,
+                COALESCE(album_rating_user, 0) AS album_rating_user,
+                song_fave AS fave,
+                album_fave AS album_fave,
+                r4_songs.album_id AS album_id,
+                r4_albums.album_name,
+                r4_album_sid.album_rating AS album_rating,
+                album_rating_complete
+            FROM r4_request_store
+                JOIN r4_songs USING (song_id)
+                JOIN r4_albums USING (album_id)
+                JOIN r4_album_sid ON (
+                    r4_albums.album_id = r4_album_sid.album_id 
+                    AND r4_request_store.sid = r4_album_sid.sid
+                )
+                LEFT JOIN r4_song_sid ON (
+                    r4_request_store.song_id = r4_song_sid.song_id 
+                    AND r4_song_sid.sid = %s
+                )
+                LEFT JOIN r4_song_ratings ON (
+                    r4_request_store.song_id = r4_song_ratings.song_id 
+                    AND r4_song_ratings.user_id = %s
+                )
+                LEFT JOIN r4_album_ratings ON (
+                    r4_songs.album_id = r4_album_ratings.album_id 
+                    AND r4_album_ratings.user_id = %s 
+                    AND r4_album_ratings.sid = %s
+                )
+                LEFT JOIN r4_album_faves ON (
+                    r4_songs.album_id = r4_album_faves.album_id 
+                    AND r4_album_faves.user_id = %s
+                )
+            WHERE r4_request_store.user_id = %s
+            ORDER BY reqstor_order, reqstor_id
+""",
             (sid, self.id, self.id, sid, self.id, self.id),
             row_type=RequestSongRow,
         )
