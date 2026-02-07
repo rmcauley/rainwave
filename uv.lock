@@ -1032,12 +1032,12 @@ wheels = [
 
 [[package]]
 name = "pygobject"
-version = "3.50.1"
+version = "3.50.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pycairo" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/71/eb/53106840011df907781891a4968a35cfde42aef0e80f74c060367402a468/pygobject-3.50.1.tar.gz", hash = "sha256:a4df4e7adef7f4f01685a763d138eac9396585bfc68a7d31bbe4fbca2de0d7cb", size = 1081846, upload-time = "2025-05-25T14:53:01.761Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a7/5d/f2946cc6c1baf56dee6e942af8cfa16472538a8ad9d780d9f484e7554288/pygobject-3.50.2.tar.gz", hash = "sha256:ece6b860aab77cb649fdfc6e88d8a83765e7a62f7ffd39a628d6e2a0d397a7ff", size = 1085854, upload-time = "2025-10-18T13:44:45.634Z" }
 
 [[package]]
 name = "pyinotify"
