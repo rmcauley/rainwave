@@ -121,7 +121,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
 
     def get_user_id_by_discord_user_id(self, discord_user_id: str):
         return (
-            db.c.fetch_var(
+            await cursor.fetch_var(
                 "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s ORDER BY user_id ASC",
                 (discord_user_id,),
             )
@@ -155,7 +155,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
 
         if self.user.id > 1:
             if discord_id_used_user_id > 1 and discord_id_used_user_id != self.user.id:
-                db.c.update(
+                await cursor.update(
                     "UPDATE phpbb_users SET discord_user_id = '' WHERE discord_user_id = %s",
                     (discord_user_id,),
                 )
@@ -184,7 +184,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 "discord",
                 f"Updating exising user {user_id} from Discord {discord_user_id}",
             )
-            db.c.update(
+            await cursor.update(
                 (
                     """
                     UPDATE phpbb_users
@@ -208,7 +208,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             )
         else:
             log.debug("discord", f"Creating new user from Discord {discord_user_id}")
-            db.c.update(
+            await cursor.update(
                 (
                     """
                     INSERT INTO phpbb_users (

@@ -121,7 +121,7 @@ async def _start() -> None:
                 "%s has %s listeners."
                 % (config.station_id_friendly[sid], listener_count),
             )
-            db.c.update(
+            await cursor.update(
                 "INSERT INTO r4_listener_counts (sid, lc_guests) VALUES (%s, %s)",
                 (sid, listener_count),
             )
@@ -131,7 +131,7 @@ async def _start() -> None:
 
         cache.set_global("relay_status", relays)
 
-        # db.c.update("DELETE FROM r4_listener_counts WHERE lc_time <= %s", (current_time - config.trim_history_length,))
+        # await cursor.update("DELETE FROM r4_listener_counts WHERE lc_time <= %s", (current_time - config.trim_history_length,))
     except Exception as e:
         log.exception("icecast_sync", "Could not finish counting listeners.", e)
 

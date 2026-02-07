@@ -21,7 +21,7 @@ class ListPowerHours(web_api.web.APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     sid,

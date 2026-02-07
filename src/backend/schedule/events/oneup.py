@@ -17,7 +17,7 @@ class OneUpProducer(event.BaseProducer):
         self.plan_ahead_limit = 5
 
     def has_next_event(self) -> bool:
-        next_up_id = db.c.fetch_var(
+        next_up_id = await cursor.fetch_var(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1",
             (self.id,),
         )
@@ -26,12 +26,12 @@ class OneUpProducer(event.BaseProducer):
     def load_next_event(
         self, target_length: int | None = None, min_elec_id: int | None = None
     ) -> Any:
-        next_up_id = db.c.fetch_var(
+        next_up_id = await cursor.fetch_var(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1",
             (self.id,),
         )
         if next_up_id:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_one_ups SET one_up_queued = TRUE WHERE one_up_id = %s",
                 (next_up_id,),
             )
@@ -41,7 +41,7 @@ class OneUpProducer(event.BaseProducer):
             up.core_event_id = self.id
             return up
         else:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_schedule SET sched_used = TRUE WHERE sched_id = %s",
                 (self.id,),
             )
@@ -55,7 +55,7 @@ class OneUpProducer(event.BaseProducer):
             length = self.end - self.start
             self.start = new_start
             self.end = self.start + length
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_schedule SET sched_start = %s, sched_end = %s WHERE sched_id = %s",
                 (self.start, self.end, self.id),
             )
@@ -63,7 +63,7 @@ class OneUpProducer(event.BaseProducer):
             raise Exception("Cannot change the start time of a used producer.")
 
     def _update_length(self) -> None:
-        stats = db.c.fetch_row(
+        stats = await cursor.fetch_row(
             "SELECT SUM(song_length) AS l, COUNT(song_length) AS c FROM r4_one_ups JOIN r4_songs USING (song_id) WHERE sched_id = %s GROUP BY sched_id",
             (self.id,),
         )
@@ -79,13 +79,13 @@ class OneUpProducer(event.BaseProducer):
             self.end = self.start_actual + length
         else:
             self.end = self.start + length
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_schedule SET sched_end = %s WHERE sched_id = %s",
             (self.end, self.id),
         )
 
     def load_event_in_progress(self) -> Any:
-        next_song_id = db.c.fetch_var(
+        next_song_id = await cursor.fetch_var(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE ORDER BY one_up_order DESC LIMIT 1",
             (self.id,),
         )
@@ -100,20 +100,20 @@ class OneUpProducer(event.BaseProducer):
 
     def add_song_id(self, song_id: int, sid: int, order: int | None = None) -> None:
         if not order:
-            order = db.c.fetch_var(
+            order = await cursor.fetch_var(
                 "SELECT MAX(one_up_order) + 1 FROM r4_one_ups WHERE sched_id = %s",
                 (self.id,),
             )
             if not order:
                 order = 0
-        db.c.update(
+        await cursor.update(
             "INSERT INTO r4_one_ups (sched_id, song_id, one_up_order, one_up_sid) VALUES (%s, %s, %s, %s)",
             (self.id, song_id, order, sid),
         )
         self._update_length()
 
     def add_album_id(self, album_id: int, sid: int, order: int | None = None) -> None:
-        order = db.c.fetch_var(
+        order = await cursor.fetch_var(
             "SELECT MAX(one_up_order) + 1 FROM r4_one_ups WHERE sched_id = %s",
             (self.id,),
         )
@@ -126,7 +126,9 @@ class OneUpProducer(event.BaseProducer):
 
     def remove_one_up(self, one_up_id: int) -> bool:
         if (
-            db.c.update("DELETE FROM r4_one_ups WHERE one_up_id = %s", (one_up_id,))
+            await cursor.update(
+                "DELETE FROM r4_one_ups WHERE one_up_id = %s", (one_up_id,)
+            )
             >= 1
         ):
             self._update_length()
@@ -134,13 +136,13 @@ class OneUpProducer(event.BaseProducer):
         return False
 
     def shuffle_songs(self) -> bool:
-        one_up_ids = db.c.fetch_list(
+        one_up_ids = await cursor.fetch_list(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s", (self.id,)
         )
         random.shuffle(one_up_ids)
         i = 0
         for one_up_id in one_up_ids:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s",
                 (i, one_up_id),
             )
@@ -148,7 +150,7 @@ class OneUpProducer(event.BaseProducer):
         return True
 
     def move_song_up(self, one_up_id: int) -> bool:
-        one_up_ids = db.c.fetch_list(
+        one_up_ids = await cursor.fetch_list(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
             (self.id,),
         )
@@ -156,11 +158,11 @@ class OneUpProducer(event.BaseProducer):
         prev_one_up_id = False
         for oid in one_up_ids:
             if oid == one_up_id and prev_one_up_id:
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s",
                     (i - 1, one_up_id),
                 )
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_one_ups SET one_up_order = %s WHERE one_up_id = %s",
                     (i, prev_one_up_id),
                 )
@@ -170,7 +172,7 @@ class OneUpProducer(event.BaseProducer):
 
     def load_all_songs(self) -> None:
         self.songs = []
-        for song_row in db.c.fetch_all(
+        for song_row in await cursor.fetch_all(
             "SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
             (self.id,),
         ):
@@ -182,7 +184,7 @@ class OneUpProducer(event.BaseProducer):
 
     def fill_unrated(self, sid: int, max_length: int) -> None:
         total_time = 0
-        rows = db.c.fetch_all(
+        rows = await cursor.fetch_all(
             """
                 SELECT
                     song_id,
@@ -209,11 +211,11 @@ class OneUpProducer(event.BaseProducer):
 
     def duplicate(self) -> "OneUpProducer":
         duped = super().duplicate()
-        for song_row in db.c.fetch_all(
+        for song_row in await cursor.fetch_all(
             "SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
             (self.id,),
         ):
-            db.c.update(
+            await cursor.update(
                 "INSERT INTO r4_one_ups (sched_id, song_id, one_up_order, one_up_sid) VALUES (%s, %s, %s, %s)",
                 (
                     duped.id,
@@ -234,7 +236,7 @@ class OneUpProducer(event.BaseProducer):
 class OneUp(event.BaseEvent):
     @classmethod
     def load_by_id(cls, one_up_id: int, sid: int) -> "OneUp":
-        row = db.c.fetch_row(
+        row = await cursor.fetch_row(
             "SELECT * FROM r4_one_ups WHERE one_up_id = %s", (one_up_id,)
         )
         if not row:
@@ -254,9 +256,11 @@ class OneUp(event.BaseEvent):
 
     def finish(self) -> None:
         super().finish()
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_one_ups SET one_up_used = TRUE WHERE one_up_id = %s", (self.id,)
         )
 
     def delete(self) -> int:
-        return db.c.update("DELETE FROM r4_one_ups WHERE one_up_id = %s", (self.id,))
+        return await cursor.update(
+            "DELETE FROM r4_one_ups WHERE one_up_id = %s", (self.id,)
+        )

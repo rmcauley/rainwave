@@ -106,7 +106,7 @@ class AssociateGroupTool(web_api.web.HTMLRequest):
                 % (album.data["name"], config.station_id_friendly[album_set[1]])
             )
         self.write("</ul><select id='associate_group_id'>")
-        for row in db.c.fetch_all(
+        for row in await cursor.fetch_all(
             "SELECT group_id, group_name FROM r4_groups ORDER BY group_name"
         ):
             self.write(
@@ -143,7 +143,7 @@ class AssociateGroupSongList(SongList):
             % row["id"]
         )
         self.write("<td>")
-        for group in db.c.fetch_all(
+        for group in await cursor.fetch_all(
             "SELECT r4_groups.group_id, group_name, group_is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s ORDER BY group_is_tag DESC, group_name",
             (row["id"],),
         ):
@@ -181,7 +181,7 @@ class GroupEditGroupList(web_api.web.HTMLRequest):
         self.write(self.render_string("bare_header.html", title="Group List"))
         self.write("<h2>Group List</h2>")
         self.write("<table>")
-        groups = db.c.fetch_all(
+        groups = await cursor.fetch_all(
             """
             SELECT
                 COUNT(r4_song_group.song_id) AS num_songs,
@@ -237,7 +237,7 @@ class GroupEditSongList(web_api.web.HTMLRequest):
         self.write(self.render_string("bare_header.html", title="Song List"))
         self.write("<h2>%s Songs</h2>" % (group.data["name"]))
         self.write("<table>")
-        for row in db.c.fetch_all(
+        for row in await cursor.fetch_all(
             "SELECT r4_songs.song_id AS id, song_title AS title, album_name, group_is_tag FROM r4_song_group JOIN r4_songs USING (song_id) JOIN r4_albums USING (album_id) WHERE group_id = %s AND song_verified = TRUE ORDER BY group_is_tag, album_name, title",
             (group.id,),
         ):
@@ -273,7 +273,7 @@ class DisassociateGroupAlbumList(AlbumList):
 class DisassociateGroupSongList(SongList):
     def render_row_special(self, row):
         self.write("<td>")
-        for group in db.c.fetch_all(
+        for group in await cursor.fetch_all(
             "SELECT r4_groups.group_id, group_name, group_is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s ORDER BY group_is_tag DESC, group_name",
             (row["id"],),
         ):

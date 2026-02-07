@@ -68,7 +68,7 @@ class AllAlbumsPaginatedHandler(APIHandler):
         sql, args = playlist.get_all_albums_list_sql(self.sid, self.user)
         offset = self.get_argument_int("after", 0) or 0
         args = args + (offset,)
-        albums = db.c.fetch_all(
+        albums = await cursor.fetch_all(
             sql + f" ORDER BY album_name LIMIT {PAGE_LIMIT} OFFSET %s", args
         )
         self.append(
@@ -219,7 +219,7 @@ class AlbumHandler(APIHandler):
             )
         except MetadataNotFoundError:
             self.return_name = "album_error"
-            valid_sids = db.c.fetch_list(
+            valid_sids = await cursor.fetch_list(
                 "SELECT sid FROM r4_album_sid WHERE album_id = %s ORDER BY sid",
                 (self.get_argument("id"),),
             )
@@ -277,7 +277,7 @@ class AllSongsHandler(APIHandler):
             distinct_on = "song_rating_user, album_name, song_title"
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 "SELECT DISTINCT ON ("
                 + distinct_on
                 + ") r4_songs.song_id AS id, song_title AS title, album_name, CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, song_rating_user AS rating_user, song_fave AS fave "
@@ -325,7 +325,7 @@ class Top100Songs(APIHandler):
         if "sid" in self.request.arguments:
             self.append(
                 self.return_name,
-                db.c.fetch_all(
+                await cursor.fetch_all(
                     """
                     SELECT
                         DISTINCT ON (song_rating, song_id) 
@@ -355,7 +355,7 @@ class Top100Songs(APIHandler):
         else:
             self.append(
                 self.return_name,
-                db.c.fetch_all(
+                await cursor.fetch_all(
                     """
                     SELECT
                         DISTINCT ON (song_rating, song_id) 
@@ -398,7 +398,7 @@ class AllFavHandler(APIHandler):
         if "sid" in self.request.arguments:
             self.append(
                 self.return_name,
-                db.c.fetch_all(
+                await cursor.fetch_all(
                     """
                     SELECT
                         r4_song_ratings.song_id AS id,
@@ -430,7 +430,7 @@ class AllFavHandler(APIHandler):
         else:
             self.append(
                 self.return_name,
-                db.c.fetch_all(
+                await cursor.fetch_all(
                     """
                     SELECT
                         r4_song_ratings.song_id AS id,
@@ -472,7 +472,7 @@ class PlaybackHistory(APIHandler):
         if self.user.is_anonymous():
             self.append(
                 self.return_name,
-                db.c.fetch_all(
+                await cursor.fetch_all(
                     """
                     SELECT
                         r4_song_history.song_id AS id,
@@ -496,7 +496,7 @@ class PlaybackHistory(APIHandler):
         else:
             self.append(
                 self.return_name,
-                db.c.fetch_all(
+                await cursor.fetch_all(
                     """
                     SELECT
                         r4_song_history.song_id AS id,
@@ -565,7 +565,7 @@ class StationSongCountRequest(APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     song_origin_sid AS sid,
@@ -589,7 +589,7 @@ class AllRequestedSongs(APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     r4_songs.song_id AS id,
@@ -633,7 +633,7 @@ class RecentlyVotedSongs(APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     r4_songs.song_id AS id,

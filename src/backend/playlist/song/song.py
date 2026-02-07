@@ -86,12 +86,14 @@ class Song:
         cls, song_id: int, sid: int | None = None, all_categories: bool = False
     ) -> "Song":
         if sid is not None:
-            d = db.c.fetch_row(
+            d = await cursor.fetch_row(
                 "SELECT * FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.song_id = %s AND r4_song_sid.sid = %s",
                 (song_id, sid),
             )
         else:
-            d = db.c.fetch_row("SELECT * FROM r4_songs WHERE song_id = %s", (song_id,))
+            d = await cursor.fetch_row(
+                "SELECT * FROM r4_songs WHERE song_id = %s", (song_id,)
+            )
             if not d:
                 raise SongNonExistent
             sid = d["song_origin_sid"]
@@ -105,7 +107,7 @@ class Song:
             s.filename = d["song_filename"]
             s.verified = d["song_verified"]
             s.replay_gain = d["song_replay_gain"]
-            s.data["sids"] = db.c.fetch_list(
+            s.data["sids"] = await cursor.fetch_list(
                 "SELECT sid FROM r4_song_sid WHERE song_id = %s", (song_id,)
             )
             s.data["sid"] = sid
@@ -136,7 +138,7 @@ class Song:
 
         kept_artists = []
         kept_groups = []
-        matched_entry = db.c.fetch_row(
+        matched_entry = await cursor.fetch_row(
             "SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,)
         )
         if matched_entry:
@@ -189,17 +191,23 @@ class Song:
 
         # do not get replay gain earlier in case an exception is thrown above
         # it means a lot of wasted CPU time in that scenario
-        s.replay_gain = s.get_replay_gain()
-        db.c.update(
-            "UPDATE r4_songs SET song_replay_gain = %s WHERE song_id = %s",
-            (s.replay_gain, s.id),
-        )
+        if (
+            await cursor.fetch_var(
+                "SELECT song_replay_gain FROM r4_songs WHERE song_id = %s", (s.id,)
+            )
+            is None
+        ):
+            s.replay_gain = s.get_replay_gain()
+            await cursor.update(
+                "UPDATE r4_songs SET song_replay_gain = %s WHERE song_id = %s",
+                (s.replay_gain, s.id),
+            )
 
         return s
 
     @classmethod
     def load_from_deleted_file(cls, filename: str) -> "Song | None":
-        matched_entry = db.c.fetch_row(
+        matched_entry = await cursor.fetch_row(
             "SELECT song_id FROM r4_songs WHERE song_filename = %s", (filename,)
         )
         if matched_entry and "song_id" in matched_entry:
@@ -212,9 +220,15 @@ class Song:
     def create_fake(cls, sid: int) -> "Song":
         s = cls()
         s.filename = "fake.mp3"
-        s.data["title"] = "Test Song %s" % db.c.get_next_id("r4_songs", "song_id")
-        s.artist_tag = "Test Artist %s" % db.c.get_next_id("r4_artists", "artist_id")
-        s.album_tag = "Test Album %s" % db.c.get_next_id("r4_albums", "album_id")
+        s.data["title"] = "Test Song %s" % await cursor.get_next_id(
+            "r4_songs", "song_id"
+        )
+        s.artist_tag = "Test Artist %s" % await cursor.get_next_id(
+            "r4_artists", "artist_id"
+        )
+        s.album_tag = "Test Album %s" % await cursor.get_next_id(
+            "r4_albums", "album_id"
+        )
         s.fake = True
         s.data["length"] = 60
         s.save([sid])
@@ -313,7 +327,7 @@ class Song:
         for artist in self.artists:
             artist_parseable.append({"id": artist.id, "name": artist.data["name"]})
         artist_parseable = json.dumps(artist_parseable, ensure_ascii=False)
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_songs SET song_artist_parseable = %s WHERE song_id = %s",
             (artist_parseable, self.id),
         )
@@ -333,12 +347,12 @@ class Song:
             potential_id = None
             # To check for moved/duplicate songs we try to find if it exists in the db
             if self.artist_tag:
-                potential_id = db.c.fetch_var(
+                potential_id = await cursor.fetch_var(
                     "SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s AND song_artist_tag = %s",
                     (self.data["title"], self.data["length"], self.artist_tag),
                 )
             else:
-                potential_id = db.c.fetch_var(
+                potential_id = await cursor.fetch_var(
                     "SELECT song_id FROM r4_songs WHERE song_title = %s AND song_length = %s",
                     (self.data["title"], self.data["length"]),
                 )
@@ -358,7 +372,7 @@ class Song:
 
         if update:
             log.debug("playlist", "updating existing song_id {}".format(self.id))
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_songs \
 				SET	song_filename = %s, \
 					song_title = %s, \
@@ -386,14 +400,14 @@ class Song:
                 ),
             )
             if self.artist_tag:
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_songs SET song_artist_tag = %s WHERE song_id = %s",
                     (self.artist_tag, self.id),
                 )
         else:
-            self.id = db.c.get_next_id("r4_songs", "song_id")
+            self.id = await cursor.get_next_id("r4_songs", "song_id")
             log.debug("playlist", "inserting a new song with id {}".format(self.id))
-            db.c.update(
+            await cursor.update(
                 "INSERT INTO r4_songs \
 				(song_id, song_filename, song_title, song_title_searchable, song_url, song_link_text, song_length, song_origin_sid, song_file_mtime, song_verified, song_scanned, song_replay_gain, song_artist_tag) \
 				VALUES \
@@ -417,7 +431,7 @@ class Song:
             self.verified = True
             self.data["added_on"] = int(timestamp())
 
-        current_sids = db.c.fetch_list(
+        current_sids = await cursor.fetch_list(
             "SELECT sid FROM r4_song_sid WHERE song_id = %s", (self.id,)
         )
         log.debug(
@@ -428,18 +442,18 @@ class Song:
         )
         for sid in current_sids:
             if not self.data["sids"].count(sid):
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s AND sid = %s",
                     (self.id, sid),
                 )
         for sid in self.data["sids"]:
             if current_sids.count(sid):
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_song_sid SET song_exists = TRUE WHERE song_id = %s AND sid = %s",
                     (self.id, sid),
                 )
             else:
-                db.c.update(
+                await cursor.update(
                     "INSERT INTO r4_song_sid (song_id, sid) VALUES (%s, %s)",
                     (self.id, sid),
                 )
@@ -449,13 +463,15 @@ class Song:
             log.critical("song_disable", "Tried to disable a song without a song ID.")
             return
         log.info("song_disable", "Disabling ID %s / file %s" % (self.id, self.filename))
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s", (self.id,)
         )
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s", (self.id,)
         )
-        db.c.update("DELETE FROM r4_request_store WHERE song_id = %s", (self.id,))
+        await cursor.update(
+            "DELETE FROM r4_request_store WHERE song_id = %s", (self.id,)
+        )
         if self.album:
             self.album.reconcile_sids()
         if self.groups:
@@ -520,7 +536,7 @@ class Song:
             "Song ID %s Station ID %s cool_time period: %s" % (self.id, sid, cool_time),
         )
         cool_time = int(cool_time + timestamp())
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_song_sid SET song_cool = TRUE, song_cool_end = %s WHERE song_id = %s AND sid = %s AND song_cool_end < %s",
             (cool_time, self.id, sid, cool_time),
         )
@@ -532,7 +548,7 @@ class Song:
             sid, "cooldown_request_only_period"
         )
         self.data["request_only"] = True
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = %s WHERE song_id = %s AND sid = %s AND song_request_only_end IS NOT NULL",
             (self.data["request_only_end"], self.id, sid),
         )
@@ -548,7 +564,7 @@ class Song:
         self.set_election_block(sid, "in_election", num_elections)
 
     def set_election_block(self, sid: int, blocked_by: str, block_length: int) -> None:
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_song_sid SET song_elec_blocked = TRUE, song_elec_blocked_by = %s, song_elec_blocked_num = %s WHERE song_id = %s AND sid = %s AND song_elec_blocked_num <= %s",
             (blocked_by, block_length, self.id, sid, block_length),
         )
@@ -557,7 +573,7 @@ class Song:
         self.data["elec_blocked"] = True
 
     def update_rating(self, skip_album_update: bool = False) -> None:
-        ratings = db.c.fetch_all(
+        ratings = await cursor.fetch_all(
             "SELECT song_rating_user AS rating, COUNT(user_id) AS count FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE song_id = %s AND radio_inactive = FALSE AND song_rating_user IS NOT NULL GROUP BY song_rating_user",
             (self.id,),
         )
@@ -573,7 +589,7 @@ class Song:
                 "song_rating",
                 "rating update: %s for %s" % (self.data["rating"], self.filename),
             )
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s",
                 (self.data["rating"], potential_points, self.id),
             )
@@ -668,11 +684,11 @@ class Song:
         )
 
     def load_extra_detail(self, sid: int) -> None:
-        self.data["rating_rank"] = db.c.fetch_var(
+        self.data["rating_rank"] = await cursor.fetch_var(
             "SELECT COUNT(song_id) + 1 FROM r4_songs WHERE song_verified = TRUE AND song_rating > %s",
             (self.data["rating"],),
         )
-        self.data["request_rank"] = db.c.fetch_var(
+        self.data["request_rank"] = await cursor.fetch_var(
             "SELECT COUNT(song_id) + 1 FROM r4_songs WHERE song_verified = TRUE AND song_request_count > %s",
             (self.data["request_count"],),
         )
@@ -692,7 +708,7 @@ class Song:
         )
 
         self.data["rating_histogram"] = {}
-        histo = db.c.fetch_all(
+        histo = await cursor.fetch_all(
             """
                 SELECT
                     ROUND(((song_rating_user * 10) - (CAST(song_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating_user_rnd,
@@ -771,7 +787,7 @@ class Song:
         return d
 
     def get_all_ratings(self) -> dict[int, Any]:
-        table = db.c.fetch_all(
+        table = await cursor.fetch_all(
             "SELECT song_rating_user, song_fave, user_id FROM r4_song_ratings JOIN phpbb_users USING (user_id) WHERE radio_inactive = FALSE AND song_id = %s",
             (self.id,),
         )
@@ -786,13 +802,13 @@ class Song:
     def update_last_played(self, sid: int) -> None:
         if self.album:
             self.album.update_last_played(sid)
-        return db.c.update(
+        return await cursor.update(
             "UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s",
             (timestamp(), self.id, sid),
         )
 
     def add_to_vote_count(self, votes: int, sid: int) -> None:
-        return db.c.update(
+        return await cursor.update(
             "UPDATE r4_songs SET song_vote_count = song_vote_count + %s WHERE song_id = %s",
             (votes, self.id),
         )
@@ -815,10 +831,10 @@ class Song:
             self.data["rating_allowed"] = False
 
     def update_request_count(self, sid: int, update_albums: bool = True) -> None:
-        count = db.c.fetch_var(
+        count = await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_request_history WHERE song_id = %s", (self.id,)
         )
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_songs SET song_request_count = %s WHERE song_id = %s",
             (
                 count,
@@ -830,11 +846,11 @@ class Song:
             self.album.update_request_count(sid)
 
     def update_fave_count(self, sid: int, update_albums: bool = True) -> None:
-        count = db.c.fetch_var(
+        count = await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s",
             (self.id,),
         )
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_songs SET song_fave_count = %s WHERE song_id = %s",
             (
                 count,
@@ -846,10 +862,10 @@ class Song:
             self.album.update_fave_count()
 
     def update_vote_count(self, sid: int, update_albums: bool = True) -> None:
-        count = db.c.fetch_var(
+        count = await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_vote_history AND song_id = %s", (self.id,)
         )
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_songs SET song_vote_count = %s WHERE song_id = %s",
             (
                 count,
@@ -864,7 +880,7 @@ class Song:
         return self.data["length"]
 
     def assign_to_album(self, song_id, is_tag=None):
-        row = db.c.fetch_row(
+        row = await cursor.fetch_row(
             "SELECT album_id, song_added_on FROM r4_songs WHERE song_id = %s",
             (song_id,),
         )
@@ -872,7 +888,7 @@ class Song:
             raise Exception("Song %s not found" % song_id)
         existing_album = row["album_id"]
         if not existing_album or existing_album != self.id:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_songs SET album_id = %s WHERE song_id = %s",
                 (self.id, song_id),
             )
@@ -880,11 +896,11 @@ class Song:
             old_album = Album.load_from_id(existing_album)
             old_album.reconcile_sids()
         self.reconcile_sids()
-        for song_sid in db.c.fetch_list(
+        for song_sid in await cursor.fetch_list(
             "SELECT sid FROM r4_song_sid WHERE song_id = %s AND song_exists = TRUE",
             (song_id,),
         ):
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_album_sid SET album_newest_song_time = %s WHERE album_newest_song_time < %s AND album_id = %s AND sid = %s",
                 (row["song_added_on"], row["song_added_on"], self.id, song_sid),
             )
@@ -899,7 +915,7 @@ class Song:
         self, song_id: int, is_tag: bool | None = None, order: int | None = None
     ) -> None:
         if not order and not self.data.get("order"):
-            order = db.c.fetch_var(
+            order = await cursor.fetch_var(
                 "SELECT MAX(artist_order) FROM r4_song_artist WHERE song_id = %s",
                 (song_id,),
             )
@@ -913,10 +929,12 @@ class Song:
             is_tag = self.is_tag
         else:
             self.is_tag = is_tag
-        if (db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) or 0) > 0:
+        if (
+            await cursor.fetch_var(self.has_song_id_query, (song_id, self.id)) or 0
+        ) > 0:
             pass
         else:
-            if not db.c.update(
+            if not await cursor.update(
                 self.associate_song_id_query, (song_id, self.id, is_tag, order)
             ):
                 raise MetadataUpdateError(

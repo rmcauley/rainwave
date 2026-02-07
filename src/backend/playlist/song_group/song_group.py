@@ -65,23 +65,23 @@ class SongGroup:
         )
         new_sids = [row["sid"] for row in new_sids_all]
         for sid in config.station_ids:
-            existing = db.c.fetch_row(
+            existing = await cursor.fetch_row(
                 "SELECT group_display FROM r4_group_sid WHERE group_id = %s AND sid = %s",
                 (self.id, sid),
             )
             if existing:
                 if sid in new_sids:
-                    db.c.update(
+                    await cursor.update(
                         "UPDATE r4_group_sid SET group_display = TRUE WHERE group_id = %s",
                         (self.id,),
                     )
                 else:
-                    db.c.update(
+                    await cursor.update(
                         "UPDATE r4_group_sid SET group_display = FALSE WHERE group_id = %s",
                         (self.id,),
                     )
             elif sid in new_sids:
-                db.c.update(
+                await cursor.update(
                     "INSERT INTO r4_group_sid (group_id, sid, group_display) VALUES (%s, %s, TRUE)",
                     (self.id, sid),
                 )
@@ -99,7 +99,7 @@ class SongGroup:
             % (self.id, sid, cool_time),
         )
         # Make sure to update both the if and else SQL statements if doing any updates
-        db.c.update(
+        await cursor.update(
             """
 UPDATE r4_song_sid
 SET song_cool = TRUE,
@@ -114,7 +114,7 @@ WHERE r4_song_sid.song_id = r4_song_group.song_id
             (cool_end, self.id, sid, cool_end),
         )
         request_only_end = cool_end + 300
-        db.c.update(
+        await cursor.update(
             """
 UPDATE r4_song_sid
 SET song_request_only = TRUE,
@@ -132,7 +132,7 @@ WHERE r4_song_sid.song_id = r4_song_group.song_id
 
     def _start_election_block_db(self, sid: int, num_elections: int) -> None:
         # refer to song.set_election_block for base SQL
-        db.c.update(
+        await cursor.update(
             """
 UPDATE r4_song_sid
 SET song_elec_blocked = TRUE,
@@ -148,19 +148,19 @@ WHERE r4_song_sid.song_id = r4_song_group.song_id
         )
 
     def set_elec_block(self, num_elections: int) -> None:
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_groups SET group_elec_block = %s WHERE group_id = %s",
             (num_elections, self.id),
         )
 
     def set_cooldown(self, cooldown: int) -> None:
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_groups SET group_cool_time = %s WHERE group_id = %s",
             (cooldown, self.id),
         )
 
     def load_songs_from_sid(self, sid: int, user_id: int) -> None:
-        all_songs = db.c.fetch_all(
+        all_songs = await cursor.fetch_all(
             """
 SELECT
     r4_song_group.song_id AS id,

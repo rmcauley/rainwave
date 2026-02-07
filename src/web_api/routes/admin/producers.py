@@ -19,7 +19,7 @@ class ListProducers(web_api.web.APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     sched_type as type,
@@ -47,7 +47,7 @@ class ListProducers(web_api.web.APIHandler):
 
         self.append(
             self.return_name + "_past",
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     sched_type as type,
@@ -84,7 +84,7 @@ class ListProducersAll(web_api.web.APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     sched_type as type,
@@ -110,7 +110,7 @@ class ListProducersAll(web_api.web.APIHandler):
 
         self.append(
             self.return_name + "_past",
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     sched_type as type,
@@ -221,7 +221,7 @@ class EuropifyProducer(web_api.web.APIHandler):
             (start_eu - datetime.fromtimestamp(0, timezone("UTC"))).total_seconds()
         )
         new_producer.change_start(start_epoch_eu)
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_schedule SET sched_name = %s WHERE sched_id = %s",
             (new_producer.name, new_producer.id),
         )
@@ -244,7 +244,7 @@ class ChangeProducerName(web_api.web.APIHandler):
                 "internal_error",
                 "Producer ID %s not found." % self.get_argument("sched_id"),
             )
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_schedule SET sched_name = %s WHERE sched_id = %s",
             (self.get_argument("name"), self.get_argument("sched_id")),
         )
@@ -266,7 +266,7 @@ class ChangeProducerURL(web_api.web.APIHandler):
                 "internal_error",
                 "Producer ID %s not found." % self.get_argument("sched_id"),
             )
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_schedule SET sched_url = %s WHERE sched_id = %s",
             (self.get_argument("url"), self.get_argument("sched_id")),
         )
@@ -327,7 +327,7 @@ class DeleteProducer(web_api.web.APIHandler):
                 "internal_error",
                 "Producer ID %s not found." % self.get_argument("sched_id"),
             )
-        db.c.update(
+        await cursor.update(
             "DELETE FROM r4_schedule WHERE sched_id = %s",
             (self.get_argument("sched_id"),),
         )

@@ -70,7 +70,7 @@ def song_id(s: Any, request: Any = None) -> int | None:
     if not this_id:
         return None
     if (
-        db.c.fetch_var(
+        await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_songs WHERE song_id = %s AND song_verified = TRUE",
             (this_id,),
         )
@@ -90,7 +90,7 @@ def song_id_matching_sid(s: Any, request: Any) -> int | None:
     if not this_id or not request:
         return None
     if (
-        db.c.fetch_var(
+        await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_song_sid WHERE song_id = %s AND sid = %s",
             (this_id, request.sid),
         )
@@ -108,7 +108,9 @@ def album_id(s: Any, request: Any = None) -> int | None:
     if not this_id:
         return None
     if (
-        db.c.fetch_var("SELECT COUNT(*) FROM r4_albums WHERE album_id = %s", (this_id,))
+        await cursor.fetch_var(
+            "SELECT COUNT(*) FROM r4_albums WHERE album_id = %s", (this_id,)
+        )
         == 0
     ):
         return None
@@ -123,7 +125,7 @@ def artist_id(s: Any, request: Any = None) -> int | None:
     if not this_id:
         return None
     if (
-        db.c.fetch_var(
+        await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_artists WHERE artist_id = %s", (this_id,)
         )
         == 0
@@ -140,7 +142,7 @@ def sched_id(s: Any, request: Any = None) -> int | None:
     if not this_id:
         return None
     if (
-        db.c.fetch_var(
+        await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_schedule WHERE sched_id = %s", (this_id,)
         )
         == 0
@@ -157,7 +159,7 @@ def elec_id(s: Any, request: Any = None) -> int | None:
     if not this_id:
         return None
     if (
-        db.c.fetch_var(
+        await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_elections WHERE elec_id = %s", (this_id,)
         )
         == 0
@@ -246,7 +248,9 @@ def user_id(s: Any, request: Any = None) -> int | None:
     u = positive_integer(s, request)
     if not u:
         return None
-    if not db.c.fetch_var("SELECT user_id FROM phpbb_users WHERE user_id = %s", (u,)):
+    if not await cursor.fetch_var(
+        "SELECT user_id FROM phpbb_users WHERE user_id = %s", (u,)
+    ):
         return None
     return u
 
@@ -329,7 +333,7 @@ def song_id_list(s: Any, request: Any = None) -> list[int] | None:
         return None
     for this_song_id in l:
         if (
-            db.c.fetch_var(
+            await cursor.fetch_var(
                 "SELECT COUNT(*) FROM r4_songs WHERE song_id = %s AND song_verified = TRUE",
                 (this_song_id,),
             )
@@ -511,7 +515,9 @@ group_id_error = "must be a valid group ID."
 def group_id(s: Any, request: Any = None) -> int | None:
     gid = integer(s)
     if (
-        db.c.fetch_var("SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (gid,))
+        await cursor.fetch_var(
+            "SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (gid,)
+        )
         == 0
     ):
         return None

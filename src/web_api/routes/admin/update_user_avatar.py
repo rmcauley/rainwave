@@ -28,12 +28,12 @@ class UpdateUserAvatarByDiscordId(web_api.web.APIHandler):
         avatar_url = self.get_argument("avatar")
         user_avatar_type = "avatar.driver.remote"
 
-        possible_id = db.c.fetch_var(
+        possible_id = await cursor.fetch_var(
             "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
             (discord_user_id,),
         )
         if possible_id:
-            db.c.update(
+            await cursor.update(
                 (
                     """
                     UPDATE phpbb_users

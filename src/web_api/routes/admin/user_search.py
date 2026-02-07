@@ -21,12 +21,12 @@ class UserSearchRequest(web_api.web.APIHandler):
                 f"{self.request.remote_ip} is not allowed to access this endpoint.",
             )
 
-        possible_id = db.c.fetch_var(
+        possible_id = await cursor.fetch_var(
             "SELECT user_id FROM phpbb_users WHERE username = %s OR radio_username = %s",
             (self.get_argument("username"), self.get_argument("username")),
         )
         if possible_id:
-            possible_sid = db.c.fetch_var(
+            possible_sid = await cursor.fetch_var(
                 "SELECT sid FROM r4_listeners WHERE user_id = %s", (possible_id,)
             )
             self.append("user", {"user_id": possible_id, "sid": possible_sid})
@@ -49,12 +49,12 @@ class UserSearchByDiscordUserIdRequest(web_api.web.APIHandler):
                 f"{self.request.remote_ip} is not allowed to access this endpoint.",
             )
 
-        possible_id = db.c.fetch_var(
+        possible_id = await cursor.fetch_var(
             "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
             (self.get_argument("discord_user_id"),),
         )
         if possible_id:
-            possible_sid = db.c.fetch_var(
+            possible_sid = await cursor.fetch_var(
                 "SELECT sid FROM r4_listeners WHERE user_id = %s", (possible_id,)
             )
             self.append("user", {"user_id": possible_id, "sid": possible_sid})

@@ -17,7 +17,7 @@ class ListPowerHours(web_api.web.APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     sched_id AS id,
@@ -100,7 +100,7 @@ class RemoveFromPowerHour(web_api.web.APIHandler):
     fields = {"one_up_id": (fieldtypes.positive_integer, True)}
 
     def post(self):
-        ph_id = db.c.fetch_var(
+        ph_id = await cursor.fetch_var(
             "SELECT sched_id FROM r4_one_ups WHERE one_up_id = %s",
             (self.get_argument("one_up_id"),),
         )
@@ -136,7 +136,7 @@ class MoveUpInPowerHour(web_api.web.APIHandler):
     fields = {"one_up_id": (fieldtypes.positive_integer, True)}
 
     def post(self):
-        ph_id = db.c.fetch_var(
+        ph_id = await cursor.fetch_var(
             "SELECT sched_id FROM r4_one_ups WHERE one_up_id = %s",
             (self.get_argument("one_up_id"),),
         )

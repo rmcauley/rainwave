@@ -75,7 +75,7 @@ class AnonymousUser(UserBase):
     def get_listener_record(self, use_cache: bool = True) -> ListenerRecord | None:
         if not self.ip_address:
             return None
-        listener = db.c.fetch_row(
+        listener = await cursor.fetch_row(
             """
             SELECT 
                 listener_id, 
@@ -105,7 +105,7 @@ class AnonymousUser(UserBase):
             ).encode("ascii", "ignore")
             listen_key = cache.get(cache_key)
             if not listen_key:
-                listen_key = db.c.fetch_var(
+                listen_key = await cursor.fetch_var(
                     "SELECT api_key_listen_key FROM r4_api_keys WHERE api_key = %s AND user_id = 1",
                     (self.api_key,),
                     var_type=str,
@@ -204,10 +204,10 @@ class AnonymousUser(UserBase):
             for x in range(10)
         )
         if reuse:
-            db.c.update(
+            await cursor.update(
                 "DELETE FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (reuse,)
             )
-        db.c.update(
+        await cursor.update(
             "INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_key_listen_key) VALUES (%s, %s, %s, %s)",
             (self.id, api_key, expiry, listen_key),
         )

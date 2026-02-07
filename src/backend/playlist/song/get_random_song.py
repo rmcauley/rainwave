@@ -25,7 +25,7 @@ def get_random_song_timed(
     )
     lower_target_bound = target_seconds - (target_delta / 2)
     upper_target_bound = target_seconds + (target_delta / 2)
-    num_available = db.c.fetch_var(
+    num_available = await cursor.fetch_var(
         "SELECT COUNT(r4_song_sid.song_id) " + sql_query,
         (sid, lower_target_bound, upper_target_bound),
     )
@@ -48,7 +48,7 @@ def get_random_song_timed(
         return get_random_song(sid)
     else:
         offset = random.randint(1, num_available) - 1
-        song_id = db.c.fetch_var(
+        song_id = await cursor.fetch_var(
             "SELECT r4_song_sid.song_id " + sql_query + " LIMIT 1 OFFSET %s",
             (sid, lower_target_bound, upper_target_bound, offset),
         )
@@ -72,7 +72,7 @@ def get_random_song(sid: int) -> Song:
         "AND song_elec_blocked = FALSE "
         "AND album_requests_pending IS NULL"
     )
-    num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
+    num_available = await cursor.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
     log.info(
         "song_select", "Song pool size (cooldown, blocks, requests): %s" % num_available
     )
@@ -86,7 +86,7 @@ def get_random_song(sid: int) -> Song:
         return get_random_song_ignore_requests(sid)
     else:
         offset = random.randint(1, num_available) - 1
-        song_id = db.c.fetch_var(
+        song_id = await cursor.fetch_var(
             "SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, offset)
         )
         return Song.load_from_id(song_id, sid)
@@ -106,7 +106,7 @@ def get_shortest_song(sid: int) -> Song:
         "AND song_elec_blocked = FALSE "
         "ORDER BY song_length"
     )
-    song_id = db.c.fetch_var("SELECT song_id " + sql_query + " LIMIT 1", (sid,))
+    song_id = await cursor.fetch_var("SELECT song_id " + sql_query + " LIMIT 1", (sid,))
     return Song.load_from_id(song_id, sid)
 
 
@@ -123,7 +123,7 @@ def get_random_song_ignore_requests(sid: int) -> Song:
         "AND song_request_only = FALSE "
         "AND song_elec_blocked = FALSE "
     )
-    num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
+    num_available = await cursor.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
     log.debug("song_select", "Song pool size (cooldown, blocks): %s" % num_available)
     offset = 0
     if not num_available or num_available == 0:
@@ -135,7 +135,7 @@ def get_random_song_ignore_requests(sid: int) -> Song:
         return get_random_song_ignore_all(sid)
     else:
         offset = random.randint(1, num_available) - 1
-        song_id = db.c.fetch_var(
+        song_id = await cursor.fetch_var(
             "SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, offset)
         )
         return Song.load_from_id(song_id, sid)
@@ -147,7 +147,7 @@ def get_random_song_ignore_all(sid: int) -> Song:
     ignoring all availability and election block rules.
     """
     sql_query = "FROM r4_song_sid WHERE r4_song_sid.sid = %s AND song_exists = TRUE "
-    num_available = db.c.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
+    num_available = await cursor.fetch_var("SELECT COUNT(song_id) " + sql_query, (sid,))
     offset = 0
     if not num_available or num_available == 0:
         log.critical("song_select", "No songs exist.")
@@ -158,7 +158,7 @@ def get_random_song_ignore_all(sid: int) -> Song:
         raise Exception("Could not find any songs to play.")
     else:
         offset = random.randint(1, num_available) - 1
-        song_id = db.c.fetch_var(
+        song_id = await cursor.fetch_var(
             "SELECT song_id " + sql_query + " LIMIT 1 OFFSET %s", (sid, offset)
         )
         return Song.load_from_id(song_id, sid)

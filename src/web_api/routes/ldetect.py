@@ -100,17 +100,17 @@ class AddListener(IcecastHandler):
             self.add_anonymous(self.sid)
 
     def add_registered(self, sid):
-        real_key = db.c.fetch_var(
+        real_key = await cursor.fetch_var(
             "SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s",
             (self.user_id,),
         )
         if real_key != self.listen_key:
             raise APIException("invalid_argument", reason="mismatched listen_key.")
-        tunedin = db.c.fetch_var(
+        tunedin = await cursor.fetch_var(
             "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,)
         )
         if tunedin:
-            db.c.update(
+            await cursor.update(
                 """
                 UPDATE r4_listeners
                 SET sid = %s,
@@ -144,7 +144,7 @@ class AddListener(IcecastHandler):
             )
             self.failed = False
         else:
-            db.c.update(
+            await cursor.update(
                 """
                     INSERT INTO r4_listeners
                     (sid,
@@ -189,12 +189,12 @@ class AddListener(IcecastHandler):
             self.failed = False
             return
 
-        records = db.c.fetch_list(
+        records = await cursor.fetch_list(
             "SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1",
             (self.listener_ip, self.listen_key),
         )
         if len(records) == 0:
-            db.c.update(
+            await cursor.update(
                 """
                 INSERT INTO r4_listeners
                 (sid,
@@ -236,10 +236,10 @@ class AddListener(IcecastHandler):
             while records:
                 popped = records.pop()
                 sync_to_front.sync_frontend_key(popped)
-                db.c.update(
+                await cursor.update(
                     "DELETE FROM r4_listeners WHERE listener_id = %s", (popped,)
                 )
-            db.c.update(
+            await cursor.update(
                 """
                     UPDATE r4_listeners
                     SET sid = %s,
@@ -284,7 +284,7 @@ class RemoveListener(IcecastHandler):
     }
 
     def post(self, sid=0):
-        listener = db.c.fetch_row(
+        listener = await cursor.fetch_row(
             "SELECT user_id, listener_key FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
             (self.relay, self.get_argument("client")),
         )
@@ -293,12 +293,12 @@ class RemoveListener(IcecastHandler):
             # self.append("      RMFAIL: %s %s." % ('{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
             return
 
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s",
             (self.relay, self.get_argument("client")),
         )
         if listener["user_id"] > 1:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s",
                 (timestamp() + 600, listener["user_id"]),
             )

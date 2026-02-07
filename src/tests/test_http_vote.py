@@ -62,7 +62,7 @@ class TestVote(AsyncHTTPTestCase):
         pytest.skip("No upcoming election with voteable entries.")
 
     def _set_anonymous_listener_purged(self, purged):
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_listeners SET listener_purge = %s WHERE user_id = %s AND listener_ip = %s",
             (purged, ANONYMOUS_USER_ID, TUNED_IN_ANONYMOUS_IP),
         )

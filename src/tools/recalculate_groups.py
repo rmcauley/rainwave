@@ -15,7 +15,7 @@ if __name__ == "__main__":
     log.init()
     db.connect()
 
-    groups = db.c.fetch_list("SELECT group_id FROM r4_groups")
+    groups = await cursor.fetch_list("SELECT group_id FROM r4_groups")
     i = 0
     for group_id in groups:
         txt = "Group %s / %s" % (i, len(groups))

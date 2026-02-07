@@ -44,7 +44,7 @@ class KeyIndex(web_api.web.HTMLRequest):
                 self.locale.translate("qr_code"),
             )
         )
-        for key in db.c.fetch_all(
+        for key in await cursor.fetch_all(
             "SELECT * FROM r4_api_keys WHERE user_id = %s", (self.user.id,)
         ):
             url = "rw://%s:%s@rainwave.cc" % (self.user.id, key["api_key"])
@@ -81,7 +81,7 @@ class AppLogin(web_api.web.HTMLRequest):
 
         self.user.ensure_api_key()
 
-        key = db.c.fetch_var(
+        key = await cursor.fetch_var(
             "SELECT api_key FROM r4_api_keys WHERE user_id = %s LIMIT 1",
             (self.user.id,),
         )
@@ -99,7 +99,7 @@ class KeyDelete(KeyIndex):
     fields = {"delete_key": (fieldtypes.integer, True)}
 
     def get(self):
-        db.c.update(
+        await cursor.update(
             "DELETE FROM r4_api_keys WHERE user_id = %s AND api_id = %s",
             (self.user.id, self.get_argument("delete_key")),
         )

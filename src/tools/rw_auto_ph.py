@@ -32,7 +32,7 @@ if __name__ == "__main__":
     db.connect()
     cache.connect()
 
-    songs_today = db.c.fetch_all(
+    songs_today = await cursor.fetch_all(
         """
         SELECT
             r4_songs.song_id,
@@ -101,7 +101,7 @@ if __name__ == "__main__":
             length = 0
             while length < length_of_each_ph and len(songs_today):
                 song_row = songs_today.pop()
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_songs SET song_new_played = TRUE WHERE song_id = %s",
                     (song_row["song_id"],),
                 )

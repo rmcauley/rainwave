@@ -55,7 +55,7 @@ class LatestSongs(web_api.web.HTMLRequest):
         )
         self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
 
-        for fn in db.c.fetch_list(
+        for fn in await cursor.fetch_list(
             "SELECT song_filename FROM r4_songs ORDER BY song_file_mtime DESC LIMIT 20"
         ):
             self.write("<div>%s</div>" % fn)

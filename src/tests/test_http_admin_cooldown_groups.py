@@ -61,7 +61,7 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
         payload = self._payload(response)
         assert payload["set_song_cooldown_result"]["success"] is True
 
-        row = db.c.fetch_row(
+        row = await cursor.fetch_row(
             "SELECT song_cool_multiply, song_cool_override FROM r4_songs WHERE song_id = %s",
             (song_id,),
         )
@@ -76,7 +76,7 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
         payload = self._payload(response)
         assert payload["reset_song_cooldown_result"]["success"] is True
 
-        row = db.c.fetch_row(
+        row = await cursor.fetch_row(
             "SELECT song_cool_multiply, song_cool_override FROM r4_songs WHERE song_id = %s",
             (song_id,),
         )
@@ -94,7 +94,7 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
         payload = self._payload(response)
         assert payload["set_album_cooldown_result"]["success"] is True
 
-        row = db.c.fetch_row(
+        row = await cursor.fetch_row(
             "SELECT album_cool_multiply, album_cool_override FROM r4_album_sid WHERE album_id = %s AND sid = %s",
             (album_id, 1),
         )
@@ -109,7 +109,7 @@ class TestAdminCooldownGroups(AsyncHTTPTestCase):
         payload = self._payload(response)
         assert payload["reset_album_cooldown_result"]["success"] is True
 
-        row = db.c.fetch_row(
+        row = await cursor.fetch_row(
             "SELECT album_cool_multiply, album_cool_override FROM r4_album_sid WHERE album_id = %s AND sid = %s",
             (album_id, 1),
         )

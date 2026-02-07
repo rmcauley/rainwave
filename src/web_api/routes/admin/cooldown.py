@@ -17,7 +17,7 @@ class SetSongCooldown(web_api.web.APIHandler):
 
     def post(self):
         if self.get_argument("multiply") and self.get_argument("override"):
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_songs SET song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s",
                 (
                     self.get_argument("multiply"),
@@ -33,7 +33,7 @@ class SetSongCooldown(web_api.web.APIHandler):
                 },
             )
         elif self.get_argument("multiply"):
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_songs SET song_cool_multiply = %s WHERE song_id = %s",
                 (self.get_argument("multiply"), self.get_argument("song_id")),
             )
@@ -45,7 +45,7 @@ class SetSongCooldown(web_api.web.APIHandler):
                 },
             )
         elif self.get_argument("override"):
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_songs SET AND song_cool_override = %s WHERE song_id = %s",
                 (self.get_argument("override"), self.get_argument("song_id")),
             )
@@ -76,7 +76,7 @@ class ResetSongCooldown(web_api.web.APIHandler):
     fields = {"song_id": (fieldtypes.song_id, True)}
 
     def post(self):
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_songs SET song_cool_multiply = 1, song_cool_override = NULL WHERE song_id = %s",
             (self.get_argument("song_id"),),
         )
@@ -95,7 +95,7 @@ class SetAlbumCooldown(web_api.web.APIHandler):
 
     def post(self):
         if self.get_argument("multiply") and self.get_argument("override"):
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_album_sid SET album_cool_multiply = %s, album_cool_override = %s WHERE album_id = %s AND sid = %s",
                 (
                     self.get_argument("multiply"),
@@ -112,7 +112,7 @@ class SetAlbumCooldown(web_api.web.APIHandler):
                 },
             )
         elif self.get_argument("multiply"):
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_album_sid SET album_cool_multiply = %s WHERE album_id = %s AND sid = %s",
                 (
                     self.get_argument("multiply"),
@@ -128,7 +128,7 @@ class SetAlbumCooldown(web_api.web.APIHandler):
                 },
             )
         elif self.get_argument("override"):
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_album_sid SET album_cool_override = %s WHERE album_id = %s AND sid = %s",
                 (
                     self.get_argument("override"),
@@ -162,7 +162,7 @@ class ResetAlbumCooldown(web_api.web.APIHandler):
     fields = {"album_id": (fieldtypes.album_id, True)}
 
     def post(self):
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_album_sid SET album_cool_multiply = 1, album_cool_override = NULL WHERE album_id = %s AND sid = %s",
             (self.get_argument("album_id"), self.sid),
         )

@@ -14,7 +14,7 @@ def _get_requested_albums_sql() -> str:
 def get_unrated_songs_for_requesting(user_id: int, sid: int, limit: int) -> list[int]:
     # This insane bit of SQL fetches the user's largest unrated albums that aren't on cooldown
     unrated = []
-    for row in db.c.fetch_all(
+    for row in await cursor.fetch_all(
         _get_requested_albums_sql()
         + (
             """
@@ -54,7 +54,7 @@ def get_unrated_songs_on_cooldown_for_requesting(
 ) -> list[int]:
     # Similar to the above, but this time we take whatever's on shortest cooldown (ignoring album unrated count)
     unrated = []
-    for album_row in db.c.fetch_all(
+    for album_row in await cursor.fetch_all(
         _get_requested_albums_sql()
         + (
             """
@@ -81,7 +81,7 @@ LIMIT %s
         ),
         (user_id, user_id, sid, limit),
     ):
-        song_id = db.c.fetch_var(
+        song_id = await cursor.fetch_var(
             """
 SELECT
     r4_song_sid.song_id

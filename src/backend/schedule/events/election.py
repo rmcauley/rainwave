@@ -58,7 +58,7 @@ class ElectionProducer(event.BaseProducer):
         if not self.id:
             return True
         else:
-            return db.c.fetch_var(
+            return await cursor.fetch_var(
                 "SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_used = FALSE AND sched_id = %s",
                 (self.elec_type, self.sid, self.id),
             )
@@ -70,12 +70,12 @@ class ElectionProducer(event.BaseProducer):
         skip_requests: bool = False,
     ) -> Any:
         if self.id:
-            elec_id = db.c.fetch_var(
+            elec_id = await cursor.fetch_var(
                 "SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s AND sched_id = %s ORDER BY elec_id LIMIT 1",
                 (self.elec_type, self.sid, min_elec_id, self.id),
             )
         else:
-            elec_id = db.c.fetch_var(
+            elec_id = await cursor.fetch_var(
                 "SELECT elec_id FROM r4_elections WHERE elec_type = %s and elec_used = FALSE AND sid = %s AND elec_id > %s AND sched_id IS NULL ORDER BY elec_id LIMIT 1",
                 (self.elec_type, self.sid, min_elec_id),
             )
@@ -88,7 +88,7 @@ class ElectionProducer(event.BaseProducer):
             elec = self.elec_class.load_by_id(elec_id)
             if not elec.songs:
                 log.warn("load_election", "Election ID %s is empty.  Marking as used.")
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_elections SET elec_used = TRUE WHERE elec_id = %s",
                     (elec.id,),
                 )
@@ -103,12 +103,12 @@ class ElectionProducer(event.BaseProducer):
 
     def load_event_in_progress(self) -> Any:
         if self.id:
-            elec_id = db.c.fetch_var(
+            elec_id = await cursor.fetch_var(
                 "SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s AND sched_id = %s ORDER BY elec_id DESC LIMIT 1",
                 (self.elec_type, self.sid, self.id),
             )
         else:
-            elec_id = db.c.fetch_var(
+            elec_id = await cursor.fetch_var(
                 "SELECT elec_id FROM r4_elections WHERE elec_type = %s AND elec_in_progress = TRUE AND sid = %s AND sched_id IS NULL ORDER BY elec_id DESC LIMIT 1",
                 (self.elec_type, self.sid),
             )
@@ -121,7 +121,7 @@ class ElectionProducer(event.BaseProducer):
             elec = self.elec_class.load_by_id(elec_id)
             if not elec.songs:
                 log.warn("load_election", "Election ID %s is empty.  Marking as used.")
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_elections SET elec_used = TRUE WHERE elec_id = %s",
                     (elec.id,),
                 )
@@ -138,7 +138,7 @@ class ElectionProducer(event.BaseProducer):
             "Creating election type %s for sid %s, target length %s."
             % (self.elec_type, self.sid, target_length),
         )
-        db.c.start_transaction()
+        await cursor.start_transaction()
         try:
             elec = self.elec_class.create(self.sid, self.id)
             elec.url = self.url
@@ -146,10 +146,10 @@ class ElectionProducer(event.BaseProducer):
             elec.fill(target_length, skip_requests)
             if elec.length() == 0:
                 raise Exception("Created zero-length election.")
-            db.c.commit()
+            await cursor.commit()
             return elec
         except:
-            db.c.rollback()
+            await cursor.rollback()
             raise
 
 
@@ -163,7 +163,7 @@ class Election(event.BaseEvent):
     @classmethod
     def load_by_id(cls, elec_id: int) -> "Election":
         elec = cls()
-        row = db.c.fetch_row(
+        row = await cursor.fetch_row(
             "SELECT * FROM r4_elections WHERE elec_id = %s", (elec_id,)
         )
         if not row:
@@ -181,7 +181,7 @@ class Election(event.BaseEvent):
         elec.public = True
         elec.timed = False
         elec.sched_id = row["sched_id"]
-        for song_row in db.c.fetch_all(
+        for song_row in await cursor.fetch_all(
             "SELECT * FROM r4_election_entries WHERE elec_id = %s", (elec_id,)
         ):
             try:
@@ -189,7 +189,7 @@ class Election(event.BaseEvent):
             except SongNonExistent:
                 song = playlist.Song.load_from_id(
                     song_row["song_id"],
-                    db.c.fetch_var(
+                    await cursor.fetch_var(
                         "SELECT song_origin_sid FROM r4_songs WHERE song_id = %s",
                         (song_row["song_id"],),
                     ),
@@ -206,7 +206,7 @@ class Election(event.BaseEvent):
 
     @classmethod
     def create(cls, sid: int, sched_id: int | None = None) -> "Election":
-        elec_id = db.c.get_next_id("r4_schedule", "sched_id")
+        elec_id = await cursor.get_next_id("r4_schedule", "sched_id")
         elec = cls(sid)
         elec.is_election = True
         elec.id = elec_id
@@ -221,7 +221,7 @@ class Election(event.BaseEvent):
         elec.public = True
         elec.timed = True
         elec.sched_id = sched_id
-        db.c.update(
+        await cursor.update(
             "INSERT INTO r4_elections (elec_id, elec_used, elec_type, sid, sched_id) VALUES (%s, %s, %s, %s, %s)",
             (elec_id, False, elec.type, elec.sid, sched_id),
         )
@@ -285,14 +285,14 @@ class Election(event.BaseEvent):
     def add_song(self, song: Any) -> None:
         if not song:
             return False
-        entry_id = db.c.get_next_id("r4_election_entries", "entry_id")
+        entry_id = await cursor.get_next_id("r4_election_entries", "entry_id")
         song.data["entry_id"] = entry_id
         song.data["entry_position"] = len(self.songs)
         if not "entry_type" in song.data:
             song.data["entry_type"] = ElecSongTypes.normal
         if not "entry_votes" in song.data:
             song.data["entry_votes"] = 0
-        db.c.update(
+        await cursor.update(
             "INSERT INTO r4_election_entries (entry_id, song_id, elec_id, entry_position, entry_type, entry_votes) VALUES (%s, %s, %s, %s, %s, %s)",
             (
                 entry_id,
@@ -312,7 +312,7 @@ class Election(event.BaseEvent):
         return True
 
     def prepare_event(self) -> None:
-        results = db.c.fetch_all(
+        results = await cursor.fetch_all(
             "SELECT song_id, entry_votes FROM r4_election_entries WHERE elec_id = %s",
             (self.id,),
         )
@@ -338,13 +338,13 @@ class Election(event.BaseEvent):
                     total_votes += self.songs[i].data["entry_votes"]
                 else:
                     self.songs[i].data["entry_votes"] = 0
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_election_entries SET entry_position = %s WHERE entry_id = %s",
                     (i, self.songs[i].data["entry_id"]),
                 )
             if total_votes > 0:
                 for song in self.songs:
-                    db.c.update(
+                    await cursor.update(
                         """
                             UPDATE r4_songs
                             SET song_vote_share = ((song_vote_count + %s) / (song_votes_seen + %s)),
@@ -361,7 +361,7 @@ class Election(event.BaseEvent):
                         ),
                     )
                     if song.album:
-                        db.c.update(
+                        await cursor.update(
                             """
 UPDATE r4_album_sid
 SET album_vote_share = ((album_vote_count + %s) / (album_votes_seen + %s)),
@@ -381,29 +381,29 @@ WHERE album_id = %s
                         )
                     if "elec_request_user_id" in song.data:
                         if song == self.songs[0]:
-                            db.c.update(
+                            await cursor.update(
                                 "UPDATE phpbb_users SET radio_winningrequests = radio_winningrequests + 1 WHERE user_id = %s",
                                 (song.data["elec_request_user_id"],),
                             )
                         else:
-                            db.c.update(
+                            await cursor.update(
                                 "UPDATE phpbb_users SET radio_losingrequests = radio_losingrequests + 1 WHERE user_id = %s",
                                 (song.data["elec_request_user_id"],),
                             )
 
             if len(self.songs) > 0:
-                db.c.update(
+                await cursor.update(
                     "UPDATE phpbb_users SET radio_winningvotes = radio_winningvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id = %s AND phpbb_users.user_id = r4_vote_history.user_id",
                     (self.id, self.songs[0].id),
                 )
-                db.c.update(
+                await cursor.update(
                     "UPDATE phpbb_users SET radio_losingvotes = radio_losingvotes + 1 FROM r4_vote_history WHERE elec_id = %s AND song_id != %s AND phpbb_users.user_id = r4_vote_history.user_id",
                     (self.id, self.songs[0].id),
                 )
         self.start_actual = int(timestamp())
         self.in_progress = True
         self.used = True
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_elections SET elec_in_progress = TRUE, elec_start_actual = %s, elec_used = TRUE WHERE elec_id = %s",
             (self.start_actual, self.id),
         )
@@ -531,7 +531,7 @@ WHERE album_id = %s
         self.in_progress = False
         self.used = True
 
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_elections SET elec_in_progress = FALSE, elec_used = TRUE WHERE elec_id = %s",
             (self.id,),
         )
@@ -552,12 +552,12 @@ WHERE album_id = %s
 
     def set_priority(self, priority: bool) -> None:
         if priority:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_elections SET elec_priority = TRUE WHERE elec_id = %s",
                 (self.id,),
             )
         else:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_elections SET elec_priority = FALSE WHERE elec_id = %s",
                 (self.id,),
             )
@@ -599,17 +599,19 @@ WHERE album_id = %s
 
     def add_vote_to_entry(self, entry_id: int, addition: int = 1) -> None:
         # I hope you've verified this entry belongs to this event, cause I don't do that here.. :)
-        return db.c.update(
+        return await cursor.update(
             "UPDATE r4_election_entries SET entry_votes = entry_votes + %s WHERE entry_id = %s",
             (addition, entry_id),
         )
 
     def delete(self) -> None:
-        return db.c.update("DELETE FROM r4_elections WHERE elec_id = %s", (self.id,))
+        return await cursor.update(
+            "DELETE FROM r4_elections WHERE elec_id = %s", (self.id,)
+        )
 
     def update_vote_counts(self) -> None:
         for song in self.songs:
-            song.data["entry_votes"] = db.c.fetch_var(
+            song.data["entry_votes"] = await cursor.fetch_var(
                 "SELECT entry_votes FROM r4_election_entries WHERE entry_id = %s",
                 (song.data["entry_id"],),
             )

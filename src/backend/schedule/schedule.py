@@ -60,7 +60,7 @@ def load() -> None:
         history[sid] = cache.get_station(sid, "sched_history")
         if not history[sid]:
             history[sid] = []
-            for song_id in db.c.fetch_list(
+            for song_id in await cursor.fetch_list(
                 "SELECT song_id FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) WHERE sid = %s AND song_exists = TRUE AND song_verified = TRUE ORDER BY songhist_time DESC LIMIT 5",
                 (sid,),
             ):
@@ -91,7 +91,7 @@ def get_producer_at_time(sid: int, at_time: int) -> BaseProducer:
     to_ret = None
     local_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(at_time))
     time_ahead = int((at_time - timestamp()) / 60)
-    sched_id = db.c.fetch_var(
+    sched_id = await cursor.fetch_var(
         """
             SELECT
                 sched_id
@@ -159,7 +159,7 @@ def set_upnext_crossfade(sid: int, crossfade: bool | int) -> None:
 
 
 def advance_station(sid: int) -> None:
-    db.c.start_transaction()
+    await cursor.start_transaction()
     try:
         log.debug("advance", "Advancing station %s." % sid)
         start_time = timestamp()
@@ -180,7 +180,7 @@ def advance_station(sid: int) -> None:
 
         start_time = timestamp()
         upnext[sid][0].prepare_event()
-        db.c.commit()
+        await cursor.commit()
 
         log.debug(
             "advance", "upnext[0] preparation time: %.6f" % (timestamp() - start_time,)
@@ -191,13 +191,13 @@ def advance_station(sid: int) -> None:
             datetime.timedelta(milliseconds=150), lambda: post_process(sid)
         )
     except:
-        db.c.rollback()
+        await cursor.rollback()
         raise
 
 
 def post_process(sid: int) -> None:
     try:
-        db.c.start_transaction()
+        await cursor.start_transaction()
         start_time = timestamp()
         playlist.prepare_cooldown_algorithm(sid)
         rainwave.playlist_objects.album.clear_updated_albums(sid)
@@ -205,7 +205,7 @@ def post_process(sid: int) -> None:
 
         start_time = timestamp()
         current[sid].finish()
-        for sched_id in db.c.fetch_list(
+        for sched_id in await cursor.fetch_list(
             "SELECT sched_id FROM r4_schedule WHERE sched_end < %s AND sched_used = FALSE",
             (timestamp(),),
         ):
@@ -217,7 +217,7 @@ def post_process(sid: int) -> None:
         start_time = timestamp()
         last_song = current[sid].get_song()
         if last_song:
-            db.c.update(
+            await cursor.update(
                 "INSERT INTO r4_song_history (sid, song_id) VALUES (%s, %s)",
                 (sid, last_song.id),
             )
@@ -245,7 +245,7 @@ def post_process(sid: int) -> None:
         user.trim_listeners(sid)
         cache.update_user_rating_acl(sid, history[sid][0].get_song().id)
         user.unlock_listeners(sid)
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_listeners SET listener_voted_entry = NULL WHERE sid = %s", (sid,)
         )
         log.debug(
@@ -272,9 +272,9 @@ def post_process(sid: int) -> None:
         update_memcache(sid)
 
         sync_to_front.sync_frontend_all(sid)
-        db.c.commit()
+        await cursor.commit()
     except:
-        db.c.rollback()
+        await cursor.rollback()
         raise
 
     if (
@@ -343,7 +343,7 @@ def _get_schedule_stats(sid: int) -> dict[str, Any]:
 
     if not max_elec_id:
         max_elec_id = (
-            db.c.fetch_var(
+            await cursor.fetch_var(
                 "SELECT elec_id FROM r4_elections WHERE elec_used = TRUE ORDER BY elec_id DESC LIMIT 1"
             )
             or 0
@@ -358,7 +358,7 @@ def manage_next(sid: int) -> None:
     )
     now_producer = get_producer_at_time(sid, timestamp())
     next_producer = get_producer_at_time(sid, max_future_time)
-    nextnext_producer_start = db.c.fetch_var(
+    nextnext_producer_start = await cursor.fetch_var(
         "SELECT sched_start FROM r4_schedule WHERE sid = %s AND sched_used = FALSE AND sched_start > %s AND sched_timed = TRUE",
         (sid, max_future_time),
     )
@@ -441,16 +441,18 @@ def _get_or_create_election(sid: int, target_length: int | None = None) -> BaseE
 def _trim(sid: int) -> None:
     # Deletes any events in the schedule and elections tables that are old, according to the config
     current_time = int(timestamp())
-    db.c.update(
+    await cursor.update(
         "DELETE FROM r4_schedule WHERE sched_start_actual <= %s AND sched_type != 'OneUpProducer'",
         (current_time - config.trim_event_age,),
     )
-    db.c.update(
+    await cursor.update(
         "DELETE FROM r4_elections WHERE elec_start_actual <= %s",
         (current_time - config.trim_election_age,),
     )
-    max_history_id = db.c.fetch_var("SELECT MAX(songhist_id) FROM r4_song_history")
-    db.c.update(
+    max_history_id = await cursor.fetch_var(
+        "SELECT MAX(songhist_id) FROM r4_song_history"
+    )
+    await cursor.update(
         "DELETE FROM r4_song_history WHERE songhist_id <= %s AND sid = %s",
         (max_history_id - config.trim_history_length, sid),
     )
@@ -516,7 +518,7 @@ def update_live_voting(sid: int) -> None:
         return live_voting
     for event in upnext_sid:
         if event.is_election:
-            live_voting[event.id] = db.c.fetch_all(
+            live_voting[event.id] = await cursor.fetch_all(
                 "SELECT entry_id, entry_votes, song_id FROM r4_election_entries WHERE elec_id = %s",
                 (event.id,),
             )

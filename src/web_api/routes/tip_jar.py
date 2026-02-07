@@ -19,7 +19,7 @@ class TipJarContents(APIHandler):
     def post(self):
         self.append(
             self.return_name,
-            db.c.fetch_all(
+            await cursor.fetch_all(
                 """
                 SELECT
                     donation_id AS id,
@@ -59,7 +59,7 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 			</div>"""
         )
 
-        all_donations = db.c.fetch_var(
+        all_donations = await cursor.fetch_var(
             "SELECT ROUND(SUM(donation_amount)) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0"
         )
         self.write(
@@ -67,7 +67,9 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
             % (self.locale.translate("tip_jar_all_donations"), all_donations)
         )
 
-        balance = db.c.fetch_var("SELECT ROUND(SUM(donation_amount)) FROM r4_donations")
+        balance = await cursor.fetch_var(
+            "SELECT ROUND(SUM(donation_amount)) FROM r4_donations"
+        )
         self.write(
             "<p>%s: %s</p>" % (self.locale.translate("tip_jar_balance"), balance)
         )

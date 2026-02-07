@@ -26,7 +26,7 @@ class UserSearchByDiscordUserIdRequest(web_api.web.APIHandler):
 
         list_as_tuple = tuple(cast(list[str], self.get_argument("discord_user_ids")))
 
-        db.c.update(
+        await cursor.update(
             "UPDATE phpbb_users SET group_id = 8 WHERE discord_user_id IN %s AND group_id NOT IN %s AND group_id != 8",
             (list_as_tuple, PRIVILEGED_GROUP_IDS),
         )

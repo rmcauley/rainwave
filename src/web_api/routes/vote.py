@@ -88,7 +88,7 @@ class SubmitVote(APIHandler):
             if self.user.data["voted_entry"]:
                 already_voted = self.user.data["voted_entry"]
         else:
-            previous_vote = db.c.fetch_row(
+            previous_vote = await cursor.fetch_row(
                 "SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s",
                 (self.user.id, event.id),
             )
@@ -99,7 +99,7 @@ class SubmitVote(APIHandler):
             elif previous_vote:
                 already_voted = previous_vote["entry_id"]
 
-        db.c.start_transaction()
+        await cursor.start_transaction()
         try:
             if already_voted:
                 if not event.add_vote_to_entry(already_voted, -1):
@@ -138,7 +138,7 @@ class SubmitVote(APIHandler):
                 )
 
             if self.user.is_anonymous():
-                if not db.c.update(
+                if not await cursor.update(
                     "UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s",
                     (entry_id, self.user.data["listener_id"]),
                 ):
@@ -151,7 +151,7 @@ class SubmitVote(APIHandler):
                 self.user.update({"voted_entry": entry_id})
             else:
                 if already_voted:
-                    db.c.update(
+                    await cursor.update(
                         "UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE user_id = %s and entry_id = %s",
                         (
                             event.get_entry(entry_id).id,
@@ -161,7 +161,7 @@ class SubmitVote(APIHandler):
                         ),
                     )
                 else:
-                    db.c.update(
+                    await cursor.update(
                         """
                         INSERT INTO r4_vote_history (
                             elec_id,
@@ -180,7 +180,7 @@ class SubmitVote(APIHandler):
                             event.sid,
                         ),
                     )
-                    db.c.update(
+                    await cursor.update(
                         "UPDATE phpbb_users SET radio_inactive = FALSE, radio_last_active = %s WHERE user_id = %s",
                         (timestamp(), self.user.id),
                     )
@@ -211,9 +211,9 @@ class SubmitVote(APIHandler):
                     % (self.user.data["listener_id"], entry_id),
                 )
                 raise APIException("internal_error")
-            db.c.commit()
+            await cursor.commit()
         except:
-            db.c.rollback()
+            await cursor.rollback()
             raise
 
         return True

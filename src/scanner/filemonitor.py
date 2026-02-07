@@ -59,30 +59,30 @@ def full_music_scan(full_reset: bool) -> None:
     _common_init()
     db.connect()
     cache.connect()
-    db.c.start_transaction()
+    await cursor.start_transaction()
 
     try:
         if full_reset:
-            db.c.update("UPDATE r4_songs SET song_file_mtime = 0")
-        db.c.update("UPDATE r4_songs SET song_scanned = FALSE")
+            await cursor.update("UPDATE r4_songs SET song_file_mtime = 0")
+        await cursor.update("UPDATE r4_songs SET song_scanned = FALSE")
 
         _scan_all_directories()
 
         # This procedure is slow but steady and easy to use.
-        dead_songs = db.c.fetch_list(
+        dead_songs = await cursor.fetch_list(
             "SELECT song_id FROM r4_songs WHERE song_scanned = FALSE AND song_verified = TRUE"
         )
         for song_id in dead_songs:
             song = playlist.Song.load_from_id(song_id)
             song.disable()
 
-        db.c.commit()
+        await cursor.commit()
 
         _process_found_album_art()
         print()
         write_unmatched_art_log()
     except:
-        db.c.rollback()
+        await cursor.rollback()
         raise
 
 
@@ -128,12 +128,12 @@ def _scan_directory(directory: str, sids: list[int]) -> None:
     # Normalize and add a trailing separator to the directory name
     directory = os.path.join(os.path.normpath(directory), "")
 
-    songs = db.c.fetch_list(
+    songs = await cursor.fetch_list(
         "SELECT song_id FROM r4_songs WHERE song_filename LIKE %s || '%%' AND song_verified = TRUE",
         (directory,),
     )
     for song_id in songs:
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_songs SET song_scanned = FALSE WHERE song_id = %s", (song_id,)
         )
 
@@ -150,7 +150,7 @@ def _scan_directory(directory: str, sids: list[int]) -> None:
                 filename = os.path.join(root, filename)
                 _scan_file(filename, sids)
 
-    songs = db.c.fetch_list(
+    songs = await cursor.fetch_list(
         "SELECT song_id FROM r4_songs WHERE song_filename LIKE %s || '%%' AND song_scanned = FALSE AND song_verified = TRUE",
         (directory,),
     )
@@ -172,14 +172,14 @@ def _scan_file(filename: str, sids: list[int]) -> bool:
         try:
             log.debug("scan", "sids: {} Scanning file: {}".format(sids, filename))
             # Only scan the file if we don't have a previous mtime for it, or the mtime is different
-            old_mtime = db.c.fetch_var(
+            old_mtime = await cursor.fetch_var(
                 "SELECT song_file_mtime FROM r4_songs WHERE song_filename = %s AND song_verified = TRUE",
                 (filename,),
             )
             if old_mtime != new_mtime or not old_mtime:
                 log.debug("scan", "mtime mismatch, scanning for changes")
                 s = playlist.Song.load_from_file(filename, sids)
-                if not db.c.fetch_var(
+                if not await cursor.fetch_var(
                     "SELECT album_id FROM r4_songs WHERE song_id = %s", (s.id,)
                 ):
                     _add_scan_error(
@@ -191,7 +191,7 @@ def _scan_file(filename: str, sids: list[int]) -> bool:
                     s.disable()
             else:
                 log.debug("scan", "mtime match, no action taken.")
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_songs SET song_scanned = TRUE WHERE song_filename = %s",
                     (filename,),
                 )
@@ -275,7 +275,7 @@ def _process_album_art(filename: str, sids: list[int]) -> bool:
         return True
     try:
         directory = os.path.dirname(filename) + os.sep
-        album_ids = db.c.fetch_list(
+        album_ids = await cursor.fetch_list(
             "SELECT DISTINCT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'",
             (directory,),
         )

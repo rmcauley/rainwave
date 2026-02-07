@@ -152,7 +152,7 @@ class RegisteredUser(UserBase):
 
     def add_request(self, sid: int, song_id: int) -> int:
         song = playlist.Song.load_from_id(song_id, sid)
-        for requested in db.c.fetch_all(
+        for requested in await cursor.fetch_all(
             "SELECT r4_request_store.song_id, r4_songs.album_id FROM r4_request_store JOIN r4_songs USING (song_id) WHERE r4_request_store.user_id = %s",
             (self.id,),
             row_type=RequestStoreRow,
@@ -163,7 +163,7 @@ class RegisteredUser(UserBase):
                 if song.album.id == requested["album_id"]:
                     raise APIException("same_request_album")
         self._check_too_many_requests()
-        updated_rows = db.c.update(
+        updated_rows = await cursor.update(
             "INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)",
             (self.id, song_id, sid),
         )
@@ -179,7 +179,7 @@ class RegisteredUser(UserBase):
             limit = max_limit
         added_requests = 0
         for song_id in playlist.get_unrated_songs_for_requesting(self.id, sid, limit):
-            added_requests += db.c.update(
+            added_requests += await cursor.update(
                 "INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)",
                 (self.id, song_id, sid),
             )
@@ -187,7 +187,7 @@ class RegisteredUser(UserBase):
             for song_id in playlist.get_unrated_songs_on_cooldown_for_requesting(
                 self.id, sid, limit - added_requests
             ):
-                added_requests += db.c.update(
+                added_requests += await cursor.update(
                     "INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)",
                     (self.id, song_id, sid),
                 )
@@ -204,7 +204,7 @@ class RegisteredUser(UserBase):
         added_requests = 0
         for song_id in playlist.get_favorited_songs_for_requesting(self.id, sid, limit):
             if song_id:
-                added_requests += db.c.update(
+                added_requests += await cursor.update(
                     "INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)",
                     (self.id, song_id, sid),
                 )
@@ -213,25 +213,25 @@ class RegisteredUser(UserBase):
         return added_requests
 
     def remove_request(self, song_id: int) -> int:
-        song_requested = db.c.fetch_var(
+        song_requested = await cursor.fetch_var(
             "SELECT reqstor_id FROM r4_request_store WHERE user_id = %s AND song_id = %s",
             (self.id, song_id),
             var_type=int,
         )
         if not song_requested:
             raise APIException("song_not_requested")
-        return db.c.update(
+        return await cursor.update(
             "DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s",
             (self.id, song_id),
         )
 
     def clear_all_requests(self) -> int:
-        return db.c.update(
+        return await cursor.update(
             "DELETE FROM r4_request_store WHERE user_id = %s", (self.id,)
         )
 
     def clear_all_requests_on_cooldown(self) -> int:
-        return db.c.update(
+        return await cursor.update(
             "DELETE FROM r4_request_store USING r4_song_sid WHERE r4_song_sid.song_id = r4_request_store.song_id AND r4_song_sid.sid = r4_request_store.sid AND user_id = %s AND song_cool_end > %s",
             (
                 self.id,
@@ -242,7 +242,7 @@ class RegisteredUser(UserBase):
     def pause_requests(self) -> bool:
         self.remove_from_request_line()
         if (
-            db.c.update(
+            await cursor.update(
                 "UPDATE phpbb_users SET radio_requests_paused = TRUE WHERE user_id = %s",
                 (self.id,),
             )
@@ -254,7 +254,7 @@ class RegisteredUser(UserBase):
 
     def unpause_requests(self, sid: int) -> bool:
         if (
-            db.c.update(
+            await cursor.update(
                 "UPDATE phpbb_users SET radio_requests_paused = FALSE WHERE user_id = %s",
                 (self.id,),
             )
@@ -268,20 +268,20 @@ class RegisteredUser(UserBase):
     def put_in_request_line(self, sid: int) -> bool:
         if not sid:
             return False
-        if db.c.fetch_var(
+        if await cursor.fetch_var(
             "SELECT radio_requests_paused FROM phpbb_users WHERE user_id = %s",
             (self.id,),
             var_type=bool,
         ):
             return False
-        already_lined = db.c.fetch_row(
+        already_lined = await cursor.fetch_row(
             "SELECT * FROM r4_request_line WHERE user_id = %s",
             (self.id,),
             row_type=RequestLineRow,
         )
         if already_lined and already_lined["sid"] == sid:
             if already_lined["line_expiry_tune_in"]:
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_request_line SET line_expiry_tune_in = NULL WHERE user_id = %s",
                     (self.id,),
                 )
@@ -290,7 +290,7 @@ class RegisteredUser(UserBase):
             self.remove_from_request_line()
         has_valid = True if self.get_top_request_song_id(sid) else False
         return (
-            db.c.update(
+            await cursor.update(
                 "INSERT INTO r4_request_line (user_id, sid, line_has_had_valid) VALUES (%s, %s, %s)",
                 (self.id, sid, has_valid),
             )
@@ -299,13 +299,15 @@ class RegisteredUser(UserBase):
 
     def remove_from_request_line(self) -> bool:
         return (
-            db.c.update("DELETE FROM r4_request_line WHERE user_id = %s", (self.id,))
+            await cursor.update(
+                "DELETE FROM r4_request_line WHERE user_id = %s", (self.id,)
+            )
             > 0
         )
 
     def is_in_request_line(self) -> bool:
         return (
-            db.c.fetch_var(
+            await cursor.fetch_var(
                 "SELECT COUNT(*) FROM r4_request_line WHERE user_id = %s",
                 (self.id,),
                 var_type=int,
@@ -314,21 +316,21 @@ class RegisteredUser(UserBase):
         ) > 0
 
     def get_top_request_song_id(self, sid: int) -> int | None:
-        return db.c.fetch_var(
+        return await cursor.fetch_var(
             "SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE ORDER BY reqstor_order, reqstor_id LIMIT 1",
             (self.id, sid),
             var_type=int,
         )
 
     def get_top_request_song_id_any(self, sid: int) -> int | None:
-        return db.c.fetch_var(
+        return await cursor.fetch_var(
             "SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE ORDER BY reqstor_order, reqstor_id LIMIT 1",
             (self.id, sid),
             var_type=int,
         )
 
     def get_request_line_sid(self) -> int | None:
-        return db.c.fetch_var(
+        return await cursor.fetch_var(
             "SELECT sid FROM r4_request_line WHERE user_id = %s",
             (self.id,),
             var_type=int,
@@ -347,7 +349,7 @@ class RegisteredUser(UserBase):
         return None
 
     def get_requests(self, sid: int) -> list[dict[str, Any]]:
-        requests = db.c.fetch_all(
+        requests = await cursor.fetch_all(
             """
             SELECT
                 r4_request_store.song_id AS id,
@@ -435,7 +437,7 @@ class RegisteredUser(UserBase):
             return None
         if not t:
             t = timestamp() + config.request_tunein_timeout
-        return db.c.update(
+        return await cursor.update(
             "UPDATE r4_listeners SET line_expiry_tunein = %s WHERE user_id = %s",
             (t, self.id),
         )
@@ -447,7 +449,7 @@ class RegisteredUser(UserBase):
             )
             for x in range(10)
         )
-        db.c.update(
+        await cursor.update(
             "UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s",
             (listen_key, self.id),
         )
@@ -458,7 +460,7 @@ class RegisteredUser(UserBase):
         if "api_key" in self.data and self.data["api_key"]:
             return self.data["api_key"]
 
-        api_key = db.c.fetch_var(
+        api_key = await cursor.fetch_var(
             "SELECT api_key FROM r4_api_keys WHERE user_id = %s",
             (self.id,),
             var_type=str,
@@ -485,10 +487,10 @@ class RegisteredUser(UserBase):
             for x in range(10)
         )
         if reuse:
-            db.c.update(
+            await cursor.update(
                 "DELETE FROM r4_api_keys WHERE api_key = %s AND user_id = 1", (reuse,)
             )
-        db.c.update(
+        await cursor.update(
             "INSERT INTO r4_api_keys (user_id, api_key, api_expiry, api_key_listen_key) VALUES (%s, %s, %s, %s)",
             (self.id, api_key, expiry, listen_key),
         )

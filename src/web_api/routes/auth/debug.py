@@ -15,14 +15,14 @@ class DebugAuth(HTMLRequest):
         self.write(self.render_string("basic_header.html", title="RW Auth Debug Page"))
         has_phpbb_auth = self.do_phpbb_auth()
         has_session_auth = self.do_rw_session_auth()
-        discord_id = db.c.fetch_var(
+        discord_id = await cursor.fetch_var(
             "SELECT discord_user_id FROM phpbb_users WHERE user_id = %s",
             (self.user.id,),
         )
-        username = db.c.fetch_var(
+        username = await cursor.fetch_var(
             "SELECT username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
         )
-        radio_username = db.c.fetch_var(
+        radio_username = await cursor.fetch_var(
             "SELECT radio_username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
         )
 

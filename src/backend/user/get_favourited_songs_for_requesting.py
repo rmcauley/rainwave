@@ -3,7 +3,7 @@ def get_favorited_songs_for_requesting(user_id: int, sid: int, limit: int) -> li
     # It then does the same for any song rated >= 4.5 by the user.
     # Favourites are bubbled to the top of the heap.  The rest is randomly sorted. (but always above 4.5!)
     favorited = []
-    for row in db.c.fetch_all(
+    for row in await cursor.fetch_all(
         _get_requested_albums_sql()
         + (
             """

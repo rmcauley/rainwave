@@ -16,7 +16,7 @@ class AddDonationHandler(web_api.web.APIHandler):
     }
 
     def post(self):
-        if db.c.update(
+        if await cursor.update(
             "INSERT INTO r4_donations (user_id, donation_amount, donation_message, donation_private) values (%s, %s, %s, %s)",
             (
                 self.get_argument("donor_id"),

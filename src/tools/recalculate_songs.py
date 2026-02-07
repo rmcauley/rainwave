@@ -17,7 +17,7 @@ if __name__ == "__main__":
     log.init()
     db.connect()
 
-    songs = db.c.fetch_list("SELECT song_id FROM r4_songs")
+    songs = await cursor.fetch_list("SELECT song_id FROM r4_songs")
     i = 0
     for song_id in songs:
         txt = "Song %s / %s" % (i, len(songs))

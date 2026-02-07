@@ -27,12 +27,12 @@ class UpdateUserNicknameByDiscordId(web_api.web.APIHandler):
         discord_user_id = self.get_argument("discord_user_id")
         nickname = self.get_argument("nickname")
 
-        possible_id = db.c.fetch_var(
+        possible_id = await cursor.fetch_var(
             "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
             (discord_user_id,),
         )
         if possible_id:
-            db.c.update(
+            await cursor.update(
                 (
                     """
                     UPDATE phpbb_users

@@ -11,7 +11,7 @@ LINE_SQL = "SELECT COALESCE(radio_username, username) AS username, user_id, line
 
 def update_line(sid: int) -> None:
     # Get everyone in the line
-    line = db.c.fetch_all(LINE_SQL, (sid,))
+    line = await cursor.fetch_all(LINE_SQL, (sid,))
     _process_line(line, sid)
 
 
@@ -39,7 +39,7 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
             )
             u.remove_from_request_line()
         else:
-            tuned_in_sid = db.c.fetch_var(
+            tuned_in_sid = await cursor.fetch_var(
                 "SELECT sid FROM r4_listeners WHERE user_id = %s AND sid = %s AND listener_purge = FALSE",
                 (u.id, sid),
             )
@@ -49,7 +49,7 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
                 song_id = u.get_top_request_song_id(sid)
                 if song_id and not row["line_has_had_valid"]:
                     row["line_has_had_valid"] = True
-                    db.c.update(
+                    await cursor.update(
                         "UPDATE r4_request_line SET line_has_had_valid = TRUE WHERE user_id = %s",
                         (u.id,),
                     )
@@ -79,7 +79,7 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
                         % (sid, u.id),
                     )
                     row["line_expiry_election"] = t + 900
-                    db.c.update(
+                    await cursor.update(
                         "UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s",
                         ((t + 900), row["user_id"]),
                     )
@@ -91,12 +91,12 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
                     )
                     if song_id:
                         albums_with_requests.append(
-                            db.c.fetch_var(
+                            await cursor.fetch_var(
                                 "SELECT album_id FROM r4_songs WHERE song_id = %s",
                                 (song_id,),
                             )
                         )
-                        row["song"] = db.c.fetch_row(
+                        row["song"] = await cursor.fetch_row(
                             "SELECT song_id AS id, song_title AS title, album_name FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_id = %s",
                             (song_id,),
                         )
@@ -109,7 +109,7 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
                     "request_line",
                     "%s: User ID %s being marked as tuned out." % (sid, u.id),
                 )
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s",
                     ((t + 600), row["user_id"]),
                 )
@@ -134,12 +134,12 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
     cache.set_station(sid, "request_line", new_line, True)
     cache.set_station(sid, "request_user_positions", user_positions, True)
 
-    db.c.update(
+    await cursor.update(
         "UPDATE r4_album_sid SET album_requests_pending = NULL WHERE album_requests_pending = TRUE AND sid = %s",
         (sid,),
     )
     for album_id in albums_with_requests:
-        db.c.update(
+        await cursor.update(
             "UPDATE r4_album_sid SET album_requests_pending = TRUE WHERE album_id = %s AND sid = %s",
             (album_id, sid),
         )
@@ -187,19 +187,19 @@ def mark_request_filled(
     song.data["elec_request_user_id"] = user.id
     song.data["elec_request_username"] = user.data["name"]
 
-    db.c.update(
+    await cursor.update(
         "DELETE FROM r4_request_store WHERE user_id = %s AND song_id = %s",
         (user.id, song.id),
     )
     user.remove_from_request_line()
-    request_count = db.c.fetch_var(
+    request_count = await cursor.fetch_var(
         "SELECT COUNT(*) + 1 FROM r4_request_history WHERE user_id = %s", (user.id,)
     )
-    db.c.update(
+    await cursor.update(
         "DELETE FROM r4_request_store WHERE song_id = %s AND user_id = %s",
         (song.id, user.id),
     )
-    db.c.update(
+    await cursor.update(
         """
         INSERT INTO r4_request_history (
             user_id,
@@ -220,7 +220,7 @@ def mark_request_filled(
             sid,
         ),
     )
-    db.c.update(
+    await cursor.update(
         "UPDATE phpbb_users SET radio_totalrequests = %s WHERE user_id = %s",
         (request_count, user.id),
     )
@@ -241,7 +241,7 @@ def get_next(sid: int) -> playlist.Song | None:
 
 
 def get_next_ignoring_cooldowns(sid: int) -> playlist.Song | None:
-    line = db.c.fetch_all(LINE_SQL, (sid,))
+    line = await cursor.fetch_all(LINE_SQL, (sid,))
 
     if not line or len(line) == 0:
         return None

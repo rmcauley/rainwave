@@ -388,7 +388,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
     def do_rw_session_auth(self) -> bool:
         rw_session_id = self.get_cookie("r4_session_id")
         if rw_session_id:
-            user_id = db.c.fetch_var(
+            user_id = await cursor.fetch_var(
                 "SELECT user_id FROM r4_sessions WHERE session_id = %s",
                 (rw_session_id,),
             )

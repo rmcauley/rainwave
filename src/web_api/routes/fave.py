@@ -62,7 +62,7 @@ class SubmitFaveAllSongs(SubmitAlbumFave):
     description = "Faves or un-faves all songs in an album.  Only songs on station ID provided will be faved."
 
     def post(self):
-        song_ids = db.c.fetch_list(
+        song_ids = await cursor.fetch_list(
             "SELECT r4_song_sid.song_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s",
             (self.get_argument("album_id"), self.sid),
         )

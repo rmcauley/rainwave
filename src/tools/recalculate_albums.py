@@ -20,7 +20,7 @@ if __name__ == "__main__":
     log.init()
     db.connect()
 
-    albums = db.c.fetch_list("SELECT album_id FROM r4_albums")
+    albums = await cursor.fetch_list("SELECT album_id FROM r4_albums")
     i = 0
     for album_id in albums:
         txt = "Album %s / %s" % (i, len(albums))

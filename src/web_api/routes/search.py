@@ -20,7 +20,7 @@ class SearchHandler(APIHandler):
 
         s = "%%%s%%" % s
 
-        artists = db.c.fetch_all(
+        artists = await cursor.fetch_all(
             """
             SELECT
                 DISTINCT artist_id AS id,
@@ -38,7 +38,7 @@ class SearchHandler(APIHandler):
         )
 
         if self.user.is_anonymous():
-            albums = db.c.fetch_all(
+            albums = await cursor.fetch_all(
                 """
                 SELECT
                     DISTINCT album_id AS id,
@@ -59,7 +59,7 @@ class SearchHandler(APIHandler):
                 (self.sid, s),
             )
         else:
-            albums = db.c.fetch_all(
+            albums = await cursor.fetch_all(
                 """
                 SELECT
                     DISTINCT r4_albums.album_id AS id,
@@ -91,7 +91,7 @@ class SearchHandler(APIHandler):
 
         # base SQL here copy pasted from /rainwave/playlist_objects/album.py
         if self.user.is_anonymous():
-            songs = db.c.fetch_all(
+            songs = await cursor.fetch_all(
                 """
                 SELECT
                     r4_song_sid.song_id AS id,
@@ -128,7 +128,7 @@ class SearchHandler(APIHandler):
                 (s, self.sid),
             )
         else:
-            songs = db.c.fetch_all(
+            songs = await cursor.fetch_all(
                 """
                 SELECT
                     r4_song_sid.song_id AS id,

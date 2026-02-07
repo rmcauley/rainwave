@@ -41,7 +41,7 @@ class BaseProducer:
     @classmethod
     def load_producer_by_id(cls: Type[T], sched_id: int) -> T | None:
         global all_producers
-        row = db.c.fetch_row(
+        row = await cursor.fetch_row(
             "SELECT * FROM r4_schedule WHERE sched_id = %s", (sched_id,)
         )
         if not row or len(row) == 0:
@@ -81,7 +81,7 @@ class BaseProducer:
         use_tag_suffix: bool = True,
     ) -> "BaseProducer":
         evt = cls(sid)
-        evt.id = db.c.get_next_id("r4_schedule", "sched_id")
+        evt.id = await cursor.get_next_id("r4_schedule", "sched_id")
         evt.start = start
         evt.end = end
         evt.name = name
@@ -91,7 +91,7 @@ class BaseProducer:
         evt.url = url
         evt.use_crossfade = use_crossfade
         evt.use_tag_suffix = use_tag_suffix
-        db.c.update(
+        await cursor.update(
             """
                 INSERT INTO r4_schedule (
                     sched_id,
@@ -176,7 +176,7 @@ class BaseProducer:
     def change_start(self, new_start: int) -> None:
         if not self.used:
             self.start = new_start
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_schedule SET sched_start = %s WHERE sched_id = %s",
                 (self.start, self.id),
             )
@@ -186,7 +186,7 @@ class BaseProducer:
     def change_end(self, new_end: int) -> None:
         if not self.used:
             self.end = new_end
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_schedule SET sched_end = %s WHERE sched_id = %s",
                 (self.end, self.id),
             )
@@ -208,7 +208,7 @@ class BaseProducer:
         if not self.start_actual:
             self.start_actual = int(timestamp())
             if self.id:
-                db.c.update(
+                await cursor.update(
                     "UPDATE r4_schedule SET sched_in_progress = TRUE, sched_start_actual = %s where sched_id = %s",
                     (self.start_actual, self.id),
                 )
@@ -216,7 +216,7 @@ class BaseProducer:
     def finish(self) -> None:
         self.end_actual = int(timestamp())
         if self.id:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_schedule SET sched_used = TRUE, sched_in_progress = FALSE, sched_end_actual = %s WHERE sched_id = %s",
                 (self.end_actual, self.id),
             )

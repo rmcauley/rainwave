@@ -10,7 +10,7 @@
             listen_key = cache.get(cache_key)
             print("B")
             if not listen_key:
-                listen_key = db.c.fetch_var(
+                listen_key = await cursor.fetch_var(
                     "SELECT api_key_listen_key FROM r4_api_keys WHERE api_key = %s AND user_id = 1",
                     (self.api_key,),
                 )

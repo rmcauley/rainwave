@@ -53,7 +53,7 @@ class OrderRequests(APIHandler):
     def post(self):
         order = 0
         for song_id in self.get_argument_required("order"):
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_request_store SET reqstor_order = %s WHERE user_id = %s AND song_id = %s",
                 (order, self.user.id, song_id),
             )
@@ -166,7 +166,7 @@ class ListRequestLine(APIHandler):
         self.append(self.return_name, cache.get_station(self.sid, "request_line"))
         # It _should_ be "request_line" for now and future APIs, so... we return both. 😬
         self.append("request_line", cache.get_station(self.sid, "request_line"))
-        # self.append("request_line_db", db.c.fetch_all("SELECT username, r4_request_line.* FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE sid = %s ORDER BY line_wait_start", (self.sid,)))
+        # self.append("request_line_db", await cursor.fetch_all("SELECT username, r4_request_line.* FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE sid = %s ORDER BY line_wait_start", (self.sid,)))
 
 
 @handle_api_html_url("request_line")

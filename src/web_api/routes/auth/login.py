@@ -34,7 +34,7 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
         if not password:
             raise APIException("password_required")
 
-        db_entry = db.c.fetch_row(
+        db_entry = await cursor.fetch_row(
             "SELECT user_id, user_password, user_login_attempts, discord_user_id FROM phpbb_users WHERE LOWER(username) = %s",
             (username.lower(),),
         )
@@ -48,7 +48,7 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
         if db_entry["user_login_attempts"] >= 5:
             raise APIException("login_limit")
         if not phpbb_passwd_compare(password, db_password):
-            db.c.update(
+            await cursor.update(
                 "UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s",
                 (username,),
             )

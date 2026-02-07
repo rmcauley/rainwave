@@ -16,7 +16,7 @@ class ListenerDetailRequest(APIHandler):
     fields = {"id": (fieldtypes.user_id, True)}
 
     def post(self):
-        user = db.c.fetch_row(
+        user = await cursor.fetch_row(
             """
             SELECT
                 user_id,
@@ -49,7 +49,7 @@ class ListenerDetailRequest(APIHandler):
         user["avatar"] = UserLib.solve_avatar(user["avatar_type"], user["avatar"])
         user.pop("avatar_type")
 
-        user["top_albums"] = db.c.fetch_all(
+        user["top_albums"] = await cursor.fetch_all(
             """
             SELECT
                 album_id AS id,
@@ -73,7 +73,7 @@ class ListenerDetailRequest(APIHandler):
         )
 
         if self.sid == 5:
-            user["top_request_albums"] = db.c.fetch_all(
+            user["top_request_albums"] = await cursor.fetch_all(
                 """
                 SELECT
                     COUNT(request_id) AS request_count_listener,
@@ -97,7 +97,7 @@ class ListenerDetailRequest(APIHandler):
                 (self.get_argument("id"),),
             )
         else:
-            user["top_request_albums"] = db.c.fetch_all(
+            user["top_request_albums"] = await cursor.fetch_all(
                 """
                 SELECT
                     COUNT(request_id) AS request_count_listener,
@@ -131,7 +131,7 @@ class ListenerDetailRequest(APIHandler):
                 (self.sid, self.get_argument("id"), self.sid),
             )
 
-        user["votes_by_station"] = db.c.fetch_all(
+        user["votes_by_station"] = await cursor.fetch_all(
             """
             SELECT
                 sid,
@@ -143,7 +143,7 @@ class ListenerDetailRequest(APIHandler):
             (self.get_argument("id"),),
         )
 
-        user["requests_by_station"] = db.c.fetch_all(
+        user["requests_by_station"] = await cursor.fetch_all(
             """
             SELECT
                 sid,
@@ -156,7 +156,7 @@ class ListenerDetailRequest(APIHandler):
             (self.get_argument("id"),),
         )
 
-        user["requests_by_source_station"] = db.c.fetch_all(
+        user["requests_by_source_station"] = await cursor.fetch_all(
             """
             SELECT
                 song_origin_sid AS sid,
@@ -170,7 +170,7 @@ class ListenerDetailRequest(APIHandler):
             (self.get_argument("id"),),
         )
 
-        user["ratings_by_station"] = db.c.fetch_all(
+        user["ratings_by_station"] = await cursor.fetch_all(
             """
             SELECT
                 song_origin_sid AS sid,
@@ -195,7 +195,7 @@ class ListenerDetailRequest(APIHandler):
                 * 100
             )
 
-        user["rating_spread"] = db.c.fetch_all(
+        user["rating_spread"] = await cursor.fetch_all(
             "SELECT COUNT(song_id) AS ratings, song_rating_user AS rating FROM r4_song_ratings JOIN r4_songs USING (song_id) WHERE user_id = %s AND song_rating_user IS NOT NULL AND song_verified IS TRUE GROUP BY song_rating_user ORDER BY song_rating_user",
             (self.get_argument("id"),),
         )

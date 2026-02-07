@@ -42,17 +42,17 @@ if __name__ == "__main__":
     REQONLY_THRESHOLD = 3.3
     REQONLY_STATION = 2
 
-    remove_songs = db.c.fetch_all(
+    remove_songs = await cursor.fetch_all(
         "SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid != %s AND song_origin_sid != 0 AND song_verified = TRUE AND song_rating_count >= %s",
         (REMOVE_THRESHOLD, REQONLY_STATION, REQUIRED_RATING_COUNT),
     )
-    reqonly_songs = db.c.fetch_all(
+    reqonly_songs = await cursor.fetch_all(
         "SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating > %s AND song_rating <= %s AND song_origin_sid != 0 AND song_verified = TRUE AND song_rating_count >= %s",
         (REMOVE_THRESHOLD, REQONLY_THRESHOLD, REQUIRED_RATING_COUNT),
     )
 
     if REQONLY_STATION:
-        reqonly_songs += db.c.fetch_all(
+        reqonly_songs += await cursor.fetch_all(
             "SELECT song_id, song_origin_sid, song_filename FROM r4_songs WHERE song_rating <= %s AND song_origin_sid = %s AND song_origin_sid != 0 AND song_verified = TRUE AND song_rating_count >= %s",
             (REMOVE_THRESHOLD, REQONLY_STATION, REQUIRED_RATING_COUNT),
         )
@@ -78,11 +78,11 @@ if __name__ == "__main__":
 
     for row in reqonly_songs:
         if args.execute:
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = NULL WHERE song_id = %s",
                 (row["song_id"],),
             )
-            db.c.update(
+            await cursor.update(
                 "UPDATE r4_songs SET song_request_count = 0 WHERE song_id = %s",
                 (row["song_id"],),
             )

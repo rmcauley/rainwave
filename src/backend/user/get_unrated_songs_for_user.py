@@ -1,7 +1,7 @@
 def get_unrated_songs_for_user(
     user_id: int, limit: str = "LIMIT ALL"
 ) -> list[dict[str, Any]]:
-    return db.c.fetch_all(
+    return await cursor.fetch_all(
         """
         SELECT
             r4_songs.song_id AS id,

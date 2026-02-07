@@ -24,7 +24,7 @@ def _update_inactive() -> None:
     f.write(str(int(timestamp())))
     f.close()
     time_threshold = timestamp() - (86400 * 30)
-    db.c.update(
+    await cursor.update(
         """
         UPDATE phpbb_users
         SET radio_inactive = TRUE
