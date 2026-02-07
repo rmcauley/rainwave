@@ -9,7 +9,7 @@ from web_api.exceptions import APIException
 from libs import cache
 from libs import log
 from backend.libs import db
-from backend.rainwave import user
+from backend.user.user_model import make_user
 from song_change_api import sync_to_front
 
 # Sample Icecast query:
@@ -164,7 +164,7 @@ class AddListener(IcecastHandler):
             )
             self.failed = False
         if not self.failed:
-            u = user.User(self.user_id)
+            u = make_user(self.user_id)
             u.get_listener_record(use_cache=False)
             if u.has_requests():
                 u.put_in_request_line(sid)

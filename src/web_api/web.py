@@ -9,7 +9,7 @@ import tornado.web
 import tornado.httputil
 
 from backend.cache import cache
-from backend.user.user_model import User
+from backend.user.user_model import User, make_user
 from backend.playlist.song.song import SongNonExistent
 
 from web_api import fieldtypes
@@ -368,7 +368,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
         if not self.user and self.auth_required:
             raise APIException("auth_required", http_code=403)
         elif not self.user and not self.auth_required:
-            self.user = User(1)
+            self.user = make_user(1)
             self.user.ip_address = self.request.remote_ip
 
         self.user.refresh(self.sid)
@@ -385,66 +385,6 @@ class RainwaveHandler(tornado.web.RequestHandler):
         self.sid_check()
         self.permission_checks()
 
-    def do_phpbb_auth(self) -> bool:
-        phpbb_cookie_name = config.phpbb_cookie_name + "_"
-        user_id = fieldtypes.integer(self.get_cookie(phpbb_cookie_name + "u", ""))
-        if not user_id:
-            pass
-        else:
-            if self._verify_phpbb_session(user_id):
-                # update_phpbb_session is done by verify_phpbb_session if successful
-                self.user = User(user_id)
-                self.user.ip_address = self.request.remote_ip
-                self.user.authorize(self.sid, None, bypass=True)
-                return True
-
-            if not self.user and self.get_cookie(phpbb_cookie_name + "k"):
-                can_login = db.c.fetch_var(
-                    "SELECT 1 FROM phpbb_sessions_keys WHERE key_id = %s AND user_id = %s",
-                    (
-                        hashlib.md5(
-                            bytes(
-                                str(self.get_cookie(phpbb_cookie_name + "k")), "utf-8"
-                            )
-                        ).hexdigest(),
-                        user_id,
-                    ),
-                )
-                if can_login == 1:
-                    self._update_phpbb_session(self._get_phpbb_session(user_id))
-                    self.user = User(user_id)
-                    self.user.ip_address = self.request.remote_ip
-                    self.user.authorize(self.sid, None, bypass=True)
-                    return True
-        return False
-
-    def _verify_phpbb_session(self, user_id: int | None = None) -> str | None:
-        if not user_id and not self.user:
-            return None
-        if not user_id:
-            user_id = self.user.id
-        cookie_session = self.get_cookie(config.phpbb_cookie_name + "_sid")
-        if cookie_session:
-            if cookie_session == db.c.fetch_var(
-                "SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s AND session_id = %s",
-                (user_id, cookie_session),
-            ):
-                self._update_phpbb_session(cookie_session)
-                return cookie_session
-        return None
-
-    def _get_phpbb_session(self, user_id: int | None = None) -> Any:
-        return db.c.fetch_var(
-            "SELECT session_id FROM phpbb_sessions WHERE session_user_id = %s ORDER BY session_last_visit DESC LIMIT 1",
-            (user_id,),
-        )
-
-    def _update_phpbb_session(self, session_id: Any) -> None:
-        db.c.update(
-            "UPDATE phpbb_sessions SET session_last_visit = %s, session_page = %s WHERE session_id = %s",
-            (int(timestamp()), "rainwave", session_id),
-        )
-
     def do_rw_session_auth(self) -> bool:
         rw_session_id = self.get_cookie("r4_session_id")
         if rw_session_id:
@@ -453,7 +393,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
                 (rw_session_id,),
             )
             if user_id:
-                self.user = User(user_id)
+                self.user = make_user(user_id)
                 self.user.ip_address = self.request.remote_ip
                 self.user.authorize(self.sid, None, bypass=True)
                 return True
@@ -478,7 +418,7 @@ class RainwaveHandler(tornado.web.RequestHandler):
             raise APIException("missing_argument", argument="key", http_code=400)
 
         if user_id_present:
-            self.user = User(int(self.get_argument_int_required("user_id")))
+            self.user = make_user(int(self.get_argument_int_required("user_id")))
             self.user.ip_address = self.request.remote_ip
             self.user.authorize(self.sid, self.get_argument("key"))
             if not self.user.authorized:

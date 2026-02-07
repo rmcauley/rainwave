@@ -4,7 +4,7 @@ from backend.libs import db
 from backend.cache import cache
 from libs import log
 from backend.rainwave import playlist
-from backend.rainwave.user import User
+from backend.user.user_model import make_user
 
 LINE_SQL = "SELECT COALESCE(radio_username, username) AS username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start, line_has_had_valid FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start"
 
@@ -19,7 +19,7 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
     new_line = []
     # user_positions has user_id as a key and position as the value, this is cached for quick lookups by API requests
     # so users know where they are in line
-    user_positions = {}
+    user_positions: dict[int, int] = {}
     t = int(timestamp())
     albums_with_requests = []
     position = 1
@@ -28,7 +28,7 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
     # For each person
     for row in line:
         add_to_line = False
-        u = User(row["user_id"])
+        u = make_user(row["user_id"])
         row["song_id"] = None
         # If their time is up, remove them and don't add them to the new line
         if row["line_expiry_tune_in"] and row["line_expiry_tune_in"] <= t:
@@ -147,23 +147,6 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
     return new_line
 
 
-def update_expire_times() -> None:
-    expiry_times = {}
-    for row in db.c.fetch_all("SELECT * FROM r4_request_line"):
-        expiry_times[row["user_id"]] = None
-        if not row["line_expiry_tune_in"] and not row["line_expiry_election"]:
-            pass
-        elif row["line_expiry_tune_in"] and not row["line_expiry_election"]:
-            expiry_times[row["user_id"]] = row["line_expiry_tune_in"]
-        elif row["line_expiry_election"] and not row["line_expiry_tune_in"]:
-            expiry_times[row["user_id"]] = row["line_expiry_election"]
-        elif row["line_expiry_election"] <= row["line_expiry_tune_in"]:
-            expiry_times[row["user_id"]] = row["line_expiry_election"]
-        else:
-            expiry_times[row["user_id"]] = row["line_expiry_tune_in"]
-    cache.set_global("request_expire_times", expiry_times, True)
-
-
 def get_next_entry(
     sid: int,
 ) -> tuple[dict[str, Any] | None, list[dict[str, Any]] | None]:
@@ -240,7 +223,7 @@ def get_next(sid: int) -> playlist.Song | None:
     if not entry:
         return None
 
-    user = User(entry["user_id"])
+    user = make_user(entry["user_id"])
     user.data["name"] = entry["username"]
     song = playlist.Song.load_from_id(entry["song_id"], sid)
     mark_request_filled(sid, user, song, entry, line)
@@ -255,7 +238,7 @@ def get_next_ignoring_cooldowns(sid: int) -> playlist.Song | None:
         return None
 
     entry = line[0]
-    user = User(entry["user_id"])
+    user = make_user(entry["user_id"])
     user.data["name"] = entry["username"]
     song = playlist.Song.load_from_id(user.get_top_request_song_id_any(sid), sid)
     mark_request_filled(sid, user, song, entry, line)

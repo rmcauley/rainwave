@@ -7,9 +7,6 @@ from .connection import db_connection
 
 
 class RainwaveCursorBase:
-    auto_retry = True
-    disconnected = False
-
     def __init__(self):
         self._connection = db_connection
         self._cursor = AsyncCursor(db_connection, row_factory=dict_row)

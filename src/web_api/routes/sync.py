@@ -25,7 +25,7 @@ from web_api.web import APIHandler
 from web_api.web import get_browser_locale
 from web_api.urls import api_endpoints
 from web_api.urls import handle_api_url
-from backend.rainwave.user import User
+from backend.user.user_model import make_user
 import backend.locale.locale
 import routes.info
 import rainwave.playlist
@@ -484,7 +484,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.throttled = False
         self.throttled_msgs = []
         self.votes_by_key = ""
-        self.user = User(1)
+        self.user = make_user(1)
         self.sid = config.default_station
         self.uuid = str(uuid.uuid4())
 
@@ -908,7 +908,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                     }
                 )
 
-            self.user = User(message["user_id"])
+            self.user = make_user(message["user_id"])
             self.user.ip_address = self.request.remote_ip
             self.user.authorize(None, message["key"])
             if not self.user.authorized:

@@ -9,7 +9,7 @@ from web_api.urls import handle_url, handle_api_url
 from routes import info
 
 from backend import config
-from backend.rainwave.user import User
+from backend.user.user_model import make_user
 
 STATION_REGEX = "|".join(
     stream_filename for stream_filename in config.stream_filename_to_sid.keys()
@@ -54,7 +54,7 @@ class Bootstrap(web_api.web.APIHandler):
                 )
         super().prepare()
         if not self.user:
-            self.user = User(1)
+            self.user = make_user(1)
         self.user.ensure_api_key()
 
     def finish(self, chunk=None):

@@ -4,7 +4,7 @@
 
 import uuid
 from backend.libs import db
-from backend.rainwave.user import User
+from backend.user.user_model import make_user
 from web_api.web import RainwaveHandler
 
 ALLOWED_DESTINATIONS = ("web", "rw", "app", "rwpath")
@@ -29,13 +29,13 @@ class R4SetupSessionMixin:
         self.set_cookie("r4_session_id", session_id, expires_days=365, httponly=True)
 
         if destination == "app" or destination == "rw":
-            user = User(user_id)
+            user = make_user(user_id)
             user.authorize(1, None, bypass=True)
             self.redirect(
                 "rw://%s:%s@rainwave.cc" % (user.id, user.ensure_api_key()),
             )
         elif destination == "rwpath":
-            user = User(user_id)
+            user = make_user(user_id)
             user.authorize(1, None, bypass=True)
             self.redirect(
                 "rwpath://rainwave.cc/%s/%s" % (user.id, user.ensure_api_key()),
