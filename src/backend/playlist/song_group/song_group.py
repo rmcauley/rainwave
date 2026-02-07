@@ -1,15 +1,21 @@
 from time import time as timestamp
-from typing import Any
+from typing import TypedDict
 
-from backend.libs import db
-from libs import log
-from backend import config
-
-from backend.rainwave.playlist_objects.metadata import AssociatedMetadata
-from backend.rainwave.playlist_objects.metadata import make_searchable_string
+from backend.db.cursor import RainwaveCursor, RainwaveCursorTx
+from backend.playlist.metadata import MetadataInsertionError
+from backend.playlist.remove_diacritics import remove_diacritics
 
 
-class SongGroup(AssociatedMetadata):
+class SongGroupRow(TypedDict):
+    group_id: int
+    group_name: str
+    group_name_searchable: str
+    group_elec_block: int
+
+
+class SongGroup:
+    data: SongGroupRow
+
     select_by_name_query = "SELECT group_id AS id, group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE lower(group_name) = lower(%s)"
     select_by_id_query = "SELECT group_id AS id, group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time FROM r4_groups WHERE group_id = %s"
     select_by_song_id_query = "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag FROM r4_song_group JOIN r4_groups USING (group_id) WHERE song_id = %s ORDER BY group_name"
@@ -23,42 +29,26 @@ class SongGroup(AssociatedMetadata):
     check_self_size_query = "SELECT COUNT(song_id) FROM r4_song_group JOIN r4_songs USING (song_id) WHERE group_id = %s AND song_verified = TRUE"
     delete_self_query = "DELETE FROM r4_groups WHERE group_id = %s"
 
-    @classmethod
-    def load_list_from_song_id(
-        cls, song_id: int, sid: int | None = None, all_categories: bool = False
-    ) -> list["SongGroup"]:
-        if not sid:
-            return super(SongGroup, cls).load_list_from_song_id(song_id)
+    def __init__(self, data: SongGroupRow):
+        self.data = data
 
-        show_all_condition = (
-            "" if all_categories else "AND r4_group_sid.group_display = TRUE"
+    @staticmethod
+    async def upsert(cursor: RainwaveCursor | RainwaveCursorTx, name: str) -> SongGroup:
+        row = await cursor.fetch_row(
+            """
+            INSERT INTO r4_groups (group_name, group_name_searchable) VALUES (%s, %s, %s)
+            ON CONFLICT DO NOTHING
+            RETURNING *
+""",
+            (name, remove_diacritics(name)),
+            row_type=SongGroupRow,
         )
+        if not row:
+            raise MetadataInsertionError(f"Could not upsert group with name {name}")
+        return SongGroup(row)
 
-        rows = db.c.fetch_all(
-            "SELECT r4_groups.group_id AS id, r4_groups.group_name AS name, group_elec_block AS elec_block, group_cool_time AS cool_time, group_is_tag AS is_tag "
-            "FROM r4_song_sid "
-            "JOIN r4_song_group USING (song_id) "
-            "JOIN r4_group_sid ON (r4_song_group.group_id = r4_group_sid.group_id AND r4_group_sid.sid = %s "
-            + show_all_condition
-            + ") "
-            "JOIN r4_groups ON (r4_group_sid.group_id = r4_groups.group_id) "
-            "WHERE r4_song_sid.song_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE "
-            "ORDER BY r4_groups.group_name",
-            (sid, song_id, sid),
-        )
-        instances = []
-        for row in rows:
-            instance = cls()
-            instance._assign_from_dict(row)
-            instances.append(instance)
-        return instances
-
-    def associate_song_id(self, song_id: int, is_tag: bool | None = None) -> None:
-        super().associate_song_id(song_id, is_tag)
-        self.reconcile_sids()
-
-    def reconcile_sids(self) -> None:
-        new_sids_all = db.c.fetch_all(
+    async def reconcile_sids(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+        new_sids_all = cursor.fetch_all(
             "SELECT sid, COUNT(DISTINCT album_id) "
             "FROM r4_song_group "
             "JOIN r4_song_sid USING (song_id) "
@@ -89,19 +79,6 @@ class SongGroup(AssociatedMetadata):
                     "INSERT INTO r4_group_sid (group_id, sid, group_display) VALUES (%s, %s, TRUE)",
                     (self.id, sid),
                 )
-
-    def _insert_into_db(self) -> bool:
-        self.id = db.c.get_next_id("r4_groups", "group_id")
-        return db.c.update(
-            "INSERT INTO r4_groups (group_id, group_name, group_name_searchable) VALUES (%s, %s, %s)",
-            (self.id, self.data["name"], make_searchable_string(self.data["name"])),
-        )
-
-    def _update_db(self) -> bool:
-        return db.c.update(
-            "UPDATE r4_groups SET group_name = %s, group_name_searchable = %s WHERE group_id = %s",
-            (self.data["name"], make_searchable_string(self.data["name"]), self.id),
-        )
 
     def _start_cooldown_db(self, sid: int, cool_time: int) -> None:
         if config.has_station(

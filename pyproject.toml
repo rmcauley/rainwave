@@ -1,6 +1,6 @@
 [project]
 name = "rainwave"
-version = "5.0.0"
+version = "6.0.0"
 description = "rainwave.cc"
 readme = "README.md"
 requires-python = "~=3.14.0"
@@ -13,7 +13,6 @@ dependencies = [
     "pillow==12.1.0",
     "psycopg[binary]==3.3.2",
     "pydantic==2.12.5",
-    "pyicu==2.16",
     "pyinotify==0.9.6",
     "pytz>=2025.2",
     "pyzmq==27.1.0",

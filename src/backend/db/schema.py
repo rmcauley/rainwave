@@ -4,7 +4,7 @@ from .cursor import RainwaveCursor, get_cursor
 
 async def create_index(cursor: RainwaveCursor, table: str, columns: list[str]) -> None:
     name = "%s_%s_idx" % (table, "_".join(columns))
-    await cursor.execute("CREATE INDEX %s ON %s (%s)", (name, table, ",".join(columns)))
+    await cursor.update("CREATE INDEX %s ON %s (%s)", (name, table, ",".join(columns)))
 
 
 async def create_delete_fk(
@@ -29,7 +29,7 @@ async def create_delete_fk(
         foreign_table=foreign_table,
         foreign_key=foreign_key,
     )
-    await cursor.execute(query)
+    await cursor.update(query)
 
 
 async def create_null_fk(
@@ -54,7 +54,7 @@ async def create_null_fk(
         foreign_table=foreign_table,
         foreign_key=foreign_key,
     )
-    await cursor.execute(query)
+    await cursor.update(query)
 
 
 async def create_tables() -> None:
@@ -389,6 +389,9 @@ async def create_tables() -> None:
             )"
         )
         await cursor.update(
+            "CREATE UNIQUE INDEX artist_name_unique ON r4_artists (artist_name)"
+        )
+        await cursor.update(
             "CREATE INDEX artist_name_trgm_gin ON r4_artists USING GIN(artist_name_searchable gin_trgm_ops)"
         )
 
@@ -415,6 +418,10 @@ async def create_tables() -> None:
                 group_elec_block		SMALLINT, \
                 group_cool_time			SMALLINT	DEFAULT 900 \
             )"
+        )
+
+        await cursor.update(
+            "CREATE UNIQUE INDEX group_name_unique ON r4_groups (group_name)"
         )
 
         await cursor.update(

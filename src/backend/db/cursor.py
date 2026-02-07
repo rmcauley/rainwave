@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager, contextmanager
-from typing import Any, Sequence, Mapping, cast
+from typing import Any, AsyncIterator, Sequence, Mapping, cast
 from psycopg import AsyncCursor
 from psycopg.rows import dict_row
 from psycopg.abc import QueryNoTemplate
@@ -10,16 +10,6 @@ class RainwaveCursorBase:
     def __init__(self):
         self._connection = db_connection
         self._cursor = AsyncCursor(db_connection, row_factory=dict_row)
-
-    async def execute(
-        self,
-        query: QueryNoTemplate,
-        params: Sequence[Any] | Mapping[str, Any] | None = None,
-    ) -> None:
-        await self._cursor.execute(query, params)
-
-    async def fetch_next_row[T](self, *, row_type: type[T]) -> T:
-        return cast(T, await self._cursor.fetchone())
 
     async def fetch_var[T](
         self,
@@ -104,6 +94,29 @@ class RainwaveCursorBase:
         await self._cursor.execute(query, params)
         return self._cursor.rowcount
 
+    async def for_each_row[T](
+        self,
+        query: QueryNoTemplate,
+        params: Sequence[Any] | Mapping[str, Any] | None = None,
+        *,
+        row_type: type[T],
+    ) -> AsyncIterator[T]:
+        await self._cursor.execute(query, params)
+        while True:
+            row = await self._cursor.fetchone()
+            if not row:
+                break
+            yield cast(T, row)
+
+    async def begin_transaction(self):
+        await self._cursor.execute("BEGIN")
+
+    async def commit_transaction(self):
+        await self._cursor.execute("COMMIT")
+
+    async def rollback_transaction(self):
+        await self._cursor.execute("ROLLBACK")
+
 
 class RainwaveCursor(RainwaveCursorBase):
     pass
@@ -122,10 +135,10 @@ def get_cursor():
 @asynccontextmanager
 async def get_tx_cursor():
     cursor = RainwaveCursorTx()
-    await cursor.execute("BEGIN")
+    await cursor.begin_transaction()
     try:
         yield cursor
-        await cursor.execute("COMMIT")
+        await cursor.commit_transaction()
     except:
-        await cursor.execute("ROLLBACK")
+        await cursor.rollback_transaction()
         raise

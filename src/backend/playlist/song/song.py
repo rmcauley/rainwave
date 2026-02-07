@@ -889,3 +889,37 @@ class Song:
         # This function is never called on as part of the Album class
         # This code will never execute!!!
         pass
+
+    # needs to be specialized because of artist_order
+    def assign_artist(
+        self, song_id: int, is_tag: bool | None = None, order: int | None = None
+    ) -> None:
+        if not order and not self.data.get("order"):
+            order = db.c.fetch_var(
+                "SELECT MAX(artist_order) FROM r4_song_artist WHERE song_id = %s",
+                (song_id,),
+            )
+            if not order:
+                order = -1
+            order += 1
+        elif not order:
+            order = self.data["order"]
+        self.data["order"] = order
+        if is_tag == None:
+            is_tag = self.is_tag
+        else:
+            self.is_tag = is_tag
+        if (db.c.fetch_var(self.has_song_id_query, (song_id, self.id)) or 0) > 0:
+            pass
+        else:
+            if not db.c.update(
+                self.associate_song_id_query, (song_id, self.id, is_tag, order)
+            ):
+                raise MetadataUpdateError(
+                    "Cannot associate song ID %s with %s ID %s"
+                    % (song_id, self.__class__.__name__, self.id)
+                )
+
+    def assign_group(self, song_id: int, is_tag: bool | None = None) -> None:
+        super().associate_song_id(song_id, is_tag)
+        self.reconcile_sids()
