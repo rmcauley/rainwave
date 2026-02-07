@@ -39,7 +39,7 @@ class RainwaveCursorBase:
     async def fetch_guaranteed[T](
         self,
         query: QueryNoTemplate,
-        params: Sequence[Any] | Mapping[str, Any],
+        params: Sequence[Any] | Mapping[str, Any] | None,
         default: T,
         *,
         var_type: type[T],

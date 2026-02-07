@@ -858,3 +858,34 @@ class Song:
 
     def length(self) -> int:
         return self.data["length"]
+
+    def assign_to_album(self, song_id, is_tag=None):
+        row = db.c.fetch_row(
+            "SELECT album_id, song_added_on FROM r4_songs WHERE song_id = %s",
+            (song_id,),
+        )
+        if not row:
+            raise Exception("Song %s not found" % song_id)
+        existing_album = row["album_id"]
+        if not existing_album or existing_album != self.id:
+            db.c.update(
+                "UPDATE r4_songs SET album_id = %s WHERE song_id = %s",
+                (self.id, song_id),
+            )
+        if existing_album and existing_album != self.id:
+            old_album = Album.load_from_id(existing_album)
+            old_album.reconcile_sids()
+        self.reconcile_sids()
+        for song_sid in db.c.fetch_list(
+            "SELECT sid FROM r4_song_sid WHERE song_id = %s AND song_exists = TRUE",
+            (song_id,),
+        ):
+            db.c.update(
+                "UPDATE r4_album_sid SET album_newest_song_time = %s WHERE album_newest_song_time < %s AND album_id = %s AND sid = %s",
+                (row["song_added_on"], row["song_added_on"], self.id, song_sid),
+            )
+
+    def unassign_from_album(self, *args):
+        # This function is never called on as part of the Album class
+        # This code will never execute!!!
+        pass

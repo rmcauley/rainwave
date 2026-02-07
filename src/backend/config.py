@@ -3,14 +3,6 @@ import orjson
 from typing import TypedDict, TypeAlias
 
 
-class RatingMapEntry(TypedDict):
-    threshold: float
-    points: float
-
-
-RatingMap: TypeAlias = list[RatingMapEntry]
-
-
 class StationConfig(TypedDict):
     name: str
     stream_filename: str
@@ -164,19 +156,6 @@ cookie_domain = ""
 # Accept automated Javascript error reports from these hosts. (spam prevention)
 # hostname configuration directive is automatically included.
 accept_error_reports_from_hosts = ["localhost"]
-
-# Map user-facing ratings to raw points in the rating formula.
-rating_map: "RatingMap" = [
-    {"threshold": 0, "points": -0.2},
-    {"threshold": 1.5, "points": 0.0},
-    {"threshold": 2.0, "points": 0.1},
-    {"threshold": 2.5, "points": 0.2},
-    {"threshold": 3.0, "points": 0.5},
-    {"threshold": 3.5, "points": 0.75},
-    {"threshold": 4.0, "points": 0.9},
-    {"threshold": 4.5, "points": 1.0},
-    {"threshold": 5.0, "points": 1.1},
-]
 
 # Domain name that has address records for all your Icecast servers.
 # If you only have 1 Icecast server, put it here.

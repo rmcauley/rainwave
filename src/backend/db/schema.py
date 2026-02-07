@@ -292,7 +292,7 @@ async def create_tables() -> None:
         await create_delete_fk(cursor, "r4_song_ratings", "phpbb_users", "user_id")
 
         await cursor.update(
-            " \
+            ' \
             CREATE TABLE r4_album_sid ( \
                 album_exists				BOOLEAN		DEFAULT TRUE, \
                 album_id					INTEGER		NOT NULL, \
@@ -313,9 +313,10 @@ async def create_tables() -> None:
                 album_vote_count			INTEGER		DEFAULT 0, \
                 album_votes_seen			INTEGER		DEFAULT 0, \
                 album_vote_share			REAL 		,\
-                album_newest_song_time		INTEGER		DEFAULT 0, \
+                album_newest_song_time		INTEGER		DEFAULT 0, " \
+                album_art_url               TEXT, \
                 PRIMARY KEY (album_id, sid) \
-            )"
+            )'
         )
         await create_index(cursor, "r4_album_sid", ["album_rating"])
         await create_index(cursor, "r4_album_sid", ["album_request_count"])
@@ -324,6 +325,26 @@ async def create_tables() -> None:
         await create_index(cursor, "r4_album_sid", ["album_requests_pending"])
         await create_index(cursor, "r4_album_sid", ["album_exists", "sid"])
         await create_delete_fk(cursor, "r4_album_sid", "r4_albums", "album_id")
+
+        await cursor.update(
+            """
+            ALTER TABLE r4_album_sid
+            ADD COLUMN album_updated_at TIMESTAMP NOT NULL DEFAULT NOW();
+
+            CREATE OR REPLACE FUNCTION set_album_updated_at()
+            RETURNS TRIGGER AS $$
+            BEGIN
+            NEW.album_updated_at = NOW();
+            RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER r4_album_sid_set_updated_at
+            BEFORE UPDATE ON r4_album_sid
+            FOR EACH ROW
+            EXECUTE FUNCTION set_album_updated_at();
+        """
+        )
 
         await cursor.update(
             " \
