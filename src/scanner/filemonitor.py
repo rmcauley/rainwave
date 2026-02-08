@@ -23,6 +23,12 @@ _found_album_art: list[tuple[str, list[int]]] = []
 _on_screen = False
 
 
+# the song class no longer does this, must be incorporated
+def set_umask() -> None:
+    os.setpgrp()
+    os.umask(0o02)
+
+
 class AlbumArtNoAlbumFoundError(PassableScanError):
     pass
 

@@ -65,8 +65,12 @@ class BaseEvent:
         song = self.get_song()
         if song:
             song.update_last_played(self.sid)
+            # this moved to here
+            album.update_last_played(self.sid)
             song.start_cooldown(self.sid)
             song.update_rating()
+            # this moved to here
+            album.update_rating()
 
     def length(self) -> int:
         # These go in descending order of accuracy

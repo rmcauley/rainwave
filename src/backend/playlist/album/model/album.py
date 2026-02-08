@@ -13,26 +13,12 @@ class AlbumRow(TypedDict):
     album_id: int
     album_name: str
     album_name_searchable: str
-    album_year: int
     album_added_on: int
 
 
 class Album:
     id: int
     data: AlbumRow
-
-    select_by_name_query = (
-        "SELECT r4_albums.* FROM r4_albums WHERE lower(album_name) = lower(%s)"
-    )
-    select_by_id_query = "SELECT r4_albums.* FROM r4_albums WHERE album_id = %s"
-    select_by_song_id_query = "SELECT r4_albums.* FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_id = %s"
-    has_song_id_query = (
-        "SELECT COUNT(song_id) FROM r4_songs WHERE song_id = %s AND album_id = %s"
-    )
-    check_self_size_query = "SELECT COUNT(*) FROM r4_songs WHERE album_id = %s"
-    delete_self_query = (
-        "UPDATE r4_album_sid SET album_exists = FALSE WHERE album_id = %s"
-    )
 
     def __init__(self, data: AlbumRow):
         self.id = data["album_id"]

@@ -546,8 +546,12 @@ WHERE album_id = %s
                 self.songs[0].add_to_vote_count(
                     self.songs[0].data["entry_votes"], self.sid
                 )
+            # this moved to here
+            album.update_last_played
             self.songs[0].update_last_played(self.sid)
             self.songs[0].update_rating()
+            # this moved to here
+            album.update_rating()
             self.songs[0].start_cooldown(self.sid)
 
     def set_priority(self, priority: bool) -> None:

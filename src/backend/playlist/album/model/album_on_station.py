@@ -6,16 +6,19 @@ from typing import TypedDict
 from backend import config
 from backend.libs import log
 from backend.db.cursor import RainwaveCursor, RainwaveCursorTx
+from backend.playlist.extra_detail_histogram import (
+    RatingHistogram,
+    produce_rating_histogram,
+)
 from backend.ratings.rating_calculator import RatingMapReadyDict, rating_calculator
-from .album import Album, AlbumRow
+from .album import AlbumRow
 from backend.playlist.cooldown_config import cooldown_config
 from backend.playlist.get_age_cooldown_multiplier import get_age_cooldown_multiplier
 from backend.playlist.object_counts import num_albums
 
 
-class AlbumOnStationRow(TypedDict):
+class AlbumOnStationRow(AlbumRow):
     album_exists: bool
-    album_id: int
     sid: int
     album_song_count: int
     album_played_last: int
@@ -39,18 +42,13 @@ class AlbumOnStationExtraDetailsGenreRow(TypedDict):
     name: str
 
 
-class AlbumOnStationExtraDetailsHistogramRow(TypedDict):
-    song_rating_user: float
-    rating_count: int
-
-
 class AlbumOnStationExtraDetail(TypedDict):
     album_rating_rank: int
     album_rating_rank_percentile: int
     album_request_rank: int
     album_request_rank_percentile: int
     album_genres: list[AlbumOnStationExtraDetailsGenreRow]
-    album_rating_histogram: dict[str, int]
+    album_rating_histogram: RatingHistogram
 
 
 class AlbumDiff(TypedDict):
@@ -66,10 +64,8 @@ class AlbumOnStation:
     album_id: int
     sid: int
     data: AlbumOnStationRow
-    album: Album
 
-    def __init__(self, album_data: AlbumRow, album_on_station_data: AlbumOnStationRow):
-        self.album = Album(album_data)
+    def __init__(self, album_on_station_data: AlbumOnStationRow):
         self.album_id = album_on_station_data["album_id"]
         self.sid = album_on_station_data["sid"]
         self.data = album_on_station_data
@@ -120,9 +116,7 @@ class AlbumOnStation:
             )
             / 2
         )
-        cool_age_multiplier = get_age_cooldown_multiplier(
-            self.album.data["album_added_on"]
-        )
+        cool_age_multiplier = get_age_cooldown_multiplier(self.data["album_added_on"])
         cool_time = int(
             auto_cool
             * cool_size_multiplier
@@ -277,8 +271,8 @@ class AlbumOnStation:
         histogram_rows = await cursor.fetch_all(
             """
                 SELECT
-                    song_rating_user,
-                    COUNT(song_rating) AS rating_count
+                    song_rating_user AS rating,
+                    COUNT(song_rating) AS count
                 FROM r4_song_ratings
                 JOIN phpbb_users ON (
                     r4_song_ratings.user_id = phpbb_users.user_id 
@@ -296,11 +290,9 @@ class AlbumOnStation:
                 GROUP BY song_rating_user
 """,
             (self.sid, self.album_id),
-            row_type=AlbumOnStationExtraDetailsHistogramRow,
+            row_type=RatingMapReadyDict,
         )
-        histogram = {
-            str(row["song_rating_user"]): row["rating_count"] for row in histogram_rows
-        }
+        histogram = produce_rating_histogram(histogram_rows)
 
         return {
             "album_genres": album_genres,
@@ -336,7 +328,7 @@ class AlbumOnStation:
                 "%s album ratings for %s (%s)"
                 % (
                     rating_count,
-                    self.album.data["album_name"],
+                    self.data["album_name"],
                     config.station_id_friendly[sid],
                 ),
             )
@@ -352,7 +344,7 @@ class AlbumOnStation:
                 log.debug(
                     "album_rating",
                     "%s new rating for %s on station %s"
-                    % (rating, self.album.data["album_name"], sid),
+                    % (rating, self.data["album_name"], sid),
                 )
 
     def to_album_diff(self) -> AlbumDiff:
@@ -362,5 +354,29 @@ class AlbumOnStation:
             "cool_lowest": self.data["album_cool_lowest"],
             "newest_song_time": self.data.get("album_newest_song_time", 0) or 0,
             "rating": self.data["album_rating"],
-            "name": self.album.data["album_name"],
+            "name": self.data["album_name"],
         }
+
+    @staticmethod
+    async def update_newest_song_time(
+        cursor: RainwaveCursor | RainwaveCursorTx, album_id: int, sid: int
+    ) -> None:
+        newest_song = cursor.fetch_guaranteed(
+            """
+            SELECT MIN(song_added_on) 
+            FROM r4_songs 
+                JOIN r4_song_sid USING (song_id) 
+            WHERE album_id = %s AND sid = %s
+        """,
+            (album_id, sid),
+            default=0,
+            var_type=int,
+        )
+        await cursor.update(
+            """
+            UPDATE r4_album_sid 
+            SET album_newest_song_time = %s 
+            WHERE album_id = %s AND sid = %s
+            """,
+            (newest_song, album_id, sid),
+        )

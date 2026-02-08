@@ -271,8 +271,6 @@ relays: "RelaysConfig" = {
     }
 }
 
-enable_replaygain = True
-
 build_number = 0
 
 station_ids: set[int] = set(k for k in stations.keys())

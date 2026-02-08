@@ -130,9 +130,8 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1):
             INSERT INTO r4_albums (
                 album_name,
                 album_name_searchable,
-                album_year
             )
-            VALUES (%s, %s, %s) RETURNING album_id
+            VALUES (%s, %s) RETURNING album_id
 """,
             (name, name.lower(), year),
             as_type=int,
@@ -180,13 +179,12 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1):
                     song_id,
                     artist_id,
                     artist_order,
-                    artist_is_tag
                 )
-                VALUES (%s, %s, %s, %s)
+                VALUES (%s, %s, %s)
 """,
-                (song_id, artist_id, 0, True),
+                (song_id, artist_id, 0),
             )
             await cursor.update(
-                "INSERT INTO r4_song_group (song_id, group_id, group_is_tag) VALUES (%s, %s, %s)",
+                "INSERT INTO r4_song_group (song_id, group_id) VALUES (%s, %s)",
                 (song_id, group_id, True),
             )

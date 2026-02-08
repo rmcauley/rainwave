@@ -282,14 +282,6 @@
     },
     " место."
   ],
-  "album_year": [
-    "Выпущено в ",
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    " году."
-  ],
   "album_rating_detail": "Оценка альбома пользователями ",
   "song_rating_detail": "Оценка композиции пользователями ",
   "rating_detail_numbers": [

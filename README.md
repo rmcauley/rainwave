@@ -36,7 +36,7 @@ Rainwave is designed to run on Python 3.14 using `uv`.
 ```
 git clone https://github.com/rmcauley/rainwave.git
 cd rainwave
-sudo apt install libicu-dev
+sudo apt install libicu-dev rsgain
 uv sync
 ```
 

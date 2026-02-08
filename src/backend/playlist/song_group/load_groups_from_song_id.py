@@ -1,22 +1,17 @@
-from typing import TypedDict
-from backend.db.cursor import RainwaveCursor
-
-
-class GroupListRow(TypedDict):
-    id: int
-    name: str
-    elec_block: bool
+from backend.db.cursor import RainwaveCursor, RainwaveCursorTx
+from backend.playlist.song_group.song_group import SongGroupRow
 
 
 async def load_groups_from_song_id(
-    cursor: RainwaveCursor, song_id: int, sid: int
-) -> list[GroupListRow]:
+    cursor: RainwaveCursor | RainwaveCursorTx, song_id: int, sid: int
+) -> list[SongGroupRow]:
     return await cursor.fetch_all(
         """
         SELECT 
-            r4_groups.group_id AS id, 
-            r4_groups.group_name AS name, 
-            group_elec_block AS elec_block, 
+            r4_groups.group_id AS group_id, 
+            r4_groups.group_name AS group_name, 
+            r4_groups.group_elec_block AS group_elec_block, 
+            r4_groups.group_name_searchable AS group_name_searchable
         FROM r4_song_sid 
             JOIN r4_song_group USING (song_id) 
             JOIN r4_group_sid ON (
@@ -29,5 +24,5 @@ async def load_groups_from_song_id(
         ORDER BY r4_groups.group_name
         """,
         (sid, song_id, sid),
-        row_type=GroupListRow,
+        row_type=SongGroupRow,
     )

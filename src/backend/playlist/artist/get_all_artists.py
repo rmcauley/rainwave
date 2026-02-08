@@ -4,9 +4,9 @@ from backend.db.cursor import RainwaveCursor, RainwaveCursorTx
 
 
 class AllArtistsRow(TypedDict):
-    name: str
-    id: int
-    song_count: int
+    artist_name: str
+    artist_id: int
+    artist_song_count: int
 
 
 async def get_all_artists_list(
@@ -15,9 +15,9 @@ async def get_all_artists_list(
     return await cursor.fetch_all(
         """
         SELECT 
-            artist_name AS name, 
-            artist_id AS id, 
-            COUNT(*) AS song_count 
+            artist_name, 
+            artist_id, 
+            COUNT(*) AS artist_song_count 
         FROM r4_artists 
             JOIN r4_song_artist USING (artist_id) 
             JOIN r4_song_sid using (song_id) 

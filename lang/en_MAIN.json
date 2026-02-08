@@ -339,14 +339,6 @@
     },
     "."
   ],
-  "album_year": [
-    "Released in ",
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    "."
-  ],
   "album_rating_detail": "Users have rated this album ",
   "song_rating_detail": "Users have rated this song ",
   "rating_detail_numbers": [

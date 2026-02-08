@@ -289,14 +289,6 @@
     },
     "º no ranking."
   ],
-  "album_year": [
-    "Lançado em ",
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    "."
-  ],
   "album_rating_detail": "Usuários avaliaram esse álbum em ",
   "song_rating_detail": "Usuários avaliaram essa música em ",
   "rating_detail_numbers": [

@@ -224,14 +224,6 @@
     },
     " w rankingu."
   ],
-  "album_year": [
-    "Wydany w ",
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    "."
-  ],
   "song_extradetail_rating": [
     "Ocena: ",
     {

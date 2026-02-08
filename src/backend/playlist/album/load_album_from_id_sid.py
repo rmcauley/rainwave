@@ -7,12 +7,12 @@ from backend.playlist.metadata import MetadataNotFoundError
 
 
 class AlbumOnStationFullRow(TypedDict):
+    # from albums table
     album_id: int
     album_name: str
     album_name_searchable: str
-    album_year: int
     album_added_on: int
-
+    # from album_sid table
     album_exists: bool
     sid: int
     album_song_count: int
@@ -41,7 +41,6 @@ async def load_album_on_station_from_id(
             r4_albums.album_id,
             r4_albums.album_name,
             r4_albums.album_name_searchable,
-            r4_albums.album_year,
             r4_albums.album_added_on,
             r4_album_sid.album_exists,
             r4_album_sid.sid,
@@ -73,32 +72,4 @@ async def load_album_on_station_from_id(
             % ("AlbumOnStation", album_id, sid)
         )
 
-    return AlbumOnStation(
-        {
-            "album_id": row["album_id"],
-            "album_name": row["album_name"],
-            "album_name_searchable": row["album_name_searchable"],
-            "album_year": row["album_year"],
-            "album_added_on": row["album_added_on"],
-        },
-        {
-            "album_id": row["album_id"],
-            "album_exists": row["album_exists"],
-            "sid": row["sid"],
-            "album_song_count": row["album_song_count"],
-            "album_played_last": row["album_played_last"],
-            "album_requests_pending": row["album_requests_pending"],
-            "album_cool": row["album_cool"],
-            "album_cool_multiply": row["album_cool_multiply"],
-            "album_cool_override": row["album_cool_override"],
-            "album_cool_lowest": row["album_cool_lowest"],
-            "album_updated": row["album_updated"],
-            "album_elec_last": row["album_elec_last"],
-            "album_rating": row["album_rating"],
-            "album_rating_count": row["album_rating_count"],
-            "album_request_count": row["album_request_count"],
-            "album_fave_count": row["album_fave_count"],
-            "album_newest_song_time": row["album_newest_song_time"],
-            "album_art_url": row["album_art_url"],
-        },
-    )
+    return AlbumOnStation(row)

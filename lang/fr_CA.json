@@ -291,14 +291,6 @@
     },
     "."
   ],
-  "album_year": [
-    "Sorti en ",
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    "."
-  ],
   "album_rating_detail": "Évaluation de l'album par la communauté: ",
   "song_rating_detail": "Évaluation de la chanson par la communauté: ",
   "rating_detail_numbers": [

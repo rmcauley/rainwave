@@ -178,16 +178,6 @@ async def create_tables() -> None:
         )
 
         await cursor.update(
-            "CREATE TABLE phpbb_sessions("
-            "session_user_id		INT,"
-            "session_id				TEXT,"
-            "session_last_visit		INT,"
-            "session_page			TEXT)"
-        )
-
-        await cursor.update("CREATE TABLE phpbb_session_keys(key_id TEXT, user_id INT)")
-
-        await cursor.update(
             "CREATE TABLE phpbb_ranks(rank_id SERIAL PRIMARY KEY, rank_title TEXT)"
         )
 
@@ -195,11 +185,13 @@ async def create_tables() -> None:
             " \
             CREATE TABLE r4_albums ( \
                 album_id				SERIAL		PRIMARY KEY, \
-                album_name				TEXT		, \
+                album_name				TEXT		NOT NULL, \
                 album_name_searchable	TEXT 		NOT NULL, \
-                album_year				SMALLINT, \
                 album_added_on			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) \
             )"
+        )
+        await cursor.update(
+            "CREATE UNIQUE INDEX album_name_unique ON r4_albums (album_name)"
         )
         await cursor.update(
             "CREATE INDEX album_name_trgm_gin ON r4_albums USING GIN(album_name_searchable gin_trgm_ops)"
@@ -213,16 +205,16 @@ async def create_tables() -> None:
                 song_origin_sid				SMALLINT	NOT NULL, \
                 song_verified				BOOLEAN		DEFAULT TRUE, \
                 song_scanned				BOOLEAN		DEFAULT TRUE, \
-                song_filename				TEXT		, \
-                song_title					TEXT		, \
+                song_filename				TEXT		NOT NULL, \
+                song_title					TEXT		NOT NULL, \
                 song_title_searchable		TEXT		NOT NULL, \
                 song_artist_tag				TEXT		, \
                 song_url					TEXT		, \
                 song_link_text				TEXT		, \
-                song_length					SMALLINT	, \
+                song_length					SMALLINT	NOT NULL, \
                 song_track_number			SMALLINT	, \
                 song_disc_number			SMALLINT	, \
-                song_year				SMALLINT	, \
+                song_year				    SMALLINT	, \
                 song_added_on				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
                 song_rating					REAL		DEFAULT 0, \
                 song_rating_count			INTEGER		DEFAULT 0, \
@@ -230,7 +222,7 @@ async def create_tables() -> None:
                 song_request_count			INT			DEFAULT 0, \
                 song_cool_multiply			REAL		DEFAULT 1, \
                 song_cool_override			INTEGER		, \
-                song_file_mtime				INTEGER		, \
+                song_file_mtime				INTEGER		NOT NULL, \
                 song_replay_gain			TEXT 		, \
                 song_vote_count				INTEGER		DEFAULT 0, \
                 song_votes_seen				INTEGER		DEFAULT 0, \
@@ -244,6 +236,9 @@ async def create_tables() -> None:
         await create_null_fk(cursor, "r4_songs", "r4_albums", "album_id")
         await cursor.update(
             "CREATE INDEX song_title_trgm_gin ON r4_songs USING GIN(song_title_searchable gin_trgm_ops)"
+        )
+        await cursor.update(
+            "CREATE UNIQUE INDEX song_filename_unique ON r4_songs (song_filename)"
         )
 
         await cursor.update(
@@ -292,7 +287,7 @@ async def create_tables() -> None:
         await create_delete_fk(cursor, "r4_song_ratings", "phpbb_users", "user_id")
 
         await cursor.update(
-            ' \
+            " \
             CREATE TABLE r4_album_sid ( \
                 album_exists				BOOLEAN		DEFAULT TRUE, \
                 album_id					INTEGER		NOT NULL, \
@@ -313,10 +308,10 @@ async def create_tables() -> None:
                 album_vote_count			INTEGER		DEFAULT 0, \
                 album_votes_seen			INTEGER		DEFAULT 0, \
                 album_vote_share			REAL 		,\
-                album_newest_song_time		INTEGER		DEFAULT 0, " \
+                album_newest_song_time		INTEGER		DEFAULT 0, \
                 album_art_url               TEXT, \
                 PRIMARY KEY (album_id, sid) \
-            )'
+            )"
         )
         await create_index(cursor, "r4_album_sid", ["album_rating"])
         await create_index(cursor, "r4_album_sid", ["album_request_count"])
@@ -401,7 +396,6 @@ async def create_tables() -> None:
                 song_id					INTEGER		NOT NULL, \
                 artist_id				INTEGER		NOT NULL, \
                 artist_order			SMALLINT    DEFAULT 0, \
-                artist_is_tag			BOOLEAN		DEFAULT TRUE, \
                 PRIMARY KEY (artist_id, song_id) \
             )"
         )
@@ -429,7 +423,6 @@ async def create_tables() -> None:
             CREATE TABLE r4_song_group ( \
                 song_id					INTEGER		NOT NULL, \
                 group_id				INTEGER		NOT NULL, \
-                group_is_tag			BOOLEAN		DEFAULT TRUE, \
                 PRIMARY KEY (group_id, song_id) \
             )"
         )
@@ -447,6 +440,9 @@ async def create_tables() -> None:
         )
         await create_index(cursor, "r4_group_sid", ["group_display"])
         await create_delete_fk(cursor, "r4_group_sid", "r4_groups", "group_id")
+        await cursor.update(
+            "CREATE UNIQUE INDEX r4_group_sid_unique ON r4_group_sid (group_id, sid)"
+        )
 
         await cursor.update(
             " \
@@ -648,30 +644,6 @@ async def create_tables() -> None:
         await create_null_fk(cursor, "r4_vote_history", "r4_elections", "elec_id")
         await create_delete_fk(cursor, "r4_vote_history", "r4_songs", "song_id")
         await create_delete_fk(cursor, "r4_vote_history", "phpbb_users", "user_id")
-
-        await cursor.update(
-            " \
-            CREATE TABLE r4_vote_history_archived ( \
-                vote_id					SERIAL		PRIMARY KEY, \
-                vote_time				INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \
-                elec_id					INTEGER		, \
-                user_id					INTEGER		NOT NULL, \
-                song_id					INTEGER		NOT NULL, \
-                vote_at_rank				INTEGER		, \
-                vote_at_count				INTEGER		, \
-                entry_id				INTEGER		\
-            )"
-        )
-        await create_null_fk(
-            cursor, "r4_vote_history_archived", "r4_election_entries", "entry_id"
-        )
-        await create_null_fk(
-            cursor, "r4_vote_history_archived", "r4_elections", "elec_id"
-        )
-        await create_null_fk(cursor, "r4_vote_history_archived", "r4_songs", "song_id")
-        await create_delete_fk(
-            cursor, "r4_vote_history_archived", "phpbb_users", "user_id"
-        )
 
         await cursor.update(
             " \

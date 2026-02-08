@@ -496,3 +496,21 @@ class RegisteredUser(UserBase):
         )
         self.get_all_api_keys()
         return api_key
+
+    def check_rating_acl(self, user: Any) -> None:
+        # copy pasted from song, so self.id/sid is from there
+        if user.id == 1:
+            return
+
+        if self.data["rating_allowed"]:
+            return
+
+        if user.data["rate_anything"]:
+            self.data["rating_allowed"] = True
+            return
+
+        acl = cache.get_station(self.sid, "user_rating_acl")
+        if acl and self.id in acl and user.id in acl[self.id]:
+            self.data["rating_allowed"] = True
+        else:
+            self.data["rating_allowed"] = False

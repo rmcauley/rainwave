@@ -257,13 +257,6 @@
       "key": "rank"
     }
   ],
-  "album_year": [
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    "년에 발매되었습니다."
-  ],
   "album_rating_detail": "이 앨범에 대한 사용자 평점은 ",
   "song_rating_detail": "이 노래에 대한 사용자 평점은 ",
   "rating_detail_numbers": [

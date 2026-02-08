@@ -26,4 +26,4 @@ if __name__ == "__main__":
         i += 1
 
         s = Song.load_from_id(song_id)
-        s.update_rating(skip_album_update=True)
+        s.update_rating()

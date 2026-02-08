@@ -302,14 +302,6 @@
     },
     " der Wunschrangliste."
   ],
-  "album_year": [
-    "Veröffentlicht im Jahr ",
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    "."
-  ],
   "album_rating_detail": "Andere Benutzer bewerteten dieses Album mit ",
   "song_rating_detail": "Andere Benutzer bewerteten diesen Song mit ",
   "rating_detail_numbers": [

@@ -321,14 +321,6 @@
     },
     "."
   ],
-  "album_year": [
-    "Uitgebracht in ",
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    "."
-  ],
   "album_rating_detail": "Gebruikers beoordeelden dit album ",
   "song_rating_detail": "Gebruikers beoordeelden dit nummer ",
   "rating_detail_numbers": [

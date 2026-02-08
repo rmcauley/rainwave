@@ -195,6 +195,20 @@ def advance_station(sid: int) -> None:
         raise
 
 
+# TODO
+# SONGS DON'T DO COOLDOWN FOR YOU ANYMORE
+# album = await load_album_on_station_from_id(cursor, self.data['album_id'], self.sid)
+# await album.start_cooldown(cursor)
+# OR ELECTION BLOCK
+# for group in await load_groups_from_song_id(cursor, self.id, self.sid):
+#     group = SongGroup(group)
+
+# for metadata in self.groups:
+#     metadata.start_election_block(sid, num_elections)
+# if self.album:
+#     self.album.start_election_block(sid, num_elections)
+
+
 def post_process(sid: int) -> None:
     try:
         await cursor.start_transaction()
@@ -222,6 +236,8 @@ def post_process(sid: int) -> None:
                 (sid, last_song.id),
             )
             last_song.update_fave_count(sid, update_albums=True)
+            # this moved to here
+            self.album.update_fave_count()
         log.debug("post", "Last song insertion time: %s" % (timestamp() - start_time,))
 
         start_time = timestamp()

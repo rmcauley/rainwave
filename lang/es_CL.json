@@ -312,14 +312,6 @@
     },
     "."
   ],
-  "album_year": [
-    "Publicado en ",
-    {
-      "type": "substitute",
-      "key": "year"
-    },
-    "."
-  ],
   "album_rating_detail": "Los usuarios le han dado a este álbum una evaluación de ",
   "song_rating_detail": "Los usuarios le han dado a esta canción una evaluación de ",
   "rating_detail_numbers": [
