@@ -5,11 +5,11 @@ from datetime import datetime
 from pytz import timezone
 
 from libs import config
-from backend.libs import db
+from common.libs import db
 from libs import cache
 from libs import log
 
-from backend.rainwave.events import pvpelection
+from common.rainwave.events import pvpelection
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Rainwave PVP Hour generation script.")

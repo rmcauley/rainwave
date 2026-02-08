@@ -6,7 +6,7 @@ from tornado.testing import AsyncHTTPTestCase
 
 from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
-from web_api.urls import request_classes
+from api.urls import request_classes
 
 
 class TestTipJar(AsyncHTTPTestCase):

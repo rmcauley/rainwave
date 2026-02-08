@@ -3,9 +3,9 @@
 # Updates the "searchable names" fields in the database that are used for full-text searches
 
 from libs import config
-from backend.libs import db
+from common.libs import db
 from libs import log
-from backend.rainwave.playlist_objects.song import make_searchable_string
+from common.rainwave.playlist_objects.song import make_searchable_string
 
 config.load()
 log.init()

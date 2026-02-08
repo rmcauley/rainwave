@@ -3,9 +3,9 @@
 import argparse
 
 from libs import config
-from backend.libs import db
+from common.libs import db
 from libs import log
-from backend.rainwave.playlist import SongGroup
+from common.rainwave.playlist import SongGroup
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Reconciles song<>group data.")

@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
-from web_api.urls import request_classes
+from api.urls import request_classes
 from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 

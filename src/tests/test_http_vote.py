@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
-from web_api.urls import request_classes
+from api.urls import request_classes
 import pytest
 from tests.seed_data import (
     ANONYMOUS_API_KEY,
@@ -19,7 +19,7 @@ from tests.seed_data import (
     TUNED_OUT_LOGGED_IN_API_KEY,
     TUNED_OUT_LOGGED_IN_USER_ID,
 )
-from backend.libs import db
+from common.libs import db
 
 
 class TestVote(AsyncHTTPTestCase):

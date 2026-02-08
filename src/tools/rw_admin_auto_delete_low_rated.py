@@ -6,11 +6,11 @@ import os
 import errno
 
 from libs import config
-from backend.libs import db
+from common.libs import db
 from libs import cache
 from libs import log
 
-from backend.rainwave.playlist_objects.song import Song
+from common.rainwave.playlist_objects.song import Song
 
 
 def mkdir_p(path: str) -> None:

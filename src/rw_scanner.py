@@ -1,15 +1,15 @@
 import argparse
 
-from backend.cache import cache
+from common.cache import cache
 from scanner.filemonitor import (
     monitor,
     set_on_screen,
     full_art_update,
     full_music_scan,
 )
-from backend import config
-from backend.libs import log, db
-from backend.playlist.album.album_model import clear_updated_albums
+from common import config
+from common.libs import log, db
+from common.playlist.album.album_model import clear_updated_albums
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Rainwave song scanning daemon.")

@@ -9,13 +9,13 @@ import pyinotify
 from pyinotify import ProcessEvent, IN_DELETE, IN_MOVED_FROM
 from typing import Any
 
-from backend import config
+from common import config
 from libs import log
 from libs import cache
-from backend.libs import db
+from common.libs import db
 
-from backend.rainwave import playlist
-from backend.rainwave.playlist_objects.song import PassableScanError
+from common.rainwave import playlist
+from common.rainwave.playlist_objects.song import PassableScanError
 
 mimetypes.init()
 
