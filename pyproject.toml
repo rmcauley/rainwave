@@ -11,7 +11,7 @@ dependencies = [
     "ipython~=8.24.0",
     "libsass>=0.23.0",
     "mutagen==1.47.0",
-    "pillow~=10.3.0",
+    "pillow~=12.1.1",
     "psutil~=5.9.8",
     "psycopg2-binary~=2.9.9",
     "pygobject~=3.50.0",
