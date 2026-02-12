@@ -22,6 +22,7 @@ var RainwavePlayer = (function () {
     3: ["https://relay.rainwave.cc/covers"],
     4: ["https://relay.rainwave.cc/chiptune"],
     5: ["https://relay.rainwave.cc/all"],
+    6: ["https://relay.rainwave.cc/chill"],
   };
 
   // these friendly names make it easier to use the library as opposed to remembering numbers
@@ -36,6 +37,7 @@ var RainwavePlayer = (function () {
     "chiptune": 4,
     "chiptunes": 4,
     "all": 5,
+    "chill": 6
   };
 
   var self = {};
