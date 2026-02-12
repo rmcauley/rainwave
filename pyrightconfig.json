@@ -1,7 +1,7 @@
 {
   "stubPath": "src/typestubs",
   "include": ["src/**/*.py"],
-  "exclude": ["**/__pycache__", "src/typestubs", "src/frontend"],
+  "exclude": ["**/__pycache__", "src/frontend", "**/node_modules", "**/.*", ".venv"],
   "typeCheckingMode": "strict",
   "strict": ["src/**/*.py"],
   "reportMissingModuleSource": "none"

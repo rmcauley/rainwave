@@ -41,5 +41,5 @@ dev = [
 
 [tool.mypy]
 files = "src/**/*.py"
-mypy_path = ["src/typestubs"]
+mypy_path = ["src", "src/typestubs"]
 exclude = ["src/frontend"]

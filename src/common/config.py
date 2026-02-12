@@ -5,6 +5,7 @@ from typing import TypedDict, TypeAlias
 
 class StationConfig(TypedDict):
     name: str
+    description: str
     stream_filename: str
     num_planned_elections: int
     songs_in_election: int
@@ -41,6 +42,7 @@ class RelayConfig(TypedDict):
     listclients_url: str
     admin_username: str
     admin_password: str
+    source_password: str
     sids: list[int]
 
 
@@ -171,6 +173,8 @@ stations: StationsConfig = {
     1: {
         # Station name to display to users
         "name": "Station",
+        # Shows on Icecast servers and directories
+        "description": "",
         # If your audio is at http://icecast/station.mp3, enter 'station' here.
         # This is your 'mount' option in Icecast/LiquidSoap minus .mp3.
         # This is also the directory your station will show under your primary host.
@@ -213,6 +217,8 @@ stations: StationsConfig = {
     2: {
         # Station name to display to users
         "name": "Station 2",
+        # Shows on Icecast servers and directories
+        "description": "",
         # If your audio is at http://icecast/station.mp3, enter 'station' here.
         # This is your 'mount' option in Icecast/LiquidSoap minus .mp3.
         # This is also the directory your station will show under your primary host.
@@ -267,6 +273,7 @@ relays: "RelaysConfig" = {
         "listclients_url": "/admin/listclients",
         "admin_username": "admin",
         "admin_password": "admin",
+        "source_password": "source",
         "sids": [1],
     }
 }
@@ -329,7 +336,7 @@ csp_header = ";".join(
 station_list = {}
 station_mounts = {}
 for station_id, station in stations.items():
-    station_list[station_id] = {
+    station_list[str(station_id)] = {
         "id": station_id,
         "name": station_id_friendly[station_id],
         "url": "{}{}/".format(base_site_url, station_mount_filenames[station_id]),

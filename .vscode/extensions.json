@@ -2,7 +2,6 @@
   "recommendations": [
     "ms-python.black-formatter",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "andrejunges.handlebars"
+    "esbenp.prettier-vscode"
   ]
 }
