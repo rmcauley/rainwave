@@ -28,11 +28,11 @@ $station_select_width: 270px;
 
   &.open {
     width: $station_select_width * 1.8;
-    height: ($station_height * 5) + $menu_height;
+    height: ($station_height * 6) + $menu_height;
 
     @media ($phone-media) {
       width: 150px;
-      height: ($phone_menu_height * 5) + $phone_menu_height;
+      height: ($phone_menu_height * 6) + $phone_menu_height;
     }
   }
 
@@ -225,7 +225,7 @@ $station_select_width: 270px;
       border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    @for $i from 2 through 6 {
+    @for $i from 2 through 7 {
       &:nth-of-type(#{$i}) {
         z-index: 6 - $i;
         @include transform(
@@ -252,7 +252,7 @@ $station_select_width: 270px;
     }
 
     @media ($phone-media) {
-      @for $i from 2 through 6 {
+      @for $i from 2 through 7 {
         &:nth-of-type(#{$i}) {
           @include transform(
             translateY($phone_menu_height + ($phone_menu_height * ($i - 2)))

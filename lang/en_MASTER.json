@@ -102,6 +102,7 @@
    "station_name_3"                                  : "Covers",
    "station_name_4"                                  : "Chiptune",
    "station_name_5"                                  : "All",
+   "station_name_6"                                  : "Chill (Preview)",
 
    "forums"                                          : "Forums",
    "login"                                           : "Login",
@@ -311,6 +312,7 @@
    "station_description_id_3"                        : "Video game official and fan-made remixes, streaming 24/7.  Vote for your favourite artists!",
    "station_description_id_4"                        : "Video game and original chiptune soudtracks, streaming 24/7.  Vote for the songs you want to hear!",
    "station_description_id_5"                        : "Video game music online radio, including remixes and original soundtracks!  Vote for the songs you want to hear!",
+   "station_description_id_6"                        : "Chill and relaxing video game music radio, both original and covers.",
 
    "__comment__"                 : "Station Descriptions For The Menu (short messages)",
 
@@ -319,6 +321,7 @@
    "station_menu_description_id_3"                   : "Official and fan-made remixes.",
    "station_menu_description_id_4"                   : "Bleeps and bloops, from games and more.",
    "station_menu_description_id_5"                   : "All games and remixes from our library.",
+   "station_menu_description_id_6"                   : "Calm music from games, and cozy covers.",
    "now_playing_on_..."                              : "Now Playing On %(station)",
 
    "__comment__"                 : "Preferences",
