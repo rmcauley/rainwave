@@ -15,7 +15,7 @@ from libs import cache
 from common.libs import db
 
 from common.rainwave import playlist
-from common.rainwave.playlist_objects.song import PassableScanError
+
 
 mimetypes.init()
 

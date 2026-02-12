@@ -1,13 +1,17 @@
-from typing import TypedDict
+from dataclasses import dataclass
 from mutagen.mp3 import MP3, _Tags as Tags  # pyright: ignore[reportPrivateUsage]
 
+from scanner.exceptions import (
+    NonFatalScannerError,
+)
 
-# Usable if you want to throw an exception on a file but still continue scanning other files.
-class PassableScanError(Exception):
+
+class MissingID3TagError(NonFatalScannerError):
     pass
 
 
-class TagsFromFile(TypedDict):
+@dataclass
+class TagsFromFile:
     title: str
     album: str
     artist: str
@@ -37,7 +41,7 @@ def load_tag_from_file(filename: str) -> TagsFromFile:
         f = MP3(mp3file, translate=False)
 
         if not f.tags:
-            raise PassableScanError('Song filename "%s" has no tags.' % filename)
+            raise MissingID3TagError('Song filename "%s" has no tags.' % filename)
 
         title = get_tag(f.tags, "TIT2")
         artist = get_tag(f.tags, "TPE1")
@@ -48,18 +52,18 @@ def load_tag_from_file(filename: str) -> TagsFromFile:
         length = int(f.info.length)
 
     if title is None:
-        raise PassableScanError(f'Song filename "{filename}" has no title tag.')
+        raise MissingID3TagError(f'Song filename "{filename}" has no title tag.')
     if artist is None:
-        raise PassableScanError(f'Song filename "{filename}" has no artist tag.')
+        raise MissingID3TagError(f'Song filename "{filename}" has no artist tag.')
     if album is None:
-        raise PassableScanError(f'Song filename "{filename}" has no album tag.')
+        raise MissingID3TagError(f'Song filename "{filename}" has no album tag.')
 
-    return {
-        "album": album,
-        "artist": artist,
-        "comment": comment,
-        "genre": genre,
-        "length": length,
-        "title": title,
-        "url": url,
-    }
+    return TagsFromFile(
+        album=album,
+        artist=artist,
+        comment=comment,
+        genre=genre,
+        length=length,
+        title=title,
+        url=url,
+    )

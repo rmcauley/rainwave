@@ -1,0 +1,2 @@
+class NonFatalScannerError(Exception):
+    pass
