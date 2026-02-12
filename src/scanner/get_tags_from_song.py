@@ -18,7 +18,7 @@ class TagsFromFile(TypedDict):
 
 
 def get_tag(tags: Tags, tag: str) -> str | None:
-    frame = tags.getall("TIT2")
+    frame = tags.getall(tag)
     if len(frame) > 0 and len(str(frame[-1]).strip()) > 0:
         return str(frame[-1]).strip()
     return None
