@@ -131,13 +131,14 @@ function rainwaveInit() {
   // 	5: { "album": "All Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "All Test Song" },
   // };
 
-  var order = [5, 1, 4, 2, 3];
+  var order = [5, 1, 4, 2, 3, 6];
   var colors = {
     1: "#1f95e5", // Rainwave blue
     2: "#de641b", // OCR Orange
     3: "#b7000f", // Red
     4: "#6e439d", // Indigo
     5: "#a8cb2b", // greenish
+    6: "#186E75"
   };
   for (var i = 0; i < order.length; i++) {
     if (BOOTSTRAP.station_list[order[i]]) {

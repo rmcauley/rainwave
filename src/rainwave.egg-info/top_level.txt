@@ -1,0 +1,7 @@
+backend
+scanner
+song_change_api
+tests
+tools
+typestubs
+web_api
