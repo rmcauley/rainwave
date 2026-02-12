@@ -1,5 +1,4 @@
 import os
-import codecs
 import orjson
 import tornado.escape
 
@@ -16,7 +15,7 @@ lang_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "lang")
 
 
 def get_translation_file(filename: str) -> RainwaveTranslationFile:
-    with codecs.open(
+    with open(
         os.path.join(lang_dir, filename),
         "r",
         encoding="utf-8",

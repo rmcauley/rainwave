@@ -1,5 +1,5 @@
 from typing import TypedDict
-from mutagen.mp3 import MP3
+from mutagen.mp3 import MP3, _Tags as Tags  # pyright: ignore[reportPrivateUsage]
 
 
 # Usable if you want to throw an exception on a file but still continue scanning other files.
@@ -17,6 +17,13 @@ class TagsFromFile(TypedDict):
     length: int
 
 
+def get_tag(tags: Tags, tag: str) -> str | None:
+    frame = tags.getall("TIT2")
+    if len(frame) > 0 and len(str(frame[-1]).strip()) > 0:
+        return str(frame[-1]).strip()
+    return None
+
+
 def load_tag_from_file(filename: str) -> TagsFromFile:
     title: str | None = None
     album: str | None = None
@@ -32,30 +39,12 @@ def load_tag_from_file(filename: str) -> TagsFromFile:
         if not f.tags:
             raise PassableScanError('Song filename "%s" has no tags.' % filename)
 
-        title_frame = f.tags.getall("TIT2")
-        if len(title_frame) > 0 and len(str(title_frame[0])) > 0:
-            title = str(title_frame[0]).strip()
-
-        artist_frame = f.tags.getall("TPE1")
-        if len(artist_frame) > 0 and len(str(artist_frame[0])) > 0:
-            artist = str(artist_frame[0]).strip()
-
-        album_frame = f.tags.getall("TALB")
-        if len(album_frame) > 0 and len(str(album_frame[0]).strip()) > 0:
-            album = str(album_frame[0]).strip()
-
-        genre_frame = f.tags.getall("TCON")
-        if len(genre_frame) > 0 and len(str(genre_frame[0])) > 0:
-            genre = str(genre_frame[0]).strip()
-
-        comment_frame = f.tags.getall("COMM")
-        if len(comment_frame) > 0 and len(str(comment_frame[0])) > 0:
-            comment = str(comment_frame[0]).strip()
-
-        url_frame = f.tags.getall("WXXX")
-        if len(url_frame) > 0 and len(str(url_frame[0])) > 0:
-            url = str(url_frame[0]).strip()
-
+        title = get_tag(f.tags, "TIT2")
+        artist = get_tag(f.tags, "TPE1")
+        album = get_tag(f.tags, "TALB")
+        genre = get_tag(f.tags, "TCON")
+        comment = get_tag(f.tags, "COMM")
+        url = get_tag(f.tags, "WXXX")
         length = int(f.info.length)
 
     if title is None:

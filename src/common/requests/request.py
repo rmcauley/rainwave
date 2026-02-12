@@ -1,12 +1,26 @@
+from psycopg import sql
 from time import time as timestamp
 from typing import Any
-from common.libs import db
 from common.cache import cache
-from libs import log
-from common.rainwave import playlist
-from common.user.user_model import make_user
+from common.libs import log
 
-LINE_SQL = "SELECT COALESCE(radio_username, username) AS username, user_id, line_expiry_tune_in, line_expiry_election, line_wait_start, line_has_had_valid FROM r4_request_line JOIN phpbb_users USING (user_id) WHERE r4_request_line.sid = %s AND radio_requests_paused = FALSE ORDER BY line_wait_start"
+LINE_SQL = sql.SQL(
+    """
+    SELECT 
+        COALESCE(radio_username, username) AS username, 
+        user_id, 
+        line_expiry_tune_in, 
+        line_expiry_election, 
+        line_wait_start, 
+        line_has_had_valid 
+    FROM r4_request_line 
+        JOIN phpbb_users USING (user_id) 
+    WHERE 
+        r4_request_line.sid = {sid}
+        AND radio_requests_paused = FALSE 
+    ORDER BY line_wait_start
+"""
+).format({"sid": sql.Placeholder(name="sid")})
 
 
 def update_line(sid: int) -> None:

@@ -41,7 +41,10 @@ def publish(dct: dict[str, Any]) -> None:
 
 
 def init_proxy() -> None:
-    td = zmq.devices.ThreadDevice(zmq.FORWARDER, zmq.SUB, zmq.PUB)
+    # zmq exports this for use but pyright doesn't see this correctly
+    td = zmq.devices.ThreadDevice(  # pyright: ignore[reportPrivateImportUsage]
+        zmq.FORWARDER, zmq.SUB, zmq.PUB
+    )
 
     td.bind_in(config.zeromq_pub)
     td.setsockopt_in(zmq.IDENTITY, b"SUB")
