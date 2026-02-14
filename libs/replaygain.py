@@ -1,56 +1,65 @@
+import math
 import subprocess
-
-# from gi.repository import GLib
-# from rgain3 import rgcalc, util
-# from rgain3.script import init_gstreamer
-
-from libs import config
-
-ref_level = 89
-# init_gstreamer()
+from libs import log
 
 
-def get_gain_for_song(file):
-    if config.has("disable_replaygain") and config.get("disable_replaygain"):
-        return "0.0 dB"
+def _decode_subprocess_output(output: bytes) -> str | None:
+    if output is None:
+        return None
+    if isinstance(output, str):
+        return output
+    if isinstance(output, bytes):
+        return output.decode(errors="replace")
+    return None
 
-    output = subprocess.run(
-        ["replaygain", "-d", f"-r {ref_level}", f"{file}"],
-        capture_output=True,
-        check=True,
-    )
-    gain_line = next(
-        line for line in output.stdout.decode().split("\\n") if "dB" in line
-    )
-    gain = gain_line.split(":")[-1].strip().split("\n")[0]
-    return gain
 
-    # this code below would be better but does not close file handlers and crashes RW eventually
+def get_gain_for_song(filename: str) -> str:
+    # rsgain 3.6 options:
+    #   custom       Custom scanning (as opposed to easy which writes tags)
+    #   tagmode=s    Scan files but don't write ReplayGain tags
+    #   output       Output tab-delimited scan data to stdout
+    #   quiet        Don't print scanning status messages.
+    stdout: str | None = None
+    stderr: str | None = None
+    try:
+        output = subprocess.run(
+            ["rsgain", "custom", "--tagmode=s", "--output", "--quiet", filename],
+            capture_output=True,
+            check=True,
+        )
+        stdout = _decode_subprocess_output(output.stdout)
+        stderr = _decode_subprocess_output(output.stderr)
 
-    # mostly copy/pasted from rgain3 source
-    # adapted for Rainwave usage
+        # Sample output from rsgain 3.6 at time of writing (Feb 2026):
+        # Filename        Loudness (LUFS) Gain (dB)       Peak     Peak (dB)      Peak Type       Clipping Adjustment?
+        # 101 - No Matter the Distance... (Game Opening ver.).mp3 -10.96  -7.04   0.926971        -0.66   Sample  N
 
-    # exceptions = []
+        # According to that sample output, we get the 3rd tab from the last line of output.
+        # Convert it to float and ensure it's finite so invalid values throw.
+        if not stdout:
+            raise ValueError("rsgain did not return any stdout.")
+        fields = stdout.strip().splitlines()[-1].split("\t")
+        if len(fields) < 3:
+            raise ValueError(f"rsgain returned unexpected output row: {fields!r}")
+        value = float(fields[2].strip())
+        if not math.isfinite(value):
+            raise ValueError(f"rsgain returned non-finite gain value: {value!r}")
 
-    # # handlers
-    # def on_finished(evsrc, trackdata, albumdata):
-    #     loop.quit()
-
-    # def on_error(evsrc, exc):
-    #     exceptions.append(exc)
-    #     loop.quit()
-
-    # rg = rgcalc.ReplayGain([file], True, ref_level)
-    # with util.gobject_signals(
-    #     rg,
-    #     ("all-finished", on_finished),
-    #     ("error", on_error),
-    # ):
-    #     loop = GLib.MainLoop()
-    #     rg.start()
-    #     loop.run()
-
-    # if exceptions:
-    #     raise exceptions[0]
-
-    # return "%0.2f dB" % rg.track_data.popitem()[1].gain
+        # Now we need to add " dB" because this is what our previous replaygain solution did.
+        return f"{value} dB"
+    except subprocess.CalledProcessError as e:
+        stdout = _decode_subprocess_output(e.stdout)
+        stderr = _decode_subprocess_output(e.stderr)
+        log.exception(
+            "replaygain",
+            f"Error scanning replaygain for {filename}. stdout={stdout!r} stderr={stderr!r}",
+            e,
+        )
+        raise
+    except Exception as e:
+        log.exception(
+            "replaygain",
+            f"Error parsing replaygain for {filename}. stdout={stdout!r} stderr={stderr!r}",
+            e,
+        )
+        raise
