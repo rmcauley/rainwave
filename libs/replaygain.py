@@ -46,6 +46,7 @@ def get_gain_for_song(filename: str) -> str:
             raise ValueError(f"rsgain returned non-finite gain value: {value!r}")
 
         # Now we need to add " dB" because this is what our previous replaygain solution did.
+        log.debug("replaygain", f"{filename} RG: {value}")
         return f"{value} dB"
     except subprocess.CalledProcessError as e:
         stdout = _decode_subprocess_output(e.stdout)
