@@ -232,7 +232,6 @@ async def create_tables() -> None:
         )
         await create_index(cursor, "r4_songs", ["song_verified"])
         await create_index(cursor, "r4_songs", ["song_rating"])
-        await create_index(cursor, "r4_songs", ["song_request_count"])
         await create_null_fk(cursor, "r4_songs", "r4_albums", "album_id")
         await cursor.update(
             "CREATE INDEX song_title_trgm_gin ON r4_songs USING GIN(song_title_searchable gin_trgm_ops)"

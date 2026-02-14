@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from psycopg import sql
 
@@ -17,8 +17,26 @@ class RequestLineSqlRow(TypedDict):
     tuned_in_sid: int | None
 
 
+# remove = await remove_user_from_request_line(cursor, user_id)
+# put_to_back_of_line = await put_user_to_back_of_request_line
+# set_request_line_entry_has_had_valid_true = set_request_line_entry_has_had_valid_true
+# update_request_line_expiry_election = update_request_line_expiry_election
+# update_request_line_entry_expiry_tune_in = update_request_line_entry_expiry_tune_in
+RequestLineEntryAction = Literal[
+    "remove",
+    "put_to_back_of_line",
+    "set_request_line_entry_has_had_valid_true",
+    "update_request_line_expiry_election",
+    "update_request_line_entry_expiry_tune_in",
+    "fulfill",
+]
+
+
 class RequestLineEntry(RequestLineSqlRow):
-    song: TopRequestSongRow
+    song: TopRequestSongRow | None
+    skip: bool
+    position: int
+    actions_to_take: set[RequestLineEntryAction]
 
 
 LINE_SQL = sql.SQL(

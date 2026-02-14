@@ -41,7 +41,6 @@ class SongOnStationRow(TypedDict):
     song_rating: float
     song_rating_count: int
     song_fave_count: int
-    song_request_count: int
     song_cool_multiply: int
     song_cool_override: int
     song_file_mtime: int
