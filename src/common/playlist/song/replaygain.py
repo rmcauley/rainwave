@@ -3,14 +3,12 @@ import subprocess
 from libs import log
 
 
-def _decode_subprocess_output(output: bytes) -> str | None:
+def _decode_subprocess_output(output: bytes | str | None) -> str | None:
     if output is None:
         return None
     if isinstance(output, str):
         return output
-    if isinstance(output, bytes):
-        return output.decode(errors="replace")
-    return None
+    return output.decode(errors="replace")
 
 
 def get_gain_for_song(filename: str) -> str:
