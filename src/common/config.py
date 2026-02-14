@@ -23,12 +23,10 @@ class StationConfig(TypedDict):
     cooldown_song_min_multiplier: float
     cooldown_song_max_multiplier: float
     cooldown_request_only_period: int
-    cooldown_enable_for_categories: bool
     stream_suffix: str
     tunein_partner_key: str | None
-    tunein_partner_id: int
-    tunein_id: int
-    directories: list[str]
+    tunein_partner_id: str | None
+    tunein_id: str | None
 
 
 StationsConfig: TypeAlias = dict[int, StationConfig]
@@ -72,6 +70,9 @@ web_api_url = "127.0.0.1"
 # Start the web API at this port, increase by 1 for each process spawned.
 web_api_base_port = 20000
 
+# How many web processes (not threads) to start
+web_api_num_processes = 4
+
 # What IPs do connections from the backend (music) come from as the API (web) sees it?
 # If everything is on the same machine, leave it at this!
 web_api_trusted_ip_addresses = ["127.0.0.1", ":1"]
@@ -89,13 +90,16 @@ websocket_host = None
 # Set to * to allow from anywhere.
 websocket_allow_from = "localhost"
 
+
 # Base URL of your site.
 hostname = "localhost"
 base_site_url = "http://localhost/"
+# Set cookie_domain to blank for localhost.
+cookie_domain = ""
 enforce_ssl = False
 
-# Backend configuration.
-song_change_api_port = 21000
+# Base port of the song changing API listener
+backend_port = 21000
 
 # Database configuration
 db_name = "rainwave"
@@ -149,12 +153,6 @@ cooldown_age_stage2_start = 1
 cooldown_age_stage2_min_multiplier = 0.7
 cooldown_age_stage1_min_multiplier = 0.4
 
-# Set to True if using LiquidSoap.
-liquidsoap_annotations = False
-
-# Set cookie_domain to blank for localhost.
-cookie_domain = ""
-
 # Accept automated Javascript error reports from these hosts. (spam prevention)
 # hostname configuration directive is automatically included.
 accept_error_reports_from_hosts = ["localhost"]
@@ -203,16 +201,12 @@ stations: StationsConfig = {
         "cooldown_song_min_multiplier": 0.3,
         "cooldown_song_max_multiplier": 3.3,
         "cooldown_request_only_period": 1800,
-        # Enable cooldowns for categrories.
-        "cooldown_enable_for_categories": True,
         # Suffix to add to song titles when using LiquidSoap.
         "stream_suffix": " [Rainwave]",
         # Use if you have an entry on TuneIn.com that you want updated
         "tunein_partner_key": None,
-        "tunein_partner_id": 0,
-        "tunein_id": 0,
-        # What directories are MP3 files in for this station?
-        "directories": ["/home/radio/music"],
+        "tunein_partner_id": None,
+        "tunein_id": None,
     },
     2: {
         # Station name to display to users
@@ -247,16 +241,12 @@ stations: StationsConfig = {
         "cooldown_song_min_multiplier": 0.3,
         "cooldown_song_max_multiplier": 3.3,
         "cooldown_request_only_period": 1800,
-        # Enable cooldowns for categrories.
-        "cooldown_enable_for_categories": True,
         # Suffix to add to song titles when using LiquidSoap.
         "stream_suffix": " [Station 2]",
         # Use if you have an entry on TuneIn.com that you want updated
         "tunein_partner_key": None,
-        "tunein_partner_id": 0,
-        "tunein_id": 0,
-        # What directories are MP3 files in for this station?
-        "directories": [],
+        "tunein_partner_id": None,
+        "tunein_id": None,
     },
 }
 
@@ -264,7 +254,7 @@ default_station = 1
 
 # Used for whitelisting API requests from relays and obtaining statistics.
 # Also used to generate accurate M3U files containing all relays.
-relays: "RelaysConfig" = {
+relays: RelaysConfig = {
     "sample": {
         "hostname": "mydomain.com",
         "ip_address": "127.0.0.1",
@@ -278,7 +268,12 @@ relays: "RelaysConfig" = {
     }
 }
 
-build_number = 0
+song_dirs = {
+    "/home/rainwave/music": [1],
+}
+monitor_dir = "/home/rainwave/music"
+
+# Everything below here is calculated based on the above, no more hand-configuration necessary.
 
 station_ids: set[int] = set(k for k in stations.keys())
 station_id_friendly: dict[int, str] = {sid: v["name"] for (sid, v) in stations.items()}
@@ -317,8 +312,6 @@ for sid in station_ids:
     public_relays_json[sid] = orjson.dumps(public_relays[sid])
 
 # Generate the CSP header to send to browsers
-hostname = hostname
-websocket_host = websocket_host
 relay_hosts = " ".join(relay_hostnames)
 csp_header = ";".join(
     [

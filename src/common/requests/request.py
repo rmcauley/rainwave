@@ -1,144 +1,142 @@
-from psycopg import sql
 from time import time as timestamp
-from typing import Any
 from common.cache import cache
+from common.db.cursor import RainwaveCursor, RainwaveCursorTx
 from common.libs import log
-
-LINE_SQL = sql.SQL(
-    """
-    SELECT 
-        COALESCE(radio_username, username) AS username, 
-        user_id, 
-        line_expiry_tune_in, 
-        line_expiry_election, 
-        line_wait_start, 
-        line_has_had_valid 
-    FROM r4_request_line 
-        JOIN phpbb_users USING (user_id) 
-    WHERE 
-        r4_request_line.sid = {sid}
-        AND radio_requests_paused = FALSE 
-    ORDER BY line_wait_start
-"""
-).format({"sid": sql.Placeholder(name="sid")})
+from common.requests.put_user_in_request_line import put_user_in_request_line
+from common.requests.get_user_request_count import get_request_count_for_any_station
+from common.requests.get_user_top_request import (
+    TopRequestSongRow,
+    get_top_request_song,
+)
+from common.requests.remove_user_from_request_line import remove_user_from_request_line
+from common.requests.request_line_types import RequestLineSqlRow
+from common.requests.request_user_positions import RequestUserPositions
 
 
-def update_line(sid: int) -> None:
-    # Get everyone in the line
-    line = await cursor.fetch_all(LINE_SQL, (sid,))
-    _process_line(line, sid)
-
-
-def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
-    new_line = []
+async def _process_line(
+    cursor: RainwaveCursor | RainwaveCursorTx, sid: int, line: list[RequestLineSqlRow]
+) -> list[RequestLineSqlRow]:
     # user_positions has user_id as a key and position as the value, this is cached for quick lookups by API requests
     # so users know where they are in line
-    user_positions: dict[int, int] = {}
-    t = int(timestamp())
-    albums_with_requests = []
+    user_positions: RequestUserPositions = {}
+
+    new_line = []
+    process_time = int(timestamp())
+    albums_with_requests: set[int] = set()
     position = 1
     user_viewable_position = 1
     valid_positions = 0
-    # For each person
+
+    # For each person in line
     for row in line:
+        user_id = row["user_id"]
         add_to_line = False
-        u = make_user(row["user_id"])
-        row["song_id"] = None
+        top_request: TopRequestSongRow | None = None
+
         # If their time is up, remove them and don't add them to the new line
-        if row["line_expiry_tune_in"] and row["line_expiry_tune_in"] <= t:
+        if row["line_expiry_tune_in"] and row["line_expiry_tune_in"] <= process_time:
             log.debug(
                 "request_line",
                 "%s: Removed user ID %s from line for tune in timeout, expiry time %s current time %s"
-                % (sid, u.id, row["line_expiry_tune_in"], t),
+                % (sid, user_id, row["line_expiry_tune_in"], process_time),
             )
-            u.remove_from_request_line()
-        else:
-            tuned_in_sid = await cursor.fetch_var(
-                "SELECT sid FROM r4_listeners WHERE user_id = %s AND sid = %s AND listener_purge = FALSE",
-                (u.id, sid),
+            await remove_user_from_request_line(cursor, user_id)
+        # If the station they're tuned in to matches the station of the line we're processing
+        elif row["tuned_in_sid"] == sid:
+            # Get their top song ID
+            top_request = await get_top_request_song(
+                cursor, user_id, sid
             )
-            tuned_in = True if tuned_in_sid == sid else False
-            if tuned_in:
-                # Get their top song ID
-                song_id = u.get_top_request_song_id(sid)
-                if song_id and not row["line_has_had_valid"]:
-                    row["line_has_had_valid"] = True
-                    await cursor.update(
-                        "UPDATE r4_request_line SET line_has_had_valid = TRUE WHERE user_id = %s",
-                        (u.id,),
-                    )
-                if row["line_has_had_valid"]:
-                    valid_positions += 1
-                # If they have no song and their line expiry has arrived, boot 'em
+
+            if top_request and not row["line_has_had_valid"]:
+                row["line_has_had_valid"] = True
+                await cursor.update(
+                    "UPDATE r4_request_line SET line_has_had_valid = TRUE WHERE user_id = %s",
+                    (user_id,),
+                )
+            if row["line_has_had_valid"]:
+                valid_positions += 1
+
+            # If they have no song and their line expiry has arrived, boot 'em
+            if (
+                not top_request
+                and row["line_expiry_election"]
+                and (row["line_expiry_election"] <= process_time)
+            ):
+                log.debug(
+                    "request_line",
+                    "%s: Removed user ID %s from line for election timeout, expiry time %s current time %s"
+                    % (sid, user_id, row["line_expiry_election"], process_time),
+                )
+                await remove_user_from_request_line(cursor, user_id)
+                # Give them more chances if they still have requests
+                # They'll get added to the line of whatever station they're tuned in to (if any!)
                 if (
-                    not song_id
-                    and row["line_expiry_election"]
-                    and (row["line_expiry_election"] <= t)
+                    await get_request_count_for_any_station(cursor, user_id)
+                    and row["tuned_in_sid"]
                 ):
-                    log.debug(
-                        "request_line",
-                        "%s: Removed user ID %s from line for election timeout, expiry time %s current time %s"
-                        % (sid, u.id, row["line_expiry_election"], t),
+                    await put_user_in_request_line(
+                        cursor,
+                        user_id,
+                        row["user_requests_paused"],
+                        row["tuned_in_sid"],
+                        True if top_request else False,
+                        # Ignore the existing entry, as it's already been deleted so we intentionally
+                        # send them to the back of the line.
+                        existing_line_entry=None,
                     )
-                    u.remove_from_request_line()
-                    # Give them more chances if they still have requests
-                    # They'll get added to the line of whatever station they're tuned in to (if any!)
-                    if u.has_requests():
-                        u.put_in_request_line(u.get_tuned_in_sid())
-                # If they have no song and they're in 2nd or 1st, start the expiry countdown
-                elif not song_id and not row["line_expiry_election"] and position <= 2:
-                    log.debug(
-                        "request_line",
-                        "%s: User ID %s has no valid requests, beginning boot countdown."
-                        % (sid, u.id),
-                    )
-                    row["line_expiry_election"] = t + 900
-                    await cursor.update(
-                        "UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s",
-                        ((t + 900), row["user_id"]),
-                    )
-                    add_to_line = True
-                # Keep 'em in line
-                else:
-                    log.debug(
-                        "request_line", "%s: User ID %s is in line." % (sid, u.id)
-                    )
-                    if song_id:
-                        albums_with_requests.append(
-                            await cursor.fetch_var(
-                                "SELECT album_id FROM r4_songs WHERE song_id = %s",
-                                (song_id,),
-                            )
-                        )
-                        row["song"] = await cursor.fetch_row(
-                            "SELECT song_id AS id, song_title AS title, album_name FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_id = %s",
+            # If they have no song and they're in 2nd or 1st, start the expiry countdown
+            elif not top_request and not row["line_expiry_election"] and position <= 2:
+                log.debug(
+                    "request_line",
+                    "%s: User ID %s has no valid requests, beginning boot countdown."
+                    % (sid, user_id),
+                )
+                row["line_expiry_election"] = process_time + 900
+                await cursor.update(
+                    "UPDATE r4_request_line SET line_expiry_election = %s WHERE user_id = %s",
+                    ((process_time + 900), row["user_id"]),
+                )
+                add_to_line = True
+            # Keep 'em in line
+            else:
+                log.debug("request_line", "%s: User ID %s is in line." % (sid, user_id))
+                if top_request:
+                    albums_with_requests.add(top_request['album_id'])
+                        await cursor.fetch_var(
+                            "SELECT album_id FROM r4_songs WHERE song_id = %s",
                             (song_id,),
                         )
-                    else:
-                        row["song"] = None
-                    row["song_id"] = song_id
-                    add_to_line = True
-            elif not row["line_expiry_tune_in"] or row["line_expiry_tune_in"] == 0:
-                log.debug(
-                    "request_line",
-                    "%s: User ID %s being marked as tuned out." % (sid, u.id),
-                )
-                await cursor.update(
-                    "UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s",
-                    ((t + 600), row["user_id"]),
-                )
+                    )
+                    row["song"] = await cursor.fetch_row(
+                        "SELECT song_id AS id, song_title AS title, album_name FROM r4_songs JOIN r4_albums USING (album_id) WHERE song_id = %s",
+                        (song_id,),
+                    )
+                else:
+                    row["song"] = None
+                row["song_id"] = song_id
                 add_to_line = True
-            else:
-                log.debug(
-                    "request_line",
-                    "%s: User ID %s not tuned in, waiting on expiry for action."
-                    % (sid, u.id),
-                )
-                add_to_line = True
+        elif not row["line_expiry_tune_in"] or row["line_expiry_tune_in"] == 0:
+            log.debug(
+                "request_line",
+                "%s: User ID %s being marked as tuned out." % (sid, user_id),
+            )
+            await cursor.update(
+                "UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s",
+                ((process_time + 600), row["user_id"]),
+            )
+            add_to_line = True
+        else:
+            log.debug(
+                "request_line",
+                "%s: User ID %s not tuned in, waiting on expiry for action."
+                % (sid, user_id),
+            )
+            add_to_line = True
         row["skip"] = not add_to_line
         row["position"] = user_viewable_position
         new_line.append(row)
-        user_positions[u.id] = user_viewable_position
+        user_positions[user_id] = user_viewable_position
         user_viewable_position = user_viewable_position + 1
         if add_to_line:
             position = position + 1
@@ -159,6 +157,12 @@ def _process_line(line: list[dict[str, Any]], sid: int) -> list[dict[str, Any]]:
         )
 
     return new_line
+
+
+async def update_line(sid: int) -> None:
+    # Get everyone in the line
+    line = await cursor.fetch_all(LINE_SQL, (sid,))
+    _process_line(line, sid)
 
 
 def get_next_entry(

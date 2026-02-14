@@ -14,7 +14,7 @@ from common.playlist.album.model.album import Album
 from common.playlist.artist.artist import Artist
 from common.playlist.song.get_groups_for_song import get_groups_for_song
 from common.playlist.song.get_album_for_song import get_album_for_song
-from common.playlist.song.get_tags_from_song import load_tag_from_file
+from scanner.get_tags_from_song import load_tag_from_file
 from common.playlist.song.model.song_on_station import ArtistParseable
 from common.playlist.song.replaygain import get_gain_for_song
 from common.playlist.song_group.song_group import SongGroup
@@ -121,10 +121,10 @@ class SongFile:
 
         tags = load_tag_from_file(self.filename)
 
-        album = await Album.upsert(cursor, tags["album"])
+        album = await Album.upsert(cursor, tags.album)
         artists = [
             await Artist.upsert(cursor, artist.strip())
-            for artist in tags["artist"].split(",")
+            for artist in tags.artist.split(",")
         ]
         artist_parseable: list[ArtistParseable] = [
             {"id": artist.data["artist_id"], "name": artist.data["artist_name"]}
@@ -134,26 +134,26 @@ class SongFile:
         groups = (
             [
                 await SongGroup.upsert(cursor, group.strip())
-                for group in tags["genre"].split(",")
+                for group in tags.genre.split(",")
             ]
-            if tags["genre"]
+            if tags.genre
             else []
         )
 
         to_upsert: SongInsertDict = {
             "album_id": album.id,
             "song_artist_parseable": str(orjson.dumps(artist_parseable)),
-            "song_artist_tag": tags["artist"],
+            "song_artist_tag": tags.artist,
             "song_file_mtime": int(os.stat(self.filename)[8]),
             "song_filename": self.filename,
-            "song_length": tags["length"],
-            "song_link_text": tags["comment"],
+            "song_length": tags.length,
+            "song_link_text": tags.comment,
             "song_origin_sid": origin_sid,
             "song_replay_gain": get_gain_for_song(self.filename),
             "song_scanned": True,
-            "song_title": tags["title"],
-            "song_title_searchable": remove_diacritics(tags["title"]),
-            "song_url": tags["url"],
+            "song_title": tags.title,
+            "song_title_searchable": remove_diacritics(tags.title),
+            "song_url": tags.url,
             "song_verified": True,
         }
 

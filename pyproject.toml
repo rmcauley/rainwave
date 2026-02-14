@@ -43,3 +43,4 @@ dev = [
 files = "src/**/*.py"
 mypy_path = ["src", "src/typestubs"]
 exclude = ["src/frontend"]
+explicit_package_bases = true

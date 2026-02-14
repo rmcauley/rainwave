@@ -20,11 +20,11 @@ cache.connect()
 conn = None
 params = parse.quote(json.dumps({"sid": args.sid}))
 try:
-    dest_port = config.song_change_api_port
+    dest_port = config.backend_port
     dest_port += int(args.sid)
     timeout = 5 if cache.get_station(args.sid, "backend_ok") else 120
     conn = HTTPConnection(
-        args.dest, config.song_change_api_port + int(args.sid), timeout=timeout
+        args.dest, config.backend_port + int(args.sid), timeout=timeout
     )
     conn.request("GET", "/advance/%s" % args.sid)
     result = conn.getresponse()

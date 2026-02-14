@@ -65,16 +65,6 @@ class UserBase(ABC):
         )
 
     @abstractmethod
-    async def get_request_count_for_station(
-        self, cursor: RainwaveCursor, sid: int
-    ) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def get_request_count_for_any_station(self, cursor: RainwaveCursor) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
     async def get_remaining_request_slots(self, cursor: RainwaveCursor) -> int:
         raise NotImplementedError
 

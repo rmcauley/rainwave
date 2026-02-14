@@ -121,28 +121,6 @@ class RegisteredUser(UserBase):
             },
         )
 
-    async def get_request_count_for_station(
-        self, cursor: RainwaveCursor, sid: int
-    ) -> bool:
-        return (
-            await cursor.fetch_guaranteed(
-                "SELECT COUNT(*) FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND sid = %s",
-                (self.id, sid),
-                default=0,
-                var_type=int,
-            )
-        ) > 0
-
-    async def get_request_count_for_any_station(self, cursor: RainwaveCursor) -> bool:
-        return (
-            await cursor.fetch_guaranteed(
-                "SELECT COUNT(*) FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s",
-                (self.id,),
-                default=0,
-                var_type=int,
-            )
-        ) > 0
-
     async def get_remaining_request_slots(self, cursor: RainwaveCursor) -> int:
         num_reqs = await self.get_request_count_for_any_station(cursor)
         max_reqs = 24 if self.private_data["perks"] else 12
@@ -297,14 +275,6 @@ class RegisteredUser(UserBase):
             > 0
         )
 
-    def remove_from_request_line(self) -> bool:
-        return (
-            await cursor.update(
-                "DELETE FROM r4_request_line WHERE user_id = %s", (self.id,)
-            )
-            > 0
-        )
-
     def is_in_request_line(self) -> bool:
         return (
             await cursor.fetch_var(
@@ -314,13 +284,6 @@ class RegisteredUser(UserBase):
             )
             or 0
         ) > 0
-
-    def get_top_request_song_id(self, sid: int) -> int | None:
-        return await cursor.fetch_var(
-            "SELECT song_id FROM r4_request_store JOIN r4_song_sid USING (song_id) WHERE user_id = %s AND r4_song_sid.sid = %s AND song_exists = TRUE AND song_cool = FALSE AND song_elec_blocked = FALSE ORDER BY reqstor_order, reqstor_id LIMIT 1",
-            (self.id, sid),
-            var_type=int,
-        )
 
     def get_top_request_song_id_any(self, sid: int) -> int | None:
         return await cursor.fetch_var(

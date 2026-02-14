@@ -4,5 +4,11 @@
   "exclude": ["**/__pycache__", "src/frontend", "**/node_modules", "**/.*", ".venv"],
   "typeCheckingMode": "strict",
   "strict": ["src/**/*.py"],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": ["src"]
+    }
+  ],
   "reportMissingModuleSource": "none"
 }
