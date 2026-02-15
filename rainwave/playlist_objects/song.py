@@ -183,11 +183,17 @@ class Song:
 
         # do not get replay gain earlier in case an exception is thrown above
         # it means a lot of wasted CPU time in that scenario
-        s.replay_gain = s.get_replay_gain()
-        db.c.update(
-            "UPDATE r4_songs SET song_replay_gain = %s WHERE song_id = %s",
-            (s.replay_gain, s.id),
-        )
+        if (
+            db.c.fetch_var(
+                "SELECT song_replay_gain FROM r4_songs WHERE song_id = %s", (s.id,)
+            )
+            is None
+        ):
+            s.replay_gain = s.get_replay_gain()
+            db.c.update(
+                "UPDATE r4_songs SET song_replay_gain = %s WHERE song_id = %s",
+                (s.replay_gain, s.id),
+            )
 
         return s
 
