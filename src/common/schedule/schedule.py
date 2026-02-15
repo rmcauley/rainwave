@@ -1,47 +1,30 @@
-import time
-from time import time as timestamp
-import datetime
-import requests
-import tornado.ioloop
-from typing import Any
-
-from backend import sync_to_front
-from common.rainwave import events
-from common.rainwave import playlist
-import rainwave.playlist_objects.album
-from common.rainwave import listeners
-from common.rainwave import request
-from common.rainwave import user
-from common.libs import db
-from common import config
-from common.cache import cache
-from libs import log
-
-from common.rainwave.events import election
-
-# This is to make sure the code gets loaded and producers get registered
-import rainwave.events.oneup
-import rainwave.events.pvpelection
-import rainwave.events.pvpelection_no_cooldown
-import rainwave.events.shortest_election
-import rainwave.events.singlesong
-
-from common.rainwave.events.singlesong import SingleSong
-from common.rainwave.events.event import BaseProducer, BaseEvent
-
-# Events for each station
-current = {}
-upnext = {}
-history = {}
-
-
-class ScheduleIsEmpty(Exception):
-    pass
-
-
-class NoNextEventFound(Exception):
-    pass
-
+async def load_schedule_entry(cls: Type[T], sched_id: int) -> :
+        global all_producers
+        row = await cursor.fetch_row(
+            "SELECT * FROM r4_schedule WHERE sched_id = %s", (sched_id,)
+        )
+        if not row or len(row) == 0:
+            return None
+        p = None
+        if row["sched_type"] in all_producers:
+            p = all_producers[row["sched_type"]](row["sid"])
+        else:
+            raise Exception("Unknown producer type %s." % row["sched_type"])
+        p.id = row["sched_id"]
+        p.start = row["sched_start"]
+        p.start_actual = row["sched_start_actual"]
+        p.end = row["sched_end"]
+        p.end_actual = row["sched_end_actual"]
+        p.name = row["sched_name"]
+        p.public = row["sched_public"]
+        p.timed = row["sched_timed"]
+        p.in_progress = row["sched_in_progress"]
+        p.used = row["sched_used"]
+        p.use_crossfade = row["sched_use_crossfade"]
+        p.use_tag_suffix = row["sched_use_tag_suffix"]
+        p.url = row["sched_url"]
+        p.load()
+        return p
 
 def load() -> None:
     for sid in config.station_ids:

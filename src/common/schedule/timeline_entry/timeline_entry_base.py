@@ -6,10 +6,6 @@ from common.playlist.song.song import Song
 from libs import log
 
 
-class EventAlreadyUsed(Exception):
-    pass
-
-
 class BaseEvent:
     name: str | None
 
