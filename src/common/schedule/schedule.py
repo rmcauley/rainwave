@@ -1,62 +1,3 @@
-async def load_schedule_entry(cls: Type[T], sched_id: int) -> :
-        global all_producers
-        row = await cursor.fetch_row(
-            "SELECT * FROM r4_schedule WHERE sched_id = %s", (sched_id,)
-        )
-        if not row or len(row) == 0:
-            return None
-        p = None
-        if row["sched_type"] in all_producers:
-            p = all_producers[row["sched_type"]](row["sid"])
-        else:
-            raise Exception("Unknown producer type %s." % row["sched_type"])
-        p.id = row["sched_id"]
-        p.start = row["sched_start"]
-        p.start_actual = row["sched_start_actual"]
-        p.end = row["sched_end"]
-        p.end_actual = row["sched_end_actual"]
-        p.name = row["sched_name"]
-        p.public = row["sched_public"]
-        p.timed = row["sched_timed"]
-        p.in_progress = row["sched_in_progress"]
-        p.used = row["sched_used"]
-        p.use_crossfade = row["sched_use_crossfade"]
-        p.use_tag_suffix = row["sched_use_tag_suffix"]
-        p.url = row["sched_url"]
-        p.load()
-        return p
-
-def load() -> None:
-    for sid in config.station_ids:
-        current[sid] = cache.get_station(sid, "sched_current")
-        # If our cache is empty, pull from the DB
-        if not current[sid]:
-            current[sid] = get_event_in_progress(sid)
-        if not current[sid]:
-            raise Exception("Could not load any events!")
-
-        upnext[sid] = cache.get_station(sid, "sched_next")
-        if not upnext[sid]:
-            upnext[sid] = []
-            manage_next(sid)
-
-        history[sid] = cache.get_station(sid, "sched_history")
-        if not history[sid]:
-            history[sid] = []
-            for song_id in await cursor.fetch_list(
-                "SELECT song_id FROM r4_song_history JOIN r4_song_sid USING (song_id, sid) JOIN r4_songs USING (song_id) WHERE sid = %s AND song_exists = TRUE AND song_verified = TRUE ORDER BY songhist_time DESC LIMIT 5",
-                (sid,),
-            ):
-                history[sid].insert(0, SingleSong(song_id, sid))
-            # create a fake history in case clients expect it without checking
-            if not history[sid]:
-                for i in range(1, 5):
-                    history[sid].insert(
-                        0,
-                        SingleSong(playlist.get_random_song_ignore_all(sid), sid),
-                    )
-
-
 def get_event_in_progress(sid: int) -> BaseEvent | None:
     producer = get_current_producer(sid)
     evt = producer.load_event_in_progress()
@@ -176,20 +117,6 @@ def advance_station(sid: int) -> None:
     except:
         await cursor.rollback()
         raise
-
-
-# TODO
-# SONGS DON'T DO COOLDOWN FOR YOU ANYMORE
-# album = await load_album_on_station_from_id(cursor, self.data['album_id'], self.sid)
-# await album.start_cooldown(cursor)
-# OR ELECTION BLOCK
-# for group in await load_groups_from_song_id(cursor, self.id, self.sid):
-#     group = SongGroup(group)
-
-# for metadata in self.groups:
-#     metadata.start_election_block(sid, num_elections)
-# if self.album:
-#     self.album.start_election_block(sid, num_elections)
 
 
 def post_process(sid: int) -> None:

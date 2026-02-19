@@ -7,10 +7,10 @@ import bcrypt
 import aiohttp
 from api.urls import handle_url
 from api.web import HTMLRequest
-from common.libs import db, log
+from common.libs import db
 from tornado.auth import OAuth2Mixin
 
-from common import config
+from common import config, log
 
 from .errors import OAuthNetworkError, OAuthRejectedError
 from .r4_mixin import R4SetupSessionMixin

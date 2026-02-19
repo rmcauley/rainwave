@@ -4,6 +4,8 @@ from pathlib import Path
 import pytest
 from testcontainers.postgres import PostgresContainer
 
+from common import log
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -12,7 +14,7 @@ from common.cache import cache
 from common.libs.db.connection import db_connect
 from common.libs.db.schema import create_tables
 from common.locale import locale as api_locale
-from common.libs import log, zeromq
+from common import zeromq
 from common.playlist import playlist
 from common.schedule import schedule
 from .seed_data import populate_test_data

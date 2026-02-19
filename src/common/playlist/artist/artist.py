@@ -1,8 +1,11 @@
 from typing import TypedDict
 
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
-from common.playlist.metadata import MetadataInsertionError
 from common.playlist.remove_diacritics import remove_diacritics
+
+
+class CouldNotUpsertArtistError(Exception):
+    pass
 
 
 class ArtistRow(TypedDict):
@@ -31,5 +34,5 @@ class Artist:
             row_type=ArtistRow,
         )
         if upserted is None:
-            raise MetadataInsertionError(f"Could not upsert artist with name {name}")
+            raise CouldNotUpsertArtistError(f"Could not upsert artist with name {name}")
         return Artist(upserted)

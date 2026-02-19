@@ -3,7 +3,10 @@ from common.db.cursor import RainwaveCursor, RainwaveCursorTx
 from common.playlist.album.model.album_on_station import (
     AlbumOnStation,
 )
-from common.playlist.metadata import MetadataNotFoundError
+
+
+class AlbumNotFoundError(Exception):
+    pass
 
 
 class AlbumOnStationFullRow(TypedDict):
@@ -32,7 +35,7 @@ class AlbumOnStationFullRow(TypedDict):
     album_art_url: str | None
 
 
-async def load_album_on_station_from_id(
+async def get_album_on_station(
     cursor: RainwaveCursor | RainwaveCursorTx, album_id: int, sid: int
 ) -> AlbumOnStation:
     row = await cursor.fetch_row(
@@ -67,7 +70,7 @@ async def load_album_on_station_from_id(
         row_type=AlbumOnStationFullRow,
     )
     if not row:
-        raise MetadataNotFoundError(
+        raise AlbumNotFoundError(
             "%s ID %s for sid %s could not be found."
             % ("AlbumOnStation", album_id, sid)
         )

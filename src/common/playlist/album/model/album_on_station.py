@@ -4,7 +4,7 @@ import math
 from typing import TypedDict
 
 from common import config
-from common.libs import log
+from common import log
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
 from common.playlist.extra_detail_histogram import (
     RatingHistogram,
@@ -211,25 +211,6 @@ class AlbumOnStation:
         await cursor.update(
             "UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s",
             (timestamp(), self.album_id, self.sid),
-        )
-
-    async def start_election_block(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, num_elections: int
-    ) -> None:
-        # refer to song.set_election_block for base SQL
-        await cursor.update(
-            """
-                UPDATE r4_song_sid
-                SET song_elec_blocked = TRUE,
-                    song_elec_blocked_by = %s,
-                    song_elec_blocked_num = %s
-                FROM r4_songs
-                WHERE r4_song_sid.song_id = r4_songs.song_id
-                    AND album_id = %s
-                    AND sid = %s
-                    AND song_elec_blocked_num <= %s
-""",
-            ("album", num_elections, self.album_id, self.sid, num_elections),
         )
 
     async def load_extra_detail(

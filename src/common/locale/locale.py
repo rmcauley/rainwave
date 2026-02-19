@@ -4,7 +4,7 @@ import tornado.escape
 
 from .locale_types import RainwaveTranslationFile, RainwaveTranslationFileModel
 from .rainwave_locale import RainwaveLocale
-from common.libs import log
+from common import log
 
 en_main = None
 translations: dict[str, RainwaveLocale] = {}

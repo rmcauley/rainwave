@@ -1,17 +1,25 @@
 import os
 from typing import TypedDict
 
-from common.libs import log
+from common import log
 from common import config
 from time import time as timestamp
 
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.playlist.album.start_album_election_block import start_album_election_block
 from common.playlist.extra_detail_histogram import (
     RatingHistogram,
     produce_rating_histogram,
 )
 from common.playlist.get_age_cooldown_multiplier import get_age_cooldown_multiplier
 from common.playlist.cooldown_config import cooldown_config
+from common.playlist.song.start_song_election_block import start_song_election_block
+from common.playlist.song_group.load_groups_from_song_id import (
+    load_groups_for_song_on_station,
+)
+from common.playlist.song_group.start_song_group_election_block import (
+    start_song_group_election_block,
+)
 from common.ratings.rating_calculator import RatingMapReadyDict, rating_calculator
 from common.playlist.object_counts import num_songs_total
 
@@ -99,7 +107,7 @@ class SongOnStation:
                 JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s)
             WHERE r4_songs.song_id = %s
             """,
-            (song_id, sid),
+            (sid, song_id),
             row_type=SongOnStationRow,
         )
         if song_on_station_data is None:
@@ -167,26 +175,6 @@ class SongOnStation:
             """,
             (self.data["song_request_only_end"], self.id, self.sid),
         )
-
-    async def start_election_block(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, num_elections: int
-    ) -> None:
-        await cursor.update(
-            """
-            UPDATE r4_song_sid SET 
-                song_elec_blocked = TRUE, 
-                song_elec_blocked_by = %s, 
-                song_elec_blocked_num = %s 
-            WHERE 
-                song_id = %s 
-                AND sid = %s 
-                AND song_elec_blocked_num <= %s
-            """,
-            ("in_election", num_elections, self.id, self.sid, num_elections),
-        )
-        self.data["song_elec_blocked_num"] = num_elections
-        self.data["song_elec_blocked_by"] = "in_election"
-        self.data["song_elec_blocked"] = True
 
     async def update_rating(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
         ratings = await cursor.fetch_all(
@@ -289,3 +277,26 @@ class SongOnStation:
         else:
             self.verified = False
             return False
+
+    async def start_election_block(
+        self, cursor: RainwaveCursor | RainwaveCursorTx
+    ) -> None:
+        await start_album_election_block(
+            cursor,
+            self.data["album_id"],
+            self.sid,
+            config.stations[self.sid]["num_planned_elections"] + 1,
+        )
+        await start_song_election_block(
+            cursor,
+            self.id,
+            self.sid,
+            config.stations[self.sid]["num_planned_elections"] + 1,
+        )
+        for group in await load_groups_for_song_on_station(cursor, self.id, self.sid):
+            await start_song_group_election_block(
+                cursor,
+                group["group_id"],
+                self.sid,
+                config.stations[self.sid]["num_planned_elections"] + 1,
+            )

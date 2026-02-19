@@ -1,9 +1,10 @@
 from abc import abstractmethod
 from time import time as timestamp
-from typing import Any
 
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.requests.request_line_types import RequestLineEntry
 from common.schedule.schedule_entry_types import ScheduleEntryRow, ScheduleEntryType
+from common.schedule.schedule_models.timeline_entry_base import TimelineEntryBase
 
 
 class ScheduleEntry:
@@ -62,15 +63,22 @@ class ScheduleEntry:
         )
 
     @abstractmethod
-    def has_next_event(self) -> bool:
+    async def has_timeline_entries_remaining(
+        self, cursor: RainwaveCursor | RainwaveCursorTx
+    ) -> bool:
         raise NotImplementedError()
 
     @abstractmethod
-    def load_next_event(
-        self, target_length: int | None = None, min_elec_id: int | None = None
-    ) -> Any:
+    async def get_next_timeline_entry(
+        self,
+        cursor: RainwaveCursor | RainwaveCursorTx,
+        request_line: list[RequestLineEntry],
+        target_song_length: int | None = None,
+    ) -> TimelineEntryBase | None:
         raise NotImplementedError()
 
     @abstractmethod
-    def load_event_in_progress(self) -> Any:
+    async def get_timeline_entry_in_progress(
+        self, cursor: RainwaveCursor | RainwaveCursorTx
+    ) -> TimelineEntryBase | None:
         raise NotImplementedError()

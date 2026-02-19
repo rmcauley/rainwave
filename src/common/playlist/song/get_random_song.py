@@ -1,9 +1,8 @@
 import random
 from psycopg import sql
 
-from common import config
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
-from common.libs import log
+from common import log
 
 from common.playlist.song.model.song_on_station import SongOnStation
 
@@ -148,8 +147,9 @@ async def get_random_song(
 async def get_random_song_timed(
     cursor: RainwaveCursor | RainwaveCursorTx,
     sid: int,
+    *,
     target_seconds: int | None = None,
-    target_delta: int | None = None,
+    target_delta: int,
 ) -> SongOnStation:
     """
     Fetch a random song abiding by all election block, request block, and
@@ -158,8 +158,6 @@ async def get_random_song_timed(
     """
     if not target_seconds:
         return await get_random_song(cursor, sid)
-    if not target_delta:
-        target_delta = config.stations[sid]["song_lookup_length_delta"]
 
     sql_query = sql.SQL(
         "FROM r4_song_sid "

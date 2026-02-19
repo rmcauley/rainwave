@@ -1,6 +1,6 @@
 from time import time as timestamp
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
-from common.libs import log
+from common import log
 from common.requests.get_user_top_request import (
     TopRequestSongRow,
     get_top_request_song,

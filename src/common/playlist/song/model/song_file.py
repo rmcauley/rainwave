@@ -7,7 +7,7 @@ from typing import TypedDict
 
 from common.db.build_insert import build_insert_on_conflict_do_update
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
-from common.libs import log
+from common import log
 from common.playlist.album.model.album_on_station import AlbumOnStation
 from common.playlist.remove_diacritics import remove_diacritics
 from common.playlist.album.model.album import Album

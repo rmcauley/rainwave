@@ -7,8 +7,8 @@ from scanner.filemonitor import (
     full_art_update,
     full_music_scan,
 )
-from common import config
-from common.libs import log, db
+from common import config, log
+from common.libs import db
 from common.playlist.album.album_model import clear_updated_albums
 
 if __name__ == "__main__":

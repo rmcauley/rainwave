@@ -2,8 +2,11 @@ from typing import TypedDict
 
 from common import config
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
-from common.playlist.metadata import MetadataInsertionError
 from common.playlist.remove_diacritics import remove_diacritics
+
+
+class CouldNotUpsertSongError(Exception):
+    pass
 
 
 class SongGroupRow(TypedDict):
@@ -38,7 +41,7 @@ class SongGroup:
             row_type=SongGroupRow,
         )
         if not row:
-            raise MetadataInsertionError(f"Could not upsert group with name {name}")
+            raise CouldNotUpsertSongError(f"Could not upsert group with name {name}")
         return SongGroup(row)
 
     async def reconcile_sids(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
@@ -73,21 +76,3 @@ class SongGroup:
                     "DELETE FROM r4_group_sid WHERE group_id = %s AND sid = %s",
                     (self.id, sid),
                 )
-
-    async def start_election_block_db(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, sid: int, num_elections: int
-    ) -> None:
-        await cursor.update(
-            """
-            UPDATE r4_song_sid
-            SET song_elec_blocked = TRUE,
-                song_elec_blocked_by = %s,
-                song_elec_blocked_num = %s
-            FROM r4_song_group
-            WHERE r4_song_sid.song_id = r4_song_group.song_id
-                AND r4_song_group.group_id = %s
-                AND r4_song_sid.sid = %s
-                AND song_elec_blocked_num < %s
-""",
-            ("group", num_elections, self.id, sid, num_elections),
-        )

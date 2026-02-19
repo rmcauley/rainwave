@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager, contextmanager
 from typing import Any, AsyncIterator, Sequence, Mapping, cast
-from psycopg import AsyncCursor
+from psycopg import AsyncCursor, sql
 from psycopg.rows import dict_row
 from psycopg.abc import QueryNoTemplate
 from .connection import db_connection
@@ -116,6 +116,16 @@ class RainwaveCursorBase:
 
     async def rollback_transaction(self):
         await self._cursor.execute("ROLLBACK")
+
+    async def get_nextval(self, sequence_name: str) -> int:
+        return await self.fetch_guaranteed(
+            sql.SQL("SELECT nextval(%s::regclass)").format(
+                sql.Identifier(sequence_name)
+            ),
+            params=None,
+            default=0,
+            var_type=int,
+        )
 
 
 class RainwaveCursor(RainwaveCursorBase):

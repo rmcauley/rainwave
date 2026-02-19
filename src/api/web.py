@@ -15,8 +15,8 @@ from common.playlist.song.song import SongNonExistent
 from api import fieldtypes
 from common.locale import locale
 from api.exceptions import APIException
-from common import config
-from common.libs import log, db
+from common import config, log
+from common.libs import db
 
 from api.html import html_write_error
 

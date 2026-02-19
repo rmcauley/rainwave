@@ -2,7 +2,7 @@ from time import time as timestamp
 from typing import TypedDict
 
 from common import config
-from common.libs import log
+from common import log
 from common.db.cursor import RainwaveCursor
 
 

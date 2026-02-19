@@ -1,6 +1,6 @@
 import math
 import subprocess
-from common.libs import log
+from common import log
 
 
 def _decode_subprocess_output(output: bytes | str | None) -> str | None:

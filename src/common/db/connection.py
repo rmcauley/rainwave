@@ -2,7 +2,7 @@ from psycopg import AsyncConnection, OperationalError, InterfaceError
 import time
 
 from common import config
-from common.libs import log
+from common import log
 
 db_connection: AsyncConnection = None  # type: ignore
 connected = False

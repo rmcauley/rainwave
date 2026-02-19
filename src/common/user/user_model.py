@@ -6,7 +6,7 @@ from urllib import parse
 from abc import ABC, abstractmethod
 from typing import Any, TypedDict, TypeAlias
 
-from common.libs import log
+from common import log
 from common.db.cursor import RainwaveCursor
 from common.cache import cache
 from common import config
