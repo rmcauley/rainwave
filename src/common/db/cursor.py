@@ -1,15 +1,14 @@
-from contextlib import asynccontextmanager, contextmanager
+from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator, Sequence, Mapping, cast
 from psycopg import AsyncCursor, sql
-from psycopg.rows import dict_row
+from psycopg.rows import DictRow, dict_row
 from psycopg.abc import QueryNoTemplate
-from .connection import db_connection
+from .connection import get_pool
 
 
 class RainwaveCursorBase:
-    def __init__(self):
-        self._connection = db_connection
-        self._cursor = AsyncCursor(db_connection, row_factory=dict_row)
+    def __init__(self, cursor: AsyncCursor[DictRow]):
+        self._cursor = cursor
 
     async def fetch_var[T](
         self,
@@ -136,19 +135,17 @@ class RainwaveCursorTx(RainwaveCursorBase):
     pass
 
 
-@contextmanager
-def get_cursor():
-    cursor = RainwaveCursor()
-    yield cursor
-
-
 @asynccontextmanager
+async def get_cursor():
+    pool = get_pool()
+    async with pool.connection() as conn:
+        async with conn.cursor(row_factory=dict_row) as psy_cursor:
+            yield RainwaveCursor(psy_cursor)
+
+
 async def get_tx_cursor():
-    cursor = RainwaveCursorTx()
-    await cursor.begin_transaction()
-    try:
-        yield cursor
-        await cursor.commit_transaction()
-    except:
-        await cursor.rollback_transaction()
-        raise
+    pool = get_pool()
+    async with pool.connection() as conn:
+        async with conn.transaction():
+            async with conn.cursor(row_factory=dict_row) as psy_cursor:
+                yield RainwaveCursorTx(psy_cursor)

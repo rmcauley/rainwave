@@ -8,7 +8,6 @@ from typing import Literal, Self, TypedDict
 from common import config, log
 from common.db.build_insert import build_insert
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
-from common.playlist.song.start_song_cooldown import start_song_cooldown
 from common.playlist.song.get_random_song import get_random_song_timed
 from common.playlist.song.model.song_on_station import SongOnStation
 from common.requests.request_line_types import RequestLineEntry
@@ -110,7 +109,6 @@ class Election(TimelineEntryBase):
         cls, cursor: RainwaveCursor | RainwaveCursorTx, data: ElectionCreationData
     ) -> Self:
         to_create = {
-            "elec_id": await TimelineEntryBase.get_next_id(cursor),
             "elec_type": data["elec_type"],
             "sched_id": data["sched_id"],
             "sid": data["sid"],
@@ -183,11 +181,7 @@ class Election(TimelineEntryBase):
             (self.id,),
         )
 
-        played_entry = self.entries[0]
-        if played_entry:
-            await start_song_cooldown(cursor, played_entry["song_on_station"])
-
-    def get_next_song_on_station(self) -> SongOnStation:
+    def get_song_on_station_to_play(self) -> SongOnStation:
         if not self.data["elec_used"] and not self.data["elec_in_progress"]:
             raise ElectionNotStartedYetError()
 

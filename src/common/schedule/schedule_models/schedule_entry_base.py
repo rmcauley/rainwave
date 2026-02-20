@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from time import time as timestamp
+from typing import Sequence
 
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
 from common.requests.request_line_types import RequestLineEntry
@@ -82,3 +83,9 @@ class ScheduleEntry:
         self, cursor: RainwaveCursor | RainwaveCursorTx
     ) -> TimelineEntryBase | None:
         raise NotImplementedError()
+
+    @abstractmethod
+    async def get_queued_timeline_entries(
+        self, cursor: RainwaveCursor | RainwaveCursorTx
+    ) -> Sequence[TimelineEntryBase]:
+        raise NotImplementedError

@@ -1,21 +1,27 @@
-from psycopg import AsyncConnection, OperationalError, InterfaceError
-import time
+import asyncio
+
+from psycopg import OperationalError, InterfaceError
+from psycopg_pool import AsyncConnectionPool
 
 from common import config
 from common import log
 
-db_connection: AsyncConnection = None  # type: ignore
-connected = False
+db_pool: AsyncConnectionPool | None = None
+
+
+def get_pool() -> AsyncConnectionPool:
+    if not db_pool:
+        raise RuntimeError("DB pool is not connected")
+    return db_pool
 
 
 async def db_connect(
     auto_retry: bool = True, retry_only_this_time: bool = False
-) -> bool:
-    global db_connection
-    global connected
+) -> None:
+    global db_pool
 
-    if db_connection and connected:
-        return True
+    if db_pool:
+        return
 
     name = config.db_name
     host = config.db_host
@@ -23,42 +29,40 @@ async def db_connect(
     user = config.db_user
     password = config.db_password
 
-    base_connstr = "sslmode=disable "
+    conninfo = "sslmode=disable "
     if host:
-        base_connstr += "host=%s " % host
+        conninfo += "host=%s " % host
     if port:
-        base_connstr += "port=%s " % port
+        conninfo += "port=%s " % port
     if user:
-        base_connstr += "user=%s " % user
+        conninfo += "user=%s " % user
     if password:
-        base_connstr += "password=%s " % password
+        conninfo += "password=%s " % password
+    conninfo += f"dbname={name}"
+
     connected = False
     while not connected:
         try:
-            db_connection = await AsyncConnection.connect(
-                base_connstr + ("dbname=%s" % name), connect_timeout=1
+            db_pool = AsyncConnectionPool(
+                conninfo,
+                min_size=1,
+                max_size=20,
+                open=False,
+                kwargs={"autocommit": True},
             )
-            db_connection.autocommit = True
+            await db_pool.open(True)
             connected = True
         except (OperationalError, InterfaceError) as e:
-            log.exception("psycopg", "Psycopg exception", e)
+            log.exception("psycopg", "Psycopg connection error", e)
             if auto_retry or retry_only_this_time:
-                time.sleep(1)
+                await asyncio.sleep(1)
             else:
                 raise
-    return True
 
 
 async def db_close() -> bool:
-    global db_connection
-    global connected
-
-    if db_connection:
-        await db_connection.close()
-    db_connection = None  # type: ignore
-    connected = False
-
+    global db_pool
+    if db_pool:
+        await db_pool.close()
+    db_pool = None
     return True
-
-
-__all__ = ["db_connect", "db_close", "db_connection"]

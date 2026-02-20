@@ -1,3 +1,4 @@
+import orjson
 import os
 from typing import TypedDict
 
@@ -113,6 +114,9 @@ class SongOnStation:
         if song_on_station_data is None:
             raise SongOnStationNotFoundError()
         return SongOnStation(song_on_station_data)
+
+    def get_artists_from_parseable(self) -> list[ArtistParseable]:
+        return orjson.loads(self.data["song_artist_parseable"])
 
     async def start_cooldown(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
         cool_time = cooldown_config[self.sid]["max_song_cool"]

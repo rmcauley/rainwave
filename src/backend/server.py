@@ -16,6 +16,8 @@ from libs import cache
 from libs import memory_trace
 from libs import zeromq
 
+# TODO  await prepare_cooldown_algorithm(cursor, sid) every hour
+
 
 class AdvanceScheduleRequest(tornado.web.RequestHandler):
     processed = False

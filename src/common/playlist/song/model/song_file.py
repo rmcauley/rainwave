@@ -1,4 +1,3 @@
-import asyncio
 import orjson
 import os
 from psycopg import sql
@@ -213,17 +212,16 @@ class SongFile:
         self, cursor: RainwaveCursor | RainwaveCursorTx, song_id: int
     ) -> None:
         log.info("song_disable", "Disabling ID %s" % (song_id,))
-        await asyncio.gather(
-            cursor.update(
-                "UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s",
-                (song_id,),
-            ),
-            cursor.update(
-                "UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s",
-                (song_id,),
-            ),
-            cursor.update(
-                "DELETE FROM r4_request_store WHERE song_id = %s", (song_id,)
-            ),
+        await cursor.update(
+            "UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s",
+            (song_id,),
         )
+        await cursor.update(
+            "UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s",
+            (song_id,),
+        )
+        await cursor.update(
+            "DELETE FROM r4_request_store WHERE song_id = %s", (song_id,)
+        )
+
         await self.set_sids(cursor, [])

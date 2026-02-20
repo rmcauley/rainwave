@@ -2,15 +2,8 @@ from typing import Literal, TypedDict
 
 ScheduleOneUpProducerType = Literal["OneUpProducer"]
 SchedulePVPElectionType = Literal["PVPElection"]
-SchedulePowerHourType = Literal["PowerHour"]
-SchedulePVPHourType = Literal["PVPHour"]
 
-ScheduleEntryType = (
-    ScheduleOneUpProducerType
-    | SchedulePVPElectionType
-    | SchedulePowerHourType
-    | SchedulePVPHourType
-)
+ScheduleEntryType = ScheduleOneUpProducerType | SchedulePVPElectionType
 
 
 class ScheduleEntryInsertRow(TypedDict):

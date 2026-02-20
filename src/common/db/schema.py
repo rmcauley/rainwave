@@ -58,7 +58,7 @@ async def create_null_fk(
 
 
 async def create_tables() -> None:
-    with get_cursor() as cursor:
+    async with get_cursor() as cursor:
         trgrm_exists = await cursor.fetch_var(
             "SELECT extname FROM pg_extension WHERE extname = 'pg_trgm'", var_type=str
         )
@@ -469,10 +469,12 @@ async def create_tables() -> None:
         await create_index(cursor, "r4_schedule", ["sched_public"])
         await create_index(cursor, "r4_schedule", ["sched_start_actual"])
 
+        await cursor.update("CREATE SEQUENCE r4_timeline_id_seq")
+
         await cursor.update(
             " \
             CREATE TABLE r4_elections ( \
-                elec_id					INTEGER		PRIMARY KEY, \
+                elec_id					BIGINT		PRIMARY KEY, \
                 elec_used				BOOLEAN		DEFAULT FALSE, \
                 elec_in_progress		BOOLEAN		DEFAULT FALSE, \
                 elec_start_actual		INTEGER		, \
@@ -483,7 +485,7 @@ async def create_tables() -> None:
             )"
         )
         await cursor.update(
-            "ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_schedule_sched_id_seq')"
+            "ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_timeline_id_seq')"
         )
         await create_index(cursor, "r4_elections", ["elec_id"])
         await create_index(cursor, "r4_elections", ["elec_used"])
@@ -508,7 +510,7 @@ async def create_tables() -> None:
         await cursor.update(
             " \
             CREATE TABLE r4_one_ups ( \
-                one_up_id				INTEGER		NOT NULL, \
+                one_up_id				BIGINT		PRIMARY KEY, \
                 sched_id				INTEGER		NOT NULL, \
                 song_id					INTEGER		NOT NULL, \
                 one_up_order			SMALLINT	, \
@@ -518,7 +520,7 @@ async def create_tables() -> None:
             )"
         )
         await cursor.update(
-            "ALTER TABLE r4_one_ups ALTER COLUMN one_up_id SET DEFAULT nextval('r4_schedule_sched_id_seq')"
+            "ALTER TABLE r4_one_ups ALTER COLUMN one_up_id SET DEFAULT nextval('r4_timeline_id_seq')"
         )
 
         await create_delete_fk(cursor, "r4_one_ups", "r4_schedule", "sched_id")

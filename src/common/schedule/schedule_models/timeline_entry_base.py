@@ -9,9 +9,8 @@ class TimelineEntryAlreadyUsed(Exception):
 
 
 class TimelineEntryBase:
-    @staticmethod
-    async def get_next_id(cursor: RainwaveCursor | RainwaveCursorTx) -> int:
-        return await cursor.get_nextval("r4_schedule_sched_id")
+    id: int
+    start_actual: int | None
 
     @abstractmethod
     async def start(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
@@ -22,7 +21,7 @@ class TimelineEntryBase:
         raise NotImplementedError()
 
     @abstractmethod
-    def get_next_song_on_station(self) -> SongOnStation:
+    def get_song_on_station_to_play(self) -> SongOnStation:
         raise NotImplementedError()
 
     @abstractmethod

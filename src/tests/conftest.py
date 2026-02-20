@@ -16,7 +16,7 @@ from common.libs.db.schema import create_tables
 from common.locale import locale as api_locale
 from common import zeromq
 from common.playlist import playlist
-from common.schedule import schedule
+from common.schedule import get_schedule_at_time
 from .seed_data import populate_test_data
 from common.playlist import get_age_cooldown_multiplier
 
@@ -47,9 +47,9 @@ async def rainwave_db():
     api_locale.load_translations()
     zeromq.init_pub()
     get_age_cooldown_multiplier.prepare_cooldown_algorithm(1)
-    schedule.load()
-    schedule.advance_station(1)
-    schedule.post_process(1)
+    get_schedule_at_time.load()
+    get_schedule_at_time.advance_station(1)
+    get_schedule_at_time.post_process(1)
     playlist.update_num_songs()
     cache.set_station(1, "all_albums", playlist.get_all_albums_list(1), True)
     cache.set_station(1, "all_artists", playlist.get_all_artists_list(1), True)

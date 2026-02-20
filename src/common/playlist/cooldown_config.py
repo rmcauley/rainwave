@@ -3,7 +3,7 @@ from typing import TypedDict
 
 from common import config
 from common import log
-from common.db.cursor import RainwaveCursor
+from common.db.cursor import RainwaveCursor, RainwaveCursorTx
 
 
 class CooldownConfig(TypedDict):
@@ -37,7 +37,9 @@ cooldown_config_defaults: CooldownConfig = {
 cooldown_config: dict[int, CooldownConfig] = {}
 
 
-async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
+async def prepare_cooldown_algorithm(
+    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
+) -> None:
     """
     Prepares pre-calculated variables that relate to calculating cooldown.
     Should pull all variables fresh from the DB, for algorithm
@@ -61,7 +63,7 @@ async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
             WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE 
             GROUP BY r4_album_sid.album_id
         ) AS jfiscrazy
-""",
+        """,
         (sid,),
         default=cooldown_config_defaults["sum_aasl"],
         var_type=float,
@@ -86,7 +88,7 @@ async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
                 JOIN r4_song_sid USING (song_id) 
             WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE 
             GROUP BY r4_album_sid.album_id) AS hooooboy
-""",
+        """,
         (sid,),
         default=cooldown_config_defaults["multiplier_adjustment"],
         var_type=float,
@@ -111,7 +113,7 @@ async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
             WHERE r4_album_sid.sid = %s AND r4_songs.song_verified = TRUE 
             GROUP BY r4_album_sid.album_id
         ) AS hooooboy
-""",
+        """,
         (sid,),
         default=cooldown_config_defaults["base_rating"],
         var_type=float,

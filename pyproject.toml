@@ -11,6 +11,7 @@ dependencies = [
     "mutagen==1.47.0",
     "orjson==3.11.7",
     "pillow==12.1.0",
+    "psycopg-pool==3.3.0",
     "psycopg[binary]==3.3.2",
     "pydantic==2.12.5",
     "pyinotify==0.9.6",

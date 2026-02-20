@@ -1,4 +1,4 @@
-import asyncio
+from datetime import datetime
 from time import time as timestamp
 import math
 from typing import TypedDict
@@ -27,7 +27,6 @@ class AlbumOnStationRow(AlbumRow):
     album_cool_multiply: float
     album_cool_override: int
     album_cool_lowest: int
-    album_updated: int
     album_elec_last: int
     album_rating: float
     album_rating_count: int
@@ -35,6 +34,7 @@ class AlbumOnStationRow(AlbumRow):
     album_fave_count: int
     album_newest_song_time: int | None
     album_art_url: str | None
+    album_updated_at: datetime
 
 
 class AlbumOnStationExtraDetailsGenreRow(TypedDict):
@@ -151,34 +151,32 @@ class AlbumOnStation:
             "Album ID %s Station ID %s cool_time period: %s"
             % (self.album_id, self.sid, cool_time),
         )
-        await asyncio.gather(
-            cursor.update(
-                """
-                UPDATE r4_song_sid
-                SET song_cool = TRUE,
-                    song_cool_end = %s
-                FROM r4_songs
-                WHERE r4_song_sid.song_id = r4_songs.song_id
-                    AND album_id = %s
-                    AND sid = %s
-                    AND song_cool_end <= %s
-""",
-                (cool_end, self.album_id, self.sid, cool_end),
-            ),
-            cursor.update(
-                """
-                UPDATE r4_song_sid
-                SET song_request_only = TRUE,
-                    song_request_only_end = %s
-                FROM r4_songs
-                WHERE r4_song_sid.song_id = r4_songs.song_id
-                    AND album_id = %s
-                    AND sid = %s
-                    AND song_cool_end <= %s
-                    AND song_request_only_end IS NOT NULL
-""",
-                (request_only_end, self.album_id, self.sid, cool_end),
-            ),
+        await cursor.update(
+            """
+            UPDATE r4_song_sid
+            SET song_cool = TRUE,
+                song_cool_end = %s
+            FROM r4_songs
+            WHERE r4_song_sid.song_id = r4_songs.song_id
+                AND album_id = %s
+                AND sid = %s
+                AND song_cool_end <= %s
+            """,
+            (cool_end, self.album_id, self.sid, cool_end),
+        )
+        await cursor.update(
+            """
+            UPDATE r4_song_sid
+            SET song_request_only = TRUE,
+                song_request_only_end = %s
+            FROM r4_songs
+            WHERE r4_song_sid.song_id = r4_songs.song_id
+                AND album_id = %s
+                AND sid = %s
+                AND song_cool_end <= %s
+                AND song_request_only_end IS NOT NULL
+            """,
+            (request_only_end, self.album_id, self.sid, cool_end),
         )
 
     async def update_lowest_cooldown(

@@ -153,3 +153,14 @@ You can get help for deployment and development through the main
 developer, Rob, on the Rainwave discord:
 
 - https://discord.gg/fdb2cs7puS
+
+## Self-Notes For Rob
+
+On modernize deployment:
+
+- ALTER TABLE r4_elections ALTER COLUMN elec_id TYPE BIGINT;
+- ALTER TABLE r4_elections ALTER COLUMN elec_id SET DEFAULT nextval('r4_timeline_id_seq');
+- ALTER TABLE r4_one_ups ALTER COLUMN one_up_id TYPE BIGINT;
+- ALTER TABLE r4_one_ups ALTER COLUMN one_up_id SET NOT NULL;
+- ALTER TABLE r4_one_ups ADD PRIMARY KEY (one_up_id);
+- remove r4_album_sid.album_updated as it was replaced with album_updated_at

@@ -1,5 +1,5 @@
 import random
-from typing import TypedDict
+from typing import Sequence, TypedDict
 
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
 from common.playlist.album.get_song_list_for_album_display import (
@@ -26,11 +26,24 @@ class PowerHour(ScheduleEntry):
         self, cursor: RainwaveCursor | RainwaveCursorTx
     ) -> bool:
         next_up_id = await cursor.fetch_var(
-            "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1",
+            "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE AND one_up_used = FALSE ORDER BY one_up_order LIMIT 1",
             (self.id,),
             var_type=int,
         )
         return bool(next_up_id)
+
+    async def get_queued_timeline_entries(
+        self, cursor: RainwaveCursor | RainwaveCursorTx
+    ) -> Sequence[PowerHourSong]:
+        power_hour_song_ids = await cursor.fetch_list(
+            "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE AND one_up_used = FALSE ORDER BY one_up_order",
+            (self.sid,),
+            row_type=int,
+        )
+        return [
+            await PowerHourSong.load_by_id(cursor, ph_song_id, self.sid)
+            for ph_song_id in power_hour_song_ids
+        ]
 
     async def get_next_timeline_entry(
         self,
@@ -39,7 +52,7 @@ class PowerHour(ScheduleEntry):
         target_song_length: int | None = None,
     ) -> PowerHourSong | None:
         next_up_id = await cursor.fetch_var(
-            "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE ORDER BY one_up_order LIMIT 1",
+            "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE AND one_up_used = FALSE ORDER BY one_up_order LIMIT 1",
             (self.id,),
             var_type=int,
         )
@@ -108,7 +121,7 @@ class PowerHour(ScheduleEntry):
         self, cursor: RainwaveCursor | RainwaveCursorTx
     ) -> PowerHourSong | None:
         next_song_id = await cursor.fetch_var(
-            "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE ORDER BY one_up_order DESC LIMIT 1",
+            "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE ORDER BY one_up_order ASC LIMIT 1",
             (self.id,),
             var_type=int,
         )

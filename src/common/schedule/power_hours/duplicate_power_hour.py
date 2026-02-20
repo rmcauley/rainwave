@@ -23,7 +23,7 @@ async def duplicate_power_hour(
             "sid": existing_power_hour.data["sid"],
         },
     )
-    duplicated_power_hour = PowerHour("PowerHour", duplicated_power_hour_row)
+    duplicated_power_hour = PowerHour("OneUpProducer", duplicated_power_hour_row)
     for song_row in await cursor.fetch_all(
         "SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
         (existing_power_hour.id,),

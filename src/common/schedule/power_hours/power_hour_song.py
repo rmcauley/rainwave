@@ -49,7 +49,7 @@ class PowerHourSong(TimelineEntryBase):
             "UPDATE r4_one_ups SET one_up_used = TRUE WHERE one_up_id = %s", (self.id,)
         )
 
-    def get_next_song_on_station(self) -> SongOnStation:
+    def get_song_on_station_to_play(self) -> SongOnStation:
         return self.song_on_station
 
     def length(self) -> int:

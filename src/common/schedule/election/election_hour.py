@@ -37,10 +37,7 @@ class ElectionHour(ScheduleEntry):
             return await Election.load_by_id(cursor, elec_id)
 
         elec_type: ElectionType = "Election"
-        if (
-            self.data["sched_type"] == "PVPElection"
-            or self.data["sched_type"] == "PVPHour"
-        ):
+        if self.data["sched_type"] == "PVPElection":
             elec_type = "PVPElection"
 
         election = await Election.create(

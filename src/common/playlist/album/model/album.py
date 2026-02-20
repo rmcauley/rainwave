@@ -1,4 +1,3 @@
-import asyncio
 from typing import TypedDict
 
 from common.db.cursor import RainwaveCursor, RainwaveCursorTx
@@ -55,22 +54,20 @@ class Album:
     async def reconcile_sids(
         self, cursor: RainwaveCursor | RainwaveCursorTx
     ) -> list[int]:
-        (new_sids, current_sids, old_sids) = await asyncio.gather(
-            cursor.fetch_list(
-                "SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE AND song_verified = TRUE GROUP BY sid",
-                (self.id,),
-                row_type=int,
-            ),
-            cursor.fetch_list(
-                "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE",
-                (self.id,),
-                row_type=int,
-            ),
-            cursor.fetch_list(
-                "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE",
-                (self.id,),
-                row_type=int,
-            ),
+        new_sids = await cursor.fetch_list(
+            "SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE AND song_verified = TRUE GROUP BY sid",
+            (self.id,),
+            row_type=int,
+        )
+        current_sids = await cursor.fetch_list(
+            "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE",
+            (self.id,),
+            row_type=int,
+        )
+        old_sids = await cursor.fetch_list(
+            "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = FALSE",
+            (self.id,),
+            row_type=int,
         )
 
         for sid in current_sids:
@@ -165,16 +162,4 @@ class Album:
             "FROM status "
             "WHERE r4_album_ratings.album_id = status.album_id AND r4_album_ratings.sid = status.sid AND r4_album_ratings.user_id = status.user_id ",
             (self.id,),
-        )
-
-    async def update_fave_count(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> None:
-        await cursor.update(
-            """
-            UPDATE r4_album_sid SET album_fave_count = (
-                SELECT COUNT(*) FROM r4_album_faves WHERE album_fave = TRUE AND album_id = %s
-            ) WHERE album_id = %s
-            """,
-            (self.id, self.id),
         )
