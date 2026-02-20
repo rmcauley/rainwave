@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.song.model.song_on_station import SongOnStation
 
 
@@ -13,11 +13,11 @@ class TimelineEntryBase:
     start_actual: int | None
 
     @abstractmethod
-    async def start(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def start(self, cursor: RainwaveCursor) -> None:
         raise NotImplementedError()
 
     @abstractmethod
-    async def finish(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def finish(self, cursor: RainwaveCursor) -> None:
         raise NotImplementedError()
 
     @abstractmethod

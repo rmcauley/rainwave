@@ -1,4 +1,4 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.requests.get_request_line import get_request_line
 from common.requests.request_expiry_times import update_request_expire_times
 from common.requests.update_request_line import write_updated_request_line_to_db
@@ -9,7 +9,7 @@ from common.schedule.timeline import TimelineOnStation
 
 
 async def generate_next_timeline_entries(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int, timeline: TimelineOnStation
+    cursor: RainwaveCursor, sid: int, timeline: TimelineOnStation
 ) -> None:
     while len(timeline.upnext) < 2:
         new_upnext_start_time = timeline.current.length() + sum(

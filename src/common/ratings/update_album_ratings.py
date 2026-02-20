@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
 class UpdatedAlbumRating(TypedDict):
@@ -22,7 +22,7 @@ class GetUpdatedAlbumRatingRow(TypedDict):
 
 
 async def update_album_ratings(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
     target_sid: int,
     song_id: int,
     user_id: int,

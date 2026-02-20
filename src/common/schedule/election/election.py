@@ -7,7 +7,7 @@ from typing import Literal, Self, TypedDict
 
 from common import config, log
 from common.db.build_insert import build_insert
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.song.get_random_song import get_random_song_timed
 from common.playlist.song.model.song_on_station import SongOnStation
 from common.requests.request_line_types import RequestLineEntry
@@ -69,9 +69,7 @@ class Election(TimelineEntryBase):
         self.entries = entries
 
     @classmethod
-    async def load_by_id(
-        cls, cursor: RainwaveCursor | RainwaveCursorTx, elec_id: int
-    ) -> Self:
+    async def load_by_id(cls, cursor: RainwaveCursor, elec_id: int) -> Self:
         election_row = await cursor.fetch_row(
             "SELECT * FROM r4_elections WHERE elec_id = %s",
             (elec_id,),
@@ -105,9 +103,7 @@ class Election(TimelineEntryBase):
         return cls(election_row, entries)
 
     @classmethod
-    async def create(
-        cls, cursor: RainwaveCursor | RainwaveCursorTx, data: ElectionCreationData
-    ) -> Self:
+    async def create(cls, cursor: RainwaveCursor, data: ElectionCreationData) -> Self:
         to_create = {
             "elec_type": data["elec_type"],
             "sched_id": data["sched_id"],
@@ -137,7 +133,7 @@ class Election(TimelineEntryBase):
                 return 0
             return math.floor(totalsec / len(self.entries))
 
-    async def start(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def start(self, cursor: RainwaveCursor) -> None:
         if self.data["elec_used"]:
             raise TimelineEntryAlreadyUsed()
 
@@ -172,7 +168,7 @@ class Election(TimelineEntryBase):
             (self.data["elec_start_actual"], self.id),
         )
 
-    async def finish(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def finish(self, cursor: RainwaveCursor) -> None:
         self.data["elec_in_progress"] = False
         self.data["elec_used"] = True
 
@@ -189,7 +185,7 @@ class Election(TimelineEntryBase):
 
     async def fill(
         self,
-        cursor: RainwaveCursor | RainwaveCursorTx,
+        cursor: RainwaveCursor,
         request_line: list[RequestLineEntry],
         target_song_length: int | None = None,
     ) -> None:

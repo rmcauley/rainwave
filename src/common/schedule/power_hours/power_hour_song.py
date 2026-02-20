@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.song.model.song_on_station import SongOnStation
 from common.schedule.schedule_models.timeline_entry_base import TimelineEntryBase
 
@@ -26,9 +26,7 @@ class PowerHourSong(TimelineEntryBase):
         self.song_on_station = song_on_station
 
     @staticmethod
-    async def load_by_id(
-        cursor: RainwaveCursor | RainwaveCursorTx, id: int, sid: int
-    ) -> PowerHourSong:
+    async def load_by_id(cursor: RainwaveCursor, id: int, sid: int) -> PowerHourSong:
         row = await cursor.fetch_row(
             "SELECT * FROM r4_one_ups WHERE one_up_id = %s",
             (id,),
@@ -41,10 +39,10 @@ class PowerHourSong(TimelineEntryBase):
         )
         return PowerHourSong(row, song_on_station)
 
-    async def start(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def start(self, cursor: RainwaveCursor) -> None:
         await self.song_on_station.start_election_block(cursor)
 
-    async def finish(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def finish(self, cursor: RainwaveCursor) -> None:
         await cursor.update(
             "UPDATE r4_one_ups SET one_up_used = TRUE WHERE one_up_id = %s", (self.id,)
         )

@@ -1,9 +1,7 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
-async def update_fave_count(
-    cursor: RainwaveCursor | RainwaveCursorTx, album_id: int
-) -> None:
+async def update_fave_count(cursor: RainwaveCursor, album_id: int) -> None:
     await cursor.update(
         """
         UPDATE r4_album_sid SET album_fave_count = (

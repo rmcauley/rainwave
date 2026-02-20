@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
 class AllArtistsRow(TypedDict):
@@ -9,9 +9,7 @@ class AllArtistsRow(TypedDict):
     artist_song_count: int
 
 
-async def get_all_artists_list(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
-) -> list[AllArtistsRow]:
+async def get_all_artists_list(cursor: RainwaveCursor, sid: int) -> list[AllArtistsRow]:
     return await cursor.fetch_all(
         """
         SELECT 

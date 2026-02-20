@@ -1,13 +1,13 @@
 import asyncio
 from .station_cache import cache_get_station, cache_set_station
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from typing import TypeAlias
 
 UserRatingACL: TypeAlias = dict[int, dict[int, bool]]
 
 
 async def update_user_rating_acl(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int, song_id: int
+    cursor: RainwaveCursor, sid: int, song_id: int
 ) -> None:
     user_rating_acl: UserRatingACL = await cache_get_station(sid, "user_rating_acl")
     if not user_rating_acl:

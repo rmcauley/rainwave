@@ -1,15 +1,13 @@
 import random
 from psycopg import sql
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common import log
 
 from common.playlist.song.model.song_on_station import SongOnStation
 
 
-async def get_random_song_ignore_all(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
-) -> SongOnStation:
+async def get_random_song_ignore_all(cursor: RainwaveCursor, sid: int) -> SongOnStation:
     """
     Fetches the most stale song (longest time since it's been played) in the db,
     ignoring all availability and election block rules.
@@ -49,7 +47,7 @@ async def get_random_song_ignore_all(
 
 
 async def get_random_song_ignore_requests(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
+    cursor: RainwaveCursor, sid: int
 ) -> SongOnStation:
     """
     Fetch a random song abiding by election block and availability rules,
@@ -93,9 +91,7 @@ async def get_random_song_ignore_requests(
         return await SongOnStation.load(cursor, song_id, sid)
 
 
-async def get_random_song(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
-) -> SongOnStation:
+async def get_random_song(cursor: RainwaveCursor, sid: int) -> SongOnStation:
     """
     Fetch a random song, abiding by all election block, request block, and
     availability rules.  Falls back to get_random_ignore_requests on failure.
@@ -145,7 +141,7 @@ async def get_random_song(
 
 
 async def get_random_song_timed(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
     sid: int,
     *,
     target_seconds: int | None = None,
@@ -227,9 +223,7 @@ async def get_random_song_timed(
         return await SongOnStation.load(cursor, song_id, sid)
 
 
-async def get_shortest_song(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
-) -> SongOnStation:
+async def get_shortest_song(cursor: RainwaveCursor, sid: int) -> SongOnStation:
     """
     Fetch the shortest song available abiding by election block and availability rules.
     """

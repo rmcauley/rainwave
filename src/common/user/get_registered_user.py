@@ -1,7 +1,7 @@
 from common.db.cursor import RainwaveCursor
 
 
-from .model.user_registered import RegisteredUser
+from .model.registered_user import RegisteredUser
 
 
 async def get_authorized_registered_user(

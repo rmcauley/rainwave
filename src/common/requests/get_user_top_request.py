@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
 class TopRequestSongRow(TypedDict):
@@ -11,7 +11,7 @@ class TopRequestSongRow(TypedDict):
 
 
 async def get_top_request_song(
-    cursor: RainwaveCursor | RainwaveCursorTx, user_id: int, sid: int
+    cursor: RainwaveCursor, user_id: int, sid: int
 ) -> TopRequestSongRow | None:
     return await cursor.fetch_row(
         """
@@ -36,26 +36,3 @@ async def get_top_request_song(
         (user_id, sid),
         row_type=TopRequestSongRow,
     )
-
-
-# async def get_top_request_song_id(
-#     cursor: RainwaveCursor | RainwaveCursorTx, user_id: int, sid: int
-# ) -> int | None:
-#     return await cursor.fetch_var(
-#         """
-#         SELECT
-#             song_id
-#         FROM r4_request_store
-#             JOIN r4_song_sid USING (song_id)
-#         WHERE
-#             user_id = %s
-#             AND r4_song_sid.sid = %s
-#             AND song_exists = TRUE
-#             AND song_cool = FALSE
-#             AND song_elec_blocked = FALSE
-#         ORDER BY reqstor_order, reqstor_id
-#         LIMIT 1
-#         """,
-#         (user_id, sid),
-#         var_type=int,
-#     )

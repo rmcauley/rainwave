@@ -6,7 +6,7 @@ from psycopg.abc import QueryNoTemplate
 from .connection import get_pool
 
 
-class RainwaveCursorBase:
+class RainwaveCursor:
     def __init__(self, cursor: AsyncCursor[DictRow]):
         self._cursor = cursor
 
@@ -127,14 +127,6 @@ class RainwaveCursorBase:
         )
 
 
-class RainwaveCursor(RainwaveCursorBase):
-    pass
-
-
-class RainwaveCursorTx(RainwaveCursorBase):
-    pass
-
-
 @asynccontextmanager
 async def get_cursor():
     pool = get_pool()
@@ -148,4 +140,4 @@ async def get_tx_cursor():
     async with pool.connection() as conn:
         async with conn.transaction():
             async with conn.cursor(row_factory=dict_row) as psy_cursor:
-                yield RainwaveCursorTx(psy_cursor)
+                yield RainwaveCursor(psy_cursor)

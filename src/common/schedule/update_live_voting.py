@@ -1,7 +1,7 @@
 from typing import TypedDict
 
 from common.cache.station_cache import cache_get_station, cache_set_station
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
 class LiveVotingRow(TypedDict):
@@ -15,7 +15,7 @@ LiveVotingByTimelineEntry = dict[int, list[LiveVotingRow]]
 
 
 async def update_live_voting_cache(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int, elec_id: int
+    cursor: RainwaveCursor, sid: int, elec_id: int
 ) -> LiveVotingByTimelineEntry:
     live_voting_by_timeline_entry: LiveVotingByTimelineEntry = (
         await cache_get_station(sid, "live_voting")

@@ -1,10 +1,10 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.requests.remove_user_from_request_line import remove_user_from_request_line
 from common.requests.request_line_types import RequestLineSqlRow
 
 
 async def put_user_in_request_line(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
     user_id: int,
     user_requests_paused: bool,
     for_station_sid: int,

@@ -1,10 +1,8 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.artist.artist import Artist, ArtistRow
 
 
-async def get_artists_for_song(
-    cursor: RainwaveCursor | RainwaveCursorTx, song_id: int
-) -> list[Artist]:
+async def get_artists_for_song(cursor: RainwaveCursor, song_id: int) -> list[Artist]:
     artist_rows = await cursor.fetch_all(
         """
         SELECT r4_artists.* 

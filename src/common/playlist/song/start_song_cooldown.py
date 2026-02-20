@@ -1,11 +1,11 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.album.get_album_on_station import get_album_on_station
 from common.playlist.album.update_album_fave_count import update_fave_count
 from common.playlist.song.model.song_on_station import SongOnStation
 
 
 async def start_song_cooldown_and_update_rating(
-    cursor: RainwaveCursor | RainwaveCursorTx, song_on_station: SongOnStation
+    cursor: RainwaveCursor, song_on_station: SongOnStation
 ) -> None:
     album_on_station = await get_album_on_station(
         cursor, song_on_station.data["album_id"], song_on_station.sid

@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
 from common.db.cursor import RainwaveCursor
-from common.user.model.user_data_type import (
+from common.playlist.song.model.song_on_station import SongOnStation
+from common.user.model.user_data_types import (
     UserPrivateData,
     UserPublicData,
     UserServerData,
 )
-from common.user.user_model import ListenerRecord
 
 
 class UserBase(ABC):
@@ -69,93 +68,49 @@ class UserBase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_api_key(
-        self, expiry: int | None = None, reuse: str | None = None
-    ) -> str:
+    async def add_request(
+        self, cursor: RainwaveCursor, song_on_station: SongOnStation
+    ) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    async def get_listener_record(
-        self, cursor: RainwaveCursor
-    ) -> ListenerRecord | None:
+    async def add_unrated_requests(
+        self,
+        cursor: RainwaveCursor,
+        sid: int,
+    ) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    def get_all_api_keys(self) -> list[str]:
+    async def add_favorited_requests(
+        self,
+        cursor: RainwaveCursor,
+        sid: int,
+    ) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    def _check_too_many_requests(self) -> int:
+    async def remove_request(self, cursor: RainwaveCursor, song_id: int) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    def add_request(self, sid: int, song_id: int) -> int:
+    async def clear_all_requests(self, cursor: RainwaveCursor) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    def add_unrated_requests(self, sid: int, limit: int | None = None) -> int:
+    async def clear_all_requests_on_cooldown(self, cursor: RainwaveCursor) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    def add_favorited_requests(self, sid: int, limit: int | None = None) -> int:
+    async def pause_requests(self, cursor: RainwaveCursor) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def remove_request(self, song_id: int) -> int:
+    async def unpause_requests(self, cursor: RainwaveCursor, sid: int) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def clear_all_requests(self) -> int:
-        raise NotImplementedError
-
-    @abstractmethod
-    def clear_all_requests_on_cooldown(self) -> int:
-        raise NotImplementedError
-
-    @abstractmethod
-    def pause_requests(self) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def unpause_requests(self, sid: int) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def put_in_request_line(self, sid: int) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def remove_from_request_line(self) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def is_in_request_line(self) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_top_request_song_id(self, sid: int) -> int | None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_top_request_song_id_any(self, sid: int) -> int | None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_request_line_sid(self) -> int | None:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def get_request_line_position(self, sid: int) -> int | None:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def get_request_expiry(self) -> int | None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_requests(self, sid: int) -> list[dict[str, Any]]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def set_request_tunein_expiry(self, t: int | None = None) -> int | None:
+    async def put_in_request_line_if_necessary(
+        self, cursor: RainwaveCursor, sid: int
+    ) -> None:
         raise NotImplementedError

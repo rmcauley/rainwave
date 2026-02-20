@@ -1,6 +1,6 @@
 from psycopg import sql
 from typing import Literal, TypedDict
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
 class SongListForAlbumDisplayRow(TypedDict):
@@ -23,7 +23,7 @@ class SongListForAlbumDisplayRow(TypedDict):
 
 
 async def get_songs_for_album_display(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
     album_id: int,
     sid: int,
     user_id: int,

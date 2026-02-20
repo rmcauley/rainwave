@@ -6,7 +6,7 @@ from common import log
 from common import config
 from time import time as timestamp
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.album.start_album_election_block import start_album_election_block
 from common.playlist.extra_detail_histogram import (
     RatingHistogram,
@@ -97,9 +97,7 @@ class SongOnStation:
         self.data = song_on_station_data
 
     @staticmethod
-    async def load(
-        cursor: RainwaveCursor | RainwaveCursorTx, song_id: int, sid: int
-    ) -> SongOnStation:
+    async def load(cursor: RainwaveCursor, song_id: int, sid: int) -> SongOnStation:
         song_on_station_data = await cursor.fetch_row(
             """
             SELECT r4_songs.*, r4_albums.name AS album_name, r4_song_sid.*
@@ -118,7 +116,7 @@ class SongOnStation:
     def get_artists_from_parseable(self) -> list[ArtistParseable]:
         return orjson.loads(self.data["song_artist_parseable"])
 
-    async def start_cooldown(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def start_cooldown(self, cursor: RainwaveCursor) -> None:
         cool_time = cooldown_config[self.sid]["max_song_cool"]
         if self.data["song_cool_override"]:
             cool_time = self.data["song_cool_override"]
@@ -180,7 +178,7 @@ class SongOnStation:
             (self.data["song_request_only_end"], self.id, self.sid),
         )
 
-    async def update_rating(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def update_rating(self, cursor: RainwaveCursor) -> None:
         ratings = await cursor.fetch_all(
             """
             SELECT 
@@ -249,17 +247,13 @@ class SongOnStation:
             "song_rating_histogram": histogram,
         }
 
-    async def update_last_played(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> None:
+    async def update_last_played(self, cursor: RainwaveCursor) -> None:
         await cursor.update(
             "UPDATE r4_song_sid SET song_played_last = %s WHERE song_id = %s AND sid = %s",
             (timestamp(), self.id, self.sid),
         )
 
-    async def update_fave_count(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> None:
+    async def update_fave_count(self, cursor: RainwaveCursor) -> None:
         count = await cursor.fetch_guaranteed(
             "SELECT COUNT(*) FROM r4_song_ratings WHERE song_fave = TRUE AND song_id = %s",
             (self.id,),
@@ -282,9 +276,7 @@ class SongOnStation:
             self.verified = False
             return False
 
-    async def start_election_block(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> None:
+    async def start_election_block(self, cursor: RainwaveCursor) -> None:
         await start_album_election_block(
             cursor,
             self.data["album_id"],

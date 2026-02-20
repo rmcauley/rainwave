@@ -1,14 +1,12 @@
 from common import log
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.requests.request_line_types import RequestLineEntry
 from common.schedule.election.election import Election, ElectionType
 from common.schedule.schedule_models.schedule_entry_base import ScheduleEntry
 
 
 class ElectionHour(ScheduleEntry):
-    async def has_timeline_entries_remaining(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> bool:
+    async def has_timeline_entries_remaining(self, cursor: RainwaveCursor) -> bool:
         return (
             await cursor.fetch_guaranteed(
                 "SELECT COUNT(elec_id) FROM r4_elections WHERE sched_id = %s AND sid = %s AND elec_used = FALSE",
@@ -20,7 +18,7 @@ class ElectionHour(ScheduleEntry):
 
     async def get_next_timeline_entry(
         self,
-        cursor: RainwaveCursor | RainwaveCursorTx,
+        cursor: RainwaveCursor,
         request_line: list[RequestLineEntry],
         target_song_length: int | None = None,
     ) -> Election:
@@ -47,7 +45,7 @@ class ElectionHour(ScheduleEntry):
         return election
 
     async def get_timeline_entry_in_progress(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
+        self, cursor: RainwaveCursor
     ) -> Election | None:
         elec_id = await cursor.fetch_var(
             "SELECT elec_id FROM r4_elections WHERE elec_in_progress = TRUE sched_id = %s ORDER BY elec_id DESC LIMIT 1",

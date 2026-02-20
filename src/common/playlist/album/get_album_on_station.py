@@ -1,7 +1,7 @@
 from psycopg import sql
 from datetime import datetime
 from typing import TypedDict
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.album.model.album_on_station import (
     AlbumOnStation,
 )
@@ -69,7 +69,7 @@ select_sql = sql.SQL(
 
 
 async def get_album_on_station(
-    cursor: RainwaveCursor | RainwaveCursorTx, album_id: int, sid: int
+    cursor: RainwaveCursor, album_id: int, sid: int
 ) -> AlbumOnStation:
     row = await cursor.fetch_row(
         select_sql
@@ -87,7 +87,7 @@ async def get_album_on_station(
 
 
 async def get_many_album_on_station(
-    cursor: RainwaveCursor | RainwaveCursorTx, album_ids: list[int], sid: int
+    cursor: RainwaveCursor, album_ids: list[int], sid: int
 ) -> list[AlbumOnStation]:
     rows = await cursor.fetch_all(
         select_sql

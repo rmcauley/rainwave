@@ -1,8 +1,8 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
 async def start_album_election_block(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
     album_id: int,
     sid: int,
     num_elections: int,

@@ -3,7 +3,7 @@ from typing import TypedDict
 
 from common import config
 from common import log
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
 class CooldownConfig(TypedDict):
@@ -37,9 +37,7 @@ cooldown_config_defaults: CooldownConfig = {
 cooldown_config: dict[int, CooldownConfig] = {}
 
 
-async def prepare_cooldown_algorithm(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
-) -> None:
+async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
     """
     Prepares pre-calculated variables that relate to calculating cooldown.
     Should pull all variables fresh from the DB, for algorithm

@@ -1,28 +1,11 @@
+from common.db.cursor import RainwaveCursor
+from common.user.model.anonymous_user import AnonymousUser
 
 
-    def _auth_anon_user(self, api_key: str | None, bypass: bool = False) -> None:
-        if not bypass:
-            print("not bypassing")
-            cache_key = unicodedata.normalize(
-                "NFKD", "api_key_listen_key_%s" % api_key
-            ).encode("ascii", "ignore")
-            print("A")
-            listen_key = cache.get(cache_key)
-            print("B")
-            if not listen_key:
-                listen_key = await cursor.fetch_var(
-                    "SELECT api_key_listen_key FROM r4_api_keys WHERE api_key = %s AND user_id = 1",
-                    (self.api_key,),
-                )
-                print("c")
-                if not listen_key:
-                    print("d")
-                    return
-                else:
-                    print("e")
-                    self.data["listen_key"] = listen_key
-            else:
-                print("f")
-                self.data["listen_key"] = listen_key
-        print("all should be good!")
-        self.authorized = True
+async def get_authorized_anonymous_user(
+    cursor: RainwaveCursor, sid: int, user_id: int, api_key: str
+) -> AnonymousUser:
+    (public_data, private_data, server_data) = await AnonymousUser.get_refreshed_data(
+        cursor, sid, user_id, api_key
+    )
+    return AnonymousUser(public_data, private_data, server_data)

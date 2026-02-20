@@ -20,6 +20,10 @@ ErrorTranslationKeys = (
     | Literal["db_error_permanent"]
     | Literal["websocket_throttle"]
     | Literal["404"]
+    | Literal["too_many_requests"]
+    | Literal["same_request_exists"]
+    | Literal["same_request_album"]
+    | Literal["song_not_requested"]
 )
 
 

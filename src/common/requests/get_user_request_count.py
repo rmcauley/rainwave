@@ -1,8 +1,8 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
 async def get_request_count_for_station(
-    cursor: RainwaveCursor | RainwaveCursorTx, user_id: int, sid: int
+    cursor: RainwaveCursor, user_id: int, sid: int
 ) -> bool:
     return (
         await cursor.fetch_guaranteed(
@@ -15,7 +15,7 @@ async def get_request_count_for_station(
 
 
 async def get_request_count_for_any_station(
-    cursor: RainwaveCursor | RainwaveCursorTx, user_id: int
+    cursor: RainwaveCursor, user_id: int
 ) -> bool:
     return (
         await cursor.fetch_guaranteed(

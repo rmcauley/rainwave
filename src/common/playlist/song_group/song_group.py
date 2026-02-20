@@ -1,7 +1,7 @@
 from typing import TypedDict
 
 from common import config
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.remove_diacritics import remove_diacritics
 
 
@@ -30,7 +30,7 @@ class SongGroup:
         self.data = data
 
     @staticmethod
-    async def upsert(cursor: RainwaveCursor | RainwaveCursorTx, name: str) -> SongGroup:
+    async def upsert(cursor: RainwaveCursor, name: str) -> SongGroup:
         row = await cursor.fetch_row(
             """
             INSERT INTO r4_groups (group_name, group_name_searchable) VALUES (%s, %s, %s)
@@ -44,7 +44,7 @@ class SongGroup:
             raise CouldNotUpsertSongError(f"Could not upsert group with name {name}")
         return SongGroup(row)
 
-    async def reconcile_sids(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def reconcile_sids(self, cursor: RainwaveCursor) -> None:
         new_sids_all = await cursor.fetch_all(
             """
                 SELECT

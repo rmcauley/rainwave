@@ -1,9 +1,9 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.requests.request_line_types import RequestLineEntry
 
 
 async def update_albums_with_requests_flag(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int, line: list[RequestLineEntry]
+    cursor: RainwaveCursor, sid: int, line: list[RequestLineEntry]
 ) -> None:
     await cursor.update(
         "UPDATE r4_album_sid SET album_requests_pending = NULL WHERE album_requests_pending = TRUE AND sid = %s",

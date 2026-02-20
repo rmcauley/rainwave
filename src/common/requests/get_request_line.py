@@ -1,5 +1,5 @@
 from time import time as timestamp
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common import log
 from common.requests.get_user_top_request import (
     TopRequestSongRow,
@@ -13,9 +13,7 @@ from common.requests.request_line_types import (
 )
 
 
-async def get_request_line(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
-) -> list[RequestLineEntry]:
+async def get_request_line(cursor: RainwaveCursor, sid: int) -> list[RequestLineEntry]:
     line = await cursor.fetch_all(LINE_SQL, {"sid": sid}, row_type=RequestLineSqlRow)
 
     new_line: list[RequestLineEntry] = []

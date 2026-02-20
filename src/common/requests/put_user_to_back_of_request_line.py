@@ -1,4 +1,4 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.requests.put_user_in_request_line import put_user_in_request_line
 from common.requests.remove_user_from_request_line import remove_user_from_request_line
 from common.requests.get_user_request_count import get_request_count_for_any_station
@@ -6,7 +6,7 @@ from common.requests.request_line_types import RequestLineEntry
 
 
 async def put_user_to_back_of_request_line(
-    cursor: RainwaveCursor | RainwaveCursorTx, entry: RequestLineEntry
+    cursor: RainwaveCursor, entry: RequestLineEntry
 ) -> None:
     await remove_user_from_request_line(cursor, entry["user_id"])
     # Give them more chances if they still have requests

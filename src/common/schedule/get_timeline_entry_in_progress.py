@@ -1,10 +1,10 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.schedule.get_schedule_at_time import get_current_schedule_entry
 from common.schedule.schedule_models.timeline_entry_base import TimelineEntryBase
 
 
 async def get_timeline_entry_in_progress(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
+    cursor: RainwaveCursor, sid: int
 ) -> TimelineEntryBase | None:
     schedule_entry = await get_current_schedule_entry(cursor, sid)
     if schedule_entry:

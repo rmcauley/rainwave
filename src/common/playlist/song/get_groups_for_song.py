@@ -1,10 +1,8 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.song_group.song_group import SongGroup, SongGroupRow
 
 
-async def get_groups_for_song(
-    cursor: RainwaveCursor | RainwaveCursorTx, song_id: int
-) -> list[SongGroup]:
+async def get_groups_for_song(cursor: RainwaveCursor, song_id: int) -> list[SongGroup]:
     group_rows = await cursor.fetch_all(
         """
         SELECT r4_groups.* 

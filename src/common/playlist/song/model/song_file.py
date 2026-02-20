@@ -5,7 +5,7 @@ from typing import TypedDict
 
 
 from common.db.build_insert import build_insert_on_conflict_do_update
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common import log
 from common.playlist.album.model.album_on_station import AlbumOnStation
 from common.playlist.remove_diacritics import remove_diacritics
@@ -49,9 +49,7 @@ class SongFile:
         self.existing_song_id = existing_song_id
 
     @staticmethod
-    async def create(
-        cursor: RainwaveCursor | RainwaveCursorTx, filename: str
-    ) -> SongFile:
+    async def create(cursor: RainwaveCursor, filename: str) -> SongFile:
         existing_song_id = await cursor.fetch_var(
             "SELECT song_id FROM r4_songs WHERE song_filename = %s",
             (filename,),
@@ -59,9 +57,7 @@ class SongFile:
         )
         return SongFile(filename, existing_song_id)
 
-    async def set_sids(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, new_sids: list[int]
-    ) -> None:
+    async def set_sids(self, cursor: RainwaveCursor, new_sids: list[int]) -> None:
         if not self.existing_song_id:
             return
 
@@ -208,9 +204,7 @@ class SongFile:
 
         await self.set_sids(cursor, new_sids)
 
-    async def disable_song(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, song_id: int
-    ) -> None:
+    async def disable_song(self, cursor: RainwaveCursor, song_id: int) -> None:
         log.info("song_disable", "Disabling ID %s" % (song_id,))
         await cursor.update(
             "UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s",

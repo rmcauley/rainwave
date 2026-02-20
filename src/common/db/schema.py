@@ -651,12 +651,15 @@ async def create_tables() -> None:
             CREATE TABLE r4_api_keys ( \
                 api_id					SERIAL		PRIMARY KEY, \
                 user_id					INTEGER		NOT NULL, \
-                api_key					VARCHAR(10) , \
+                api_key					TEXT , \
                 api_expiry				INTEGER		, \
                 api_key_listen_key      TEXT        \
             )"
         )
 
+        await cursor.update(
+            "CREATE UNIQUE INDEX api_key_unique ON r4_api_keys (user_id, api_key)"
+        )
         await create_index(cursor, "r4_api_keys", ["api_key"])
         await create_delete_fk(cursor, "r4_api_keys", "phpbb_users", "user_id")
 

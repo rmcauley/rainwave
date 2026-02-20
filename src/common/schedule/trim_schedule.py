@@ -1,9 +1,9 @@
 from time import time as timestamp
 from common import config
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 
-async def trim_schedule(cursor: RainwaveCursor | RainwaveCursorTx, sid: int) -> None:
+async def trim_schedule(cursor: RainwaveCursor, sid: int) -> None:
     # Deletes any events in the schedule and elections tables that are old, according to the config
     current_time = int(timestamp())
     await cursor.update(

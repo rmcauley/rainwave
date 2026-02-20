@@ -1,6 +1,6 @@
 from datetime import datetime
 from common.cache.update_user_rating_acl import update_user_rating_acl
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.listeners.trim_listeners import trim_listeners
 from common.listeners.unlock_listeners import unlock_listeners
 from common.playlist.album.get_album_on_station import get_many_album_on_station
@@ -20,7 +20,7 @@ from common.schedule.update_tunein import update_tunein
 
 
 async def advance_timeline(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int, timeline: TimelineOnStation
+    cursor: RainwaveCursor, sid: int, timeline: TimelineOnStation
 ) -> None:
     processing_start_time = datetime.now()
 

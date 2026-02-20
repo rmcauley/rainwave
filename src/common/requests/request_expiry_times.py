@@ -1,13 +1,13 @@
 from typing import cast
 from common.cache.cache import cache_get, cache_set
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.requests.request_line_db_schema import RequestLineRow
 
 RequestExpiryTimes = dict[int, int | None]
 
 
 async def update_request_expire_times(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
 ) -> None:
     expiry_times: RequestExpiryTimes = {}
     for row in await cursor.fetch_all(

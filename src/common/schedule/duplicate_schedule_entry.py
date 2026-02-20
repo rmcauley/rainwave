@@ -1,12 +1,12 @@
 from time import time as timestamp
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.schedule.create_schedule_entry import create_schedule_entry
 from common.schedule.schedule_entry_types import ScheduleEntryRow
 
 
 async def duplicate_schedule_entry(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
     entry: ScheduleEntryRow,
     creator_user_id: int,
 ) -> ScheduleEntryRow:

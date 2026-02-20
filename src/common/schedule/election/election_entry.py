@@ -2,7 +2,7 @@ from psycopg import sql
 from typing import TypedDict
 
 from common.db.build_insert import build_insert
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.song.model.song_on_station import SongOnStation
 
 
@@ -33,7 +33,7 @@ class ElectionEntry(ElectionEntryRow):
 
 
 async def create_election_entry(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
     election_id: int,
     song_on_station: SongOnStation,
     entry_position: int,

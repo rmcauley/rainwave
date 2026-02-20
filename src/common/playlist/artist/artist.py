@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.remove_diacritics import remove_diacritics
 
 
@@ -23,7 +23,7 @@ class Artist:
         self.data = artist_row
 
     @staticmethod
-    async def upsert(cursor: RainwaveCursor | RainwaveCursorTx, name: str) -> Artist:
+    async def upsert(cursor: RainwaveCursor, name: str) -> Artist:
         upserted = await cursor.fetch_row(
             """
             INSERT INTO r4_artists (artist_name, artist_name_searchable) VALUES (%s, %s)

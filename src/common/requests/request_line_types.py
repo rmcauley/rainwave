@@ -63,3 +63,27 @@ LINE_SQL = sql.SQL(
     ORDER BY line_wait_start
 """
 ).format({"sid": sql.Placeholder(name="sid")})
+
+LINE_ENTRY_SQL_FOR_USER_ID = sql.SQL(
+    """
+    SELECT 
+        COALESCE(radio_username, username) AS username, 
+        r4_request_line.sid AS line_sid,
+        user_id,
+        radio_requests_paused AS user_requests_paused,
+        line_expiry_tune_in, 
+        line_expiry_election, 
+        line_wait_start, 
+        line_has_had_valid,
+        r4_listeners.sid AS tuned_in_sid
+    FROM r4_request_line 
+        JOIN phpbb_users USING (user_id) 
+        LEFT JOIN r4_listeners ON (
+            r4_request_line.user_id = r4_listeners.user_id
+            AND listener_purge = FALSE
+        )
+    WHERE 
+        r4_request_line.user_id = {user_id}
+    ORDER BY line_wait_start
+"""
+).format({"user_id": sql.Placeholder(name="user_id")})

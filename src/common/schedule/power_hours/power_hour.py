@@ -1,7 +1,7 @@
 import random
 from typing import Sequence, TypedDict
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.album.get_song_list_for_album_display import (
     get_songs_for_album_display,
 )
@@ -22,9 +22,7 @@ class FillUnratedRow(TypedDict):
 
 
 class PowerHour(ScheduleEntry):
-    async def has_timeline_entries_remaining(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> bool:
+    async def has_timeline_entries_remaining(self, cursor: RainwaveCursor) -> bool:
         next_up_id = await cursor.fetch_var(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = FALSE AND one_up_used = FALSE ORDER BY one_up_order LIMIT 1",
             (self.id,),
@@ -33,7 +31,7 @@ class PowerHour(ScheduleEntry):
         return bool(next_up_id)
 
     async def get_queued_timeline_entries(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
+        self, cursor: RainwaveCursor
     ) -> Sequence[PowerHourSong]:
         power_hour_song_ids = await cursor.fetch_list(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE AND one_up_used = FALSE ORDER BY one_up_order",
@@ -47,7 +45,7 @@ class PowerHour(ScheduleEntry):
 
     async def get_next_timeline_entry(
         self,
-        cursor: RainwaveCursor | RainwaveCursorTx,
+        cursor: RainwaveCursor,
         request_line: list[RequestLineEntry],
         target_song_length: int | None = None,
     ) -> PowerHourSong | None:
@@ -70,9 +68,7 @@ class PowerHour(ScheduleEntry):
             )
             return None
 
-    async def change_start(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, new_start: int
-    ) -> None:
+    async def change_start(self, cursor: RainwaveCursor, new_start: int) -> None:
         if not self.data["sched_used"]:
             self.data["sched_start"] = new_start
             if self.data["sched_end"] and self.data["sched_start"]:
@@ -85,7 +81,7 @@ class PowerHour(ScheduleEntry):
         else:
             raise Exception("Cannot change the start time of a used producer.")
 
-    async def _update_length(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def _update_length(self, cursor: RainwaveCursor) -> None:
         stats = await cursor.fetch_row(
             """
             SELECT 
@@ -118,7 +114,7 @@ class PowerHour(ScheduleEntry):
         )
 
     async def get_timeline_entry_in_progress(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
+        self, cursor: RainwaveCursor
     ) -> PowerHourSong | None:
         next_song_id = await cursor.fetch_var(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE ORDER BY one_up_order ASC LIMIT 1",
@@ -131,7 +127,7 @@ class PowerHour(ScheduleEntry):
 
     async def add_song_id(
         self,
-        cursor: RainwaveCursor | RainwaveCursorTx,
+        cursor: RainwaveCursor,
         song_id: int,
         order: int | None = None,
     ) -> None:
@@ -150,7 +146,7 @@ class PowerHour(ScheduleEntry):
 
     async def add_album_id(
         self,
-        cursor: RainwaveCursor | RainwaveCursorTx,
+        cursor: RainwaveCursor,
         album_id: int,
         order: int | None = None,
     ) -> None:
@@ -168,7 +164,7 @@ class PowerHour(ScheduleEntry):
         await self._update_length(cursor)
 
     async def remove_one_up(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, power_hour_song_id: int
+        self, cursor: RainwaveCursor, power_hour_song_id: int
     ) -> bool:
         if (
             await cursor.update(
@@ -180,7 +176,7 @@ class PowerHour(ScheduleEntry):
             return True
         return False
 
-    async def shuffle_songs(self, cursor: RainwaveCursor | RainwaveCursorTx) -> bool:
+    async def shuffle_songs(self, cursor: RainwaveCursor) -> bool:
         power_hour_song_ids = await cursor.fetch_list(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s",
             (self.id,),
@@ -196,9 +192,7 @@ class PowerHour(ScheduleEntry):
             i += 1
         return True
 
-    async def move_song_up(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, one_up_id: int
-    ) -> bool:
+    async def move_song_up(self, cursor: RainwaveCursor, one_up_id: int) -> bool:
         power_hour_song_ids = await cursor.fetch_list(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
             (self.id,),
@@ -220,9 +214,7 @@ class PowerHour(ScheduleEntry):
             i += 1
         return True
 
-    async def load_all_songs(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> list[PowerHourSong]:
+    async def load_all_songs(self, cursor: RainwaveCursor) -> list[PowerHourSong]:
         songs: list[PowerHourSong] = []
         for power_hour_song_row in await cursor.fetch_all(
             "SELECT * FROM r4_one_ups WHERE sched_id = %s ORDER BY one_up_order",
@@ -235,9 +227,7 @@ class PowerHour(ScheduleEntry):
             songs.append(PowerHourSong(power_hour_song_row, song_on_station))
         return songs
 
-    async def fill_unrated(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, max_length: int
-    ) -> None:
+    async def fill_unrated(self, cursor: RainwaveCursor, max_length: int) -> None:
         total_time = 0
         rows = await cursor.fetch_all(
             """

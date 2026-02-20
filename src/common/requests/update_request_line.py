@@ -2,7 +2,7 @@ from time import time as timestamp
 
 from common import log
 from common.cache.station_cache import cache_set_station
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.requests.get_user_top_request import TopRequestSongRow
 from common.requests.put_user_in_request_line import put_user_in_request_line
 from common.requests.remove_user_from_request_line import remove_user_from_request_line
@@ -20,7 +20,7 @@ from common.requests.update_request_line_entry_has_had_valid import (
 
 
 async def _mark_request_filled(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
     sid: int,
     entry: RequestLineEntry,
     song: TopRequestSongRow,
@@ -55,7 +55,7 @@ async def _mark_request_filled(
 
 
 async def write_updated_request_line_to_db(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int, line: list[RequestLineEntry]
+    cursor: RainwaveCursor, sid: int, line: list[RequestLineEntry]
 ) -> None:
     # user_positions has user_id as a key and position as the value, this is cached for quick lookups by API requests
     # so users know where they are in line

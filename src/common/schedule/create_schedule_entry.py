@@ -1,6 +1,6 @@
 from psycopg import sql
 from common.db.build_insert import build_insert
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.schedule.schedule_entry_types import (
     ScheduleEntryInsertRow,
     ScheduleEntryRow,
@@ -8,7 +8,7 @@ from common.schedule.schedule_entry_types import (
 
 
 async def create_schedule_entry(
-    cursor: RainwaveCursor | RainwaveCursorTx, data: ScheduleEntryInsertRow
+    cursor: RainwaveCursor, data: ScheduleEntryInsertRow
 ) -> ScheduleEntryRow:
     inserted = await cursor.fetch_row(
         build_insert(

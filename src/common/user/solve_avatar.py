@@ -1,11 +1,11 @@
-_AVATAR_PATH = "/forums/download/file.php?avatar=%s"
-_DEFAULT_AVATAR = "/static/images4/user.svg"
+AVATAR_PATH = "/forums/download/file.php?avatar=%s"
+DEFAULT_AVATAR = "/static/images4/user.svg"
 
 
-def solve_avatar(avatar_type: str, avatar: str) -> str:
+def solve_avatar(avatar_type: str, avatar: str | None) -> str:
     if avatar_type == "avatar.driver.upload":
-        return _AVATAR_PATH % avatar
-    elif avatar_type == "avatar.driver.remote":
+        return AVATAR_PATH % avatar
+    elif avatar_type == "avatar.driver.remote" and avatar:
         return avatar
     else:
-        return _DEFAULT_AVATAR
+        return DEFAULT_AVATAR

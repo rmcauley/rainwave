@@ -27,3 +27,25 @@ class UserServerData(TypedDict):
     group_id: int
     listener_id: int | None
     listener_sid: int | None
+
+
+class UserRefreshDataRow(TypedDict):
+    avatar_type: str
+    avatar: str | None
+    group_id: int
+    id: int
+    listen_key: str
+    listener_id: int | None
+    listener_lock_counter: int | None
+    listener_lock_sid: int | None
+    listener_lock: bool | None
+    listener_sid: int | None
+    listener_voted_entry: int | None
+    name: str
+    requests_paused: bool
+    total_ratings: int
+
+
+class RequestStoreRow(TypedDict):
+    song_id: int
+    album_id: int

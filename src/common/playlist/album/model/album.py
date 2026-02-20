@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 
 from common.playlist.remove_diacritics import remove_diacritics
 from api.exceptions import APIException
@@ -41,9 +41,7 @@ class Album:
 
         return Album(data)
 
-    async def get_num_songs_for_station(
-        self, cursor: RainwaveCursor | RainwaveCursorTx, sid: int
-    ) -> int:
+    async def get_num_songs_for_station(self, cursor: RainwaveCursor, sid: int) -> int:
         return await cursor.fetch_guaranteed(
             "SELECT COUNT(song_id) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE r4_songs.album_id = %s AND sid = %s AND song_exists = TRUE AND song_verified = TRUE",
             (self.id, sid),
@@ -51,9 +49,7 @@ class Album:
             var_type=int,
         )
 
-    async def reconcile_sids(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> list[int]:
+    async def reconcile_sids(self, cursor: RainwaveCursor) -> list[int]:
         new_sids = await cursor.fetch_list(
             "SELECT sid FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE r4_songs.album_id = %s AND song_exists = TRUE AND song_verified = TRUE GROUP BY sid",
             (self.id,),
@@ -98,9 +94,7 @@ class Album:
 
         return new_sids
 
-    async def update_all_user_ratings(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> None:
+    async def update_all_user_ratings(self, cursor: RainwaveCursor) -> None:
         await cursor.update(
             "DELETE FROM r4_album_ratings WHERE album_id = %s", (self.id,)
         )
@@ -147,9 +141,7 @@ class Album:
                 (num_songs, self.id, sid),
             )
 
-    async def reset_user_completed_flags(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> None:
+    async def reset_user_completed_flags(self, cursor: RainwaveCursor) -> None:
         await cursor.update(
             "WITH status AS ( "
             "SELECT CASE WHEN COUNT(song_rating) >= album_song_count THEN TRUE ELSE FALSE END AS rating_complete, r4_songs.album_id, r4_song_sid.sid, user_id "

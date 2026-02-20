@@ -1,11 +1,11 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.schedule.create_schedule_entry import create_schedule_entry
 from common.schedule.power_hours.power_hour import PowerHour
 from common.schedule.power_hours.power_hour_song import PowerHourSongRow
 
 
 async def duplicate_power_hour(
-    cursor: RainwaveCursor | RainwaveCursorTx, existing_power_hour: PowerHour
+    cursor: RainwaveCursor, existing_power_hour: PowerHour
 ) -> PowerHour:
     duplicated_power_hour_row = await create_schedule_entry(
         cursor,

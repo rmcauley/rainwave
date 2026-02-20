@@ -1,4 +1,4 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common import config
 
 num_songs_total = 0
@@ -9,7 +9,7 @@ max_album_ids: dict[int, int] = {}
 
 
 async def update_playlist_object_counts(
-    cursor: RainwaveCursor | RainwaveCursorTx,
+    cursor: RainwaveCursor,
 ) -> None:
     global num_songs_total
     global num_songs

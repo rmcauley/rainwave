@@ -1,9 +1,9 @@
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.song_group.song_group import SongGroupRow
 
 
 async def load_groups_for_song_on_station(
-    cursor: RainwaveCursor | RainwaveCursorTx, song_id: int, sid: int
+    cursor: RainwaveCursor, song_id: int, sid: int
 ) -> list[SongGroupRow]:
     return await cursor.fetch_all(
         """

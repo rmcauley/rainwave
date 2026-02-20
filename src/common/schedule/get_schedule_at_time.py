@@ -1,19 +1,19 @@
 from time import time as timestamp
 
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.schedule.get_schedule_entry_from_row import get_schedule_entry_from_row
 from common.schedule.schedule_entry_types import ScheduleEntryRow
 from common.schedule.schedule_models.schedule_entry_base import ScheduleEntry
 
 
 async def get_current_schedule_entry(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int
+    cursor: RainwaveCursor, sid: int
 ) -> ScheduleEntry | None:
     return await get_schedule_entry_at_time(cursor, sid, int(timestamp()))
 
 
 async def get_schedule_entry_at_time(
-    cursor: RainwaveCursor | RainwaveCursorTx, sid: int, at_time: int
+    cursor: RainwaveCursor, sid: int, at_time: int
 ) -> ScheduleEntry | None:
     schedule_row = await cursor.fetch_row(
         """

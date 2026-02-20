@@ -5,7 +5,7 @@ from typing import TypedDict
 
 from common import config
 from common import log
-from common.db.cursor import RainwaveCursor, RainwaveCursorTx
+from common.db.cursor import RainwaveCursor
 from common.playlist.extra_detail_histogram import (
     RatingHistogram,
     produce_rating_histogram,
@@ -138,7 +138,7 @@ class AlbumOnStation:
 
     async def start_cooldown(
         self,
-        cursor: RainwaveCursor | RainwaveCursorTx,
+        cursor: RainwaveCursor,
         cool_time_override: int | None = None,
     ) -> None:
         cool_time = cool_time_override or self.get_cooldown_time()
@@ -179,9 +179,7 @@ class AlbumOnStation:
             (request_only_end, self.album_id, self.sid, cool_end),
         )
 
-    async def update_lowest_cooldown(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> None:
+    async def update_lowest_cooldown(self, cursor: RainwaveCursor) -> None:
         self.data["album_cool_lowest"] = await cursor.fetch_guaranteed(
             "SELECT MIN(song_cool_end) FROM r4_song_sid JOIN r4_songs USING (song_id) WHERE album_id = %s AND sid = %s AND song_exists = TRUE",
             (self.album_id, self.sid),
@@ -203,9 +201,7 @@ class AlbumOnStation:
             ),
         )
 
-    async def update_last_played(
-        self, cursor: RainwaveCursor | RainwaveCursorTx
-    ) -> None:
+    async def update_last_played(self, cursor: RainwaveCursor) -> None:
         await cursor.update(
             "UPDATE r4_album_sid SET album_played_last = %s WHERE album_id = %s AND sid = %s",
             (timestamp(), self.album_id, self.sid),
@@ -282,7 +278,7 @@ class AlbumOnStation:
             "album_request_rank_percentile": 0,
         }
 
-    async def update_rating(self, cursor: RainwaveCursor | RainwaveCursorTx) -> None:
+    async def update_rating(self, cursor: RainwaveCursor) -> None:
         for sid in await cursor.fetch_list(
             "SELECT sid FROM r4_album_sid WHERE album_id = %s AND album_exists = TRUE",
             (self.album_id,),
@@ -338,7 +334,7 @@ class AlbumOnStation:
 
     @staticmethod
     async def update_newest_song_time(
-        cursor: RainwaveCursor | RainwaveCursorTx, album_id: int, sid: int
+        cursor: RainwaveCursor, album_id: int, sid: int
     ) -> None:
         newest_song = cursor.fetch_guaranteed(
             """
