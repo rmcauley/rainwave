@@ -1,0 +1,5353 @@
+{
+  "openapi": "3.2.0",
+  "$self": "https://rainwave.cc/api4/rainwave-openapi.json",
+  "info": {
+    "title": "Rainwave API",
+    "version": "4.0.0",
+    "contact": {
+      "name": "Rainwave",
+      "url": "https://rainwave.cc"
+    }
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "https://rainwave.cc"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Core",
+      "description": "Rainwave REST-ish endpoints for core Rainwave interactivity, as used on the website."
+    },
+    {
+      "name": "Statistics",
+      "description": "Endpoints that provide miscellaneous statistics."
+    },
+    {
+      "name": "Websocket",
+      "description": "Endpoints that begin websocket connections for Rainwave."
+    }
+  ],
+  "paths": {
+    "/api4/websocket/{sid}": {
+      "get": {
+        "summary": "WebSocket upgrade endpoint",
+        "description": "Upgrades HTTP connection to a WebSocket session for the station.",
+        "parameters": [
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "101": { "description": "Websocket initiated." },
+          "400": { "$ref": "#/components/responses/default_api_error" },
+          "403": { "$ref": "#/components/responses/default_api_error" }
+        }
+      }
+    },
+    "/api4/album": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getAlbum",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "sort": {
+                    "description": "How to sort the songs that are a part of the album.",
+                    "type": "string",
+                    "enum": ["added_on", "name"]
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["id", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/album_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/all_albums_paginated": {
+      "post": {
+        "tags": ["Core"],
+        "description": "Returns all albums on the station, sorted by album ID.",
+        "operationId": "getAllAlbumsPaginated",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "after": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/all_albums_paginated_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/all_artists_paginated": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getAllArtistsPaginated",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "after": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/all_artists_paginated_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/all_faves": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getAllFaves",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "per_page": {
+                    "type": "number"
+                  },
+                  "page_start": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "required": ["user_id", "api_key"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/all_faves_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/all_groups_paginated": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getAllGroupsPaginated",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "after": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/all_groups_paginated_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/all_songs": {
+      "post": {
+        "tags": ["Statistics"],
+        "operationId": "getAllSongs",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "per_page": {
+                    "type": "number"
+                  },
+                  "page_start": {
+                    "type": "number"
+                  },
+                  "order": {
+                    "type": "string",
+                    "enum": ["rating"]
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "required": ["user_id", "api_key"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/all_songs_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/artist": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getArtist",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["id", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/artist_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/clear_rating": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "clearRating",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "song_id": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["song_id", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/clear_rating_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/clear_requests": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "clearRequests",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/clear_requests_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/clear_requests_on_cooldown": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "clearRequestsOnCooldown",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/clear_requests_on_cooldown_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/delete_request": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "deleteRequest",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "song_id": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["song_id", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/delete_request_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/fave_album": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "faveAlbum",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "album_id": {
+                    "type": "number"
+                  },
+                  "fave": {
+                    "type": "boolean"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["album_id", "fave", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/fave_album_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/fave_all_songs": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "faveAllSongsInAlbum",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "album_id": {
+                    "type": "number"
+                  },
+                  "fave": {
+                    "type": "boolean"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["album_id", "fave", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/fave_all_songs_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/fave_song": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "faveSong",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "song_id": {
+                    "type": "number"
+                  },
+                  "fave": {
+                    "type": "boolean"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "required": ["song_id", "fave", "user_id", "api_key"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/fave_song_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/group": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getGroup",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["id", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/group_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/info_all": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getAllStationsInfo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/info_all_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/listener": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getListener",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "user_id", "api_key"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/listener_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/order_requests": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "reorderRequests",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "string",
+                    "description": "A comma-separated list of Song IDs that represent the user's request queue, in the order the user desires."
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["order", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/order_requests_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/pause_request_queue": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "pauseRequestQueue",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/pause_request_queue_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/playback_history": {
+      "post": {
+        "tags": ["Statistics"],
+        "operationId": "getPlaybackHistory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "per_page": {
+                    "type": "number"
+                  },
+                  "page_start": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/playback_history_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/rate": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "rateSong",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "song_id": {
+                    "type": "number"
+                  },
+                  "rating": {
+                    "type": "number",
+                    "enum": [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["song_id", "rating", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/rate_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/request": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "requestSong",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "song_id": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["song_id", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/request_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/request_favorited_songs": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "requestFavoritedSongs",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/request_favorited_songs_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/request_line": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getRequestLine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/request_line_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/request_unrated_songs": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "requestUnratedSongs",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/request_unrated_songs_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/search": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "search",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "search": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["search", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/search_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/song": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getSong",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["id", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/song_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/station_song_count": {
+      "post": {
+        "tags": ["Statistics"],
+        "operationId": "getStationSongCount",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "required": ["user_id", "api_key"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/station_song_count_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/stations": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getStations",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/stations_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/top_100": {
+      "post": {
+        "tags": ["Statistics"],
+        "operationId": "getTop100",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/top_100_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/unpause_request_queue": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "unpauseRequestQueue",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/unpause_request_queue_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/unrated_songs": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getUnratedSongs",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "per_page": {
+                    "type": "number"
+                  },
+                  "page_start": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/unrated_songs_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/user_info": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "getUserInfo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
+                },
+                "required": ["user_id", "api_key"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user_info_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/user_recent_votes": {
+      "post": {
+        "tags": ["Statistics"],
+        "operationId": "getUserRecentVotes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "per_page": {
+                    "type": "number"
+                  },
+                  "page_start": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user_recent_votes_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/user_requested_history": {
+      "post": {
+        "tags": ["Statistics"],
+        "operationId": "getUserRequestedHistory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "per_page": {
+                    "type": "number"
+                  },
+                  "page_start": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user_requested_history_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    },
+    "/api4/vote": {
+      "post": {
+        "tags": ["Core"],
+        "operationId": "vote",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "entry_id": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["entry_id", "user_id", "api_key", "sid"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/vote_response"
+          },
+          "default": {
+            "$ref": "#/components/responses/default_api_error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "album": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/album"
+            }
+          }
+        }
+      },
+      "album_diff": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/album_diff"
+            }
+          }
+        }
+      },
+      "album_response": {
+        "description": "200 response for /api4/album",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "album": {
+                  "$ref": "#/components/schemas/album"
+                }
+              },
+              "required": ["album"]
+            }
+          }
+        }
+      },
+      "albums": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/albums"
+            }
+          }
+        }
+      },
+      "all_albums_paginated": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/all_albums_paginated"
+            }
+          }
+        }
+      },
+      "all_albums_paginated_response": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "all_albums_paginated": {
+                  "$ref": "#/components/schemas/all_albums_paginated"
+                }
+              },
+              "required": ["all_albums_paginated"]
+            }
+          }
+        }
+      },
+      "all_artists_paginated": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/all_artists_paginated"
+            }
+          }
+        }
+      },
+      "all_artists_paginated_response": {
+        "description": "200 response for /api4/all_artists_paginated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "all_artists_paginated": {
+                  "$ref": "#/components/schemas/all_artists_paginated"
+                }
+              },
+              "required": ["all_artists_paginated"]
+            }
+          }
+        }
+      },
+      "all_faves": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/all_faves"
+            }
+          }
+        }
+      },
+      "all_faves_response": {
+        "description": "200 response for /api4/all_faves",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "all_faves": {
+                  "$ref": "#/components/schemas/all_faves"
+                }
+              },
+              "required": ["all_faves"]
+            }
+          }
+        }
+      },
+      "all_groups_paginated": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/all_groups_paginated"
+            }
+          }
+        }
+      },
+      "all_groups_paginated_response": {
+        "description": "200 response for /api4/all_groups_paginated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "all_groups_paginated": {
+                  "$ref": "#/components/schemas/all_groups_paginated"
+                }
+              },
+              "required": ["all_groups_paginated"]
+            }
+          }
+        }
+      },
+      "all_songs": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/all_songs"
+            }
+          }
+        }
+      },
+      "all_songs_response": {
+        "description": "200 response for /api4/all_songs",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "all_songs": {
+                  "$ref": "#/components/schemas/all_songs"
+                }
+              },
+              "required": ["all_songs"]
+            }
+          }
+        }
+      },
+      "all_stations_info": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/all_stations_info"
+            }
+          }
+        }
+      },
+      "already_voted": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/already_voted"
+            }
+          }
+        }
+      },
+      "api_info": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/api_info"
+            }
+          }
+        }
+      },
+      "artist": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/artist"
+            }
+          }
+        }
+      },
+      "artist_response": {
+        "description": "200 response for /api4/artist",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "artist": {
+                  "$ref": "#/components/schemas/artist"
+                }
+              },
+              "required": ["artist"]
+            }
+          }
+        }
+      },
+      "artists": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/artists"
+            }
+          }
+        }
+      },
+      "auth_response": {
+        "description": "200 response for /api4/auth",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "wsok": {
+                  "$ref": "#/components/schemas/wsok"
+                },
+                "wserror": {
+                  "$ref": "#/components/schemas/wserror"
+                }
+              }
+            }
+          }
+        }
+      },
+      "build_version": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/build_version"
+            }
+          }
+        }
+      },
+      "check_sched_current_id_response": {
+        "description": "200 response for /api4/check_sched_current_id",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "clear_rating_response": {
+        "description": "200 response for /api4/clear_rating",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rate_result": {
+                  "$ref": "#/components/schemas/rate_result"
+                }
+              },
+              "required": ["rate_result"]
+            }
+          }
+        }
+      },
+      "clear_requests_on_cooldown_response": {
+        "description": "200 response for /api4/clear_requests_on_cooldown",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "$ref": "#/components/schemas/requests"
+                }
+              },
+              "required": ["requests"]
+            }
+          }
+        }
+      },
+      "clear_requests_response": {
+        "description": "200 response for /api4/clear_requests",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "$ref": "#/components/schemas/requests"
+                }
+              },
+              "required": ["requests"]
+            }
+          }
+        }
+      },
+      "cookie_domain": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/cookie_domain"
+            }
+          }
+        }
+      },
+      "default_api_error": {
+        "description": "Default Rainwave error response.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "$ref": "#/components/schemas/error"
+                }
+              },
+              "required": ["error"]
+            }
+          }
+        }
+      },
+      "delete_request_response": {
+        "description": "200 response for /api4/delete_request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "$ref": "#/components/schemas/requests"
+                }
+              },
+              "required": ["requests"]
+            }
+          }
+        }
+      },
+      "delete_request_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/delete_request_result"
+            }
+          }
+        }
+      },
+      "error": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/error"
+            }
+          }
+        }
+      },
+      "error_report_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/error_report_result"
+            }
+          }
+        }
+      },
+      "fave_album_response": {
+        "description": "200 response for /api4/fave_album",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fave_album_result": {
+                  "$ref": "#/components/schemas/fave_album_result"
+                }
+              },
+              "required": ["fave_album_result"]
+            }
+          }
+        }
+      },
+      "fave_album_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/fave_album_result"
+            }
+          }
+        }
+      },
+      "fave_all_songs_response": {
+        "description": "200 response for /api4/fave_all_songs",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fave_all_songs_result": {
+                  "$ref": "#/components/schemas/fave_all_songs_result"
+                }
+              },
+              "required": ["fave_all_songs_result"]
+            }
+          }
+        }
+      },
+      "fave_all_songs_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/fave_all_songs_result"
+            }
+          }
+        }
+      },
+      "fave_song_response": {
+        "description": "200 response for /api4/fave_song",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fave_song_result": {
+                  "$ref": "#/components/schemas/fave_song_result"
+                }
+              },
+              "required": ["fave_song_result"]
+            }
+          }
+        }
+      },
+      "fave_song_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/fave_song_result"
+            }
+          }
+        }
+      },
+      "group": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/group"
+            }
+          }
+        }
+      },
+      "group_response": {
+        "description": "200 response for /api4/group",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "group": {
+                  "$ref": "#/components/schemas/group"
+                }
+              },
+              "required": ["group"]
+            }
+          }
+        }
+      },
+      "info_all_response": {
+        "description": "200 response for /api4/info_all",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "all_stations_info": {
+                  "$ref": "#/components/schemas/all_stations_info"
+                }
+              },
+              "required": ["all_stations_info"]
+            }
+          }
+        }
+      },
+      "listener": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/listener"
+            }
+          }
+        }
+      },
+      "listener_response": {
+        "description": "200 response for /api4/listener",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "listener": {
+                  "$ref": "#/components/schemas/listener"
+                }
+              },
+              "required": ["listener"]
+            }
+          }
+        }
+      },
+      "live_voting": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/live_voting"
+            }
+          }
+        }
+      },
+      "locale": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/locale"
+            }
+          }
+        }
+      },
+      "locales": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/locales"
+            }
+          }
+        }
+      },
+      "message_id": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/message_id"
+            }
+          }
+        }
+      },
+      "mobile": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/mobile"
+            }
+          }
+        }
+      },
+      "on_draw": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/on_draw"
+            }
+          }
+        }
+      },
+      "on_init": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/on_init"
+            }
+          }
+        }
+      },
+      "on_measure": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/on_measure"
+            }
+          }
+        }
+      },
+      "order_requests_response": {
+        "description": "200 response for /api4/order_requests",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "order_requests_result": {
+                  "$ref": "#/components/schemas/order_requests_result"
+                },
+                "requests": {
+                  "$ref": "#/components/schemas/requests"
+                }
+              },
+              "required": ["order_requests_result", "requests"]
+            }
+          }
+        }
+      },
+      "order_requests_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/order_requests_result"
+            }
+          }
+        }
+      },
+      "pause_request_queue_response": {
+        "description": "200 response for /api4/pause_request_queue",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "pause_request_queue_result": {
+                  "$ref": "#/components/schemas/pause_request_queue_result"
+                },
+                "user": {
+                  "$ref": "#/components/schemas/user"
+                }
+              },
+              "required": ["pause_request_queue_result", "user"]
+            }
+          }
+        }
+      },
+      "pause_request_queue_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/pause_request_queue_result"
+            }
+          }
+        }
+      },
+      "ping": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ping"
+            }
+          }
+        }
+      },
+      "ping_response": {
+        "description": "200 response for /api4/ping",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "pong": {
+                  "$ref": "#/components/schemas/pong"
+                }
+              },
+              "required": ["pong"]
+            }
+          }
+        }
+      },
+      "playback_history": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/playback_history"
+            }
+          }
+        }
+      },
+      "playback_history_response": {
+        "description": "200 response for /api4/playback_history",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "playback_history": {
+                  "$ref": "#/components/schemas/playback_history"
+                }
+              },
+              "required": ["playback_history"]
+            }
+          }
+        }
+      },
+      "pong": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/pong"
+            }
+          }
+        }
+      },
+      "pong_confirm": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/pong_confirm"
+            }
+          }
+        }
+      },
+      "pong_response": {
+        "description": "200 response for /api4/pong",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "pongConfirm": {
+                  "$ref": "#/components/schemas/pong_confirm"
+                }
+              },
+              "required": ["pongConfirm"]
+            }
+          }
+        }
+      },
+      "rate_response": {
+        "description": "200 response for /api4/rate",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rate_result": {
+                  "$ref": "#/components/schemas/rate_result"
+                }
+              },
+              "required": ["rate_result"]
+            }
+          }
+        }
+      },
+      "rate_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/rate_result"
+            }
+          }
+        }
+      },
+      "redownload_m3u": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/redownload_m3u"
+            }
+          }
+        }
+      },
+      "relays": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/relays"
+            }
+          }
+        }
+      },
+      "request_favorited_songs_response": {
+        "description": "200 response for /api4/request_favorited_songs",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "request_favorited_songs_result": {
+                  "$ref": "#/components/schemas/request_favorited_songs_result"
+                },
+                "requests": {
+                  "$ref": "#/components/schemas/requests"
+                }
+              },
+              "required": ["request_favorited_songs_result", "requests"]
+            }
+          }
+        }
+      },
+      "request_favorited_songs_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/request_favorited_songs_result"
+            }
+          }
+        }
+      },
+      "request_line": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/request_line"
+            }
+          }
+        }
+      },
+      "request_line_response": {
+        "description": "200 response for /api4/request_line",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "request_line_result": {
+                  "$ref": "#/components/schemas/request_line"
+                }
+              },
+              "required": ["request_line_result"]
+            }
+          }
+        }
+      },
+      "request_response": {
+        "description": "200 response for /api4/request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "$ref": "#/components/schemas/requests"
+                }
+              },
+              "required": ["requests"]
+            }
+          }
+        }
+      },
+      "request_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/request_result"
+            }
+          }
+        }
+      },
+      "request_unrated_songs_response": {
+        "description": "200 response for /api4/request_unrated_songs",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "request_unrated_songs_result": {
+                  "$ref": "#/components/schemas/request_unrated_songs_result"
+                },
+                "requests": {
+                  "$ref": "#/components/schemas/requests"
+                }
+              },
+              "required": ["request_unrated_songs_result", "requests"]
+            }
+          }
+        }
+      },
+      "request_unrated_songs_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/request_unrated_songs_result"
+            }
+          }
+        }
+      },
+      "requests": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/requests"
+            }
+          }
+        }
+      },
+      "sched_current": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/sched_current"
+            }
+          }
+        }
+      },
+      "sched_history": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/sched_history"
+            }
+          }
+        }
+      },
+      "sched_next": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/sched_next"
+            }
+          }
+        }
+      },
+      "sdk_error_clear": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/sdk_error_clear"
+            }
+          }
+        }
+      },
+      "sdk_exception": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/sdk_exception"
+            }
+          }
+        }
+      },
+      "sdk_schedule_synced": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/sdk_schedule_synced"
+            }
+          }
+        }
+      },
+      "search_response": {
+        "description": "200 response for /api4/search",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "albums": {
+                  "$ref": "#/components/schemas/albums"
+                },
+                "artists": {
+                  "$ref": "#/components/schemas/artists"
+                },
+                "songs": {
+                  "$ref": "#/components/schemas/songs"
+                }
+              },
+              "required": ["albums", "artists", "songs"]
+            }
+          }
+        }
+      },
+      "song": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/song"
+            }
+          }
+        }
+      },
+      "song_response": {
+        "description": "200 response for /api4/song",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "song": {
+                  "$ref": "#/components/schemas/song"
+                }
+              },
+              "required": ["song"]
+            }
+          }
+        }
+      },
+      "songs": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/songs"
+            }
+          }
+        }
+      },
+      "station_list": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/station_list"
+            }
+          }
+        }
+      },
+      "station_song_count": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/station_song_count"
+            }
+          }
+        }
+      },
+      "station_song_count_response": {
+        "description": "200 response for /api4/station_song_count",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "station_song_count": {
+                  "$ref": "#/components/schemas/station_song_count"
+                }
+              },
+              "required": ["station_song_count"]
+            }
+          }
+        }
+      },
+      "stations": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/stations"
+            }
+          }
+        }
+      },
+      "stations_response": {
+        "description": "200 response for /api4/stations",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "stations": {
+                  "$ref": "#/components/schemas/stations"
+                }
+              },
+              "required": ["stations"]
+            }
+          }
+        }
+      },
+      "stream_filename": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/stream_filename"
+            }
+          }
+        }
+      },
+      "sync_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/sync_result"
+            }
+          }
+        }
+      },
+      "top_100": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/top_100"
+            }
+          }
+        }
+      },
+      "top_100_response": {
+        "description": "200 response for /api4/top_100",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "top_100": {
+                  "$ref": "#/components/schemas/top_100"
+                }
+              },
+              "required": ["top_100"]
+            }
+          }
+        }
+      },
+      "unpause_request_queue_response": {
+        "description": "200 response for /api4/unpause_request_queue",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unpause_request_queue_result": {
+                  "$ref": "#/components/schemas/unpause_request_queue_result"
+                },
+                "user": {
+                  "$ref": "#/components/schemas/user"
+                }
+              },
+              "required": ["unpause_request_queue_result", "user"]
+            }
+          }
+        }
+      },
+      "unpause_request_queue_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/unpause_request_queue_result"
+            }
+          }
+        }
+      },
+      "unrated_songs": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/unrated_songs"
+            }
+          }
+        }
+      },
+      "unrated_songs_response": {
+        "description": "200 response for /api4/unrated_songs",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unrated_songs": {
+                  "$ref": "#/components/schemas/unrated_songs"
+                }
+              },
+              "required": ["unrated_songs"]
+            }
+          }
+        }
+      },
+      "user": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/user"
+            }
+          }
+        }
+      },
+      "user_info": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/user_info"
+            }
+          }
+        }
+      },
+      "user_info_response": {
+        "description": "200 response for /api4/user_info",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_info": {
+                  "$ref": "#/components/schemas/user"
+                }
+              },
+              "required": ["user_info"]
+            }
+          }
+        }
+      },
+      "user_recent_votes": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/user_recent_votes"
+            }
+          }
+        }
+      },
+      "user_recent_votes_response": {
+        "description": "200 response for /api4/user_recent_votes",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_recent_votes": {
+                  "$ref": "#/components/schemas/user_recent_votes"
+                }
+              },
+              "required": ["user_recent_votes"]
+            }
+          }
+        }
+      },
+      "user_requested_history": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/user_requested_history"
+            }
+          }
+        }
+      },
+      "user_requested_history_response": {
+        "description": "200 response for /api4/user_requested_history",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_requested_history": {
+                  "$ref": "#/components/schemas/user_requested_history"
+                }
+              },
+              "required": ["user_requested_history"]
+            }
+          }
+        }
+      },
+      "vote_response": {
+        "description": "200 response for /api4/vote",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vote": {
+                  "$ref": "#/components/schemas/vote_result"
+                }
+              },
+              "required": ["vote"]
+            }
+          }
+        }
+      },
+      "vote_result": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/vote_result"
+            }
+          }
+        }
+      },
+      "websocket_host": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/websocket_host"
+            }
+          }
+        }
+      },
+      "wserror": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/wserror"
+            }
+          }
+        }
+      },
+      "wsok": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/wsok"
+            }
+          }
+        }
+      },
+      "wsthrottle": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/wsthrottle"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "album": {
+        "$ref": "#/components/schemas/album_with_detail"
+      },
+      "album_diff": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "cool": {
+              "type": "boolean"
+            },
+            "cool_lowest": {
+              "type": "number"
+            },
+            "newest_song_time": {
+              "type": "number"
+            }
+          },
+          "required": ["id", "cool", "cool_lowest", "newest_song_time"]
+        }
+      },
+      "album_in_list": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rating": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "cool": {
+            "type": "boolean"
+          },
+          "cool_lowest": {
+            "type": "number"
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating_complete": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "newest_song_time": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "rating",
+          "cool",
+          "cool_lowest",
+          "fave",
+          "rating_user",
+          "rating_complete",
+          "newest_song_time"
+        ]
+      },
+      "album_with_detail": {
+        "type": "object",
+        "properties": {
+          "genres": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/song_group"
+            }
+          },
+          "rating_complete": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "rating_rank": {
+            "type": "number"
+          },
+          "rating_rank_percentile": {
+            "type": "number"
+          },
+          "request_count": {
+            "type": "number"
+          },
+          "request_rank": {
+            "type": "number"
+          },
+          "request_rank_percentile": {
+            "type": "number"
+          },
+          "rating_histogram": {
+            "type": "object"
+          },
+          "songs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/song_on_album"
+            }
+          },
+          "added_on": {
+            "type": "number"
+          },
+          "art": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "cool_lowest": {
+            "type": "number"
+          },
+          "cool_multiply": {
+            "type": "number"
+          },
+          "cool_override": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "cool": {
+            "type": "boolean"
+          },
+          "fave_count": {
+            "type": "number"
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "played_last": {
+            "type": "number"
+          },
+          "rating_count": {
+            "type": "number"
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "song_count": {
+            "type": "number"
+          },
+          "vote_count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "genres",
+          "rating_complete",
+          "rating_rank",
+          "rating_rank_percentile",
+          "request_count",
+          "request_rank",
+          "request_rank_percentile",
+          "rating_histogram",
+          "songs",
+          "added_on",
+          "art",
+          "cool_lowest",
+          "cool",
+          "fave_count",
+          "fave",
+          "id",
+          "name",
+          "played_last",
+          "rating_count",
+          "rating_user",
+          "rating",
+          "song_count",
+          "vote_count"
+        ]
+      },
+      "albums": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/search_album"
+        }
+      },
+      "all_albums_paginated": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/album_in_list"
+            }
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "next": {
+            "type": "number"
+          },
+          "progress": {
+            "type": "number"
+          }
+        },
+        "required": ["data", "has_next", "next", "progress"]
+      },
+      "all_artists_paginated": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/artist_in_list"
+            }
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "next": {
+            "type": "number"
+          },
+          "progress": {
+            "type": "number"
+          }
+        },
+        "required": ["data", "has_next", "next", "progress"]
+      },
+      "all_faves": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/fave_song"
+        }
+      },
+      "all_groups_paginated": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/group_in_list"
+            }
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "next": {
+            "type": "number"
+          },
+          "progress": {
+            "type": "number"
+          }
+        },
+        "required": ["data", "has_next", "next", "progress"]
+      },
+      "all_songs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/all_songs_song"
+        }
+      },
+      "all_songs_song": {
+        "type": "object",
+        "properties": {
+          "album_name": {
+            "type": "string"
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "rating": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": ["album_name", "fave", "id", "rating", "rating_user", "title"]
+      },
+      "all_stations_info": {
+        "type": "object",
+        "properties": {}
+      },
+      "already_voted": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/already_voted_entry"
+        }
+      },
+      "already_voted_entry": {
+        "type": "array",
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "api_info": {
+        "type": "object",
+        "properties": {
+          "exectime": {
+            "type": "number"
+          },
+          "time": {
+            "type": "number"
+          }
+        },
+        "required": ["exectime", "time"]
+      },
+      "artist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "artist_in_list": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "song_count": {
+            "type": "number"
+          }
+        },
+        "required": ["id", "name", "song_count"]
+      },
+      "artists": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/search_artist"
+        }
+      },
+      "boolean_result": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "tl_key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["success", "tl_key", "text"]
+      },
+      "build_version": {
+        "type": "number"
+      },
+      "cookie_domain": {
+        "type": "string"
+      },
+      "delete_request_result": {
+        "$ref": "#/components/schemas/boolean_result"
+      },
+      "error": {
+        "$ref": "#/components/schemas/rainwave_error_object"
+      },
+      "error_report_result": {
+        "$ref": "#/components/schemas/boolean_result"
+      },
+      "fave_album_result": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "fave": {
+            "type": "boolean"
+          },
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "tl_key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "fave", "sid", "success", "tl_key", "text"]
+      },
+      "fave_all_songs_result": {
+        "type": "object",
+        "properties": {
+          "song_ids": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "fave": {
+            "type": "boolean"
+          },
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "tl_key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["song_ids", "fave", "sid", "success", "tl_key", "text"]
+      },
+      "fave_song": {
+        "type": "object",
+        "properties": {
+          "album_id": {
+            "type": "number"
+          },
+          "album_name": {
+            "type": "string"
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": ["album_id", "album_name", "fave", "id", "rating", "rating_user", "title"]
+      },
+      "fave_song_result": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "fave": {
+            "type": "boolean"
+          },
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "tl_key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "fave", "sid", "success", "tl_key", "text"]
+      },
+      "group": {
+        "$ref": "#/components/schemas/group_with_detail"
+      },
+      "group_in_list": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "group_with_detail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "all_songs_for_sid": {
+            "type": "object"
+          }
+        },
+        "required": ["id", "name", "all_songs_for_sid"]
+      },
+      "listener": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "colour": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "string"
+          },
+          "total_votes": {
+            "type": "number"
+          },
+          "total_ratings": {
+            "type": "number"
+          },
+          "mind_changes": {
+            "type": "number"
+          },
+          "total_requests": {
+            "type": "number"
+          },
+          "winning_votes": {
+            "type": "number"
+          },
+          "losing_votes": {
+            "type": "number"
+          },
+          "regdate": {
+            "type": "number"
+          },
+          "top_albums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/listener_top_album"
+            }
+          },
+          "top_request_albums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/listener_top_request_album"
+            }
+          },
+          "votes_by_station": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/listener_votes_by_station"
+            }
+          },
+          "requests_by_station": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/listener_requests_by_station"
+            }
+          },
+          "requests_by_source_station": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/listener_requests_by_station"
+            }
+          },
+          "ratings_by_station": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/listener_ratings_by_station"
+            }
+          },
+          "ratings_completion": {
+            "type": "object",
+            "properties": {}
+          },
+          "rating_spread": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/listener_rating_spread_item"
+            }
+          }
+        },
+        "required": [
+          "user_id",
+          "name",
+          "avatar",
+          "colour",
+          "rank",
+          "total_votes",
+          "total_ratings",
+          "mind_changes",
+          "total_requests",
+          "winning_votes",
+          "losing_votes",
+          "regdate",
+          "top_albums",
+          "top_request_albums",
+          "votes_by_station",
+          "requests_by_station",
+          "requests_by_source_station",
+          "ratings_by_station",
+          "ratings_completion",
+          "rating_spread"
+        ]
+      },
+      "listener_rating_spread_item": {
+        "type": "object",
+        "properties": {
+          "ratings": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          }
+        },
+        "required": ["ratings", "rating"]
+      },
+      "listener_ratings_by_station": {
+        "type": "object",
+        "properties": {
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "average_rating": {
+            "type": "string"
+          },
+          "ratings": {
+            "type": "number"
+          }
+        },
+        "required": ["sid", "average_rating", "ratings"]
+      },
+      "listener_requests_by_station": {
+        "type": "object",
+        "properties": {
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "requests": {
+            "type": "number"
+          }
+        },
+        "required": ["sid", "requests"]
+      },
+      "listener_top_album": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rating_listener": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          }
+        },
+        "required": ["id", "name", "rating_listener", "rating"]
+      },
+      "listener_top_request_album": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "request_count_listener": {
+            "type": "number"
+          }
+        },
+        "required": ["id", "name", "request_count_listener"]
+      },
+      "listener_votes_by_station": {
+        "type": "object",
+        "properties": {
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "votes": {
+            "type": "number"
+          }
+        },
+        "required": ["sid", "votes"]
+      },
+      "live_voting": {
+        "type": "object"
+      },
+      "locale": {
+        "type": "string"
+      },
+      "locales": {
+        "type": "object"
+      },
+      "message_id": {
+        "type": "object",
+        "properties": {
+          "message_id": {
+            "type": "number"
+          }
+        },
+        "required": ["message_id"]
+      },
+      "mobile": {
+        "type": "boolean"
+      },
+      "native_error": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "stack": {
+            "type": "string"
+          }
+        },
+        "required": ["name", "message"]
+      },
+      "on_draw": {
+        "type": "array",
+        "items": {}
+      },
+      "on_init": {
+        "type": "array",
+        "items": {}
+      },
+      "on_measure": {
+        "type": "array",
+        "items": {}
+      },
+      "order_requests_result": {
+        "$ref": "#/components/schemas/boolean_result"
+      },
+      "pause_request_queue_result": {
+        "$ref": "#/components/schemas/boolean_result"
+      },
+      "ping": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "number"
+          }
+        },
+        "required": ["timestamp"]
+      },
+      "playback_history": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/playback_history_entry"
+        }
+      },
+      "playback_history_entry": {
+        "type": "object",
+        "properties": {
+          "album_id": {
+            "type": "number"
+          },
+          "album_name": {
+            "type": "string"
+          },
+          "artist_parseable": {
+            "type": "string"
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "song_played_at": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "album_id",
+          "album_name",
+          "artist_parseable",
+          "fave",
+          "id",
+          "rating",
+          "rating_user",
+          "song_played_at",
+          "title"
+        ]
+      },
+      "pong": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "number"
+          }
+        },
+        "required": ["timestamp"]
+      },
+      "pong_confirm": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "number"
+          }
+        },
+        "required": ["timestamp"]
+      },
+      "rainwave_error_object": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number"
+          },
+          "tl_key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "tl_key", "text"]
+      },
+      "rainwave_event": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "start": {
+            "type": "number"
+          },
+          "start_actual": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "end": {
+            "type": "number"
+          },
+          "type": {
+            "enum": ["Election", "OneUp", "PVPElection"]
+          },
+          "name": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "url": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "voting_allowed": {
+            "type": "boolean"
+          },
+          "used": {
+            "type": "boolean"
+          },
+          "length": {
+            "type": "number"
+          },
+          "core_event_id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "songs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/rainwave_event_song"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "start_actual",
+          "end",
+          "type",
+          "name",
+          "sid",
+          "url",
+          "voting_allowed",
+          "used",
+          "length",
+          "core_event_id",
+          "songs"
+        ]
+      },
+      "rainwave_event_song": {
+        "type": "object",
+        "properties": {
+          "albums": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "rating": {
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "fave": {
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  },
+                  "rating_user": {
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "art": {
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "required": ["id", "name", "rating", "fave", "rating_user", "art"]
+              }
+            ],
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/rainwave_event_song_artist"
+            }
+          },
+          "cool": {
+            "type": "boolean"
+          },
+          "elec_blocked_by": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "elec_blocked": {
+            "type": "boolean"
+          },
+          "elec_request_user_id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "elec_request_username": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "entry_id": {
+            "type": "number"
+          },
+          "entry_position": {
+            "type": "number"
+          },
+          "entry_type": {
+            "enum": [2, 4]
+          },
+          "entry_votes": {
+            "type": "number"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/song_group"
+            }
+          },
+          "origin_sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "rating_allowed": {
+            "type": "boolean"
+          },
+          "rating_count": {
+            "type": "number"
+          },
+          "request_id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "request_count": {
+            "type": "number"
+          },
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "length": {
+            "type": "number"
+          },
+          "link_text": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "albums",
+          "artists",
+          "cool",
+          "elec_blocked_by",
+          "elec_blocked",
+          "elec_request_user_id",
+          "elec_request_username",
+          "entry_id",
+          "entry_position",
+          "entry_type",
+          "entry_votes",
+          "groups",
+          "origin_sid",
+          "rating_allowed",
+          "rating_count",
+          "request_count",
+          "sid",
+          "fave",
+          "id",
+          "length",
+          "link_text",
+          "rating_user",
+          "rating",
+          "title",
+          "url"
+        ]
+      },
+      "rainwave_event_song_artist": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "type": "number"
+          },
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["order", "id", "name"]
+      },
+      "rainwave_sdk_error_clear": {
+        "type": "object",
+        "properties": {
+          "tl_key": {
+            "type": "string"
+          }
+        },
+        "required": ["tl_key"]
+      },
+      "rate_result": {
+        "type": "object",
+        "properties": {
+          "updated_album_ratings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/updated_album_rating"
+            }
+          },
+          "song_id": {
+            "type": "number"
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "tl_key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["updated_album_ratings", "song_id", "rating_user", "success", "tl_key", "text"]
+      },
+      "redownload_m3u": {
+        "type": "object",
+        "properties": {
+          "tl_key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["tl_key", "text"]
+      },
+      "relay": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "hostname": {
+            "type": "string"
+          },
+          "port": {
+            "type": "number"
+          }
+        },
+        "required": ["name", "protocol", "hostname", "port"]
+      },
+      "relays": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/relay"
+        }
+      },
+      "request": {
+        "type": "object",
+        "properties": {
+          "albums": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/request_album"
+              }
+            ],
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "cool_end": {
+            "type": "number"
+          },
+          "cool": {
+            "type": "boolean"
+          },
+          "elec_blocked_by": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "elec_blocked_num": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "elec_blocked": {
+            "type": "boolean"
+          },
+          "good": {
+            "type": "boolean"
+          },
+          "order": {
+            "type": "number"
+          },
+          "origin_sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "request_id": {
+            "type": "number"
+          },
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/artist"
+            }
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "length": {
+            "type": "number"
+          },
+          "link_text": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "albums",
+          "cool_end",
+          "cool",
+          "elec_blocked_by",
+          "elec_blocked_num",
+          "elec_blocked",
+          "good",
+          "order",
+          "origin_sid",
+          "request_id",
+          "sid",
+          "valid",
+          "artists",
+          "fave",
+          "id",
+          "length",
+          "link_text",
+          "rating_user",
+          "rating",
+          "title",
+          "url"
+        ]
+      },
+      "request_album": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "rating": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating_complete": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "art": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": ["name", "id", "rating", "rating_user", "rating_complete", "art"]
+      },
+      "request_favorited_songs_result": {
+        "$ref": "#/components/schemas/boolean_result"
+      },
+      "request_line": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/request_line_entry"
+        }
+      },
+      "request_line_entry": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "number"
+          },
+          "line_expiry_tune_in": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "line_expiry_election": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "line_wait_start": {
+            "type": "number"
+          },
+          "line_has_had_valid": {
+            "type": "boolean"
+          },
+          "song_id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "skip": {
+            "type": "boolean"
+          },
+          "position": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "username",
+          "user_id",
+          "line_expiry_tune_in",
+          "line_expiry_election",
+          "line_wait_start",
+          "line_has_had_valid",
+          "song_id",
+          "skip",
+          "position"
+        ]
+      },
+      "request_result": {
+        "$ref": "#/components/schemas/boolean_result"
+      },
+      "request_unrated_songs_result": {
+        "$ref": "#/components/schemas/boolean_result"
+      },
+      "requests": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/request"
+        }
+      },
+      "sched_current": {
+        "$ref": "#/components/schemas/rainwave_event"
+      },
+      "sched_history": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/rainwave_event"
+        }
+      },
+      "sched_next": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/rainwave_event"
+        }
+      },
+      "sdk_error_clear": {
+        "$ref": "#/components/schemas/rainwave_sdk_error_clear"
+      },
+      "sdk_exception": {
+        "$ref": "#/components/schemas/native_error"
+      },
+      "sdk_schedule_synced": {
+        "type": "boolean"
+      },
+      "search_album": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cool": {
+            "type": "boolean"
+          },
+          "rating": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating_complete": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          }
+        },
+        "required": ["id", "name", "cool", "rating", "fave", "rating_user", "rating_complete"]
+      },
+      "search_artist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "search_song": {
+        "type": "object",
+        "properties": {
+          "added_on": {
+            "type": "number"
+          },
+          "album_id": {
+            "type": "number"
+          },
+          "album_name": {
+            "type": "string"
+          },
+          "cool_end": {
+            "type": "number"
+          },
+          "cool": {
+            "type": "boolean"
+          },
+          "origin_sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "requestable": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "length": {
+            "type": "number"
+          },
+          "link_text": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "url": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "added_on",
+          "album_id",
+          "album_name",
+          "cool_end",
+          "cool",
+          "origin_sid",
+          "requestable",
+          "id",
+          "rating",
+          "fave",
+          "rating_user",
+          "title",
+          "length",
+          "link_text",
+          "url"
+        ]
+      },
+      "song": {
+        "$ref": "#/components/schemas/song_with_detail"
+      },
+      "song_group": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "song_on_album": {
+        "type": "object",
+        "properties": {
+          "origin_sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "added_on": {
+            "type": "number"
+          },
+          "cool_multiply": {
+            "type": "number"
+          },
+          "cool_override": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "requestable": {
+            "type": "boolean"
+          },
+          "cool": {
+            "type": "boolean"
+          },
+          "cool_end": {
+            "type": "number"
+          },
+          "request_only_end": {
+            "type": "number"
+          },
+          "request_only": {
+            "type": "boolean"
+          },
+          "albums": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name"]
+              }
+            ],
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/artist"
+            }
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "length": {
+            "type": "number"
+          },
+          "link_text": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "origin_sid",
+          "added_on",
+          "requestable",
+          "cool",
+          "cool_end",
+          "request_only_end",
+          "request_only",
+          "albums",
+          "artists",
+          "fave",
+          "id",
+          "length",
+          "link_text",
+          "rating_user",
+          "rating",
+          "title",
+          "url"
+        ]
+      },
+      "song_with_detail": {
+        "type": "object",
+        "properties": {
+          "album": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "rating": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "number"
+                          }
+                        ]
+                      },
+                      "fave": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      },
+                      "rating_user": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "number"
+                          }
+                        ]
+                      },
+                      "art": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["id", "name", "rating", "fave", "rating_user", "art"]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "rating_complete": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["rating_complete"]
+                  }
+                ]
+              }
+            ],
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/song_with_detail_artist"
+            }
+          },
+          "cool": {
+            "type": "boolean"
+          },
+          "elec_blocked_by": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "elec_blocked": {
+            "type": "boolean"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/song_group"
+            }
+          },
+          "origin_sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "rating_allowed": {
+            "type": "boolean"
+          },
+          "rating_count": {
+            "type": "number"
+          },
+          "rating_rank_percentile": {
+            "type": "number"
+          },
+          "rating_rank": {
+            "type": "number"
+          },
+          "request_count": {
+            "type": "number"
+          },
+          "request_rank_percentile": {
+            "type": "number"
+          },
+          "request_rank": {
+            "type": "number"
+          },
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "albums": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "name"]
+              }
+            ],
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "length": {
+            "type": "number"
+          },
+          "link_text": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "album",
+          "artists",
+          "cool",
+          "elec_blocked_by",
+          "elec_blocked",
+          "groups",
+          "origin_sid",
+          "rating_allowed",
+          "rating_count",
+          "rating_rank_percentile",
+          "rating_rank",
+          "request_count",
+          "request_rank_percentile",
+          "request_rank",
+          "sid",
+          "albums",
+          "fave",
+          "id",
+          "length",
+          "link_text",
+          "rating_user",
+          "rating",
+          "title",
+          "url"
+        ]
+      },
+      "song_with_detail_artist": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "type": "number"
+          },
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["order", "id", "name"]
+      },
+      "songs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/search_song"
+        }
+      },
+      "station_description": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "name": {
+            "type": "string"
+          },
+          "relays": {
+            "$ref": "#/components/schemas/relays"
+          },
+          "stream": {
+            "type": "string"
+          }
+        },
+        "required": ["description", "id", "name", "relays", "stream"]
+      },
+      "station_list": {
+        "type": "object",
+        "properties": {}
+      },
+      "station_song_count": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/station_song_count_by_station"
+        }
+      },
+      "station_song_count_by_station": {
+        "type": "object",
+        "properties": {
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "song_count": {
+            "type": "number"
+          }
+        },
+        "required": ["sid", "song_count"]
+      },
+      "stations": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/station_description"
+        }
+      },
+      "stream_filename": {
+        "type": "string"
+      },
+      "sync_result": {
+        "$ref": "#/components/schemas/rainwave_error_object"
+      },
+      "top_100": {
+        "$ref": "#/components/schemas/top100"
+      },
+      "top100": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/top100_song"
+        }
+      },
+      "top100_song": {
+        "type": "object",
+        "properties": {
+          "album_name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "origin_sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "song_rating": {
+            "type": "number"
+          },
+          "song_rating_count": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": ["album_name", "id", "origin_sid", "song_rating", "song_rating_count", "title"]
+      },
+      "unpause_request_queue_result": {
+        "$ref": "#/components/schemas/boolean_result"
+      },
+      "unrated_song": {
+        "type": "object",
+        "properties": {
+          "album_name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": ["album_name", "id", "title"]
+      },
+      "unrated_songs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/unrated_song"
+        }
+      },
+      "updated_album_rating": {
+        "type": "object",
+        "properties": {
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "id": {
+            "type": "number"
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rating_complete": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          }
+        },
+        "required": ["sid", "id", "rating_user", "rating_complete"]
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "admin": {
+            "type": "boolean"
+          },
+          "avatar": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "listen_key": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "listener_id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "lock_counter": {
+            "type": "number"
+          },
+          "lock_in_effect": {
+            "type": "boolean"
+          },
+          "lock_sid": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "lock": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "new_privmsg": {
+            "type": "number"
+          },
+          "perks": {
+            "type": "boolean"
+          },
+          "rate_anything": {
+            "type": "boolean"
+          },
+          "request_expires_at": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "request_position": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "requests_paused": {
+            "type": "boolean"
+          },
+          "sid": {
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "tuned_in": {
+            "type": "boolean"
+          },
+          "voted_entry": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "required": [
+          "admin",
+          "id",
+          "listen_key",
+          "listener_id",
+          "lock_counter",
+          "lock_in_effect",
+          "lock_sid",
+          "lock",
+          "name",
+          "new_privmsg",
+          "perks",
+          "rate_anything",
+          "request_expires_at",
+          "request_position",
+          "requests_paused",
+          "sid",
+          "tuned_in",
+          "voted_entry"
+        ]
+      },
+      "user_info": {
+        "$ref": "#/components/schemas/user"
+      },
+      "user_recent_vote": {
+        "type": "object",
+        "properties": {
+          "album_name": {
+            "type": "string"
+          },
+          "fave": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "id": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "rating_user": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": ["album_name", "fave", "id", "rating", "rating_user", "title"]
+      },
+      "user_recent_votes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/user_recent_vote"
+        }
+      },
+      "user_requested_history": {
+        "$ref": "#/components/schemas/user_recent_votes"
+      },
+      "vote_result": {
+        "type": "object",
+        "properties": {
+          "elec_id": {
+            "type": "number"
+          },
+          "entry_id": {
+            "type": "number"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "tl_key": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["elec_id", "entry_id", "success", "tl_key", "text"]
+      },
+      "websocket_host": {
+        "type": "string"
+      }
+    }
+  }
+}

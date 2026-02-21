@@ -164,3 +164,4 @@ On modernize deployment:
 - ALTER TABLE r4_one_ups ALTER COLUMN one_up_id SET NOT NULL;
 - ALTER TABLE r4_one_ups ADD PRIMARY KEY (one_up_id);
 - remove r4_album_sid.album_updated as it was replaced with album_updated_at
+- Route https://rainwave.cc/api4/rainwave-openapi.json

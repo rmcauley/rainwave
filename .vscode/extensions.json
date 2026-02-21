@@ -2,6 +2,7 @@
   "recommendations": [
     "ms-python.black-formatter",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "42crunch.vscode-openapi"
   ]
 }
