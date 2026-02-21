@@ -62,6 +62,7 @@ class EntryVotesRow(TypedDict):
 
 class Election(TimelineEntryBase):
     def __init__(self, data: ElectionRow, entries: list[ElectionEntry]) -> None:
+        super().__init__(data["elec_id"], data["elec_start_actual"])
         self.id = data["elec_id"]
         self.type = data["elec_type"]
         self.sid = data["sid"]

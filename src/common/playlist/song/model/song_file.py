@@ -45,6 +45,7 @@ class SongFile:
     existing_song_id: int | None
 
     def __init__(self, filename: str, existing_song_id: int | None):
+        super().__init__()
         self.filename = filename
         self.existing_song_id = existing_song_id
 

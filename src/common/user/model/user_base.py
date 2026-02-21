@@ -25,6 +25,7 @@ class UserBase(ABC):
         private_data: UserPrivateData,
         server_data: UserServerData,
     ):
+        super().__init__()
         self.id = public_data["id"]
         self.public_data = public_data
         self.private_data = private_data

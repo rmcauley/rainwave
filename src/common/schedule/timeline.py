@@ -1,5 +1,4 @@
 from time import time as timestamp
-from dataclasses import dataclass
 
 from common.db.cursor import RainwaveCursor
 from common.playlist.song.model.song_on_station import SongOnStation
@@ -12,13 +11,7 @@ from common.schedule.get_schedule_at_time import (
     get_schedule_entry_at_time,
 )
 from common.schedule.schedule_models.timeline_entry_base import TimelineEntryBase
-
-
-@dataclass
-class TimelineOnStation:
-    history: list[SongOnStation]
-    current: TimelineEntryBase
-    upnext: list[TimelineEntryBase]
+from common.schedule.timeline_types import TimelineOnStation
 
 
 timeline_by_station: dict[int, TimelineOnStation] = {}

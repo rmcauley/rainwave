@@ -73,7 +73,7 @@ class PowerHour(ScheduleEntry):
             self.data["sched_start"] = new_start
             if self.data["sched_end"] and self.data["sched_start"]:
                 length = min(0, self.data["sched_end"] - self.data["sched_start"])
-                self.end = self.data["sched_start"] + length
+                self.data["sched_end"] = self.data["sched_start"] + length
             await cursor.update(
                 "UPDATE r4_schedule SET sched_start = %s, sched_end = %s WHERE sched_id = %s",
                 (self.data["sched_start"], self.data["sched_end"], self.id),

@@ -3,6 +3,7 @@ from typing import Any
 
 class TestModeCache:
     def __init__(self) -> None:
+        super().__init__()
         self.vars: dict[bytes, Any] = {}
 
     async def get(self, key: bytes) -> Any | None:

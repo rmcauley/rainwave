@@ -3,188 +3,60 @@ import re
 import time
 from datetime import datetime
 from urllib.parse import parse_qsl, urlparse
-from typing import Any
+from typing import Any, cast
 
 from common import config
-from common.libs import db
-from common.events import event
-
-string_error = "must be a string."
 
 
-def string(in_string: Any, request: Any = None) -> str | None:
-    if not in_string:
+def string(input: Any) -> str | None:
+    if not input:
         return None
-    if isinstance(in_string, bytes):
-        in_string = in_string.decode()
-    if isinstance(in_string, str):
-        return in_string
+    if isinstance(input, bytes):
+        input = input.decode().strip()
+    if isinstance(input, str):
+        return input.strip()
     try:
-        return in_string.decode("utf-8").strip()
+        return input.decode("utf-8").strip()
     except UnicodeDecodeError:
         return None
 
 
-# All _error variables start with no capital letter and end with a period.
-numeric_error = "must be a number."
-
-
-def numeric(s: Any, request: Any = None) -> int | float | str | None:
-    if isinstance(s, (int, float)):
-        return s
-    if isinstance(s, bytes):
-        s = s.decode()
-    if not s:
+def numeric(input: Any) -> int | float | str | None:
+    if isinstance(input, (int, float)):
+        return input
+    if isinstance(input, bytes):
+        input = input.decode()
+    if not input:
         return None
-    if not isinstance(s, str):
+    if not isinstance(input, str):
         return None
-    if not re.match(r"^-?\d+(.\d+)?$", s):
+    if not re.match(r"^-?\d+(.\d+)?$", input):
         return None
-    return s
+    return input
 
 
-integer_error = "must be a number."
-
-
-def integer(s: Any, request: Any = None) -> int | None:
-    if isinstance(s, (int)):
-        return s
-    if isinstance(s, float):
-        return int(s)
-    if isinstance(s, bytes):
-        s = s.decode()
-    if not s:
+def integer(input: Any) -> int | None:
+    if isinstance(input, int):
+        return input
+    if isinstance(input, float):
+        return int(input)
+    try:
+        return int(input)
+    except:
         return None
-    if not isinstance(s, str):
-        return None
-    if not re.match(r"^-?\d+$", s):
-        return None
-    return int(s)
 
 
-song_id_error = "must be a valid song ID."
-
-
-def song_id(s: Any, request: Any = None) -> int | None:
-    this_id = integer(s)
-    if not this_id:
-        return None
-    if (
-        await cursor.fetch_var(
-            "SELECT COUNT(*) FROM r4_songs WHERE song_id = %s AND song_verified = TRUE",
-            (this_id,),
-        )
-        == 0
-    ):
-        return None
-    return this_id
-
-
-song_id_matching_sid_error = (
-    "must be a valid song ID that exists on the requested station ID."
-)
-
-
-def song_id_matching_sid(s: Any, request: Any) -> int | None:
-    this_id = integer(s)
-    if not this_id or not request:
-        return None
-    if (
-        await cursor.fetch_var(
-            "SELECT COUNT(*) FROM r4_song_sid WHERE song_id = %s AND sid = %s",
-            (this_id, request.sid),
-        )
-        == 0
-    ):
-        return None
-    return this_id
-
-
-album_id_error = "must be a valid album ID."
-
-
-def album_id(s: Any, request: Any = None) -> int | None:
-    this_id = integer(s)
-    if not this_id:
-        return None
-    if (
-        await cursor.fetch_var(
-            "SELECT COUNT(*) FROM r4_albums WHERE album_id = %s", (this_id,)
-        )
-        == 0
-    ):
-        return None
-    return this_id
-
-
-artist_id_error = "must be a valid artist ID."
-
-
-def artist_id(s: Any, request: Any = None) -> int | None:
-    this_id = integer(s)
-    if not this_id:
-        return None
-    if (
-        await cursor.fetch_var(
-            "SELECT COUNT(*) FROM r4_artists WHERE artist_id = %s", (this_id,)
-        )
-        == 0
-    ):
-        return None
-    return this_id
-
-
-sched_id_error = "must be a valid schedule ID."
-
-
-def sched_id(s: Any, request: Any = None) -> int | None:
-    this_id = integer(s)
-    if not this_id:
-        return None
-    if (
-        await cursor.fetch_var(
-            "SELECT COUNT(*) FROM r4_schedule WHERE sched_id = %s", (this_id,)
-        )
-        == 0
-    ):
-        return None
-    return this_id
-
-
-elec_id_error = "must be a valid election ID."
-
-
-def elec_id(s: Any, request: Any = None) -> int | None:
-    this_id = integer(s)
-    if not this_id:
-        return None
-    if (
-        await cursor.fetch_var(
-            "SELECT COUNT(*) FROM r4_elections WHERE elec_id = %s", (this_id,)
-        )
-        == 0
-    ):
-        return None
-    return this_id
-
-
-positive_integer_error = "must be a positive number."
-
-
-def positive_integer(s: Any, request: Any = None) -> int | None:
-    nmbr = integer(s)
-    if not nmbr:
+def positive_integer(input: Any) -> int | None:
+    nmbr = integer(input)
+    if nmbr is None:
         return None
     if nmbr <= 0:
         return None
     return nmbr
 
 
-zero_or_greater_integer_error = "must be positive number or zero."
-
-
-def zero_or_greater_integer(s: Any, request: Any = None) -> int | None:
-    nmbr = integer(s)
+def zero_or_greater_integer(input: Any) -> int | None:
+    nmbr = integer(input)
     if nmbr == None:
         return None
     if nmbr < 0:
@@ -192,31 +64,15 @@ def zero_or_greater_integer(s: Any, request: Any = None) -> int | None:
     return nmbr
 
 
-float_num_error = "must be a number."
-
-
-def float_num(s: Any, request: Any = None) -> float | None:
-    f = numeric(s)
+def float_num(input: Any) -> float | None:
+    f = numeric(input)
     if not f:
         return None
-    return float(s)
+    return float(input)
 
 
-long_num_error = "must be a number."
-
-
-def long_num(s: Any, request: Any = None) -> int | None:
-    l = numeric(s)
-    if not l:
-        return None
-    return int(l)
-
-
-rating_error = "must >= 1.0 and <= 5.0 in increments of	0.5."
-
-
-def rating(s: Any, request: Any = None) -> float | None:
-    r = float_num(s)
+def rating(input: Any) -> float | None:
+    r = float_num(input)
     if not r:
         return None
     if r < 1 or r > 5:
@@ -226,135 +82,83 @@ def rating(s: Any, request: Any = None) -> float | None:
     return r
 
 
-boolean_error = "must be 'true' or 'false'."
-
-
-def boolean(s: Any, request: Any = None) -> bool | None:
-    if s == True:
+def boolean(input: Any) -> bool | None:
+    if input == True:
         return True
-    elif s == False:
+    elif input == False:
         return False
-    elif s == "true" or s == "True":
+    elif input == "true" or input == "True":
         return True
-    elif s == "false" or s == "False":
+    elif input == "false" or input == "False":
         return False
     return None
 
 
-user_id_error = "must be a valid user ID."
-
-
-def user_id(s: Any, request: Any = None) -> int | None:
-    u = positive_integer(s, request)
-    if not u:
-        return None
-    if not await cursor.fetch_var(
-        "SELECT user_id FROM phpbb_users WHERE user_id = %s", (u,)
-    ):
-        return None
-    return u
-
-
-valid_relay_error = "must be a known and valid relay's IP address."
-
-
-def valid_relay(s: Any, request: Any = None) -> str | None:
-    if not s:
+def valid_relay(input: str) -> str | None:
+    if not input:
         return None
     for name, value in config.relays.items():
-        if value["ip_address"] == s or (
-            value.get("ip_address6") and value.get("ip_address6") == s
+        if value["ip_address"] == input or (
+            value.get("ip_address6") and value.get("ip_address6") == input
         ):
             return name
     return None
 
 
-sid_error = "must be a valid station ID."
-
-
-def sid(s: Any, request: Any = None) -> int | None:
-    this_sid = zero_or_greater_integer(s, request)
+def sid(input: Any) -> int | None:
+    this_sid = zero_or_greater_integer(input)
     if not this_sid:
         return None
-    if request and request.allow_sid_zero and this_sid == 0:
-        return this_sid
     if this_sid in config.station_ids:
         return this_sid
     return None
 
 
-integer_list_error = "must be a comma-separated list of integers."
+def integer_list(input: Any) -> list[int] | None:
+    if isinstance(input, list):
+        if all(
+            isinstance(i, int)
+            for i in input  # pyright: ignore[reportUnknownVariableType]
+        ):
+            return cast(list[int], input)
+        return None
 
-
-def integer_list(s: Any, request: Any = None) -> list[int] | None:
-    if isinstance(s, list):
-        for i in s:
-            if not isinstance(i, int):
-                return None
-        return s
-
-    if isinstance(s, bytes):
-        s = s.decode()
-    if not s:
+    if isinstance(input, bytes):
+        input = input.decode().strip()
+    if not input:
         return None
     try:
-        if not re.match(r"^(\d+)(,\d+)*$", s):
+        if not re.match(r"^(\d+)(,\d+)*$", input):
             return None
     except TypeError:
         return None
-    l = []
-    for entry in s.split(","):
+    l: list[int] = []
+    for entry in input.split(","):
         l.append(int(entry))
     return l
 
 
-string_list_error = "must be a comma-separated list of strings."
-
-
-def string_list(s: Any, request: Any = None) -> list[str] | None:
-    if isinstance(s, list):
-        for i in s:
-            if not isinstance(i, str):
-                return None
-        return s
-    l = []
-    for entry in s.split(","):
+def string_list(input: Any) -> list[str] | None:
+    if isinstance(input, list):
+        if all(
+            isinstance(i, str)
+            for i in input  # pyright: ignore[reportUnknownVariableType]
+        ):
+            return cast(list[str], input)
+        return None
+    if not isinstance(input, str):
+        return None
+    l: list[str] = []
+    for entry in input.split(","):
         l.append(entry)
     return l
 
 
-# Careful, this one could get expensive with all the song ID queries
-song_id_list_error = "must be a comma-separated list of valid song IDs."
-
-
-def song_id_list(s: Any, request: Any = None) -> list[int] | None:
-    l = integer_list(s)
-    if not l:
-        return None
-    for this_song_id in l:
-        if (
-            await cursor.fetch_var(
-                "SELECT COUNT(*) FROM r4_songs WHERE song_id = %s AND song_verified = TRUE",
-                (this_song_id,),
-            )
-            == 0
-        ):
-            return None
-    return l
-
-
 # Returns a set of (mount, user_id, listen_key, listener_ip)
-icecast_mount_error = "invalid Icecast mount."
-
-
-def icecast_mount(
-    s: Any, request: Any = None
-) -> tuple[str, int, str | None, str | None] | None:
-    if not s:
+def icecast_mount(input: str) -> tuple[str, int, str | None, str | None] | None:
+    if not input:
         return None
-    if isinstance(s, bytes):
-        s = s.decode()
-    parsed = urlparse(s)
+    parsed = urlparse(input)
     path = parsed.path
     if path[0] == "/":
         path = path[1:]
@@ -429,19 +233,19 @@ def icecast_mount(
     return (mount, uid, listen_key, listener_ip)
 
 
-ip_address_error = "invalid IP address."
-
-
-def ip_address(addr: Any, request: Any = None) -> Any:
-    if not addr:
+def ip_address(addr: Any) -> Any:
+    try:
+        # This works for both IPv4 and IPv6.
+        return str(ipaddress.ip_address(addr))
+    except ValueError:
+        # Somehow this wasn't a valid IP address.
         return None
-    return addr
 
 
 media_player_error = None
 
 
-def media_player(s: str, request: Any = None) -> str:
+def media_player(s: str) -> str:
     ua = s.lower()
     if ua.find("firefox") > -1:
         return "Firefox"
@@ -500,34 +304,7 @@ def media_player(s: str, request: Any = None) -> str:
     return "Unknown (" + s + ")"
 
 
-producer_type_error = None
-
-
-def producer_type(s: Any, request: Any = None) -> Any | None:
-    if s not in event.all_producers:
-        return None
-    return s
-
-
-group_id_error = "must be a valid group ID."
-
-
-def group_id(s: Any, request: Any = None) -> int | None:
-    gid = integer(s)
-    if (
-        await cursor.fetch_var(
-            "SELECT COUNT(*) FROM r4_groups WHERE group_id = %s", (gid,)
-        )
-        == 0
-    ):
-        return None
-    return gid
-
-
-date_error = "must be valid ISO 8601 date. (YYYY-MM-DD)"
-
-
-def date(s: Any, request: Any = None) -> datetime | None:
+def date(s: Any) -> datetime | None:
     if not s:
         return None
     if isinstance(s, bytes):
@@ -538,11 +315,8 @@ def date(s: Any, request: Any = None) -> datetime | None:
         return None
 
 
-date_as_epoch_error = "must be valid ISO 8601 date. (YYYY-MM-DD)"
-
-
-def date_as_epoch(s: Any, request: Any = None) -> float | None:
-    dt = date(s, request)
+def date_as_epoch(s: Any) -> float | None:
+    dt = date(s)
     if not dt:
         return None
     return time.mktime(dt.timetuple())

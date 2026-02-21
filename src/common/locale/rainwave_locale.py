@@ -20,6 +20,7 @@ class RainwaveLocale:
         en_master: RainwaveTranslationFile,
         translation: RainwaveTranslationFile,
     ) -> None:
+        super().__init__()
         self.code = code
         self._translation = translation
         self._ordinal_suffixes = ORDINAL_SUFFIXES.get(code, {})

@@ -54,12 +54,15 @@ async def get_random_song_ignore_requests(
     but ignoring request blocking rules.
     """
     sql_query = sql.SQL(
-        "FROM r4_song_sid "
-        "WHERE r4_song_sid.sid = {sid} "
-        "AND song_exists = TRUE "
-        "AND song_cool = FALSE "
-        "AND song_request_only = FALSE "
-        "AND song_elec_blocked = FALSE "
+        """
+        FROM r4_song_sid 
+        WHERE
+            r4_song_sid.sid = {sid} 
+            AND song_exists = TRUE 
+            AND song_cool = FALSE 
+            AND song_request_only = FALSE 
+            AND song_elec_blocked = FALSE 
+        """
     ).format(sid=sql.Placeholder(name="sid"))
     num_available = await cursor.fetch_guaranteed(
         sql.SQL("SELECT COUNT(song_id) {sql_query}").format(sql_query=sql_query),
@@ -98,15 +101,18 @@ async def get_random_song(cursor: RainwaveCursor, sid: int) -> SongOnStation:
     """
 
     sql_query = sql.SQL(
-        "FROM r4_song_sid "
-        "JOIN r4_songs USING (song_id) "
-        "JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
-        "WHERE r4_song_sid.sid = {sid} "
-        "AND song_exists = TRUE "
-        "AND song_cool = FALSE "
-        "AND song_request_only = FALSE "
-        "AND song_elec_blocked = FALSE "
-        "AND album_requests_pending IS NULL"
+        """
+        FROM r4_song_sid 
+            JOIN r4_songs USING (song_id) 
+            JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) 
+        WHERE 
+            r4_song_sid.sid = {sid} 
+            AND song_exists = TRUE 
+            AND song_cool = FALSE 
+            AND song_request_only = FALSE 
+            AND song_elec_blocked = FALSE 
+            AND album_requests_pending IS NULL
+        """
     ).format(sid=sql.Placeholder(name="sid"))
     num_available = await cursor.fetch_guaranteed(
         sql.SQL("SELECT COUNT(song_id) {sql_query}").format(sql_query=sql_query),
@@ -156,16 +162,19 @@ async def get_random_song_timed(
         return await get_random_song(cursor, sid)
 
     sql_query = sql.SQL(
-        "FROM r4_song_sid "
-        "JOIN r4_songs USING (song_id) "
-        "JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) "
-        "WHERE r4_song_sid.sid = {sid} "
-        "AND song_exists = TRUE "
-        "AND song_cool = FALSE "
-        "AND song_elec_blocked = FALSE "
-        "AND album_requests_pending IS NULL "
-        "AND song_request_only = FALSE "
-        "AND song_length >= {lower_bound} AND song_length <= {upper_bound}"
+        """
+        FROM r4_song_sid 
+            JOIN r4_songs USING (song_id) 
+            JOIN r4_album_sid ON (r4_album_sid.album_id = r4_songs.album_id AND r4_album_sid.sid = r4_song_sid.sid) 
+        WHERE 
+            r4_song_sid.sid = {sid} 
+            AND song_exists = TRUE 
+            AND song_cool = FALSE 
+            AND song_elec_blocked = FALSE 
+            AND album_requests_pending IS NULL 
+            AND song_request_only = FALSE 
+            AND song_length >= {lower_bound} AND song_length <= {upper_bound}
+        """
     ).format(
         sid=sql.Placeholder(name="sid"),
         lower_bound=sql.Placeholder(name="lower_bound"),
@@ -221,31 +230,3 @@ async def get_random_song_timed(
             )
             raise Exception("Could not find any songs to play.")
         return await SongOnStation.load(cursor, song_id, sid)
-
-
-async def get_shortest_song(cursor: RainwaveCursor, sid: int) -> SongOnStation:
-    """
-    Fetch the shortest song available abiding by election block and availability rules.
-    """
-    sql_query = sql.SQL(
-        "FROM r4_song_sid "
-        "JOIN r4_songs USING (song_id) "
-        "WHERE r4_song_sid.sid = {sid} "
-        "AND song_exists = TRUE "
-        "AND song_cool = FALSE "
-        "AND song_request_only = FALSE "
-        "AND song_elec_blocked = FALSE "
-        "ORDER BY song_length"
-    ).format(sid=sql.Placeholder(name="sid"))
-    song_id = await cursor.fetch_var(
-        sql.SQL("SELECT song_id {sql_query} LIMIT 1").format(sql_query=sql_query),
-        {"sid": sid},
-        var_type=int,
-    )
-    if song_id is None:
-        log.critical(
-            "song_select",
-            f"Shortest song on station could not be loaded.",
-        )
-        raise Exception(f"Could not find shortest song on station {sid}.")
-    return await SongOnStation.load(cursor, song_id, sid)

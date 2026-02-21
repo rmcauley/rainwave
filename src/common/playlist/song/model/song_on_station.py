@@ -91,6 +91,7 @@ class SongOnStation:
     data: SongOnStationRow
 
     def __init__(self, song_on_station_data: SongOnStationRow):
+        super().__init__()
         self.id = song_on_station_data["song_id"]
         self.sid = song_on_station_data["sid"]
         self.filename = song_on_station_data["song_filename"]
@@ -270,10 +271,10 @@ class SongOnStation:
 
     def is_valid(self) -> bool:
         if self.filename and os.path.exists(self.filename):
-            self.verified = True
+            self.data["song_verified"] = True
             return True
         else:
-            self.verified = False
+            self.data["song_verified"] = False
             return False
 
     async def start_election_block(self, cursor: RainwaveCursor) -> None:

@@ -20,6 +20,7 @@ class Album:
     data: AlbumRow
 
     def __init__(self, data: AlbumRow):
+        super().__init__()
         self.id = data["album_id"]
         self.data = data
 
@@ -143,15 +144,29 @@ class Album:
 
     async def reset_user_completed_flags(self, cursor: RainwaveCursor) -> None:
         await cursor.update(
-            "WITH status AS ( "
-            "SELECT CASE WHEN COUNT(song_rating) >= album_song_count THEN TRUE ELSE FALSE END AS rating_complete, r4_songs.album_id, r4_song_sid.sid, user_id "
-            "FROM r4_songs JOIN r4_song_sid USING (song_id) JOIN r4_song_ratings USING (song_id) JOIN r4_album_sid ON (r4_songs.album_id = r4_album_sid.album_id AND r4_song_sid.sid = r4_album_sid.sid) "
-            "WHERE r4_songs.album_id = %s AND r4_song_sid.song_rating_user IS NOT NULL "
-            "GROUP BY r4_songs.album_id, album_song_count, r4_song_sid.sid, user_id  "
-            ") "
-            "UPDATE r4_album_ratings "
-            "SET album_rating_complete = status.rating_complete "
-            "FROM status "
-            "WHERE r4_album_ratings.album_id = status.album_id AND r4_album_ratings.sid = status.sid AND r4_album_ratings.user_id = status.user_id ",
+            """
+            WITH status AS ( 
+                SELECT 
+                    CASE WHEN COUNT(song_rating) >= album_song_count THEN TRUE ELSE FALSE END AS rating_complete, 
+                    r4_songs.album_id, 
+                    r4_song_sid.sid, 
+                    user_id 
+                FROM r4_songs 
+                    JOIN r4_song_sid USING (song_id) 
+                    JOIN r4_song_ratings USING (song_id) 
+                    JOIN r4_album_sid ON (r4_songs.album_id = r4_album_sid.album_id AND r4_song_sid.sid = r4_album_sid.sid) 
+                WHERE 
+                    r4_songs.album_id = %s 
+                    AND r4_song_sid.song_rating_user IS NOT NULL 
+                GROUP BY r4_songs.album_id, album_song_count, r4_song_sid.sid, user_id  
+            ) 
+            UPDATE r4_album_ratings 
+            SET album_rating_complete = status.rating_complete 
+            FROM status 
+            WHERE 
+                r4_album_ratings.album_id = status.album_id 
+                AND r4_album_ratings.sid = status.sid 
+                AND r4_album_ratings.user_id = status.user_id
+            """,
             (self.id,),
         )

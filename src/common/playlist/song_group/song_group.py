@@ -26,6 +26,7 @@ class SongGroup:
     data: SongGroupRow
 
     def __init__(self, data: SongGroupRow):
+        super().__init__()
         self.id = data["group_id"]
         self.data = data
 

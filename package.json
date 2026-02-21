@@ -4,7 +4,10 @@
   "description": "rainwave.cc",
   "scripts": {
     "prepare": "husky",
-    "rw_templates": "uv run ./tools/rw_templates.py --templatedir ./src/frontend/templates --outfile ./src/frontend/templates/index",
+    "generate:python-dto": "uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_dto.py --output-model-type pydantic_v2.BaseModel --target-python-version 3.14 --openapi-scopes paths --formatters black",
+    "generate:python-openapi": "uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_openapi.py --output-model-type typing.TypedDict --target-python-version 3.14 --formatters black",
+    "generate:templates": "uv run ./tools/rw_templates.py --templatedir ./src/frontend/templates --outfile ./src/frontend/templates/index",
+    "generate": "npm run generate:python-dto && npm run generate:python-openapi && npm run generate:templates",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint:fix": "uv run black . && eslint --fix . && prettier --write ."
   },

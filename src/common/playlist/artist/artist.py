@@ -19,6 +19,7 @@ class Artist:
     data: ArtistRow
 
     def __init__(self, artist_row: ArtistRow):
+        super().__init__()
         self.id = artist_row["artist_id"]
         self.data = artist_row
 

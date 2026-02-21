@@ -12,6 +12,11 @@ class TimelineEntryBase:
     id: int
     start_actual: int | None
 
+    def __init__(self, id: int, start_actual: int | None):
+        super().__init__()
+        self.id = id
+        self.start_actual = start_actual
+
     @abstractmethod
     async def start(self, cursor: RainwaveCursor) -> None:
         raise NotImplementedError()

@@ -5,7 +5,7 @@ from common.requests.update_request_line import write_updated_request_line_to_db
 from common.schedule.election.election import Election
 from common.schedule.get_schedule_at_time import get_schedule_entry_at_time
 from common.schedule.schedule_models.timeline_entry_base import TimelineEntryBase
-from common.schedule.timeline import TimelineOnStation
+from common.schedule.timeline_types import TimelineOnStation
 
 
 async def generate_next_timeline_entries(

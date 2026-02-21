@@ -20,6 +20,7 @@ class PowerHourSongRow(PowerHourSongCreateRow):
 
 class PowerHourSong(TimelineEntryBase):
     def __init__(self, data: PowerHourSongRow, song_on_station: SongOnStation) -> None:
+        super().__init__(data["one_up_id"], None)
         self.id = data["one_up_id"]
         self.sid = data["one_up_sid"]
         self.data = data

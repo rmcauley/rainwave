@@ -15,6 +15,7 @@ class ScheduleEntry:
     type: ScheduleEntryType
 
     def __init__(self, type: ScheduleEntryType, data: ScheduleEntryRow) -> None:
+        super().__init__()
         self.data = data
         self.type = type
         self.id = data["sched_id"]

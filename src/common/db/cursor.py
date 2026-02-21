@@ -8,6 +8,7 @@ from .connection import get_pool
 
 class RainwaveCursor:
     def __init__(self, cursor: AsyncCursor[DictRow]):
+        super().__init__()
         self._cursor = cursor
 
     async def fetch_var[T](

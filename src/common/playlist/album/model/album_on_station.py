@@ -66,6 +66,7 @@ class AlbumOnStation:
     data: AlbumOnStationRow
 
     def __init__(self, album_on_station_data: AlbumOnStationRow):
+        super().__init__()
         self.album_id = album_on_station_data["album_id"]
         self.sid = album_on_station_data["sid"]
         self.data = album_on_station_data

@@ -35,9 +35,7 @@ def set_sub_callback(methd: Callable[..., Any]) -> None:
 def publish(dct: dict[str, Any]) -> None:
     if not _pub:
         raise APIException("internal_error", http_code=500)
-    _pub.send_string(  # pyright: ignore[reportUnknownMemberType]
-        orjson.dumps(dct).decode("utf-8")
-    )
+    _pub.send_string(orjson.dumps(dct).decode("utf-8"))
 
 
 def init_proxy() -> None:
