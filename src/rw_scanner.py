@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     try:
         db.connect()
-        cache.connect()
+        cache.cache_connect()
 
         set_on_screen(on_screen)
 

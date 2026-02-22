@@ -1,27 +1,54 @@
-#!/usr/bin/env python
+import asyncio
+from typing import TypedDict
 
-import argparse
+from common import log
+from common.db.connection import db_connect
+from common.db.cursor import get_cursor
+from common.playlist.song_group.song_group import SongGroup
 
-from libs import config
-from common.libs import db
-from libs import log
-from common.rainwave.playlist import SongGroup
+
+class RecalculateSongGroupRow(TypedDict):
+    group_id: int
+    group_name: str
+    group_name_searchable: str
+    group_elec_block: int
+
+
+async def main() -> None:
+    log.init()
+    await db_connect(auto_retry=False)
+    async with get_cursor() as cursor:
+        max_id = await cursor.fetch_guaranteed(
+            "SELECT max(group_id) AS max_group_id FROM r4_groups",
+            params=None,
+            default=0,
+            var_type=int,
+        )
+        page_start_id = 0
+        while True:
+            groups = await cursor.fetch_all(
+                "SELECT group_id, group_name, group_name_searchable, group_elec_block FROM r4_groups WHERE group_id > %s ORDER BY group_id LIMIT 100",
+                params=(page_start_id,),
+                row_type=RecalculateSongGroupRow,
+            )
+
+            if len(groups) == 0:
+                break
+
+            for group_row in groups:
+                txt = "Group %s / %s" % (group_row["group_id"], max_id)
+                txt += " " * (80 - len(txt))
+                print("\r" + txt, end="")
+
+                g = SongGroup(group_row)
+                await g.reconcile_sids(cursor)
+
+            page_start_id = groups[-1]["group_id"]
+
+    print()
+    print("Done")
+    print()
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Reconciles song<>group data.")
-    parser.add_argument("--config", default=None)
-    args = parser.parse_args()
-    config.load(args.config)
-    log.init()
-    db.connect()
-
-    groups = await cursor.fetch_list("SELECT group_id FROM r4_groups")
-    i = 0
-    for group_id in groups:
-        txt = "Group %s / %s" % (i, len(groups))
-        txt += " " * (80 - len(txt))
-        print("\r" + txt, end="")
-        i += 1
-
-        g = SongGroup.load_from_id(group_id)
-        g.reconcile_sids()
+    asyncio.run(main())

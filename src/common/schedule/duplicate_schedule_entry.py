@@ -22,14 +22,11 @@ async def duplicate_schedule_entry(
         {
             "sched_creator_user_id": creator_user_id,
             "sched_end": sched_end,
-            "sched_end_actual": None,
             "sched_name": entry["sched_name"],
             "sched_start": sched_start,
-            "sched_start_actual": None,
-            "sched_time": entry["sched_time"],
+            "sched_timed": entry["sched_timed"],
             "sched_type": entry["sched_type"],
             "sched_url": entry["sched_url"],
-            "sched_used": False,
             "sid": entry["sid"],
         },
     )

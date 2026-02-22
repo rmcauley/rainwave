@@ -104,7 +104,7 @@ Once that is started successfully, open another terminal/command line
 and start the public-facing website and API:
 
 ```
-uv run rw_web_api.py
+uv run rw_api.py
 ```
 
 Now use the same tool LiquidSoap uses to test that everything works:

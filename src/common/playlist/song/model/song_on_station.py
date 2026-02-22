@@ -15,13 +15,14 @@ from common.playlist.extra_detail_histogram import (
 from common.playlist.get_age_cooldown_multiplier import get_age_cooldown_multiplier
 from common.playlist.cooldown_config import cooldown_config
 from common.playlist.song.start_song_election_block import start_song_election_block
+from common.playlist.song.update_song_rating import update_song_rating
 from common.playlist.song_group.load_groups_from_song_id import (
     load_groups_for_song_on_station,
 )
 from common.playlist.song_group.start_song_group_election_block import (
     start_song_group_election_block,
 )
-from common.ratings.rating_calculator import RatingMapReadyDict, rating_calculator
+from common.ratings.rating_calculator import RatingMapReadyDict
 from common.playlist.object_counts import num_songs_total
 
 
@@ -180,36 +181,9 @@ class SongOnStation:
         )
 
     async def update_rating(self, cursor: RainwaveCursor) -> None:
-        ratings = await cursor.fetch_all(
-            """
-            SELECT 
-                song_rating_user AS rating,
-                COUNT(user_id) AS count
-            FROM r4_song_ratings 
-                JOIN phpbb_users USING (user_id) 
-            WHERE 
-                song_id = %s 
-                AND radio_inactive = FALSE 
-                AND song_rating_user IS NOT NULL 
-            GROUP BY song_rating_user
-            """,
-            (self.id,),
-            row_type=RatingMapReadyDict,
-        )
-        rating, rating_count = rating_calculator(ratings)
-
-        log.debug("song_rating", "%s ratings for %s" % (rating_count, self.filename))
-        if rating > 0 and rating_count > config.rating_threshold_for_calc:
-            self.data["song_rating"] = rating
-            self.data["song_rating_count"] = rating_count
-            log.debug(
-                "song_rating",
-                "rating update: %s for %s" % (self.data["song_rating"], self.filename),
-            )
-            await cursor.update(
-                "UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s",
-                (self.data["song_rating"], rating_count, self.id),
-            )
+        (rating, rating_count) = await update_song_rating(cursor, self.id)
+        self.data["song_rating"] = rating
+        self.data["song_rating_count"] = rating_count
 
     async def load_extra_detail(
         self, cursor: RainwaveCursor

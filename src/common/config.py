@@ -1,6 +1,6 @@
 import orjson
 
-from typing import TypedDict, TypeAlias
+from typing import Literal, TypedDict, TypeAlias
 
 
 class StationConfig(TypedDict):
@@ -59,26 +59,26 @@ developer_mode = False
 
 log_dir = None
 # Levels: "debug" "info" "warn" "error" "critical"
-log_level = "critical"
+log_level: Literal["critical"] = "critical"
 
 # What host the API resides on relative to the song change API.
 # Used internally for the song change api to talk to the API.
 # If everything is on the same machine, leave it at 127.0.0.1!
 # Change this if you are using different machines for the web API and song change API.
-web_api_url = "127.0.0.1"
+api_url = "127.0.0.1"
 
 # Start the web API at this port, increase by 1 for each process spawned.
-web_api_base_port = 20000
+api_base_port = 20000
 
 # How many web processes (not threads) to start
-web_api_num_processes = 4
+api_num_processes = 4
 
 # What IPs do connections from the backend (music) come from as the API (web) sees it?
 # If everything is on the same machine, leave it at this!
-web_api_trusted_ip_addresses = ["127.0.0.1", ":1"]
+api_trusted_ip_addresses = ["127.0.0.1", ":1"]
 
 # What does the API address look like for end-user browsers?
-web_api_external_url_prefix = "//localhost:20000/api4/"
+api_external_url_prefix = "//localhost:20000/api4/"
 
 # If you need to run WebSockets on a different host because of
 # any sort of CDN (e.g. CloudFlare) , enter a host here.

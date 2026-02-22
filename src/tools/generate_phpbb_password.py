@@ -2,11 +2,12 @@ import bcrypt
 from api.routes.auth.login import phpbb_passwd_compare
 
 pw = input("Password: ")
-h = bcrypt.hashpw(pw.encode(), bcrypt.gensalt())
-h = "$2y$" + h[4:].decode()
+hashed_bytes = bcrypt.hashpw(pw.encode(), bcrypt.gensalt())
+phpbb_hash = "$2y$" + hashed_bytes[4:].decode()
 
-if not phpbb_passwd_compare(pw, h):
+if not phpbb_passwd_compare(pw, phpbb_hash):
     raise RuntimeError("Password/hash mismatch.")
 
-print(h)
+print()
+print(phpbb_hash)
 print()

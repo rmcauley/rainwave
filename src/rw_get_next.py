@@ -15,7 +15,7 @@ parser.add_argument("--sid", "-s", required=False, default=1)
 parser.add_argument("--config", "-c", required=False, default=None)
 args = parser.parse_args()
 
-cache.connect()
+cache.cache_connect()
 
 conn = None
 params = parse.quote(json.dumps({"sid": args.sid}))

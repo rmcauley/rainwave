@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from common import log
 from common.db.cursor import RainwaveCursor
 from common.requests.request_line_types import RequestLineEntry
@@ -15,6 +17,16 @@ class ElectionHour(ScheduleEntry):
                 var_type=int,
             )
         ) > 0
+
+    async def get_queued_timeline_entries(
+        self, cursor: RainwaveCursor
+    ) -> Sequence[Election]:
+        elec_ids = await cursor.fetch_list(
+            "SELECT elec_id FROM r4_elections WHERE elec_used = FALSE AND sched_id = %s ORDER BY elec_id LIMIT 1",
+            (self.id,),
+            row_type=int,
+        )
+        return [await Election.load_by_id(cursor, elec_id) for elec_id in elec_ids]
 
     async def get_next_timeline_entry(
         self,

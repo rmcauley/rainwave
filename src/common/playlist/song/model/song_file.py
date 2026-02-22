@@ -6,13 +6,10 @@ from typing import TypedDict
 
 from common.db.build_insert import build_insert_on_conflict_do_update
 from common.db.cursor import RainwaveCursor
-from common import log
-from common.playlist.album.model.album_on_station import AlbumOnStation
 from common.playlist.remove_diacritics import remove_diacritics
 from common.playlist.album.model.album import Album
 from common.playlist.artist.artist import Artist
-from common.playlist.song.get_groups_for_song import get_groups_for_song
-from common.playlist.song.get_album_for_song import get_album_for_song
+from common.playlist.song.set_song_sids import set_song_sids
 from scanner.get_tags_from_song import load_tag_from_file
 from common.playlist.song.model.song_on_station import ArtistParseable
 from common.playlist.song.replaygain import get_gain_for_song
@@ -62,49 +59,7 @@ class SongFile:
         if not self.existing_song_id:
             return
 
-        existing_album = await get_album_for_song(cursor, self.existing_song_id)
-        existing_groups = await get_groups_for_song(cursor, self.existing_song_id)
-
-        current_sids = await cursor.fetch_list(
-            "SELECT sid FROM r4_song_sid WHERE song_id = %s",
-            (self.existing_song_id,),
-            row_type=int,
-        )
-        log.debug(
-            "playlist",
-            "database sids: {}, new sids: {}".format(current_sids, new_sids),
-        )
-
-        for sid in current_sids:
-            if sid not in new_sids:
-                await cursor.update(
-                    "UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s AND sid = %s",
-                    (self.existing_song_id, sid),
-                )
-                if existing_album:
-                    await AlbumOnStation.update_newest_song_time(
-                        cursor, existing_album.id, sid
-                    )
-        for sid in new_sids:
-            await cursor.update(
-                """
-                INSERT INTO r4_song_sid 
-                    (song_id, sid, song_exists) 
-                VALUES (%s, %s, TRUE) 
-                ON CONFLICT DO UPDATE SET song_exists = TRUE
-                """,
-                (self.existing_song_id, sid),
-            )
-            if existing_album:
-                await AlbumOnStation.update_newest_song_time(
-                    cursor, existing_album.id, sid
-                )
-
-        if existing_album:
-            await existing_album.reconcile_sids(cursor)
-
-        for group in existing_groups:
-            await group.reconcile_sids(cursor)
+        await set_song_sids(cursor, self.existing_song_id, new_sids)
 
     async def upsert(
         self, cursor: RainwaveCursor, new_sids: list[int], origin_sid: int
@@ -204,19 +159,3 @@ class SongFile:
         )
 
         await self.set_sids(cursor, new_sids)
-
-    async def disable_song(self, cursor: RainwaveCursor, song_id: int) -> None:
-        log.info("song_disable", "Disabling ID %s" % (song_id,))
-        await cursor.update(
-            "UPDATE r4_songs SET song_verified = FALSE WHERE song_id = %s",
-            (song_id,),
-        )
-        await cursor.update(
-            "UPDATE r4_song_sid SET song_exists = FALSE WHERE song_id = %s",
-            (song_id,),
-        )
-        await cursor.update(
-            "DELETE FROM r4_request_store WHERE song_id = %s", (song_id,)
-        )
-
-        await self.set_sids(cursor, [])

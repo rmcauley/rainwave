@@ -1,14 +1,14 @@
 import asyncio
 
 from common import log
-from common.db.connection import db_connect
-from common.db.schema import create_tables
+from common.cache.cache import cache_connect
+from common.cache.reset_station_caches import reset_station_caches
 
 
 async def main() -> None:
     log.init(None, "print")
-    await db_connect(auto_retry=False)
-    await create_tables()
+    await cache_connect()
+    await reset_station_caches()
     print()
     print("Done")
     print()

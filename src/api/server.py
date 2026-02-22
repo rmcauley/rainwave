@@ -6,8 +6,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.process
 
-from common import zeromq
-import src.api.routes.help
+from common import config, zeromq
 import common.locale.locale
 
 
@@ -28,7 +27,7 @@ class APIServer:
         port_no = int(config.api_base_port) + task_id
 
         # Log according to configured directory and port # we're operating on
-        log_file = "%s/rw_api_%s.log" % (config.get_directory("log_dir"), port_no)
+        log_file = f"logs/rw_api_%{port_no}.log"
         log.init(log_file, config.log_level)
         log.debug("start", "Server booting, port %s." % port_no)
         db.connect(auto_retry=False, retry_only_this_time=True)

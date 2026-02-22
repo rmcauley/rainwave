@@ -2,7 +2,7 @@ from os import path
 import logging
 import logging.handlers
 import datetime
-from typing import Any
+from typing import Any, Literal
 from common import config
 
 log: logging.Logger | None = None
@@ -22,11 +22,12 @@ class RWFormatter(logging.Formatter):
         )
 
 
-def init(logfile: str | None = None, loglevel: str = "warning") -> None:
+LOG_LEVELS = Literal["critical", "error", "info", "debug", "warning", "print"]
+
+
+def init(logfile: str | None = None, loglevel: LOG_LEVELS = "warning") -> None:
     global log
     logging.getLogger().setLevel(logging.DEBUG)
-    logging.getLogger("scss").setLevel(logging.DEBUG)
-    logging.getLogger("scss.compiler").setLevel(logging.DEBUG)
     logging.getLogger("tornado.access").setLevel(logging.CRITICAL)
 
     handler = None
@@ -68,10 +69,6 @@ def init(logfile: str | None = None, loglevel: str = "warning") -> None:
     warn("test", "Warn test.")
     error("test", "Error test.")
     critical("test", "Critical test.")
-
-
-def close() -> None:
-    logging.shutdown()
 
 
 def _massage_line(key: str, message: str, user: Any | None) -> str:

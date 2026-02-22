@@ -1,36 +1,64 @@
-#!/usr/bin/env python
+import asyncio
+from typing import TypedDict
 
-import argparse
+from common import config, log
+from common.cache.cache import cache_connect
+from common.db.connection import db_connect
+from common.db.cursor import get_cursor
+from common.playlist.album.get_album_on_station import get_many_album_on_station
+from common.playlist.album.model.album import Album
 
-from libs import config
-from common.libs import db
-from libs import log
-from libs import cache
-from common.rainwave.playlist import Album
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Recalculates all album ratings, both global ratings and for every user.  Takes a while."
-    )
-    parser.add_argument("--config", default=None)
-    args = parser.parse_args()
+class AllAlbumRow(TypedDict):
+    album_id: int
+    album_name: str
+    album_name_searchable: str
+    album_added_on: int
 
-    config.load(args.config)
-    cache.connect()
-    log.init()
-    db.connect()
 
-    albums = await cursor.fetch_list("SELECT album_id FROM r4_albums")
-    i = 0
-    for album_id in albums:
-        txt = "Album %s / %s" % (i, len(albums))
-        txt += " " * (80 - len(txt))
-        print("\r" + txt, end="")
-        i += 1
+async def main() -> None:
+    await cache_connect()
+    await db_connect(auto_retry=False)
+    async with get_cursor() as cursor:
+        max_id = await cursor.fetch_guaranteed(
+            "SELECT max(album_id) AS max_album_id FROM r4_albums",
+            params=None,
+            default=0,
+            var_type=int,
+        )
+        page_start_id = 0
+        while True:
+            albums = await cursor.fetch_all(
+                "SELECT album_id, album_name, album_name_searchable, album_added_on FROM r4_albums WHERE album_id > %s ORDER BY id LIMIT 100",
+                params=(page_start_id,),
+                row_type=AllAlbumRow,
+            )
 
-        a = Album.load_from_id(album_id)
-        a.reconcile_sids()
-        a.update_all_user_ratings()
-        a.update_rating()
+            if len(albums) == 0:
+                break
+
+            for row in albums:
+                txt = "Album %s / %s" % (row["album_id"], max_id)
+                txt += " " * (80 - len(txt))
+                print("\r" + txt, end="")
+
+                album = Album(row)
+                await album.reconcile_sids(cursor)
+                await album.update_all_user_ratings(cursor)
+                await album.reset_user_completed_flags(cursor)
+                for sid in config.station_ids:
+                    for album_on_station in await get_many_album_on_station(
+                        cursor, [album.id], sid
+                    ):
+                        await album_on_station.update_rating(cursor)
+
+            page_start_id = albums[-1]["album_id"]
+
     print()
     print("Done")
+    print()
+
+
+if __name__ == "__main__":
+    log.init()
+    asyncio.run(main())

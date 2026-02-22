@@ -1,29 +1,43 @@
-#!/usr/bin/env python
+import asyncio
 
-import argparse
+from common import log
+from common.db.connection import db_connect
+from common.db.cursor import get_cursor
+from common.playlist.song.update_song_rating import update_song_rating
 
-from libs import config
-from common.libs import db
-from libs import log
-from common.rainwave.playlist import Song
+
+async def main() -> None:
+    log.init()
+    await db_connect(auto_retry=False)
+    async with get_cursor() as cursor:
+        max_id = await cursor.fetch_guaranteed(
+            "SELECT max(song_id) AS max_song_id FROM r4_songs",
+            params=None,
+            default=0,
+            var_type=int,
+        )
+        page_start_id = 0
+        while True:
+            songs = await cursor.fetch_list(
+                "SELECT song_id FROM r4_songs WHERE song_id > %s ORDER BY song_id LIMIT 100",
+                (page_start_id,),
+                row_type=int,
+            )
+
+            if len(songs) == 0:
+                break
+
+            for song_id in songs:
+                txt = "Song %s / %s" % (song_id, max_id)
+                txt += " " * (80 - len(txt))
+                print("\r" + txt, end="")
+
+                await update_song_rating(cursor, song_id)
+
+    print()
+    print("Done")
+    print()
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Recalculates all song global ratings.  Can take a while."
-    )
-    parser.add_argument("--config", default=None)
-    args = parser.parse_args()
-    config.load(args.config)
-    log.init()
-    db.connect()
-
-    songs = await cursor.fetch_list("SELECT song_id FROM r4_songs")
-    i = 0
-    for song_id in songs:
-        txt = "Song %s / %s" % (i, len(songs))
-        txt += " " * (80 - len(txt))
-        print("\r" + txt, end="")
-        i += 1
-
-        s = Song.load_from_id(song_id)
-        s.update_rating()
+    asyncio.run(main())

@@ -40,7 +40,7 @@ def _load_api_requests():
 async def rainwave_db():
     log.init(loglevel="critical")
     _load_api_requests()
-    cache.connect()
+    cache.cache_connect()
     await db_connect(auto_retry=False)
     await create_tables()
     populate_test_data(db.c, sid=1)

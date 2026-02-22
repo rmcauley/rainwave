@@ -53,7 +53,7 @@ class RainwaveHandler(RequestHandler, ABC):
 
         if (
             self.local_only
-            and not self.request.remote_ip in config.web_api_trusted_ip_addresses
+            and not self.request.remote_ip in config.api_trusted_ip_addresses
         ):
             raise APIException(
                 "rejected", text="You are not coming from a trusted address."

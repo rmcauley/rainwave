@@ -21,7 +21,7 @@ async def _build_emcache_client(host: str, port: int) -> emcache.Client:
     return client
 
 
-async def connect() -> None:
+async def cache_connect() -> None:
     global client
     global ratings_client
 
