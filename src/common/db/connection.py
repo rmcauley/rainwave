@@ -8,6 +8,8 @@ from common import log
 
 db_pool: AsyncConnectionPool | None = None
 
+db_connection_errors = (OperationalError, InterfaceError)
+
 
 def get_pool() -> AsyncConnectionPool:
     if not db_pool:
@@ -52,7 +54,7 @@ async def db_connect(
             )
             await db_pool.open(True)
             connected = True
-        except (OperationalError, InterfaceError) as e:
+        except db_connection_errors as e:
             log.exception("psycopg", "Psycopg connection error", e)
             if auto_retry or retry_only_this_time:
                 await asyncio.sleep(1)

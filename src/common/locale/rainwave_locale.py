@@ -49,7 +49,9 @@ class RainwaveLocale:
         )
         return f"{value}{suffix}"
 
-    def translate(self, key: str, values: dict[str, str | int | float]) -> str:
+    def translate(
+        self, key: str, values: dict[str, str | int | float] | None = None
+    ) -> str:
         entry = self._translation[key]
         if not entry:
             return f"[[{entry}]]"

@@ -34,7 +34,7 @@ class RainwaveHandler(RequestHandler, ABC):
     local_only = False
     # Does the user need perks (donor/beta/etc) to see this request/page?
     perks_required = False
-    # automatically add pagination to an API request.
+    # Automatically add pagination to an API request.
     pagination = False
     # set to allow from any source
     allow_cors = False
@@ -42,7 +42,7 @@ class RainwaveHandler(RequestHandler, ABC):
     unlocked_listener_only = False
 
     user: UserBase | None = None
-    rainwave_locale: RainwaveLocale = translations["en-CA"]
+    locale: RainwaveLocale = translations["en-CA"]  # type: ignore
     response: RainwaveResponse = {}
     error_response: dict[RainwaveResponseKey, RainwaveErrorObject] = {}
 

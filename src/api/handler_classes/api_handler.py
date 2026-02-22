@@ -1,9 +1,13 @@
+from abc import abstractmethod
 import time
 from time import time as timestamp
-from typing import Any
+import traceback
+from typing import Any, cast
 import orjson
+from api.exceptions import APIException
 from api.handler_classes.rainwave_handler import RainwaveHandler
 from common import log
+from common.db.connection import db_connection_errors
 
 
 class APIHandler(RainwaveHandler):
@@ -22,7 +26,14 @@ class APIHandler(RainwaveHandler):
                 "%s took %s to execute!" % (self.__class__.__name__, exectime),
             )
         self.response["api_info"] = {"exectime": exectime, "time": round(timestamp())}
-        self.write(orjson.dumps(self.response))
+        if self.error_response:
+            self.write(
+                orjson.dumps(
+                    cast(dict[str, object], self.response) | self.error_response
+                )
+            )
+        else:
+            self.write(orjson.dumps(self.response))
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         self.response = {}
@@ -40,63 +51,37 @@ class APIHandler(RainwaveHandler):
         if "exc_info" in kwargs:
             exc = kwargs["exc_info"][1]
 
-            if isinstance(exc, db.connection_errors):
-                try:
-                    self.append(
-                        "error",
-                        {
-                            "code": 500,
-                            "tl_key": "db_error_retry",
-                            "text": self.locale.translate("db_error_retry"),
-                        },
-                    )
-                except Exception:
-                    self.append(
-                        "error",
-                        {
-                            "code": 500,
-                            "tl_key": "db_error_permanent",
-                            "text": self.locale.translate("db_error_permanent"),
-                        },
-                    )
+            if isinstance(exc, db_connection_errors):
+                self.error_response["error"] = {
+                    "status": 500,
+                    "tl_key": "db_error_retry",
+                    "text": self.locale.translate("db_error_retry"),
+                }
             elif isinstance(exc, APIException):
-                exc.localize(self.locale)
-                self.append(self.return_name, exc.jsonable())
-            elif isinstance(exc, SongNonExistent):
-                self.append(
-                    "error",
-                    {
-                        "code": status_code,
-                        "tl_key": "song_does_not_exist",
-                        "text": self.locale.translate("song_does_not_exist"),
-                    },
-                )
+                self.error_response[self.return_name] = exc.to_api(self.locale)
             else:
-                self.append(
-                    "error",
-                    {
-                        "code": status_code,
-                        "tl_key": "internal_error",
-                        "text": repr(exc),
-                    },
-                )
-                self.append(
-                    "traceback",
-                    {
-                        "traceback": traceback.format_exception(
-                            kwargs["exc_info"][0],
-                            kwargs["exc_info"][1],
-                            kwargs["exc_info"][2],
-                        )
-                    },
+                self.error_response["error"] = {
+                    "status": status_code,
+                    "tl_key": "internal_error",
+                    "text": repr(exc),
+                }
+
+                self.response["traceback"] = "\n".join(
+                    traceback.format_exception(
+                        kwargs["exc_info"][0],
+                        kwargs["exc_info"][1],
+                        kwargs["exc_info"][2],
+                    )
                 )
         else:
-            self.append(
-                "error",
-                {
-                    "tl_key": "internal_error",
-                    "text": self.locale.translate("internal_error"),
-                },
-            )
-        if not kwargs.get("no_finish"):
-            self.finish()
+            self.error_response["error"] = {
+                "status": 500,
+                "tl_key": "internal_error",
+                "text": self.locale.translate("internal_error"),
+            }
+
+        self.write_rainwave_output()
+
+    @abstractmethod
+    async def post(self) -> None:
+        raise NotImplementedError()

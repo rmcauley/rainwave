@@ -73,6 +73,7 @@ class RainwaveResponse(TypedDict, total=False):
     stream_filename: str
     sync_result: rainwave_openapi.RainwaveErrorObject
     top_100: rainwave_openapi.Top100
+    traceback: str
     unpause_request_queue_result: rainwave_openapi.BooleanResult
     unrated_songs: rainwave_openapi.UnratedSongs
     user_info: rainwave_openapi.User
@@ -140,6 +141,7 @@ RainwaveResponseKey = Literal[
     "stream_filename",
     "sync_result",
     "top_100",
+    "traceback",
     "unpause_request_queue_result",
     "unrated_songs",
     "user_info",

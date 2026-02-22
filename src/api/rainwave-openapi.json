@@ -5078,6 +5078,9 @@
         },
         "required": ["album_name", "id", "origin_sid", "song_rating", "song_rating_count", "title"]
       },
+      "traceback": {
+        "type": "string"
+      },
       "unpause_request_queue_result": {
         "$ref": "#/components/schemas/boolean_result"
       },

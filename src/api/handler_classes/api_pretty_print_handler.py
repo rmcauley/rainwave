@@ -1,108 +1,95 @@
-# this mixin will overwrite anything in APIHandler and RainwaveHandler so be careful wielding it
-class PrettyPrintAPIMixin:
-    phpbb_auth = True
-    allow_get = True
-    write_error = html_write_error
-    is_html = True
-    is_pretty_print_html = True
+from typing import Any, cast
 
-    # Vars here be filled by the base class, not the mixin
-    _output: dict[Any, Any] | list[Any]
-    write: Callable
-    render_string: Callable
-    locale: locale.RainwaveLocale
-    return_name: str
-    pagination: bool
-    fields: dict
-    get_argument_int: Callable
-    url: str
-    get_argument: Callable
-    request: tornado.httputil.HTTPServerRequest
+from api import fieldtypes
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+from api.helpers.paginated_requests import get_pagination_params
+from urllib.parse import urlencode
 
-    # reset the initialize to ignore overwriting self.get with anything
-    def initialize(self, *args: Any, **kwargs: Any) -> None:
-        super().initialize(*args, **kwargs)  # type: ignore
-        self._real_post = self.post
-        self.post = self.post_reject
+from common import config
 
-    def prepare(self) -> None:
-        super().prepare()  # type: ignore
-        self._real_post()
 
-    def get(self, write_header: bool = True) -> None:
-        if not isinstance(self._output, dict):
-            raise APIException(
-                "invalid_argument",
-                "Pretty-printed output of in_order requests is not supported",
-                code=400,
+class PrettyPrintAPIHandler(APIHandlerWithGet):
+    def write_rainwave_output(self) -> None:
+        self.write(
+            self.render_string(
+                "basic_header.html", title=self.locale.translate(self.return_name)
             )
+        )
 
-        if write_header:
-            self.write(
-                self.render_string(
-                    "basic_header.html", title=self.locale.translate(self.return_name)
-                )
-            )
-
-        page_start = self.get_argument("page_start")
-        per_page = self.get_argument("per_page")
-        per_page_link = None
+        (per_page, page_start) = get_pagination_params(self)
+        previous_page_link: str | None = None
+        next_page_link: str | None = None
         previous_page_start = None
         next_page_start = None
         if self.pagination:
-            if self.get_argument_int("page_start"):
+            if fieldtypes.integer(self.get_argument("page_start")):
                 previous_page_start = min(page_start - per_page, 0)
                 next_page_start = page_start + per_page
             else:
                 next_page_start = per_page
 
-            per_page_link = "%s?" % self.url
-            for field in self.fields.keys():
-                if field == "page_start":
-                    pass
-                elif field == "per_page":
-                    per_page_link += "%s=%s&" % (field, per_page)
-                else:
-                    per_page_link += "%s=%s&" % (field, self.get_argument(field))
+            base_args: dict[str, str | int] = {
+                key: self.get_argument(key)
+                for key in self.request.arguments
+                if key != "page_start"
+            }
+            base_args["per_page"] = per_page
+            next_page_link_url = "?%s" % urlencode(
+                {**base_args, "page_start": next_page_start}
+            )
+            previous_page_link_url: str | None = None
+            if page_start > 0:
+                previous_page_link_url = "?%s" % urlencode(
+                    {**base_args, "page_start": previous_page_start}
+                )
 
             if page_start > 0:
-                self.write(
-                    "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
-                    % (per_page_link, previous_page_start)
+                previous_page_link = (
+                    "<div><a href='%s'>&lt;&lt; Previous Page</a></div>"
+                    % previous_page_link_url
                 )
-            if (
-                self.return_name in self._output
-                and len(self._output[self.return_name]) >= per_page
-            ):
-                self.write(
-                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
-                    % (per_page_link, next_page_start)
-                )
-            elif not self.return_name in self._output:
-                self.write(
-                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
-                    % (per_page_link, next_page_start)
-                )
+                self.write(previous_page_link)
 
-        for json_out in self._output.values():
-            if not isinstance(json_out, list):
+            return_name_response = self.response.get(self.return_name, None)
+            if (
+                return_name_response
+                and isinstance(return_name_response, list)
+                and len(cast(list[Any], return_name_response)) >= per_page
+            ):
+                next_page_link = (
+                    "<div><a href='%s'>Next Page &gt;&gt;</a></div>"
+                    % next_page_link_url
+                )
+                self.write(next_page_link)
+            elif not self.return_name in self.response:
+                next_page_link = (
+                    "<div><a href='%s'>Next Page &gt;&gt;</a></div>"
+                    % next_page_link_url
+                )
+                self.write(next_page_link)
+
+        for response_key, response_value in self.response.items():
+            if not isinstance(response_value, list):
                 continue
-            if len(json_out) > 0:
-                self.write("<table class='%s'><th>#</th>" % self.return_name)
-                keys = getattr(self, "columns", self.sort_keys(json_out[0].keys()))
+            response_value = cast(list[dict[str, Any]], response_value)
+            if len(response_value) > 0:
+                self.write("<table class='%s'><th>#</th>" % response_key)
+                keys = getattr(
+                    self, "columns", self.sort_keys(list(response_value[0].keys()))
+                )
                 for key in keys:
                     self.write("<th>%s</th>" % self.locale.translate(key))
                 self.header_special()
                 self.write("</th>")
                 i = 1
                 if "page_start" in self.request.arguments:
-                    i += self.get_argument("page_start")
-                for row in json_out:
+                    i += page_start
+                for row in response_value:
                     self.write("<tr><td>%s</td>" % i)
                     for key in keys:
                         if key == "sid":
                             self.write(
-                                "<td>%s</td>" % config.station_id_friendly[row[key]]
+                                "<td>%s</td>" % config.stations[row[key]]["name"]
                             )
                         else:
                             self.write("<td>%s</td>" % row[key])
@@ -114,24 +101,11 @@ class PrettyPrintAPIMixin:
                 self.write("<p>%s</p>" % self.locale.translate("no_results"))
 
         if self.pagination:
-            if page_start > 0:
-                self.write(
-                    "<div><a href='%spage_start=%s'>&lt;&lt; Previous Page</a></div>"
-                    % (per_page_link, previous_page_start)
-                )
-            if (
-                self.return_name in self._output
-                and len(self._output[self.return_name]) >= per_page
-            ):
-                self.write(
-                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
-                    % (per_page_link, next_page_start)
-                )
-            elif not self.return_name in self._output:
-                self.write(
-                    "<div><a href='%spage_start=%s'>Next Page &gt;&gt;</a></div>"
-                    % (per_page_link, next_page_start)
-                )
+            if previous_page_link:
+                self.write(previous_page_link)
+            if next_page_link:
+                self.write(next_page_link)
+
         self.write(self.render_string("basic_footer.html"))
 
     def header_special(self) -> None:
@@ -140,21 +114,10 @@ class PrettyPrintAPIMixin:
     def row_special(self, row: dict[str, Any]) -> None:
         pass
 
-    def sort_keys(self, keys: list[str] | Any) -> list[str]:
-        new_keys = []
+    def sort_keys(self, keys: list[str]) -> list[str]:
+        new_keys: list[str] = []
         for key in ["rating_user", "fave", "title", "album_rating_user", "album_name"]:
             if key in keys:
                 new_keys.append(key)
         new_keys.extend(key for key in keys if key not in new_keys)
         return new_keys
-
-    # pylint: disable=E1003
-    # no JSON output!!
-    def finish(self, *args, **kwargs):
-        super().finish(*args, **kwargs)  # type: ignore
-
-    # pylint: enable=E1003
-
-    # see initialize, this will override the JSON POST function
-    def post_reject(self):
-        return None

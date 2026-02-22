@@ -1,64 +1,34 @@
+from http.client import responses
+import traceback
+from typing import Any
+
+from tornado.web import HTTPError
+
+from api.exceptions import APIException
+from api.handler_classes.rainwave_handler import RainwaveHandler
+from api.routes.auth.errors import OAuthRejectedError
+
+
 class HTMLRequest(RainwaveHandler):
-    phpbb_auth = True
-    allow_get = True
-    write_error = html_write_error
-    is_html = True
+    def write_error(self, status_code: int, **kwargs: Any) -> None:
+        title = "HTTP %s - %s" % (
+            status_code,
+            responses.get(status_code, "Unknown"),
+        )
 
+        if "exc_info" in kwargs:
+            exc = kwargs["exc_info"][1]
 
-def html_write_error(self, status_code: int, **kwargs: Any) -> None:
-    if "exc_info" in kwargs:
-        exc = kwargs["exc_info"][1]
+            if isinstance(exc, OAuthRejectedError):
+                title = self.locale.translate("oauth_rejected")
+            elif isinstance(exc, APIException):
+                title = exc.to_api(self.locale).get("text") or exc.tl_key
+            elif isinstance(exc, (APIException, HTTPError)) and exc.reason:
+                title = "%s - %s" % (status_code, exc.reason)
 
-        if isinstance(exc, db.connection_errors):
-            try:
-                self.append(
-                    "error",
-                    {
-                        "code": 500,
-                        "tl_key": "db_error_retry",
-                        "text": self.locale.translate("db_error_retry"),
-                    },
-                )
-            except Exception:
-                self.append(
-                    "error",
-                    {
-                        "code": 500,
-                        "tl_key": "db_error_permanent",
-                        "text": self.locale.translate("db_error_permanent"),
-                    },
-                )
-        elif isinstance(exc, APIException):
-            if not isinstance(self.locale, locale.RainwaveLocale):
-                exc.localize(locale.RainwaveLocale.get("en_CA"))
-            else:
-                exc.localize(self.locale)
+        self.write(self.render_string("basic_header.html", title=title))
 
-        if isinstance(exc, OAuthRejectedError):
-            self.write(
-                self.render_string(
-                    "basic_header.html", title=self.locale.translate("oauth_rejected")
-                )
-            )
-        elif isinstance(exc, (APIException, tornado.web.HTTPError)) and exc.reason:
-            self.write(
-                self.render_string(
-                    "basic_header.html", title="%s - %s" % (status_code, exc.reason)
-                )
-            )
-        else:
-            self.write(
-                self.render_string(
-                    "basic_header.html",
-                    title="HTTP %s - %s"
-                    % (
-                        status_code,
-                        responses.get(status_code, "Unknown"),
-                    ),
-                )
-            )
-
-        if status_code == 500 or config.developer_mode:
+        if status_code == 500:
             self.write("<p>")
             self.write(self.locale.translate("unknown_error_message"))
             self.write("</p><p>")
@@ -70,4 +40,4 @@ def html_write_error(self, status_code: int, **kwargs: Any) -> None:
                 self.write(line)
             self.write("</div>")
 
-    self.finish()
+        self.write(self.render_string("basic_footer.html"))
