@@ -1,11 +1,11 @@
 from abc import ABC
 from typing import cast
 
-from api.handler_classes.rainwave_handler import RainwaveHandler
+from api.handler_classes.api_handler import APIHandler
 from common.user.model.registered_user import RegisteredUser
 
 
-class RainwaveRegisteredUserHandler(RainwaveHandler, ABC):
+class RegisteredUserAPIHandler(APIHandler, ABC):
     login_required = True
     registered_user: RegisteredUser
 

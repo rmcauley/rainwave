@@ -1,6 +1,9 @@
 from tornado.web import HTTPError
 from typing import Any, Literal
 
+from api.rainwave_openapi import RainwaveErrorObject
+from common.locale.rainwave_locale import RainwaveLocale
+
 # Cross-reference these with keys in en_MAIN.jsonc
 ErrorTranslationKeys = (
     Literal["missing_station_id"]
@@ -29,32 +32,30 @@ ErrorTranslationKeys = (
 
 
 class APIException(HTTPError):
-    code: int
+    http_status: int
 
     def __init__(
         self,
         translation_key: ErrorTranslationKeys,
         text: str | None = None,
-        http_code: int = 200,
+        http_status: int = 200,
         **kwargs: Any
     ) -> None:
-        super().__init__(http_code, text, **kwargs)
+        super().__init__(http_status, text, **kwargs)
         self.tl_key = translation_key
         self.reason = text
         self.extra = kwargs
-        self.code = http_code
+        self.http_status = http_status
 
-    def localize(self, request_locale: Any) -> None:
-        if not self.reason and request_locale:
-            self.reason = request_locale.translate(self.tl_key, **self.extra)
+    def to_api(self, request_locale: RainwaveLocale) -> RainwaveErrorObject:
+        rw_error_obj: RainwaveErrorObject = {
+            "status": self.status_code,
+            "success": False,
+            "tl_key": self.tl_key,
+        }
 
-    def jsonable(self) -> dict[str, Any]:
-        self.extra.update(
-            {
-                "code": self.status_code,
-                "success": False,
-                "tl_key": self.tl_key,
-                "text": self.reason,
-            }
-        )
-        return self.extra
+        reason = self.reason
+        if reason:
+            rw_error_obj["text"] = request_locale.translate(self.tl_key, **self.extra)
+
+        return rw_error_obj

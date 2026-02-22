@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from api import rainwave_openapi
 
@@ -84,6 +84,74 @@ class RainwaveResponse(TypedDict, total=False):
     wsok: bool
     wsthrottle: ErrorMessage
     wserror: rainwave_openapi.RainwaveErrorObject
+
+
+RainwaveResponseKey = Literal[
+    "album",
+    "album_diff",
+    "albums",
+    "all_albums_paginated",
+    "all_artists_paginated",
+    "all_faves",
+    "all_groups_paginated",
+    "all_songs",
+    "all_stations_info",
+    "already_voted",
+    "api_info",
+    "artists",
+    "artist",
+    "build_version",
+    "cookie_domain",
+    "delete_request_result",
+    "error_report_result",
+    "error",
+    "fave_album_result",
+    "fave_all_songs_result",
+    "fave_song_result",
+    "group",
+    "listener",
+    "live_voting",
+    "locale",
+    "locales",
+    "message_id",
+    "mobile",
+    "order_requests_result",
+    "pause_request_queue_result",
+    "ping",
+    "pong",
+    "pongConfirm",
+    "playback_history",
+    "rate_result",
+    "redownload_m3u",
+    "relays",
+    "request_favorited_songs_result",
+    "request_line",
+    "request_result",
+    "request_unrated_songs_result",
+    "requests",
+    "sched_current",
+    "sched_history",
+    "sched_next",
+    "song",
+    "songs",
+    "station_list",
+    "station_song_count",
+    "stations",
+    "stream_filename",
+    "sync_result",
+    "top_100",
+    "unpause_request_queue_result",
+    "unrated_songs",
+    "user_info",
+    "user_recent_votes",
+    "user_requested_history",
+    "user",
+    "vote_result",
+    "websocket_host",
+    "wsok",
+    "wsthrottle",
+    "wserror",
+]
 
 
 class BootstrapUser(rainwave_openapi.User):

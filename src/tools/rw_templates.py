@@ -108,19 +108,25 @@ def compile_templates_v2(source_dir: str, dest_file: str) -> None:
             for root, _subdirs, files in os.walk(source_dir):
                 for f in files:
                     if f.endswith(".html"):
-                        template_name = f[: f.rfind(".")]
-                        if template_name in template_names:
-                            raise Exception(
-                                f"%{template_name} is a duplicate template name."
-                            )
-                        template_names.add(template_name)
+                        try:
+                            template_name = f[: f.rfind(".")]
+                            if template_name in template_names:
+                                raise Exception(
+                                    f"{template_name} is a duplicate template name."
+                                )
+                            template_names.add(template_name)
 
-                        with open(os.path.join(root, f)) as handlebars_file:
-                            parser = RainwaveParserV2(template_name)
-                            parser.feed(handlebars_file.read())
-                            [js_buffer, d_ts_buffer] = parser.get_buffers_and_close()
-                            output_js.write(js_buffer)
-                            output_d_ts.write(d_ts_buffer)
+                            with open(os.path.join(root, f)) as handlebars_file:
+                                parser = RainwaveParserV2(template_name)
+                                parser.feed(handlebars_file.read())
+                                [js_buffer, d_ts_buffer] = (
+                                    parser.get_buffers_and_close()
+                                )
+                                output_js.write(js_buffer)
+                                output_d_ts.write(d_ts_buffer)
+                        except:
+                            print(f"Failed on {os.path.join(root, f)}")
+                            raise
             output_js.write(js_end(template_names))
             output_d_ts.write(d_ts_end())
 
@@ -559,15 +565,13 @@ if __name__ == "__main__":
     )
     argp.add_argument(
         "--templatedir",
-        default="jstemplates",
         required=True,
         help="Directory where templates live",
     )
     argp.add_argument(
         "--outfile",
-        default="RWTemplates.templates.js",
         required=True,
-        help="Output Javascript file",
+        help="Output Javascript and d.ts file",
     )
     command_args = argp.parse_args()
     compile_templates_v2(

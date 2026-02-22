@@ -3663,7 +3663,7 @@
       "rainwave_error_object": {
         "type": "object",
         "properties": {
-          "code": {
+          "status": {
             "type": "number"
           },
           "tl_key": {
@@ -3671,9 +3671,12 @@
           },
           "text": {
             "type": "string"
+          },
+          "success": {
+            "type": "boolean"
           }
         },
-        "required": ["code", "tl_key", "text"]
+        "required": ["status", "tl_key"]
       },
       "rainwave_event": {
         "type": "object",

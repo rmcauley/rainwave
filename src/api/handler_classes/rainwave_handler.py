@@ -5,8 +5,9 @@ from tornado.web import RequestHandler
 
 from api import fieldtypes
 from api.exceptions import APIException
-from api.rainwave_return_key_to_open_api import RainwaveResponse
-from common import config, log
+from api.rainwave_openapi import RainwaveErrorObject
+from api.rainwave_return_key_to_open_api import RainwaveResponse, RainwaveResponseKey
+from common import config
 from common.db.cursor import RainwaveCursor, get_cursor
 from common.locale.rainwave_locale import RainwaveLocale
 from common.locale.locale import translations
@@ -18,8 +19,7 @@ from api.helpers.get_browser_locale import get_browser_locale
 
 
 class RainwaveHandler(RequestHandler, ABC):
-    # This URL variable is setup by the server decorator - DON'T TOUCH IT.
-    url = ""
+    content_type = "text/html"
     # Do we need a Rainwave auth key for this request?
     auth_required = True
     # Validate user's tuned in status first.
@@ -32,8 +32,6 @@ class RainwaveHandler(RequestHandler, ABC):
     sid_required = True
     # Restricts requests to config.api_trusted_ip_addresses (presumably 127.0.0.1)
     local_only = False
-    # Do we allow GET HTTP requests to this URL?  (standard is "no")
-    allow_get = False
     # Does the user need perks (donor/beta/etc) to see this request/page?
     perks_required = False
     # automatically add pagination to an API request.
@@ -46,9 +44,13 @@ class RainwaveHandler(RequestHandler, ABC):
     user: UserBase | None = None
     rainwave_locale: RainwaveLocale = translations["en-CA"]
     response: RainwaveResponse = {}
+    error_response: dict[RainwaveResponseKey, RainwaveErrorObject] = {}
 
     # Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
     async def prepare(self) -> None:
+        self.response = {}
+        self.error_response = {}
+
         if (
             self.local_only
             and not self.request.remote_ip in config.web_api_trusted_ip_addresses
@@ -93,9 +95,17 @@ class RainwaveHandler(RequestHandler, ABC):
 
         self.user = user
 
+    def set_default_headers(self) -> None:
+        self.set_header("Content-Type", self.content_type)
+
     @abstractmethod
     def get_request_args(self) -> None:
-        raise NotImplementedError
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def return_name(self) -> RainwaveResponseKey:
+        raise NotImplementedError()
 
     def set_cookie(self, name: str, value: Any, *args: Any, **kwargs: Any) -> None:
         if isinstance(value, int):
@@ -166,10 +176,3 @@ class RainwaveHandler(RequestHandler, ABC):
             api_key,
             cast(str, self.request.remote_ip),
         )
-
-    def write_error(self, status_code: int, **kwargs: Any) -> None:
-        if "exc_info" in kwargs:
-            exc = kwargs["exc_info"][1]
-            if isinstance(exc, APIException):
-                exc.localize(self.locale)
-                log.debug("exception", repr(exc.reason))
