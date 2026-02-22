@@ -2,6 +2,8 @@ import os
 from typing import Any
 from tornado.web import StaticFileHandler, RequestHandler
 
+from common import config
+
 static_dir = os.path.join(
     os.path.dirname(__file__), "..", "..", "src_frontend", "static"
 )
@@ -29,8 +31,13 @@ class handle_url:
         super().__init__()
         self.url = url
 
-    def __call__(self, cls: type[RequestHandler]) -> type[RequestHandler]:
+    def __call__(
+        self, cls: type[RequestHandler], test_mode_only: bool = False
+    ) -> type[RequestHandler]:
         global api_endpoints
+
+        if test_mode_only and not config.developer_mode:
+            return cls
 
         request_classes.append((self.url, cls))
 
