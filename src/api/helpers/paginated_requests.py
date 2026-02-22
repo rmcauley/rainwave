@@ -1,14 +1,23 @@
-    def get_sql_limit_string(self) -> str:
-        if not self.pagination:
-            return ""
-        limit = ""
-        if self.get_argument("per_page") != None:
-            if not self.get_argument("per_page"):
-                limit = "LIMIT ALL"
-            else:
-                limit = "LIMIT %s" % self.get_argument("per_page")
-        else:
-            limit = "LIMIT 100"
-        if self.get_argument("page_start"):
-            limit += " OFFSET %s" % self.get_argument("page_start")
-        return limit
+from psycopg import sql
+from tornado.web import RequestHandler
+
+from api import fieldtypes
+
+
+def get_pagination_sql_limit_string(
+    request: RequestHandler, max_per_page: int = 500
+) -> sql.Composed:
+    limit = max_per_page
+    limit_argument = fieldtypes.integer(request.get_argument("per_page"))
+    if limit_argument:
+        limit = min(limit, limit_argument)
+
+    offset = 0
+    offset_argument = fieldtypes.integer(request.get_argument("page_start"))
+    if offset_argument:
+        offset = min(limit, offset_argument)
+
+    return sql.SQL(" LIMIT {limit} OFFSET {offset}").format(
+        limit=sql.Literal(limit),
+        offset=sql.Literal(offset),
+    )

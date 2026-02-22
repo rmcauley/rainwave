@@ -8,14 +8,14 @@ from typing import Any
 
 
 class Sort(StrEnum):
-    added_on = 'added_on'
-    name = 'name'
+    added_on = "added_on"
+    name = "name"  # pyright: ignore[reportIncompatibleMethodOverride, reportAssignmentType]
 
 
 class Api4AlbumPostRequest(BaseModel):
     id: float
     sort: Sort | None = Field(
-        None, description='How to sort the songs that are a part of the album.'
+        None, description="How to sort the songs that are a part of the album."
     )
     user_id: int
     api_key: str
@@ -51,7 +51,7 @@ class Api4AllGroupsPaginatedPostRequest(BaseModel):
 
 
 class Order(StrEnum):
-    rating = 'rating'
+    rating = "rating"
 
 
 class Api4AllSongsPostRequest(BaseModel):

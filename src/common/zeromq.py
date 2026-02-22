@@ -3,8 +3,8 @@ import zmq
 import zmq.devices
 from zmq.eventloop.zmqstream import ZMQStream
 from typing import Any, Callable
+from api.exceptions import APIException
 from common import config
-from api.web import APIException
 
 _pub = None
 _sub_stream = None

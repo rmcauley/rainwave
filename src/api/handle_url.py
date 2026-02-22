@@ -1,33 +1,27 @@
 import os
-import tornado.web
-import src.api.routes.help
 from typing import Any
+from tornado.web import StaticFileHandler, RequestHandler
 
-request_classes = [
-    (r"/api4/?", src.api.routes.help.IndexRequest),
-    (r"/api4/help/?", src.api.routes.help.IndexRequest),
-    (r"/api4/help/(.+)", src.api.routes.help.HelpRequest),
+static_dir = os.path.join(
+    os.path.dirname(__file__), "..", "..", "src_frontend", "static"
+)
+
+request_classes: list[
+    tuple[str, type[StaticFileHandler] | type[RequestHandler], Any]
+    | tuple[str, type[StaticFileHandler] | type[RequestHandler]]
+] = [
     (
         r"/static/(.*)",
-        tornado.web.StaticFileHandler,
-        {"path": os.path.join(os.path.dirname(__file__), "..", "static")},
-    ),
-    (
-        r"/beta/static/(.*)",
-        tornado.web.StaticFileHandler,
-        {"path": os.path.join(os.path.dirname(__file__), "..", "static")},
+        StaticFileHandler,
+        {"path": static_dir},
     ),
     (
         r"/favicon.ico",
-        tornado.web.StaticFileHandler,
-        {
-            "path": os.path.join(
-                os.path.dirname(__file__), "..", "static", "favicon.ico"
-            )
-        },
+        StaticFileHandler,
+        {"path": os.path.join(static_dir, "favicon.ico")},
     ),
 ]
-api_endpoints = {}
+api_endpoints: dict[str, type[RequestHandler]] = {}
 
 
 class handle_url:
@@ -35,15 +29,15 @@ class handle_url:
         super().__init__()
         self.url = url
 
-    def __call__(self, cls: type[Any]) -> type[Any]:
-        cls.url = self.url
-        request_classes.append((self.url, cls))
-        src.api.routes.help.add_help_class(cls, cls.url)
+    def __call__(self, cls: type[RequestHandler]) -> type[RequestHandler]:
         global api_endpoints
+
+        request_classes.append((self.url, cls))
+
         if not getattr(cls, "local_only", False) and not getattr(
             cls, "is_websocket", False
         ):
-            api_endpoints[cls.url] = cls
+            api_endpoints[self.url] = cls
         return cls
 
 

@@ -1,14 +1,7 @@
 {
   "stubPath": "src/typestubs",
   "include": ["src/**/*.py"],
-  "exclude": [
-    "**/__pycache__",
-    "src/frontend",
-    "**/node_modules",
-    "**/.*",
-    ".venv",
-    "src/api/rainwave_dto.py"
-  ],
+  "exclude": ["**/__pycache__", "src/frontend", "**/node_modules", "**/.*", ".venv"],
   "typeCheckingMode": "off",
   "executionEnvironments": [
     {

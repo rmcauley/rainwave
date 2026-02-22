@@ -13,7 +13,6 @@ from common.locale.locale import translations
 from common.user.api_key import is_valid_api_key
 from common.user.get_anonymous_user import get_authorized_anonymous_user
 from common.user.get_registered_user import get_authorized_registered_user
-from common.user.model.registered_user import RegisteredUser
 from common.user.model.user_base import UserBase
 from api.helpers.get_browser_locale import get_browser_locale
 
@@ -174,7 +173,3 @@ class RainwaveHandler(RequestHandler, ABC):
             if isinstance(exc, APIException):
                 exc.localize(self.locale)
                 log.debug("exception", repr(exc.reason))
-
-
-class RainwaveRegisteredUserHandler(RainwaveHandler, ABC):
-    registered_user: RegisteredUser
