@@ -7,8 +7,8 @@ from common.db.schema import create_tables
 
 async def main() -> None:
     log.init(None, "print")
-    await db_connect(auto_retry=False)
-    await create_tables()
+    async with db_connect(auto_retry=False):
+        await create_tables()
     print()
     print("Done")
     print()

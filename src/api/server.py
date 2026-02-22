@@ -11,7 +11,7 @@ from api.handler_classes.html404 import HTMLError404Handler
 from api.handler_classes.json404 import Error404Handler
 from common import config, log, zeromq
 from common.cache.cache import cache_connect
-from common.db.connection import db_close, db_connect
+from common.db.connection import db_connect
 import common.locale.locale
 from api.handle_url import request_classes
 
@@ -40,45 +40,41 @@ class APIServer:
         log_file = f"logs/rw_api_%{port_no}.log"
         log.init(log_file, config.log_level)
         log.debug("start", "Server booting, port %s." % port_no)
-        await db_connect(auto_retry=False, retry_only_this_time=True)
-        await cache_connect()
+        async with db_connect(auto_retry=False), cache_connect():
+            app = tornado.web.Application(
+                request_classes,
+                debug=config.developer_mode,
+                template_path=os.path.join(os.path.dirname(__file__), "templates"),
+                static_path=os.path.join(
+                    os.path.dirname(__file__), "..", "..", "src_frontend", "static"
+                ),
+                autoreload=config.developer_mode,
+                serve_traceback=config.developer_mode,
+            )
+            http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
+            http_server.listen(port_no)
+
+            for request in request_classes:
+                log.debug("start", "   Handler: %s" % str(request))
+            log.info("start", "Max open files: %s" % resource.RLIMIT_NOFILE)
+            log.info("start", "API server on port %s ready to go." % port_no)
+            self.ioloop = tornado.ioloop.IOLoop.instance()
+
+            try:
+                await asyncio.Event().wait()
+            finally:
+                self.ioloop.stop()
+                http_server.stop()
+                log.info("stop", "Server has been shutdown.")
+
+    def start(self) -> None:
+        common.locale.locale.load_translations()
 
         # Make sure all other errors get handled in an API-friendly way
         request_classes.append((r"/api/.*", Error404Handler))
         request_classes.append((r"/api4/.*", Error404Handler))
         request_classes.append((r".*", HTMLError404Handler))
 
-        app = tornado.web.Application(
-            request_classes,
-            debug=config.developer_mode,
-            template_path=os.path.join(os.path.dirname(__file__), "templates"),
-            static_path=os.path.join(
-                os.path.dirname(__file__), "..", "..", "src_frontend", "static"
-            ),
-            autoreload=config.developer_mode,
-            serve_traceback=config.developer_mode,
-        )
-        http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
-        http_server.listen(port_no)
-
-        for request in request_classes:
-            log.debug("start", "   Handler: %s" % str(request))
-        log.info("start", "Max open files: %s" % resource.RLIMIT_NOFILE)
-        log.info("start", "API server on port %s ready to go." % port_no)
-        self.ioloop = tornado.ioloop.IOLoop.instance()
-
-        try:
-            await asyncio.Event().wait()
-        finally:
-            self.ioloop.stop()
-            http_server.stop()
-            await db_close()
-            log.info("stop", "Server has been shutdown.")
-
-    def start(self) -> None:
-        common.locale.locale.load_translations()
-
-        # Setup variables for the long poll module
         # Bypass Tornado's forking processes if num_processes is set to 1
         if config.api_num_processes == 1:
             asyncio.run(self._listen(0))

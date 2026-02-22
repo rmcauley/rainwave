@@ -17,9 +17,7 @@ class AllAlbumRow(TypedDict):
 
 
 async def main() -> None:
-    await cache_connect()
-    await db_connect(auto_retry=False)
-    async with get_cursor() as cursor:
+    async with db_connect(auto_retry=False), cache_connect(), get_cursor() as cursor:
         max_id = await cursor.fetch_guaranteed(
             "SELECT max(album_id) AS max_album_id FROM r4_albums",
             params=None,

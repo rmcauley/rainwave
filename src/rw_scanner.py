@@ -1,6 +1,8 @@
 import argparse
+import asyncio
 
 from common.cache import cache
+from common.db.connection import db_connect
 from scanner.filemonitor import (
     monitor,
     set_on_screen,
@@ -8,38 +10,31 @@ from scanner.filemonitor import (
     full_music_scan,
 )
 from common import config, log
-from common.libs import db
-from common.playlist.album.album_model import clear_updated_albums
 
-if __name__ == "__main__":
+
+async def main() -> None:
     parser = argparse.ArgumentParser(description="Rainwave song scanning daemon.")
     parser.add_argument("--full", action="store_true")
     parser.add_argument("--reset", action="store_true")
     parser.add_argument("--art", action="store_true")
     args = parser.parse_args()
 
-    on_screen = args.art or args.full
+    on_screen = args.art or args.full or args.reset
 
     log.init(
         None if on_screen else "rw_scanner.log",
         "debug" if on_screen else config.log_level,
     )
 
-    for sid in config.station_ids:
-        clear_updated_albums(sid)
-
-    try:
-        db.connect()
-        cache.cache_connect()
-
+    async with db_connect(), cache.cache_connect():
         set_on_screen(on_screen)
-
         if args.art:
             full_art_update()
         elif args.full:
             full_music_scan(args.reset)
         else:
             monitor()
-    finally:
-        db.close()
-        log.close()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

@@ -41,34 +41,36 @@ async def rainwave_db():
     log.init(loglevel="critical")
     _load_api_requests()
     cache.cache_connect()
-    await db_connect(auto_retry=False)
-    await create_tables()
-    populate_test_data(db.c, sid=1)
-    api_locale.load_translations()
-    zeromq.init_pub()
-    get_age_cooldown_multiplier.prepare_cooldown_algorithm(1)
-    get_schedule_at_time.load()
-    get_schedule_at_time.advance_station(1)
-    get_schedule_at_time.post_process(1)
-    playlist.update_num_songs()
-    cache.set_station(1, "all_albums", playlist.get_all_albums_list(1), True)
-    cache.set_station(1, "all_artists", playlist.get_all_artists_list(1), True)
-    cache.set_station(1, "all_groups", playlist.get_all_groups_list(1), True)
-    cache.set_station(1, "all_groups_power", playlist.get_all_groups_for_power(1), True)
-    cache.set_global(
-        "all_stations_info",
-        {
-            1: {
-                "title": None,
-                "album": None,
-                "art": None,
-                "artists": None,
-                "event_name": None,
-                "event_type": None,
-            }
-        },
-        save_local=True,
-    )
-    yield
+    async with db_connect(auto_retry=False):
+        await create_tables()
+        populate_test_data(db.c, sid=1)
+        api_locale.load_translations()
+        zeromq.init_pub()
+        get_age_cooldown_multiplier.prepare_cooldown_algorithm(1)
+        get_schedule_at_time.load()
+        get_schedule_at_time.advance_station(1)
+        get_schedule_at_time.post_process(1)
+        playlist.update_num_songs()
+        cache.set_station(1, "all_albums", playlist.get_all_albums_list(1), True)
+        cache.set_station(1, "all_artists", playlist.get_all_artists_list(1), True)
+        cache.set_station(1, "all_groups", playlist.get_all_groups_list(1), True)
+        cache.set_station(
+            1, "all_groups_power", playlist.get_all_groups_for_power(1), True
+        )
+        cache.set_global(
+            "all_stations_info",
+            {
+                1: {
+                    "title": None,
+                    "album": None,
+                    "art": None,
+                    "artists": None,
+                    "event_name": None,
+                    "event_type": None,
+                }
+            },
+            save_local=True,
+        )
+        yield
     db.close()
     log.close()

@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 import pickle
 import emcache
 from common import config
@@ -21,16 +22,31 @@ async def _build_emcache_client(host: str, port: int) -> emcache.Client:
     return client
 
 
-async def cache_connect() -> None:
+@asynccontextmanager
+async def cache_connect():
     global client
-    global ratings_client
-
     if client:
-        return
-    if config.memcache_fake:
-        client = TestModeCache()
-    else:
-        client = await _build_emcache_client(config.memcache_host, config.memcache_port)
+        raise APIException(
+            "internal_error", "cache_connect was called twice.", http_code=500
+        )
+
+    try:
+        if config.memcache_fake:
+            client = TestModeCache()
+        else:
+            client = await _build_emcache_client(
+                config.memcache_host, config.memcache_port
+            )
+        yield client
+    finally:
+        if client:
+            await client.close()
+
+
+async def cache_close() -> None:
+    global client
+    if client:
+        await client.close()
 
 
 async def cache_set(key: str, value: Any, *, save_in_memory: bool = False) -> None:

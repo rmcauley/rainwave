@@ -30,10 +30,7 @@ async def main() -> None:
     log_file = "%s/rw_auto_ph.log" % (config.log_dir,)
     log.init(log_file, "debug")
 
-    await cache_connect()
-    await db_connect(auto_retry=False)
-
-    async with get_cursor() as cursor:
+    async with db_connect(auto_retry=False), cache_connect(), get_cursor() as cursor:
         songs_today = await cursor.fetch_all(
             """
             SELECT

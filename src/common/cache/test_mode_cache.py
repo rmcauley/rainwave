@@ -14,3 +14,6 @@ class TestModeCache:
 
     async def set(self, key: bytes, value: Any) -> None:
         self.vars[key] = value
+
+    async def close(self) -> None:
+        pass

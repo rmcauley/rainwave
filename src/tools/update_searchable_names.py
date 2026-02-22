@@ -3,6 +3,7 @@
 import asyncio
 from typing import TypedDict
 
+from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
 from common.playlist.remove_diacritics import remove_diacritics
@@ -14,9 +15,7 @@ class UpdateSearchableNameRow(TypedDict):
 
 
 async def main() -> None:
-    await db_connect(auto_retry=False)
-
-    async with get_cursor() as cursor:
+    async with db_connect(auto_retry=False), cache_connect(), get_cursor() as cursor:
         for row in await cursor.fetch_all(
             "SELECT song_id AS id, song_title AS name FROM r4_songs",
             row_type=UpdateSearchableNameRow,

@@ -1,8 +1,10 @@
 import asyncio
+from contextlib import asynccontextmanager
 
 from psycopg import OperationalError, InterfaceError
 from psycopg_pool import AsyncConnectionPool
 
+from api.exceptions import APIException
 from common import config
 from common import log
 
@@ -13,17 +15,17 @@ db_connection_errors = (OperationalError, InterfaceError)
 
 def get_pool() -> AsyncConnectionPool:
     if not db_pool:
-        raise RuntimeError("DB pool is not connected")
+        raise APIException("internal_error", "No database connection.", http_code=500)
     return db_pool
 
 
-async def db_connect(
-    auto_retry: bool = True, retry_only_this_time: bool = False
-) -> None:
+@asynccontextmanager
+async def db_connect(auto_retry: bool = True):
     global db_pool
-
     if db_pool:
-        return
+        raise APIException(
+            "internal_error", "db_connect was called twice.", http_code=500
+        )
 
     name = config.db_name
     host = config.db_host
@@ -54,17 +56,13 @@ async def db_connect(
             )
             await db_pool.open(True)
             connected = True
+            yield db_pool
         except db_connection_errors as e:
             log.exception("psycopg", "Psycopg connection error", e)
-            if auto_retry or retry_only_this_time:
+            if auto_retry:
                 await asyncio.sleep(1)
             else:
                 raise
-
-
-async def db_close() -> bool:
-    global db_pool
-    if db_pool:
-        await db_pool.close()
-    db_pool = None
-    return True
+        finally:
+            if db_pool:
+                await db_pool.close()

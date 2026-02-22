@@ -1,6 +1,7 @@
 import asyncio
 
 from common import log
+from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
 from common.playlist.song.update_song_rating import update_song_rating
@@ -8,8 +9,7 @@ from common.playlist.song.update_song_rating import update_song_rating
 
 async def main() -> None:
     log.init()
-    await db_connect(auto_retry=False)
-    async with get_cursor() as cursor:
+    async with db_connect(auto_retry=False), cache_connect(), get_cursor() as cursor:
         max_id = await cursor.fetch_guaranteed(
             "SELECT max(song_id) AS max_song_id FROM r4_songs",
             params=None,
