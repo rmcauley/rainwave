@@ -1,0 +1,30 @@
+from datetime import datetime, timedelta
+from pytz import timezone
+from time import time as timestamp
+from common.libs import db
+import api.web
+from api.handle_url import handle_api_url
+from api.exceptions import APIException
+from api import fieldtypes
+from common.rainwave.events import event
+from common.rainwave.events.event import BaseProducer
+
+
+@handle_api_url("admin/delete_producer")
+class DeleteProducer(api.web.APIHandler):
+    admin_required = True
+    sid_required = False
+    fields = {"sched_id": (fieldtypes.sched_id, True)}
+
+    def post(self):
+        producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+        if not producer:
+            raise APIException(
+                "internal_error",
+                "Producer ID %s not found." % self.get_argument("sched_id"),
+            )
+        await cursor.update(
+            "DELETE FROM r4_schedule WHERE sched_id = %s",
+            (self.get_argument("sched_id"),),
+        )
+        self.append_standard("success", "Producer deleted.")

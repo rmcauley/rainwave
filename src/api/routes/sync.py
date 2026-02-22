@@ -23,8 +23,8 @@ from api import fieldtypes
 from api.exceptions import APIException
 from api.web import APIHandler
 from api.web import get_browser_locale
-from api.urls import api_endpoints
-from api.urls import handle_api_url
+from api.handle_url import api_endpoints
+from api.handle_url import handle_api_url
 from common.user.user_model import make_user
 import common.locale.locale
 import routes.info

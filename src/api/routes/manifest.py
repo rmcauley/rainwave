@@ -6,7 +6,7 @@ except ImportError:
 import tornado.web
 
 from api.web import HTMLRequest
-from api.urls import handle_url
+from api.handle_url import handle_url
 from common import config
 
 

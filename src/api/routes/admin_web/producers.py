@@ -1,7 +1,7 @@
 from common import config
 import api.web
 from api import fieldtypes
-from api.urls import handle_url
+from api.handle_url import handle_url
 from routes.admin import producers
 from common.rainwave.events import event
 from routes.admin_web import index

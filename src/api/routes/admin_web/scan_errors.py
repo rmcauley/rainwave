@@ -2,7 +2,7 @@ from time import time as timestamp
 import datetime
 from common.libs import db
 import api.web
-from api.urls import handle_url
+from api.handle_url import handle_url
 
 from routes.admin.scan_errors import BackendScanErrors
 

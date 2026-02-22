@@ -1,9 +1,9 @@
 from libs import cache
 import api.web
-from api.urls import handle_api_url
+from api.handle_url import handle_api_url
 
 
-@handle_api_url("admin/backend_scan_errors")
+@handle_api_url("admin/js_errors")
 class JSErrors(api.web.APIHandler):
     return_name = "js_errors"
     admin_required = True

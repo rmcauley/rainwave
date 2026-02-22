@@ -1,5 +1,5 @@
 import api.web
-from api.urls import handle_url
+from api.handle_url import handle_url
 
 
 @handle_url("/admin/tools/donations")

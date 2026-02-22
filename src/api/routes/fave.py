@@ -1,7 +1,7 @@
 from api import fieldtypes
 from api.web import APIHandler
 from api.exceptions import APIException
-from api.urls import handle_api_url
+from api.handle_url import handle_api_url
 from common.libs import db
 
 from common.rainwave import rating

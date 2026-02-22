@@ -1,6 +1,6 @@
 from api import fieldtypes
 from api.exceptions import APIException
-from api.urls import handle_api_html_url, handle_api_url
+from api.handle_url import handle_api_html_url, handle_api_url
 from api.web import APIHandler, PrettyPrintAPIMixin
 from libs import cache, db
 

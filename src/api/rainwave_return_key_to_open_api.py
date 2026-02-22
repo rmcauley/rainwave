@@ -19,7 +19,7 @@ class ArtistWithSongs(rainwave_openapi.Artist):
     all_songs: list[rainwave_openapi.SongOnAlbum]
 
 
-class RainwaveResponseTypes(TypedDict):
+class RainwaveResponse(TypedDict, total=False):
     album: rainwave_openapi.AlbumWithDetail
     album_diff: rainwave_openapi.AlbumDiff
     albums: list[rainwave_openapi.SearchAlbum]

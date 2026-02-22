@@ -1,7 +1,7 @@
 from typing import cast
 from common.libs import db
 import api.web
-from api.urls import handle_api_url
+from api.handle_url import handle_api_url
 from api import fieldtypes
 from api.exceptions import APIException
 from common import config

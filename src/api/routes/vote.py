@@ -4,7 +4,7 @@ from time import time as timestamp
 from api import fieldtypes
 from api.web import APIHandler
 from api.exceptions import APIException
-from api.urls import handle_api_url
+from api.handle_url import handle_api_url
 import rainwave.schedule
 from common.rainwave.events.event import BaseEvent
 from common.rainwave.events.election import Election

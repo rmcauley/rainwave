@@ -1,20 +1,20 @@
 from common.libs import db
 import api.web
-from api.urls import handle_api_url
+from api.handle_url import handle_api_url
 from api import fieldtypes
 from api.exceptions import APIException
 from common import config
 
 
-@handle_api_url("update_user_avatar_by_discord_id")
-class UpdateUserAvatarByDiscordId(api.web.APIHandler):
+@handle_api_url("update_user_nickname_by_discord_id")
+class UpdateUserNicknameByDiscordId(api.web.APIHandler):
     auth_required = False
     sid_required = False
     description = "Accessible only to localhost connections, for wormgas."
     help_hidden = True
     fields = {
         "discord_user_id": (fieldtypes.string, True),
-        "avatar": (fieldtypes.string, True),
+        "nickname": (fieldtypes.string, True),
     }
 
     def post(self):
@@ -25,8 +25,7 @@ class UpdateUserAvatarByDiscordId(api.web.APIHandler):
             )
 
         discord_user_id = self.get_argument("discord_user_id")
-        avatar_url = self.get_argument("avatar")
-        user_avatar_type = "avatar.driver.remote"
+        nickname = self.get_argument("nickname")
 
         possible_id = await cursor.fetch_var(
             "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
@@ -37,14 +36,12 @@ class UpdateUserAvatarByDiscordId(api.web.APIHandler):
                 (
                     """
                     UPDATE phpbb_users
-                    SET user_avatar_type = %s,
-                        user_avatar = %s
+                    SET radio_username = %s
                     WHERE user_id = %s
 """
                 ),
                 (
-                    user_avatar_type,
-                    avatar_url,
+                    nickname,
                     possible_id,
                 ),
             )

@@ -1,7 +1,7 @@
 import math
 
 from api import fieldtypes
-from api.urls import handle_api_html_url, handle_api_url
+from api.handle_url import handle_api_html_url, handle_api_url
 from api.web import APIHandler, PrettyPrintAPIMixin, APIException
 from libs import cache, db
 from common.rainwave import playlist

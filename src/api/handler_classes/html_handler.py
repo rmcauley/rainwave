@@ -1,15 +1,8 @@
-import tornado
-import traceback
-from http.client import responses
-from typing import Any
-
-from common.libs import db
-from common import config
-
-from routes.auth.errors import OAuthRejectedError
-
-from api.exceptions import APIException
-from common.locale import locale
+class HTMLRequest(RainwaveHandler):
+    phpbb_auth = True
+    allow_get = True
+    write_error = html_write_error
+    is_html = True
 
 
 def html_write_error(self, status_code: int, **kwargs: Any) -> None:

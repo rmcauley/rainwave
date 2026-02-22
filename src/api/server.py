@@ -5,54 +5,24 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.process
-import tornado.websocket
-from typing import Any
 
-import api.web
+from common import zeromq
 import src.api.routes.help
 import common.locale.locale
-from libs import log
-from common.config import config
-from common.libs import db
-from libs import cache
-from libs import memory_trace
-from libs import zeromq
-from common.rainwave import playlist
-from common.rainwave import schedule
-import rainwave.request
-
-from routes.index import request_classes
-from .exceptions import APIException
-from routes.auth.errors import OAuthNetworkError, OAuthRejectedError
-
-app = None
-
-
-def sentry_before_send(
-    event: dict[str, Any], hint: dict[str, Any]
-) -> dict[str, Any] | None:
-    if "exc_info" in hint:
-        exc_type, exc_value, tb = hint["exc_info"]
-        if isinstance(exc_value, APIException) and exc_value.code != 500:
-            return None
-        if isinstance(exc_value, tornado.websocket.WebSocketClosedError):
-            return None
-        if isinstance(exc_value, (OAuthNetworkError, OAuthRejectedError)):
-            return None
-    return event
 
 
 class APIServer:
     def __init__(self) -> None:
+        super().__init__()
         self.ioloop: tornado.ioloop.IOLoop | None = None
 
     def _listen(self, task_id: int) -> None:
         zeromq.init_pub()
         zeromq.init_sub()
 
-        import routes.sync
+        import api.routes.sync
 
-        routes.sync.init()
+        api.routes.sync.init()
 
         # task_ids start at zero, so we gobble up ports starting at the base port and work up
         port_no = int(config.api_base_port) + task_id

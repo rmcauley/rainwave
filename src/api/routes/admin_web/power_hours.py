@@ -5,7 +5,7 @@ from pytz import timezone
 from libs import log
 from common import config
 import api.web
-from api.urls import handle_url
+from api.handle_url import handle_url
 from routes.admin_web.index import AlbumList
 from routes.admin_web.index import SongList
 

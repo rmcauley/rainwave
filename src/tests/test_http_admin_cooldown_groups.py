@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
-from api.urls import request_classes
+from api.handle_url import request_classes
 from common.libs import db
 import pytest
 from tests.seed_data import (

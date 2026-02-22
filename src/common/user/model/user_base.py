@@ -16,6 +16,7 @@ class UserBase(ABC):
     private_data: UserPrivateData
     # Information only the server can see
     server_data: UserServerData
+    ip_address: str
 
     id: int
 
@@ -24,12 +25,14 @@ class UserBase(ABC):
         public_data: UserPublicData,
         private_data: UserPrivateData,
         server_data: UserServerData,
+        ip_address: str,
     ):
         super().__init__()
         self.id = public_data["id"]
         self.public_data = public_data
         self.private_data = private_data
         self.server_data = server_data
+        self.ip_address = ip_address
 
     @staticmethod
     @abstractmethod

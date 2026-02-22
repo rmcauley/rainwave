@@ -3,7 +3,7 @@ import json  # We have some features of stdlib JSON we need here, don't use ujso
 import tornado.web
 
 import api.web
-from api.urls import handle_url
+from api.handle_url import handle_url
 from common.locale import locale
 
 

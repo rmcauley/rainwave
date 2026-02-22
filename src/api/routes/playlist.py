@@ -4,8 +4,8 @@ import math
 from api.web import APIHandler
 from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
-from api.urls import handle_api_url
-from api.urls import handle_api_html_url
+from api.handle_url import handle_api_url
+from api.handle_url import handle_api_html_url
 
 try:
     import ujson as json

@@ -1,4 +1,4 @@
-from api.urls import handle_url
+from api.handle_url import handle_url
 from api.web import HTMLRequest
 from routes.main import Bootstrap
 from common.libs import db

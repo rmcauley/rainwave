@@ -4,7 +4,7 @@ import tornado.escape
 from pytz import timezone
 
 import api.web
-from api.urls import handle_url
+from api.handle_url import handle_url
 
 from routes.admin.js_errors import JSErrors
 

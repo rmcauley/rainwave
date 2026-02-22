@@ -32,6 +32,7 @@ api_endpoints = {}
 
 class handle_url:
     def __init__(self, url: str) -> None:
+        super().__init__()
         self.url = url
 
     def __call__(self, cls: type[Any]) -> type[Any]:

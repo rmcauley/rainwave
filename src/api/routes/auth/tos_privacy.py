@@ -1,5 +1,5 @@
 from api.web import HTMLRequest
-from api.urls import handle_url
+from api.handle_url import handle_url
 
 
 @handle_url("/oauth/tos_privacy")

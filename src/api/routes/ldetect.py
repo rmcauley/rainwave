@@ -2,8 +2,8 @@ from time import time as timestamp
 
 from api import fieldtypes
 from api.web import RainwaveHandler
-from api.urls import handle_api_url
-from api.urls import handle_url
+from api.handle_url import handle_api_url
+from api.handle_url import handle_url
 from api.exceptions import APIException
 
 from libs import cache

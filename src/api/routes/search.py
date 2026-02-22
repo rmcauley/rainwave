@@ -1,6 +1,6 @@
 from api.web import APIHandler
 from api import fieldtypes
-from api.urls import handle_api_url
+from api.handle_url import handle_api_url
 from common.libs import db
 from common.rainwave.playlist_objects.metadata import make_searchable_string
 from api.exceptions import APIException

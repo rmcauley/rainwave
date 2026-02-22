@@ -5,7 +5,7 @@ import urllib.parse
 
 import api.web
 import common.locale.locale
-from api.urls import handle_url, handle_api_url
+from api.handle_url import handle_url, handle_api_url
 from routes import info
 
 from common import config
