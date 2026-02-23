@@ -64,7 +64,7 @@ class AnonymousUser(UserBase):
                 "admin": admin,
                 "listen_key": refresh_data["listen_key"],
                 "lock": refresh_data["listener_lock"] or False,
-                "lock_counter": refresh_data["listener_lock_counter"],
+                "lock_counter": refresh_data["listener_lock_counter"] or 0,
                 "lock_in_effect": get_lock_in_effect(
                     sid,
                     refresh_data["listener_lock"],
@@ -77,6 +77,7 @@ class AnonymousUser(UserBase):
                 "request_expires_at": None,
                 "request_position": None,
                 "requests_paused": refresh_data["requests_paused"],
+                "sid": sid,
                 "tuned_in": tuned_in,
                 "voted_entry": refresh_data["listener_voted_entry"],
             },

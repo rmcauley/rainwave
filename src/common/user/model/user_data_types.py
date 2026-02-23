@@ -10,7 +10,7 @@ class UserPublicData(TypedDict):
 class UserPrivateData(TypedDict):
     admin: bool
     listen_key: str
-    lock_counter: int | None
+    lock_counter: int
     lock_in_effect: bool
     lock_sid: int | None
     lock: bool

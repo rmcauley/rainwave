@@ -25,7 +25,10 @@ class APIHandler(RainwaveHandler):
                 "long_request",
                 "%s took %s to execute!" % (self.__class__.__name__, exectime),
             )
-        self.response["api_info"] = {"exectime": exectime, "time": round(timestamp())}
+        self.response["api_info"] = {
+            "exectime": int(exectime),
+            "time": int(timestamp()),
+        }
         if self.error_response:
             self.write(
                 orjson.dumps(

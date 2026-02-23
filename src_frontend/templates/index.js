@@ -1898,4 +1898,4 @@ v26.setAttribute('style',"visibility: hidden; z-index: -1; transition: none");
 $binds['last_song_padder'] = v26;
 v26.appendChild(v25);
 v25.appendChild(v1);
-return $binds;};export default {hotkey,albumDetail,mobileRating,settingsYesNo,albumRating,modalRating,songDetail,errorModal,songTable,authFailureModal,rating,message,menu,requestsPanel,modal,timelineSong,pullout,searchResults,fave,timelineEventTooltip,event,artistDetail,settings,search,timeline,groupDetail,listenerDetail,hamburgerMenu,settingsMultiOption,searchList,oops,index,whatIsCooldownModal,}
+return $binds;};export default {modalRating,menu,mobileRating,modal,rating,searchResults,timeline,songTable,settingsMultiOption,event,whatIsCooldownModal,message,settings,requestsPanel,search,fave,timelineSong,pullout,errorModal,timelineEventTooltip,hamburgerMenu,albumDetail,groupDetail,settingsYesNo,oops,authFailureModal,artistDetail,index,songDetail,searchList,albumRating,listenerDetail,hotkey,}
