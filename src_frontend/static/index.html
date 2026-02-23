@@ -1,64 +1,72 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-	<title>Rainwave</title>
-	<meta charset="UTF-8" />
-	<meta name="description" content="Listen, rate, and request your favourite video game music!" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <head>
+    <title>Rainwave</title>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Listen, rate, and request your favourite video game music!" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet"> 
-	<link href="/static/baked/style.css" type="text/css" rel="stylesheet" />
+    <link href="/static/baked/style.css" type="text/css" rel="stylesheet" />
 
-	<script src="/static/baked/rainwave.js" async></script>
-	<script src="/api4/bootstrap" async></script>
+    <script src="/static/baked/rainwave.js" async></script>
+    <script src="/api4/bootstrap" async></script>
 
-	<meta name="msapplication-TileColor" content="#1978B7">
-	<meta name="msapplication-TileImage" content="/static/images4/logo_white.png">
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <link rel="icon" sizes="16x16 32x32 48x48 256x256" href="/static/favicon.ico" />
 
-	<link rel="apple-touch-icon" sizes="1024x1024" href="/static/images4/ios/1024.png" />
-	<link rel="apple-touch-icon" sizes="152x152" href="/static/images4/ios/152.png" />
-	<link rel="apple-touch-icon" sizes="120x120" href="/static/images4/ios/120.png" />
-	<link rel="apple-touch-icon" sizes="76x76" href="/static/images4/ios/76.png" />
-	<link rel="mask-icon" href="/static/images4/ios/safari_pinned.svg" color="#5bbad5">
+    <meta name="theme-color" content="#1978B7" />
+    <meta name="msapplication-navbutton-color" content="#1978B7" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />
 
-	<link rel="shortcut icon" href="/static/favicon.ico" />
-	<link rel="icon" sizes="16x16 32x32 48x48 256x256" href="/static/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
 
-	<meta name="theme-color" content="#1978B7" />
-	<meta name="msapplication-navbutton-color" content="#1978B7" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />
+    <meta property="og:title" content="Rainwave" />
+    <meta property="og:site_name" content="Rainwave" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:description"
+      content="Listen, rate, and request your favourite video game music!"
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale_alternative" content="en_US" />
+    <meta property="og:url" content="https://rainwave.cc" />
+    <meta property="og:image" content="https://rainwave.cc/static/images4/android/256.png" />
+  </head>
 
-	<link rel="manifest" href="/manifest.json" />
-
-	<meta name="twitter:card" content="summary" />
-	<meta name="twitter:site" content="@Rainwavecc" />
-	<meta name="twitter:title" content="Rainwave" />
-	<meta name="twitter:description" content="Listen, rate, and request your favourite video game music!" />
-	<meta name="twitter:image" content="https://core.rainwave.cc/static/images4/android/256.jpg" />
-
-	<meta property="og:title" content="Rainwave" />
-	<meta property="og:site_name" content="Rainwave" />
-	<meta property="og:type" content="website" />
-	<meta property="og:description" content="Listen, rate, and request your favourite video game music!" />
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:locale_alternative" content="en_US" />
-	<meta property="og:url" content="https://rainwave.cc" />
-	<meta property="og:image" content="https://rainwave.cc/static/images4/android/256.png" />
-</head>
-
-<body class="simple loading normal">
-	<div id="audio_volume_container">
-		<svg class="unselectable audio_volume" id="audio_volume" viewBox="0 0 100 100" preserveAspectRatio="none" style="display: none;">
-			<clipPath id="volume_bars">
-				<rect x="0" y="80"  width="17" height="20"></rect>
-				<rect x="20" y="60" width="17" height="40"></rect>
-				<rect x="40" y="40" width="17" height="60"></rect>
-				<rect x="60" y="20" width="17" height="80"></rect>
-				<rect x="80" y="0"  width="17" height="100"></rect>
-			</clipPath>
-			<rect id="audio_volume_indicator_background" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)" style="opacity: 0.3;"></rect>
-			<rect id="audio_volume_indicator" x="0" y="0" width="100" height="100" clip-path="url(#volume_bars)"></rect>
-		</svg>
-	</div>
-</body>
+  <body class="simple loading normal">
+    <div id="audio_volume_container">
+      <svg
+        class="unselectable audio_volume"
+        id="audio_volume"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        style="display: none"
+      >
+        <clipPath id="volume_bars">
+          <rect x="0" y="80" width="17" height="20"></rect>
+          <rect x="20" y="60" width="17" height="40"></rect>
+          <rect x="40" y="40" width="17" height="60"></rect>
+          <rect x="60" y="20" width="17" height="80"></rect>
+          <rect x="80" y="0" width="17" height="100"></rect>
+        </clipPath>
+        <rect
+          id="audio_volume_indicator_background"
+          x="0"
+          y="0"
+          width="100"
+          height="100"
+          clip-path="url(#volume_bars)"
+          style="opacity: 0.3"
+        ></rect>
+        <rect
+          id="audio_volume_indicator"
+          x="0"
+          y="0"
+          width="100"
+          height="100"
+          clip-path="url(#volume_bars)"
+        ></rect>
+      </svg>
+    </div>
+  </body>
 </html>

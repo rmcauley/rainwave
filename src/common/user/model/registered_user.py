@@ -109,6 +109,7 @@ class RegisteredUser(UserBase):
                 "request_expires_at": request_expires_at,
                 "request_position": request_position,
                 "requests_paused": refresh_data["requests_paused"],
+                "sid": sid,
                 "tuned_in": tuned_in,
                 "voted_entry": refresh_data["listener_voted_entry"],
             },

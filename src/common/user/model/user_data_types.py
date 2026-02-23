@@ -19,6 +19,7 @@ class UserPrivateData(TypedDict):
     request_expires_at: int | None
     request_position: int | None
     requests_paused: bool
+    sid: int
     tuned_in: bool
     voted_entry: int | None
 

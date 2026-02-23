@@ -28,6 +28,7 @@ ErrorTranslationKeys = (
     | Literal["same_request_album"]
     | Literal["song_not_requested"]
     | Literal["rejected"]
+    | Literal["station_offline"]
 )
 
 

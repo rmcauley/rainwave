@@ -61,7 +61,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "sort": {
                     "description": "How to sort the songs that are a part of the album.",
@@ -106,7 +106,7 @@
                 "type": "object",
                 "properties": {
                   "after": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -145,7 +145,7 @@
                 "type": "object",
                 "properties": {
                   "after": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -184,10 +184,10 @@
                 "type": "object",
                 "properties": {
                   "per_page": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "page_start": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -223,7 +223,7 @@
                 "type": "object",
                 "properties": {
                   "after": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -262,10 +262,10 @@
                 "type": "object",
                 "properties": {
                   "per_page": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "page_start": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "order": {
                     "type": "string",
@@ -305,7 +305,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -344,7 +344,7 @@
                 "type": "object",
                 "properties": {
                   "song_id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -455,7 +455,7 @@
                 "type": "object",
                 "properties": {
                   "song_id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -494,7 +494,7 @@
                 "type": "object",
                 "properties": {
                   "album_id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "fave": {
                     "type": "boolean"
@@ -536,7 +536,7 @@
                 "type": "object",
                 "properties": {
                   "album_id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "fave": {
                     "type": "boolean"
@@ -578,7 +578,7 @@
                 "type": "object",
                 "properties": {
                   "song_id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "fave": {
                     "type": "boolean"
@@ -617,7 +617,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -686,7 +686,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -798,10 +798,10 @@
                 "type": "object",
                 "properties": {
                   "per_page": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "page_start": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -840,7 +840,7 @@
                 "type": "object",
                 "properties": {
                   "song_id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "rating": {
                     "type": "number",
@@ -883,7 +883,7 @@
                 "type": "object",
                 "properties": {
                   "song_id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -1069,7 +1069,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -1205,10 +1205,10 @@
                 "type": "object",
                 "properties": {
                   "per_page": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "page_start": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -1280,10 +1280,10 @@
                 "type": "object",
                 "properties": {
                   "per_page": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "page_start": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -1322,10 +1322,10 @@
                 "type": "object",
                 "properties": {
                   "per_page": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "page_start": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -1364,7 +1364,7 @@
                 "type": "object",
                 "properties": {
                   "entry_id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "integer"
@@ -2707,16 +2707,16 @@
           "type": "object",
           "properties": {
             "id": {
-              "type": "number"
+              "type": "integer"
             },
             "cool": {
               "type": "boolean"
             },
             "cool_lowest": {
-              "type": "number"
+              "type": "integer"
             },
             "newest_song_time": {
-              "type": "number"
+              "type": "integer"
             }
           },
           "required": ["id", "cool", "cool_lowest", "newest_song_time"]
@@ -2726,7 +2726,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -2745,7 +2745,7 @@
             "type": "boolean"
           },
           "cool_lowest": {
-            "type": "number"
+            "type": "integer"
           },
           "fave": {
             "oneOf": [
@@ -2778,7 +2778,7 @@
             ]
           },
           "newest_song_time": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": [
@@ -2813,19 +2813,19 @@
             ]
           },
           "rating_rank": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_rank_percentile": {
-            "type": "number"
+            "type": "integer"
           },
           "request_count": {
-            "type": "number"
+            "type": "integer"
           },
           "request_rank": {
-            "type": "number"
+            "type": "integer"
           },
           "request_rank_percentile": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_histogram": {
             "type": "object"
@@ -2837,7 +2837,7 @@
             }
           },
           "added_on": {
-            "type": "number"
+            "type": "integer"
           },
           "art": {
             "oneOf": [
@@ -2850,10 +2850,10 @@
             ]
           },
           "cool_lowest": {
-            "type": "number"
+            "type": "integer"
           },
           "cool_multiply": {
-            "type": "number"
+            "type": "integer"
           },
           "cool_override": {
             "oneOf": [
@@ -2861,7 +2861,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -2869,7 +2869,7 @@
             "type": "boolean"
           },
           "fave_count": {
-            "type": "number"
+            "type": "integer"
           },
           "fave": {
             "oneOf": [
@@ -2882,16 +2882,16 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
           },
           "played_last": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_count": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_user": {
             "oneOf": [
@@ -2899,7 +2899,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -2909,15 +2909,15 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "song_count": {
-            "type": "number"
+            "type": "integer"
           },
           "vote_count": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": [
@@ -2965,10 +2965,10 @@
             "type": "boolean"
           },
           "next": {
-            "type": "number"
+            "type": "integer"
           },
           "progress": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["data", "has_next", "next", "progress"]
@@ -2986,10 +2986,10 @@
             "type": "boolean"
           },
           "next": {
-            "type": "number"
+            "type": "integer"
           },
           "progress": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["data", "has_next", "next", "progress"]
@@ -3013,10 +3013,10 @@
             "type": "boolean"
           },
           "next": {
-            "type": "number"
+            "type": "integer"
           },
           "progress": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["data", "has_next", "next", "progress"]
@@ -3044,7 +3044,7 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "rating": {
             "oneOf": [
@@ -3052,7 +3052,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -3062,7 +3062,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -3086,10 +3086,10 @@
         "type": "array",
         "prefixItems": [
           {
-            "type": "number"
+            "type": "integer"
           },
           {
-            "type": "number"
+            "type": "integer"
           }
         ],
         "minItems": 2,
@@ -3099,10 +3099,10 @@
         "type": "object",
         "properties": {
           "exectime": {
-            "type": "number"
+            "type": "integer"
           },
           "time": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["exectime", "time"]
@@ -3111,7 +3111,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -3123,13 +3123,13 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
           },
           "song_count": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["id", "name", "song_count"]
@@ -3156,7 +3156,7 @@
         "required": ["success", "tl_key", "text"]
       },
       "build_version": {
-        "type": "number"
+        "type": "integer"
       },
       "cookie_domain": {
         "type": "string"
@@ -3174,13 +3174,13 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "fave": {
             "type": "boolean"
           },
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "success": {
             "type": "boolean"
@@ -3200,14 +3200,14 @@
           "song_ids": {
             "type": "array",
             "items": {
-              "type": "number"
+              "type": "integer"
             }
           },
           "fave": {
             "type": "boolean"
           },
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "success": {
             "type": "boolean"
@@ -3225,7 +3225,7 @@
         "type": "object",
         "properties": {
           "album_id": {
-            "type": "number"
+            "type": "integer"
           },
           "album_name": {
             "type": "string"
@@ -3241,10 +3241,10 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_user": {
             "oneOf": [
@@ -3252,7 +3252,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -3266,13 +3266,13 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "fave": {
             "type": "boolean"
           },
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "success": {
             "type": "boolean"
@@ -3293,7 +3293,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -3305,7 +3305,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -3320,7 +3320,7 @@
         "type": "object",
         "properties": {
           "user_id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -3342,25 +3342,25 @@
             "type": "string"
           },
           "total_votes": {
-            "type": "number"
+            "type": "integer"
           },
           "total_ratings": {
-            "type": "number"
+            "type": "integer"
           },
           "mind_changes": {
-            "type": "number"
+            "type": "integer"
           },
           "total_requests": {
-            "type": "number"
+            "type": "integer"
           },
           "winning_votes": {
-            "type": "number"
+            "type": "integer"
           },
           "losing_votes": {
-            "type": "number"
+            "type": "integer"
           },
           "regdate": {
-            "type": "number"
+            "type": "integer"
           },
           "top_albums": {
             "type": "array",
@@ -3436,10 +3436,10 @@
         "type": "object",
         "properties": {
           "ratings": {
-            "type": "number"
+            "type": "integer"
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["ratings", "rating"]
@@ -3448,13 +3448,13 @@
         "type": "object",
         "properties": {
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "average_rating": {
             "type": "string"
           },
           "ratings": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["sid", "average_rating", "ratings"]
@@ -3463,10 +3463,10 @@
         "type": "object",
         "properties": {
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "requests": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["sid", "requests"]
@@ -3475,16 +3475,16 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
           },
           "rating_listener": {
-            "type": "number"
+            "type": "integer"
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["id", "name", "rating_listener", "rating"]
@@ -3493,13 +3493,13 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
           },
           "request_count_listener": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["id", "name", "request_count_listener"]
@@ -3508,10 +3508,10 @@
         "type": "object",
         "properties": {
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "votes": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["sid", "votes"]
@@ -3529,7 +3529,7 @@
         "type": "object",
         "properties": {
           "message_id": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["message_id"]
@@ -3574,7 +3574,7 @@
         "type": "object",
         "properties": {
           "timestamp": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["timestamp"]
@@ -3589,7 +3589,7 @@
         "type": "object",
         "properties": {
           "album_id": {
-            "type": "number"
+            "type": "integer"
           },
           "album_name": {
             "type": "string"
@@ -3608,10 +3608,10 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_user": {
             "oneOf": [
@@ -3619,12 +3619,12 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "song_played_at": {
-            "type": "number"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -3646,7 +3646,7 @@
         "type": "object",
         "properties": {
           "timestamp": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["timestamp"]
@@ -3655,7 +3655,7 @@
         "type": "object",
         "properties": {
           "timestamp": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["timestamp"]
@@ -3664,7 +3664,7 @@
         "type": "object",
         "properties": {
           "status": {
-            "type": "number"
+            "type": "integer"
           },
           "tl_key": {
             "type": "string"
@@ -3682,10 +3682,10 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "start": {
-            "type": "number"
+            "type": "integer"
           },
           "start_actual": {
             "oneOf": [
@@ -3693,12 +3693,12 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "end": {
-            "type": "number"
+            "type": "integer"
           },
           "type": {
             "enum": ["Election", "OneUp", "PVPElection"]
@@ -3714,7 +3714,7 @@
             ]
           },
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "url": {
             "oneOf": [
@@ -3733,7 +3733,7 @@
             "type": "boolean"
           },
           "length": {
-            "type": "number"
+            "type": "integer"
           },
           "core_event_id": {
             "oneOf": [
@@ -3741,7 +3741,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -3778,7 +3778,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "name": {
                     "type": "string"
@@ -3789,7 +3789,7 @@
                         "type": "null"
                       },
                       {
-                        "type": "number"
+                        "type": "integer"
                       }
                     ]
                   },
@@ -3812,7 +3812,7 @@
                         "type": "null"
                       },
                       {
-                        "type": "number"
+                        "type": "integer"
                       }
                     ]
                   },
@@ -3867,7 +3867,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -3882,16 +3882,16 @@
             ]
           },
           "entry_id": {
-            "type": "number"
+            "type": "integer"
           },
           "entry_position": {
-            "type": "number"
+            "type": "integer"
           },
           "entry_type": {
             "enum": [2, 4]
           },
           "entry_votes": {
-            "type": "number"
+            "type": "integer"
           },
           "groups": {
             "type": "array",
@@ -3900,13 +3900,13 @@
             }
           },
           "origin_sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "rating_allowed": {
             "type": "boolean"
           },
           "rating_count": {
-            "type": "number"
+            "type": "integer"
           },
           "request_id": {
             "oneOf": [
@@ -3914,15 +3914,15 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "request_count": {
-            "type": "number"
+            "type": "integer"
           },
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "fave": {
             "oneOf": [
@@ -3935,10 +3935,10 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "length": {
-            "type": "number"
+            "type": "integer"
           },
           "link_text": {
             "oneOf": [
@@ -3956,12 +3956,12 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -4009,10 +4009,10 @@
         "type": "object",
         "properties": {
           "order": {
-            "type": "number"
+            "type": "integer"
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -4039,7 +4039,7 @@
             }
           },
           "song_id": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_user": {
             "oneOf": [
@@ -4047,7 +4047,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4088,7 +4088,7 @@
             "type": "string"
           },
           "port": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["name", "protocol", "hostname", "port"]
@@ -4113,7 +4113,7 @@
             "maxItems": 1
           },
           "cool_end": {
-            "type": "number"
+            "type": "integer"
           },
           "cool": {
             "type": "boolean"
@@ -4140,7 +4140,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4151,16 +4151,16 @@
             "type": "boolean"
           },
           "order": {
-            "type": "number"
+            "type": "integer"
           },
           "origin_sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "request_id": {
-            "type": "number"
+            "type": "integer"
           },
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "valid": {
             "type": "boolean"
@@ -4182,10 +4182,10 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "length": {
-            "type": "number"
+            "type": "integer"
           },
           "link_text": {
             "oneOf": [
@@ -4203,12 +4203,12 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -4255,7 +4255,7 @@
             "type": "string"
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "rating": {
             "oneOf": [
@@ -4263,7 +4263,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4273,7 +4273,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4316,7 +4316,7 @@
             "type": "string"
           },
           "user_id": {
-            "type": "number"
+            "type": "integer"
           },
           "line_expiry_tune_in": {
             "oneOf": [
@@ -4324,7 +4324,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4334,12 +4334,12 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "line_wait_start": {
-            "type": "number"
+            "type": "integer"
           },
           "line_has_had_valid": {
             "type": "boolean"
@@ -4350,7 +4350,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4358,7 +4358,7 @@
             "type": "boolean"
           },
           "position": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": [
@@ -4413,7 +4413,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -4427,7 +4427,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4447,7 +4447,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4468,7 +4468,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -4480,31 +4480,31 @@
         "type": "object",
         "properties": {
           "added_on": {
-            "type": "number"
+            "type": "integer"
           },
           "album_id": {
-            "type": "number"
+            "type": "integer"
           },
           "album_name": {
             "type": "string"
           },
           "cool_end": {
-            "type": "number"
+            "type": "integer"
           },
           "cool": {
             "type": "boolean"
           },
           "origin_sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "requestable": {
             "type": "boolean"
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           },
           "fave": {
             "oneOf": [
@@ -4522,7 +4522,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4530,7 +4530,7 @@
             "type": "string"
           },
           "length": {
-            "type": "number"
+            "type": "integer"
           },
           "link_text": {
             "oneOf": [
@@ -4578,7 +4578,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -4590,13 +4590,13 @@
         "type": "object",
         "properties": {
           "origin_sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "added_on": {
-            "type": "number"
+            "type": "integer"
           },
           "cool_multiply": {
-            "type": "number"
+            "type": "integer"
           },
           "cool_override": {
             "oneOf": [
@@ -4604,7 +4604,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -4615,10 +4615,10 @@
             "type": "boolean"
           },
           "cool_end": {
-            "type": "number"
+            "type": "integer"
           },
           "request_only_end": {
-            "type": "number"
+            "type": "integer"
           },
           "request_only": {
             "type": "boolean"
@@ -4630,7 +4630,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "name": {
                     "type": "string"
@@ -4659,10 +4659,10 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "length": {
-            "type": "number"
+            "type": "integer"
           },
           "link_text": {
             "oneOf": [
@@ -4680,12 +4680,12 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -4733,7 +4733,7 @@
                     "type": "object",
                     "properties": {
                       "id": {
-                        "type": "number"
+                        "type": "integer"
                       },
                       "name": {
                         "type": "string"
@@ -4744,7 +4744,7 @@
                             "type": "null"
                           },
                           {
-                            "type": "number"
+                            "type": "integer"
                           }
                         ]
                       },
@@ -4767,7 +4767,7 @@
                             "type": "null"
                           },
                           {
-                            "type": "number"
+                            "type": "integer"
                           }
                         ]
                       },
@@ -4844,31 +4844,31 @@
             }
           },
           "origin_sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "rating_allowed": {
             "type": "boolean"
           },
           "rating_count": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_rank_percentile": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_rank": {
-            "type": "number"
+            "type": "integer"
           },
           "request_count": {
-            "type": "number"
+            "type": "integer"
           },
           "request_rank_percentile": {
-            "type": "number"
+            "type": "integer"
           },
           "request_rank": {
-            "type": "number"
+            "type": "integer"
           },
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "albums": {
             "type": "array",
@@ -4877,7 +4877,7 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "name": {
                     "type": "string"
@@ -4900,10 +4900,10 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "length": {
-            "type": "number"
+            "type": "integer"
           },
           "link_text": {
             "oneOf": [
@@ -4921,12 +4921,12 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -4973,10 +4973,10 @@
         "type": "object",
         "properties": {
           "order": {
-            "type": "number"
+            "type": "integer"
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -4997,7 +4997,7 @@
             "type": "string"
           },
           "id": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -5025,10 +5025,10 @@
         "type": "object",
         "properties": {
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "song_count": {
-            "type": "number"
+            "type": "integer"
           }
         },
         "required": ["sid", "song_count"]
@@ -5061,16 +5061,16 @@
             "type": "string"
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "origin_sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "song_rating": {
-            "type": "number"
+            "type": "integer"
           },
           "song_rating_count": {
-            "type": "number"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -5091,7 +5091,7 @@
             "type": "string"
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -5109,10 +5109,10 @@
         "type": "object",
         "properties": {
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_user": {
             "oneOf": [
@@ -5120,7 +5120,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -5154,7 +5154,7 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "listen_key": {
             "oneOf": [
@@ -5172,12 +5172,12 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
           "lock_counter": {
-            "type": "number"
+            "type": "integer"
           },
           "lock_in_effect": {
             "type": "boolean"
@@ -5188,19 +5188,19 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               },
               {
-                "type": "number"
+                "type": "integer"
               },
               {
-                "type": "number"
+                "type": "integer"
               },
               {
-                "type": "number"
+                "type": "integer"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -5211,7 +5211,7 @@
             "type": "string"
           },
           "new_privmsg": {
-            "type": "number"
+            "type": "integer"
           },
           "perks": {
             "type": "boolean"
@@ -5225,7 +5225,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -5235,7 +5235,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -5243,7 +5243,7 @@
             "type": "boolean"
           },
           "sid": {
-            "enum": [1, 2, 3, 4, 5]
+            "type": "integer"
           },
           "tuned_in": {
             "type": "boolean"
@@ -5254,7 +5254,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           }
@@ -5300,10 +5300,10 @@
             ]
           },
           "id": {
-            "type": "number"
+            "type": "integer"
           },
           "rating": {
-            "type": "number"
+            "type": "integer"
           },
           "rating_user": {
             "oneOf": [
@@ -5311,7 +5311,7 @@
                 "type": "null"
               },
               {
-                "type": "number"
+                "type": "integer"
               }
             ]
           },
@@ -5334,10 +5334,10 @@
         "type": "object",
         "properties": {
           "elec_id": {
-            "type": "number"
+            "type": "integer"
           },
           "entry_id": {
-            "type": "number"
+            "type": "integer"
           },
           "success": {
             "type": "boolean"

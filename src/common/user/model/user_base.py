@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from api.rainwave_openapi import User
 from common.db.cursor import RainwaveCursor
 from common.playlist.song.model.song_on_station import SongOnStation
 from common.user.model.user_data_types import (
@@ -118,3 +119,27 @@ class UserBase(ABC):
         self, cursor: RainwaveCursor, sid: int
     ) -> None:
         raise NotImplementedError
+
+    def to_api_with_private_data(self) -> User:
+        api_formatted: User = {
+            "admin": self.private_data["admin"],
+            "avatar": self.public_data["avatar"],
+            "id": self.id,
+            "listen_key": self.private_data["listen_key"],
+            "listener_id": 0,
+            "lock_counter": self.private_data["lock_counter"],
+            "lock_in_effect": self.private_data["lock_in_effect"],
+            "lock_sid": self.private_data["lock_sid"],
+            "lock": self.private_data["lock"],
+            "name": self.public_data["name"],
+            "new_privmsg": False,
+            "perks": self.private_data["perks"],
+            "rate_anything": self.private_data["rate_anything"],
+            "request_expires_at": self.private_data["request_expires_at"],
+            "request_position": self.private_data["request_position"],
+            "requests_paused": self.private_data["requests_paused"],
+            "sid": self.private_data["sid"],
+            "tuned_in": self.private_data["tuned_in"],
+            "voted_entry": self.private_data["voted_entry"],
+        }
+        return api_formatted

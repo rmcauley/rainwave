@@ -318,9 +318,9 @@ csp_header = ";".join(
         f"default-src 'self' {hostname} *.{hostname}",
         "object-src 'none'",
         f"media-src {relay_hosts}",
-        f"font-src 'self' {hostname} data: https://fonts.googleapis.com https://fonts.gstatic.com/",
+        f"font-src 'self'",
         f"connect-src wss://{websocket_host}",
-        f"style-src 'self' {hostname} 'unsafe-inline' https://fonts.googleapis.com",
+        f"style-src 'self' {hostname} 'unsafe-inline'",
         f"img-src 'self' {hostname} *.{hostname} https://cdn.discordapp.com",
     ]
 )

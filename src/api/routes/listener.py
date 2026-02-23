@@ -201,31 +201,3 @@ class ListenerDetailRequest(APIHandler):
         )
 
         self.append("listener", user)
-
-
-@handle_api_url("current_listeners")
-class CurrentListenersRequest(APIHandler):
-    description = "Lists all current listeners for a station."
-    sid_required = True
-
-    def post(self):
-        self.append(
-            "current_listeners", cache.get_station(self.sid, "current_listeners")
-        )
-
-
-@handle_api_html_url("current_listeners")
-class CurrentListenersHTML(PrettyPrintAPIMixin, CurrentListenersRequest):
-    pass
-
-
-@handle_api_url("user_info")
-class UserInfoRequest(APIHandler):
-    description = (
-        "Get information about the user whose ID and API key has been provided."
-    )
-    auth_required = True
-    sid_required = False
-
-    def post(self):
-        self.append("user_info", self.user.to_private_dict())

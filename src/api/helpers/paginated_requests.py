@@ -3,9 +3,11 @@ from tornado.web import RequestHandler
 
 from api import fieldtypes
 
+DEFAULT_PAGE_LIMIT = 1000
+
 
 def get_pagination_params(
-    request: RequestHandler, max_per_page: int = 100
+    request: RequestHandler, max_per_page: int = DEFAULT_PAGE_LIMIT
 ) -> tuple[int, int]:
     limit = max_per_page
     limit_argument = fieldtypes.integer(request.get_argument("per_page"))
@@ -21,7 +23,7 @@ def get_pagination_params(
 
 
 def get_pagination_sql_limit_string(
-    request: RequestHandler, max_per_page: int = 100
+    request: RequestHandler, max_per_page: int = DEFAULT_PAGE_LIMIT
 ) -> sql.Composed:
     (limit, offset) = get_pagination_params(request, max_per_page)
 

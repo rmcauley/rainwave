@@ -29,9 +29,9 @@ class APIServer:
         zeromq.init_pub()
         zeromq.init_sub()
 
-        import api.routes.sync
+        import api.routes.sync_websocket.sync
 
-        api.routes.sync.init()
+        api.routes.sync_websocket.sync.init()
 
         # task_ids start at zero, so we gobble up ports starting at the base port and work up
         port_no = int(config.api_base_port) + task_id

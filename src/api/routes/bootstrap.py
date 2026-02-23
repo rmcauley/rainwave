@@ -16,12 +16,6 @@ STATION_REGEX = "|".join(
 )
 STATION_URL_REGEX = "/(?P<station>{})?/?(?:index.html)?".format(STATION_REGEX)
 STATION_URL_REGEX_COMPILED = re.compile(STATION_URL_REGEX)
-index_file_location = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "static",
-    "index.html",
-)
 
 
 @handle_api_url("bootstrap")
