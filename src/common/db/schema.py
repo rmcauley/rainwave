@@ -516,7 +516,8 @@ async def create_tables() -> None:
                 one_up_order			SMALLINT	, \
                 one_up_used				BOOLEAN		DEFAULT FALSE, \
                 one_up_queued			BOOLEAN		DEFAULT FALSE, \
-                one_up_sid				SMALLINT	NOT NULL \
+                one_up_sid				SMALLINT	NOT NULL, \
+                one_up_start_actual     INT\
             )"
         )
         await cursor.update(

@@ -6,6 +6,7 @@ from common.db.cursor import RainwaveCursor
 from common.requests.get_user_top_request import TopRequestSongRow
 from common.requests.put_user_in_request_line import put_user_in_request_line
 from common.requests.remove_user_from_request_line import remove_user_from_request_line
+from common.requests.request_line_to_api import request_line_to_api
 from common.requests.request_line_types import RequestLineEntry
 from common.requests.request_user_positions import RequestUserPositions
 from common.requests.update_request_line_entry_expiry_election import (
@@ -101,5 +102,5 @@ async def write_updated_request_line_to_db(
 
         user_positions[entry["user_id"]] = entry["position"]
 
-    await cache_set_station(sid, "request_line", line)
+    await cache_set_station(sid, "request_line", request_line_to_api(line))
     await cache_set_station(sid, "request_user_positions", user_positions)

@@ -47,7 +47,7 @@ class APIHandler(RainwaveHandler):
         self.error_response[self.return_name] = {
             "tl_key": "internal_error",
             "text": self.locale.translate("internal_error"),
-            "status": 500,
+            "code": 500,
             "success": False,
         }
 
@@ -56,7 +56,7 @@ class APIHandler(RainwaveHandler):
 
             if isinstance(exc, db_connection_errors):
                 self.error_response["error"] = {
-                    "status": 500,
+                    "code": 500,
                     "tl_key": "db_error_retry",
                     "text": self.locale.translate("db_error_retry"),
                 }
@@ -64,21 +64,20 @@ class APIHandler(RainwaveHandler):
                 self.error_response[self.return_name] = exc.to_api(self.locale)
             else:
                 self.error_response["error"] = {
-                    "status": status_code,
+                    "code": status_code,
                     "tl_key": "internal_error",
                     "text": repr(exc),
+                    "traceback": "\n".join(
+                        traceback.format_exception(
+                            kwargs["exc_info"][0],
+                            kwargs["exc_info"][1],
+                            kwargs["exc_info"][2],
+                        )
+                    ),
                 }
-
-                self.response["traceback"] = "\n".join(
-                    traceback.format_exception(
-                        kwargs["exc_info"][0],
-                        kwargs["exc_info"][1],
-                        kwargs["exc_info"][2],
-                    )
-                )
         else:
             self.error_response["error"] = {
-                "status": 500,
+                "code": 500,
                 "tl_key": "internal_error",
                 "text": self.locale.translate("internal_error"),
             }

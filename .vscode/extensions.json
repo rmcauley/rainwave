@@ -3,6 +3,8 @@
     "ms-python.black-formatter",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "42crunch.vscode-openapi"
-  ]
+    "42crunch.vscode-openapi",
+    "matangover.mypy"
+  ],
+  "unwantedRecommendations": ["ms-python.mypy-type-checker"]
 }

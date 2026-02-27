@@ -45,7 +45,10 @@ async def generate_next_timeline_entries(
 
         if next_timeline_entry is None:
             new_election = await Election.create(
-                cursor, {"elec_type": "Election", "sched_id": None, "sid": sid}
+                cursor,
+                {"elec_type": "Election", "sched_id": None, "sid": sid},
+                sched_name=None,
+                sched_url=None,
             )
             await new_election.fill(cursor, request_line, target_song_length)
             next_timeline_entry = new_election

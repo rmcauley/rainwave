@@ -1,6 +1,7 @@
 from common.cache.station_cache import cache_set_station
 from common.playlist.album.model.album_on_station import AlbumOnStation
 from common.schedule.timeline import TimelineOnStation
+from api import rainwave_typeddicts
 
 
 async def update_memcache_for_station(

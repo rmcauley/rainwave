@@ -38,7 +38,10 @@ async def load_timeline(cursor: RainwaveCursor, sid: int) -> TimelineOnStation:
         )
     if not currently_playing:
         currently_playing = await Election.create(
-            cursor, {"elec_type": "Election", "sched_id": None, "sid": sid}
+            cursor,
+            {"elec_type": "Election", "sched_id": None, "sid": sid},
+            sched_name=None,
+            sched_url=None,
         )
         await currently_playing.fill(cursor, [], None)
         await currently_playing.start(cursor)

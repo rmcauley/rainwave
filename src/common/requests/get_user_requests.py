@@ -88,8 +88,6 @@ async def get_requests(
         {"user_id": user_id, "sid": sid},
         row_type=UserRequestedSong,
     )
-    if not requests:
-        requests = []
     for song in requests:
         if (
             not song["valid"]

@@ -44,7 +44,6 @@ async def rainwave_db():
     async with db_connect(auto_retry=False):
         await create_tables()
         populate_test_data(db.c, sid=1)
-        api_locale.load_translations()
         zeromq.init_pub()
         get_age_cooldown_multiplier.prepare_cooldown_algorithm(1)
         get_schedule_at_time.load()

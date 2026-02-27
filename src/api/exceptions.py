@@ -1,7 +1,7 @@
 from tornado.web import HTTPError
 from typing import Any, Literal
 
-from api.rainwave_openapi import RainwaveErrorObject
+from api.rainwave_typeddicts import Error as RainwaveErrorObject
 from common.locale.rainwave_locale import RainwaveLocale
 
 # Cross-reference these with keys in en_MAIN.jsonc
@@ -29,6 +29,7 @@ ErrorTranslationKeys = (
     | Literal["song_not_requested"]
     | Literal["rejected"]
     | Literal["station_offline"]
+    | Literal["server_just_started"]
 )
 
 
@@ -50,13 +51,9 @@ class APIException(HTTPError):
 
     def to_api(self, request_locale: RainwaveLocale) -> RainwaveErrorObject:
         rw_error_obj: RainwaveErrorObject = {
-            "status": self.status_code,
-            "success": False,
+            "code": self.status_code,
             "tl_key": self.tl_key,
+            "text": request_locale.translate(self.tl_key, **self.extra),
         }
-
-        reason = self.reason
-        if reason:
-            rw_error_obj["text"] = request_locale.translate(self.tl_key, **self.extra)
 
         return rw_error_obj

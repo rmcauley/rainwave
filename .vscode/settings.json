@@ -21,6 +21,7 @@
   },
   "python.analysis.autoImportCompletions": true,
   "python.analysis.diagnosticMode": "workspace",
+  "mypy.runUsingActiveInterpreter": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "[javascript]": {
@@ -28,6 +29,5 @@
   },
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
+  }
 }

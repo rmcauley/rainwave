@@ -61,8 +61,14 @@ class EntryVotesRow(TypedDict):
 
 
 class Election(TimelineEntryBase):
-    def __init__(self, data: ElectionRow, entries: list[ElectionEntry]) -> None:
-        super().__init__(data["elec_id"], data["elec_start_actual"])
+    def __init__(
+        self,
+        data: ElectionRow,
+        entries: list[ElectionEntry],
+        sched_name: str | None,
+        sched_url: str | None,
+    ) -> None:
+        super().__init__(data["sid"], sched_name, sched_url)
         self.id = data["elec_id"]
         self.type = data["elec_type"]
         self.sid = data["sid"]
@@ -70,7 +76,13 @@ class Election(TimelineEntryBase):
         self.entries = entries
 
     @classmethod
-    async def load_by_id(cls, cursor: RainwaveCursor, elec_id: int) -> Self:
+    async def load_by_id(
+        cls,
+        cursor: RainwaveCursor,
+        elec_id: int,
+        sched_name: str | None,
+        sched_url: str | None,
+    ) -> Self:
         election_row = await cursor.fetch_row(
             "SELECT * FROM r4_elections WHERE elec_id = %s",
             (elec_id,),
@@ -101,10 +113,16 @@ class Election(TimelineEntryBase):
             }
             entries.append(entry)
 
-        return cls(election_row, entries)
+        return cls(election_row, entries, sched_name, sched_url)
 
     @classmethod
-    async def create(cls, cursor: RainwaveCursor, data: ElectionCreationData) -> Self:
+    async def create(
+        cls,
+        cursor: RainwaveCursor,
+        data: ElectionCreationData,
+        sched_name: str | None,
+        sched_url: str | None,
+    ) -> Self:
         to_create = {
             "elec_type": data["elec_type"],
             "sched_id": data["sched_id"],
@@ -118,7 +136,7 @@ class Election(TimelineEntryBase):
         )
         if not election_row:
             raise Exception("For for just-created election was not found.")
-        return cls(election_row, [])
+        return cls(election_row, [], sched_name, sched_url)
 
     def length(self) -> int:
         if self.data["elec_used"] or self.data["elec_in_progress"]:

@@ -2,7 +2,7 @@ from os import path
 import logging
 import logging.handlers
 import datetime
-from typing import Any, Literal
+from typing import Any, Literal, TextIO
 from common import config
 
 log: logging.Logger | None = None
@@ -30,7 +30,9 @@ def init(logfile: str | None = None, loglevel: LOG_LEVELS = "warning") -> None:
     logging.getLogger().setLevel(logging.DEBUG)
     logging.getLogger("tornado.access").setLevel(logging.CRITICAL)
 
-    handler = None
+    handler: (
+        logging.handlers.RotatingFileHandler | logging.StreamHandler[TextIO] | None
+    ) = None
     if logfile and config.log_dir:
         handler = logging.handlers.RotatingFileHandler(
             path.join(config.log_dir, logfile), maxBytes=10000000, backupCount=1

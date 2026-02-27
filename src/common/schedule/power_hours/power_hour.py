@@ -39,7 +39,7 @@ class PowerHour(ScheduleEntry):
             row_type=int,
         )
         return [
-            await PowerHourSong.load_by_id(cursor, ph_song_id, self.sid)
+            await PowerHourSong.load_by_id(cursor, self.data, ph_song_id)
             for ph_song_id in power_hour_song_ids
         ]
 
@@ -59,7 +59,7 @@ class PowerHour(ScheduleEntry):
                 "UPDATE r4_one_ups SET one_up_queued = TRUE WHERE one_up_id = %s",
                 (next_up_id,),
             )
-            next_up = await PowerHourSong.load_by_id(cursor, next_up_id, self.sid)
+            next_up = await PowerHourSong.load_by_id(cursor, self.data, next_up_id)
             return next_up
         else:
             await cursor.update(
@@ -122,7 +122,7 @@ class PowerHour(ScheduleEntry):
             var_type=int,
         )
         if next_song_id:
-            return await PowerHourSong.load_by_id(cursor, next_song_id, self.sid)
+            return await PowerHourSong.load_by_id(cursor, self.data, next_song_id)
         return None
 
     async def add_song_id(
@@ -224,7 +224,7 @@ class PowerHour(ScheduleEntry):
             song_on_station = await SongOnStation.load(
                 cursor, power_hour_song_row["song_id"], self.sid
             )
-            songs.append(PowerHourSong(power_hour_song_row, song_on_station))
+            songs.append(PowerHourSong(self.data, power_hour_song_row, song_on_station))
         return songs
 
     async def fill_unrated(self, cursor: RainwaveCursor, max_length: int) -> None:

@@ -1,60 +1,27 @@
+from api.exceptions import APIException
 from api.handler_classes.rainwave_handler import RainwaveHandler
+from common.cache.station_cache import cache_get_station
+from common.db.cursor import RainwaveCursor
+from api import rainwave_typeddicts
 
 
-def attach_info_to_request(
+async def attach_info_to_request(
+    cursor: RainwaveCursor,
     request: RainwaveHandler,
-    extra_list: str | None = None,
-    all_lists: bool = False,
-    live_voting: bool = False,
+    include_request_line: bool,
+    include_live_voting: bool,
 ) -> None:
     if request.user:
-        request.append("user", request.user.to_private_dict())
+        request.response["user"] = request.user.to_api_with_private_data()
 
-    if not request.mobile:
-        if (
-            all_lists
-            or (extra_list == "all_albums")
-            or (extra_list == "album")
-            or "all_albums" in request.request.arguments
-        ):
-            request.append(
-                "all_albums",
-                routes.playlist.get_all_albums(request.sid, request.user),
-            )
-        else:
-            request.append("album_diff", cache.get_station(request.sid, "album_diff"))
+    if include_request_line:
+        request.response["request_line"] = await cache_get_station(
+            request.sid, "request_line"
+        )
 
-        if (
-            all_lists
-            or (extra_list == "all_artists")
-            or (extra_list == "artist")
-            or "all_artists" in request.request.arguments
-        ):
-            request.append("all_artists", routes.playlist.get_all_artists(request.sid))
-
-        if (
-            all_lists
-            or (extra_list == "all_groups")
-            or (extra_list == "group")
-            or "all_groups" in request.request.arguments
-        ):
-            request.append("all_groups", routes.playlist.get_all_groups(request.sid))
-
-        if (
-            all_lists
-            or (extra_list == "current_listeners")
-            or "current_listeners" in request.request.arguments
-            or request.get_cookie("r4_active_list") == "current_listeners"
-        ):
-            request.append(
-                "current_listeners", cache.get_station(request.sid, "current_listeners")
-            )
-
-        request.append("request_line", cache.get_station(request.sid, "request_line"))
-
-    sched_next = []
-    sched_history = None
-    sched_current = None
+    sched_next: rainwave_typeddicts.SchedNext = []
+    sched_history: rainwave_typeddicts.SchedHistory = None
+    sched_current: rainwave_typeddicts.SchedCurrent = None
     if request.user and not request.user.is_anonymous():
         request.append("requests", request.user.get_requests(request.sid))
         sched_current = cache.get_station(request.sid, "sched_current")

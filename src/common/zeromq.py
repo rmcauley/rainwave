@@ -6,24 +6,14 @@ from typing import Any, Callable
 from api.exceptions import APIException
 from common import config
 
-_pub = None
-_sub_stream = None
+context = zmq.Context()
+_pub = context.socket(zmq.PUB)
+_pub.connect(config.zeromq_pub)
 
-
-def init_pub() -> None:
-    global _pub
-    context = zmq.Context()
-    _pub = context.socket(zmq.PUB)
-    _pub.connect(config.zeromq_pub)
-
-
-def init_sub() -> None:
-    global _sub_stream
-    context = zmq.Context()
-    sub = context.socket(zmq.SUB)
-    sub.connect(config.zeromq_sub)
-    sub.setsockopt(zmq.SUBSCRIBE, b"")
-    _sub_stream = ZMQStream(sub)
+sub = context.socket(zmq.SUB)
+sub.connect(config.zeromq_sub)
+sub.setsockopt(zmq.SUBSCRIBE, b"")
+_sub_stream = ZMQStream(sub)
 
 
 def set_sub_callback(methd: Callable[..., Any]) -> None:

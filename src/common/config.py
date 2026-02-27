@@ -57,7 +57,7 @@ class PublicRelayConfig(TypedDict):
 # Enable Tornado's module auto-reloading, and enable local-only test URLs to allow you to assume user roles.
 developer_mode = False
 
-log_dir = None
+log_dir: str | None = None
 # Levels: "debug" "info" "warn" "error" "critical"
 log_level: Literal["critical"] = "critical"
 
@@ -84,7 +84,7 @@ api_external_url_prefix = "//localhost:20000/api4/"
 # any sort of CDN (e.g. CloudFlare) , enter a host here.
 # If you're not using a CDN, leave as None.
 # An example would be 'websockets.mydomain.com'
-websocket_host = None
+websocket_host: str | None = None
 
 # What domains/IP addresses should WebSocket connections be allowed from?
 # Set to * to allow from anywhere.
@@ -103,8 +103,8 @@ backend_port = 21000
 
 # Database configuration
 db_name = "rainwave"
-db_host = None
-db_port = None
+db_host: str | None = None
+db_port: str | None = None
 db_user = "user"
 db_password = "password"
 

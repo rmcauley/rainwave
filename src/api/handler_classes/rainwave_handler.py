@@ -5,7 +5,7 @@ from tornado.web import RequestHandler
 
 from api import fieldtypes
 from api.exceptions import APIException
-from api.rainwave_openapi import RainwaveErrorObject
+from api.rainwave_typeddicts import Error as RainwaveErrorObject
 from api.rainwave_return_key_to_open_api import RainwaveResponse, RainwaveResponseKey
 from common import config
 from common.db.cursor import RainwaveCursor, get_cursor

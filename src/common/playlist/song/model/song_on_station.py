@@ -1,12 +1,14 @@
 import orjson
 import os
-from typing import TypedDict
+from typing import TypedDict, cast
 
+from api import rainwave_typeddicts
 from common import log
 from common import config
 from time import time as timestamp
 
 from common.db.cursor import RainwaveCursor
+from common.playlist.album.get_album_on_station import get_album_on_station
 from common.playlist.album.start_album_election_block import start_album_election_block
 from common.playlist.extra_detail_histogram import (
     RatingHistogram,
@@ -271,3 +273,51 @@ class SongOnStation:
                 self.sid,
                 config.stations[self.sid]["num_planned_elections"] + 1,
             )
+
+    async def to_api_timeline_song(
+        self, cursor: RainwaveCursor
+    ) -> rainwave_typeddicts.TimelineSong:
+        album = await get_album_on_station(cursor, self.data["album_id"], self.sid)
+
+        result_album: rainwave_typeddicts.TimelineSongAlbum = {
+            "art": album.data["album_art_url"],
+            "fave": False,
+            "id": album.data["album_id"],
+            "name": album.data["album_name"],
+            "rating": album.data["album_rating"],
+            "rating_user": 0,
+        }
+
+        result: rainwave_typeddicts.TimelineSong = {
+            "albums": [result_album],
+            "artists": [],
+            "cool": self.data["song_cool"],
+            "elec_blocked": self.data["song_elec_blocked"],
+            "elec_blocked_by": cast(
+                rainwave_typeddicts.ElecBlockedBy, self.data["song_elec_blocked_by"]
+            ),
+            "elec_request_user_id": None,
+            "elec_request_username": None,
+            "entry_id": 0,
+            "entry_position": 0,
+            "entry_type": 2,
+            "entry_votes": 0,
+            "fave": False,
+            "groups": [],
+            "id": self.id,
+            "length": self.data["song_length"],
+            "link_text": self.data["song_link_text"],
+            "origin_sid": cast(
+                rainwave_typeddicts.StationId, self.data["song_origin_sid"]
+            ),
+            "rating": self.data["song_rating"],
+            "rating_allowed": False,
+            "rating_count": self.data["song_rating_count"],
+            "rating_user": None,
+            "request_count": 0,
+            "request_id": None,
+            "sid": cast(rainwave_typeddicts.StationId, self.sid),
+            "title": self.data["song_title"],
+            "url": self.data["song_url"],
+        }
+        return result

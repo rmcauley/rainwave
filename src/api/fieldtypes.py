@@ -242,9 +242,6 @@ def ip_address(addr: Any) -> Any:
         return None
 
 
-media_player_error = None
-
-
 def media_player(s: str) -> str:
     ua = s.lower()
     if ua.find("firefox") > -1:

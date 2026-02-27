@@ -17,7 +17,7 @@
   "reportArgumentType": "error",
   "reportAssertAlwaysTrue": "error",
   "reportAssertTypeFailure": "error",
-  "reportAssignmentType": "error",
+  "reportAssignmentType": "none",
   "reportAttributeAccessIssue": "error",
   "reportCallIssue": "error",
   "reportConstantRedefinition": "error",

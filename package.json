@@ -4,10 +4,10 @@
   "description": "rainwave.cc",
   "scripts": {
     "prepare": "husky",
-    "generate:python-dto": "uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_dto.py --output-model-type pydantic_v2.BaseModel --target-python-version 3.14 --openapi-scopes paths --formatters black",
-    "generate:python-openapi": "uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_openapi.py --output-model-type typing.TypedDict --target-python-version 3.14 --formatters black",
+    "generate:python-dto": "uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_dto.py --output-model-type pydantic_v2.BaseModel --target-python-version 3.14 --openapi-scopes paths --formatters black --remove-special-field-name-prefix",
+    "generate:python-typeddicts": "uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_typeddicts.py --output-model-type typing.TypedDict --target-python-version 3.14 --formatters black --remove-special-field-name-prefix",
     "generate:templates": "uv run ./src/tools/rw_templates.py --templatedir ./src_frontend/components --outfile ./src_frontend/templates/index",
-    "generate": "npm run generate:python-dto && npm run generate:python-openapi && npm run generate:templates",
+    "generate": "npm run generate:python-dto && npm run generate:python-typeddicts && npm run generate:templates",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint:fix": "uv run black . && eslint --fix . && prettier --write ."
   },

@@ -1,6 +1,6 @@
 from typing import Literal, TypedDict
 
-from api import rainwave_openapi
+from api import rainwave_typeddicts
 
 # Manually maintained, this cannot be auto-generated.
 
@@ -15,76 +15,74 @@ class ErrorMessage(TypedDict):
     text: str
 
 
-class ArtistWithSongs(rainwave_openapi.Artist):
-    all_songs: list[rainwave_openapi.SongOnAlbum]
+class ArtistWithSongs(rainwave_typeddicts.Artist):
+    all_songs: list[rainwave_typeddicts.SongOnAlbum]
 
 
 class RainwaveResponse(TypedDict, total=False):
-    album: rainwave_openapi.AlbumWithDetail
-    album_diff: rainwave_openapi.AlbumDiff
-    albums: list[rainwave_openapi.SearchAlbum]
-    all_albums_paginated: rainwave_openapi.AllAlbumsPaginated
-    all_artists_paginated: rainwave_openapi.AllArtistsPaginated
-    all_faves: list[rainwave_openapi.FaveSong]
-    all_groups_paginated: rainwave_openapi.AllGroupsPaginated
-    all_songs: list[rainwave_openapi.AllSongsSong]
-    all_stations_info: rainwave_openapi.AllStationsInfo
-    already_voted: rainwave_openapi.AlreadyVoted
-    api_info: rainwave_openapi.ApiInfo
-    artists: rainwave_openapi.SearchArtist
-    artist: list[ArtistWithSongs]
-    build_version: int
-    cookie_domain: str
-    delete_request_result: rainwave_openapi.BooleanResult
-    error_report_result: rainwave_openapi.BooleanResult
-    error: rainwave_openapi.RainwaveErrorObject
-    fave_album_result: rainwave_openapi.FaveAlbumResult
-    fave_all_songs_result: rainwave_openapi.FaveAllSongsResult
-    fave_song_result: rainwave_openapi.FaveSongResult
-    group: rainwave_openapi.GroupWithDetail
-    listener: rainwave_openapi.Listener
-    live_voting: rainwave_openapi.LiveVoting
-    locale: str
-    locales: dict[str, str]
-    message_id: rainwave_openapi.MessageId
-    mobile: bool
-    order_requests_result: rainwave_openapi.BooleanResult
-    pause_request_queue_result: rainwave_openapi.BooleanResult
-    ping: rainwave_openapi.Ping
-    pong: rainwave_openapi.Pong
-    pongConfirm: rainwave_openapi.PongConfirm
-    playback_history: rainwave_openapi.PlaybackHistory
-    rate_result: rainwave_openapi.RateResult
-    redownload_m3u: rainwave_openapi.RedownloadM3u
-    relays: rainwave_openapi.Relays
-    request_favorited_songs_result: rainwave_openapi.BooleanResult
-    request_line: rainwave_openapi.RequestLine
-    request_result: rainwave_openapi.BooleanResult
-    request_unrated_songs_result: rainwave_openapi.BooleanResult
-    requests: rainwave_openapi.Requests
-    sched_current: rainwave_openapi.SchedCurrent
-    sched_history: rainwave_openapi.SchedHistory
-    sched_next: rainwave_openapi.SchedNext
-    song: rainwave_openapi.SongWithDetail
-    songs: rainwave_openapi.SearchSong
-    station_list: dict[int, RainwaveStation]
-    station_song_count: rainwave_openapi.StationSongCount
-    stations: rainwave_openapi.Stations
-    stream_filename: str
-    sync_result: rainwave_openapi.RainwaveErrorObject
-    top_100: rainwave_openapi.Top100
-    traceback: str
-    unpause_request_queue_result: rainwave_openapi.BooleanResult
-    unrated_songs: rainwave_openapi.UnratedSongs
-    user_info: rainwave_openapi.User
-    user_recent_votes: rainwave_openapi.UserRecentVotes
-    user_requested_history: rainwave_openapi.UserRecentVotes
-    user: rainwave_openapi.User
-    vote_result: rainwave_openapi.VoteResult
-    websocket_host: str
-    wsok: bool
-    wsthrottle: ErrorMessage
-    wserror: rainwave_openapi.RainwaveErrorObject
+    album: rainwave_typeddicts.Album
+    album_diff: rainwave_typeddicts.AlbumDiff
+    albums: rainwave_typeddicts.Albums
+    all_albums_paginated: rainwave_typeddicts.AllAlbumsPaginated
+    all_artists_paginated: rainwave_typeddicts.AllArtistsPaginated
+    all_faves: rainwave_typeddicts.AllFaves
+    all_groups_paginated: rainwave_typeddicts.AllGroupsPaginated
+    all_songs: rainwave_typeddicts.AllSongs
+    all_stations_info: rainwave_typeddicts.AllStationsInfo
+    already_voted: rainwave_typeddicts.AlreadyVoted
+    api_info: rainwave_typeddicts.ApiInfo
+    artists: rainwave_typeddicts.SearchArtist
+    artist: rainwave_typeddicts.Artist
+    build_version: rainwave_typeddicts.BuildVersion
+    cookie_domain: rainwave_typeddicts.CookieDomain
+    delete_request_result: rainwave_typeddicts.DeleteRequestResult
+    error_report_result: rainwave_typeddicts.ErrorReportResult
+    error: rainwave_typeddicts.Error
+    fave_album_result: rainwave_typeddicts.FaveAlbumResult
+    fave_all_songs_result: rainwave_typeddicts.FaveAllSongsResult
+    fave_song_result: rainwave_typeddicts.FaveSongResult
+    group: rainwave_typeddicts.Group
+    listener: rainwave_typeddicts.Listener
+    live_voting: rainwave_typeddicts.LiveVoting
+    locale: rainwave_typeddicts.Locale
+    locales: rainwave_typeddicts.Locales
+    message_id: rainwave_typeddicts.MessageId
+    order_requests_result: rainwave_typeddicts.OrderRequestsResult
+    pause_request_queue_result: rainwave_typeddicts.PauseRequestQueueResult
+    ping: rainwave_typeddicts.Ping
+    pong: rainwave_typeddicts.Pong
+    pongConfirm: rainwave_typeddicts.PongConfirm
+    playback_history: rainwave_typeddicts.PlaybackHistory
+    rate_result: rainwave_typeddicts.RateResult
+    redownload_m3u: rainwave_typeddicts.RedownloadM3u
+    relays: rainwave_typeddicts.Relays
+    request_favorited_songs_result: rainwave_typeddicts.RequestFavoritedSongsResult
+    request_line: rainwave_typeddicts.RequestLine
+    request_result: rainwave_typeddicts.RequestResult
+    request_unrated_songs_result: rainwave_typeddicts.RequestUnratedSongsResult
+    requests: rainwave_typeddicts.Requests
+    sched_current: rainwave_typeddicts.SchedCurrent
+    sched_history: rainwave_typeddicts.SchedHistory
+    sched_next: rainwave_typeddicts.SchedNext
+    song: rainwave_typeddicts.Song
+    songs: rainwave_typeddicts.Songs
+    station_list: rainwave_typeddicts.StationList
+    station_song_count: rainwave_typeddicts.StationSongCount
+    stations: rainwave_typeddicts.Stations
+    stream_filename: rainwave_typeddicts.StreamFilename
+    sync_result: rainwave_typeddicts.SyncResult
+    top_100: rainwave_typeddicts.Top100
+    unpause_request_queue_result: rainwave_typeddicts.UnpauseRequestQueueResult
+    unrated_songs: rainwave_typeddicts.UnratedSongs
+    user_info: rainwave_typeddicts.UserInfo
+    user_recent_votes: rainwave_typeddicts.UserRecentVotes
+    user_requested_history: rainwave_typeddicts.UserRequestedHistory
+    user: rainwave_typeddicts.User
+    vote_result: rainwave_typeddicts.VoteResult
+    websocket_host: rainwave_typeddicts.WebsocketHost
+    wsok: rainwave_typeddicts.Wsok
+    wsthrottle: rainwave_typeddicts.Wsthrottle
+    wserror: rainwave_typeddicts.Wserror
 
 
 RainwaveResponseKey = Literal[
@@ -115,7 +113,6 @@ RainwaveResponseKey = Literal[
     "locale",
     "locales",
     "message_id",
-    "mobile",
     "order_requests_result",
     "pause_request_queue_result",
     "ping",
@@ -141,7 +138,6 @@ RainwaveResponseKey = Literal[
     "stream_filename",
     "sync_result",
     "top_100",
-    "traceback",
     "unpause_request_queue_result",
     "unrated_songs",
     "user_info",
@@ -156,27 +152,27 @@ RainwaveResponseKey = Literal[
 ]
 
 
-class BootstrapUser(rainwave_openapi.User):
+class BootstrapUser(rainwave_typeddicts.User):
     api_key: str
 
 
 class RainwaveBootstrapResponse(TypedDict):
-    all_stations_info: rainwave_openapi.AllStationsInfo
-    already_voted: rainwave_openapi.AlreadyVoted
-    api_info: rainwave_openapi.ApiInfo
+    all_stations_info: rainwave_typeddicts.AllStationsInfo
+    already_voted: rainwave_typeddicts.AlreadyVoted
+    api_info: rainwave_typeddicts.ApiInfo
     build_version: int
     cookie_domain: str
-    live_voting: rainwave_openapi.LiveVoting
-    locale: rainwave_openapi.Locale
-    locales: rainwave_openapi.Locales
+    live_voting: rainwave_typeddicts.LiveVoting
+    locale: rainwave_typeddicts.Locale
+    locales: rainwave_typeddicts.Locales
     mobile: bool
-    relays: rainwave_openapi.Relays
-    request_line: rainwave_openapi.RequestLine
-    requests: rainwave_openapi.Requests
-    sched_current: rainwave_openapi.SchedCurrent
-    sched_history: rainwave_openapi.SchedHistory
-    sched_next: rainwave_openapi.SchedNext
-    station_list: rainwave_openapi.StationList
-    stream_filename: rainwave_openapi.StreamFilename
+    relays: rainwave_typeddicts.Relays
+    request_line: rainwave_typeddicts.RequestLine
+    requests: rainwave_typeddicts.Requests
+    sched_current: rainwave_typeddicts.SchedCurrent
+    sched_history: rainwave_typeddicts.SchedHistory
+    sched_next: rainwave_typeddicts.SchedNext
+    station_list: rainwave_typeddicts.StationList
+    stream_filename: rainwave_typeddicts.StreamFilename
     user: BootstrapUser
     websocket_host: str

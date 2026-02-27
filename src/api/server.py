@@ -9,10 +9,9 @@ import tornado.process
 
 from api.handler_classes.html404 import HTMLError404Handler
 from api.handler_classes.json404 import Error404Handler
-from common import config, log, zeromq
+from common import config, log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
-import common.locale.locale
 from api.handle_url import request_classes
 
 app: tornado.web.Application | None = None
@@ -25,9 +24,6 @@ class APIServer:
 
     async def _listen(self, task_id: int) -> None:
         global app
-
-        zeromq.init_pub()
-        zeromq.init_sub()
 
         import api.routes.sync_websocket.sync
 
@@ -68,8 +64,6 @@ class APIServer:
                 log.info("stop", "Server has been shutdown.")
 
     def start(self) -> None:
-        common.locale.locale.load_translations()
-
         # Make sure all other errors get handled in an API-friendly way
         request_classes.append((r"/api/.*", Error404Handler))
         request_classes.append((r"/api4/.*", Error404Handler))

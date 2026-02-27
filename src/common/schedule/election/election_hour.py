@@ -26,7 +26,12 @@ class ElectionHour(ScheduleEntry):
             (self.id,),
             row_type=int,
         )
-        return [await Election.load_by_id(cursor, elec_id) for elec_id in elec_ids]
+        return [
+            await Election.load_by_id(
+                cursor, elec_id, self.data["sched_name"], self.data["sched_url"]
+            )
+            for elec_id in elec_ids
+        ]
 
     async def get_next_timeline_entry(
         self,
@@ -44,14 +49,19 @@ class ElectionHour(ScheduleEntry):
             "Check for next election (sched_id %s): %s" % (self.id, elec_id),
         )
         if elec_id:
-            return await Election.load_by_id(cursor, elec_id)
+            return await Election.load_by_id(
+                cursor, elec_id, self.data["sched_name"], self.data["sched_url"]
+            )
 
         elec_type: ElectionType = "Election"
         if self.data["sched_type"] == "PVPElection":
             elec_type = "PVPElection"
 
         election = await Election.create(
-            cursor, {"elec_type": elec_type, "sched_id": self.id, "sid": self.sid}
+            cursor,
+            {"elec_type": elec_type, "sched_id": self.id, "sid": self.sid},
+            self.data["sched_name"],
+            self.data["sched_url"],
         )
         await election.fill(cursor, request_line, target_song_length)
         return election
@@ -69,7 +79,9 @@ class ElectionHour(ScheduleEntry):
             "Check for in-progress elections (sched_id %s): %s" % (self.id, elec_id),
         )
         if elec_id:
-            elec = await Election.load_by_id(cursor, elec_id)
+            elec = await Election.load_by_id(
+                cursor, elec_id, self.data["sched_name"], self.data["sched_url"]
+            )
             if not elec.entries:
                 log.warn("load_election", "Election ID %s is empty.  Marking as used.")
                 await cursor.update(
