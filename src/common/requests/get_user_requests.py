@@ -27,9 +27,13 @@ class UserRequestedSong(TypedDict):
     album_name: str
     album_rating: float
     album_rating_complete: bool
+    album_art_url: str | None
+    artist_parseable: str
+    song_link_text: str | None
+    song_url: str | None
 
 
-async def get_requests(
+async def get_user_requests(
     cursor: RainwaveCursor, sid: int, user_id: int
 ) -> list[UserRequestedSong]:
     requests = await cursor.fetch_all(
@@ -57,7 +61,11 @@ async def get_requests(
             r4_songs.album_id AS album_id,
             r4_albums.album_name,
             r4_album_sid.album_rating AS album_rating,
-            album_rating_complete
+            album_rating_complete,
+            album_art_url,
+            artist_parseable,
+            song_link_text,
+            song_url
         FROM r4_request_store
             JOIN r4_songs USING (song_id)
             JOIN r4_albums USING (album_id)

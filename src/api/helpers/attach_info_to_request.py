@@ -1,8 +1,17 @@
+import asyncio
+from typing import cast
+
+import orjson
+
 from api.exceptions import APIException
 from api.handler_classes.rainwave_handler import RainwaveHandler
+from common.cache.cache import cache_get
 from common.cache.station_cache import cache_get_station
 from common.db.cursor import RainwaveCursor
 from api import rainwave_typeddicts
+from common.playlist.album.model.album_on_station import AlbumDiff
+from common.requests.get_user_requests import get_user_requests
+from common.schedule.timeline_types import TimelineOnStation
 
 
 async def attach_info_to_request(
@@ -19,19 +28,71 @@ async def attach_info_to_request(
             request.sid, "request_line"
         )
 
-    sched_next: rainwave_typeddicts.SchedNext = []
-    sched_history: rainwave_typeddicts.SchedHistory = None
-    sched_current: rainwave_typeddicts.SchedCurrent = None
+    (timeline_api, album_diff, all_station_info) = cast(
+        tuple[
+            TimelineOnStation | None,
+            list[AlbumDiff],
+            rainwave_typeddicts.AllStationsInfo,
+        ],
+        await asyncio.gather(
+            cache_get_station(request.sid, "timeline_api"),
+            cache_get_station(request.sid, "album_diff"),
+            cache_get("all_stations_info"),
+        ),
+    )
+    if timeline_api is None:
+        raise APIException(
+            "server_just_started",
+            "Rainwave is Rebooting, Please Try Again in a Few Minutes",
+            http_code=500,
+        )
+
     if request.user and not request.user.is_anonymous():
-        request.append("requests", request.user.get_requests(request.sid))
-        sched_current = cache.get_station(request.sid, "sched_current")
-        if not sched_current:
-            raise APIException(
-                "server_just_started",
-                "Rainwave is Rebooting, Please Try Again in a Few Minutes",
-                http_code=500,
-            )
+        song_requests = await get_user_requests(cursor, request.sid, request.user.id)
+        request.response["requests"] = []
+        for song_request in song_requests:
+            album: rainwave_typeddicts.RequestAlbum = {
+                "art": song_request["album_art_url"],
+                "id": song_request["album_id"],
+                "name": song_request["album_name"],
+                "rating": song_request["rating"],
+                "rating_complete": song_request["album_rating_complete"],
+                "rating_user": song_request["rating_user"],
+            }
+            song_request_api: rainwave_typeddicts.Request = {
+                "albums": [album],
+                "artists": [
+                    {"id": artist["name"], "name": artist["name"]}
+                    for artist in orjson.loads(song_request["artist_parseable"])
+                ],
+                "cool": song_request["cool"],
+                "cool_end": song_request["cool_end"],
+                "elec_blocked": song_request["elec_blocked"],
+                "elec_blocked_by": cast(
+                    rainwave_typeddicts.ElecBlockedBy, song_request["elec_blocked_by"]
+                ),
+                "elec_blocked_num": song_request["elec_blocked_num"],
+                "fave": song_request["fave"],
+                "good": song_request["good"],
+                "id": song_request["id"],
+                "length": song_request["length"],
+                "link_text": song_request["song_link_text"],
+                "order": song_request["order"],
+                "origin_sid": cast(
+                    rainwave_typeddicts.StationId, song_request["origin_sid"]
+                ),
+                "rating": song_request["rating"],
+                "rating_user": song_request["rating_user"],
+                "request_id": song_request["request_id"],
+                "sid": cast(rainwave_typeddicts.StationId, song_request["sid"]),
+                "title": song_request["title"],
+                "url": song_request["song_url"],
+                "valid": song_request["valid"],
+            }
+            request.response["requests"].append(song_request_api)
+
         if request.user.is_tunedin():
+            sched_current[""]
             sched_current.get_song().data["rating_allowed"] = True
         sched_current = sched_current.to_dict(request.user)
         sched_next = []
