@@ -3,6 +3,8 @@ class CurrentListenersRequest(APIHandler):
     description = "Lists all current listeners for a station."
     sid_required = True
 
+    # Deprecate.  Return a blank array.
+
     def post(self):
         self.append(
             "current_listeners", cache.get_station(self.sid, "current_listeners")

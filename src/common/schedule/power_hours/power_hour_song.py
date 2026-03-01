@@ -19,7 +19,7 @@ class PowerHourSongRow(PowerHourSongCreateRow):
     one_up_id: int
     one_up_used: bool
     one_up_queued: bool
-    one_up_start_actual: int
+    one_up_start_actual: int | None
 
 
 class PowerHourSong(TimelineEntryBase):
@@ -77,8 +77,7 @@ class PowerHourSong(TimelineEntryBase):
 
     async def to_api(self, cursor: RainwaveCursor) -> rainwave_typeddicts.TimelineEntry:
         result: rainwave_typeddicts.TimelineEntry = {
-            "end": (self.data["one_up_start_actual"] or int(timestamp()))
-            + self.length(),
+            "end": (self.data["one_up_start_actual"] or 0) + self.length(),
             "id": self.id,
             "length": self.length(),
             "name": self.sched_name,
@@ -86,9 +85,9 @@ class PowerHourSong(TimelineEntryBase):
             "songs": [
                 await self.get_song_on_station_to_play().to_api_timeline_song(cursor)
             ],
-            "start": self.data["one_up_start_actual"],
+            "start": self.data["one_up_start_actual"] or 0,
             "start_actual": self.data["one_up_start_actual"],
-            "type": 2,
+            "type": "OneUp",
             "url": self.sched_url,
             "used": self.data["one_up_used"],
             "voting_allowed": False,

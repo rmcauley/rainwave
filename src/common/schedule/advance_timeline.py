@@ -1,4 +1,5 @@
 from datetime import datetime
+from common.cache.timeline_cache import update_timeline_api_cache
 from common.cache.update_user_rating_acl import update_user_rating_acl
 from common.db.cursor import RainwaveCursor
 from common.listeners.trim_listeners import trim_listeners
@@ -15,7 +16,6 @@ from common.schedule.generate_next_timeline_entries import (
 )
 from common.schedule.timeline import TimelineOnStation
 from common.schedule.trim_schedule import trim_schedule
-from backend.update_memcache_for_station import update_memcache_for_station
 from common.schedule.update_tunein import update_tunein
 
 
@@ -56,6 +56,6 @@ async def advance_timeline(
     )
     modified_albums = await get_many_album_on_station(cursor, modified_album_ids, sid)
 
-    await update_memcache_for_station(sid, timeline, modified_albums)
+    await update_timeline_api_cache(cursor, sid, timeline, modified_albums)
 
     update_tunein(sid, timeline)

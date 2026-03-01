@@ -3,8 +3,9 @@ import random
 from time import time as timestamp
 
 from psycopg import sql
-from typing import Literal, Self, TypedDict
+from typing import Literal, Self, TypedDict, cast
 
+from api import rainwave_typeddicts
 from common import config, log
 from common.db.build_insert import build_insert
 from common.db.cursor import RainwaveCursor
@@ -279,3 +280,34 @@ class Election(TimelineEntryBase):
             )
             await song_on_station.start_election_block(cursor)
             self.entries.append(entry)
+
+    async def _entry_to_api(
+        self, cursor: RainwaveCursor, entry: ElectionEntry
+    ) -> rainwave_typeddicts.TimelineSong:
+        timeline_song = await entry["song_on_station"].to_api_timeline_song(cursor)
+        timeline_song["entry_id"] = entry["entry_id"]
+        timeline_song["entry_position"] = entry["entry_position"]
+        timeline_song["entry_type"] = cast(
+            rainwave_typeddicts.ElectionSongType, entry["entry_type"]
+        )
+        timeline_song["entry_votes"] = entry["entry_votes"]
+        return timeline_song
+
+    async def to_api(self, cursor: RainwaveCursor) -> rainwave_typeddicts.TimelineEntry:
+        result: rainwave_typeddicts.TimelineEntry = {
+            "end": (self.data["elec_start_actual"] or 0) + self.length(),
+            "id": self.id,
+            "length": self.length(),
+            "name": self.sched_name,
+            "sid": cast(rainwave_typeddicts.StationId, self.sched_sid),
+            "songs": [
+                await self._entry_to_api(cursor, entry) for entry in self.entries
+            ],
+            "start": self.data["elec_start_actual"] or 0,
+            "start_actual": self.data["elec_start_actual"],
+            "type": self.type,
+            "url": self.sched_url,
+            "used": self.data["elec_used"],
+            "voting_allowed": True,
+        }
+        return result

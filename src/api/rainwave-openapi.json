@@ -2356,10 +2356,10 @@
             "type": "string"
           },
           "event_name": {
-            "type": "string"
+            "oneOf": [{ "type": "string" }, { "type": "null" }]
           },
           "event_type": {
-            "$ref": "#/components/schemas/_timeline_entry_type"
+            "oneOf": [{ "$ref": "#/components/schemas/_timeline_entry_type" }, { "type": "null" }]
           },
           "title": {
             "type": "string"
@@ -2428,7 +2428,7 @@
             ]
           },
           "type": {
-            "$ref": "#/components/schemas/_election_song_type"
+            "$ref": "#/components/schemas/_timeline_entry_type"
           },
           "url": {
             "oneOf": [
