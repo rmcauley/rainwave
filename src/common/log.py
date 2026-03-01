@@ -112,7 +112,7 @@ def critical(key: str, message: str, user: Any | None = None) -> None:
     log.critical(_massage_line(key, message, user))
 
 
-def exception(key: str, message: str, e: BaseException) -> None:
+def exception(key: str, message: str, e: Any) -> None:
     if not log:
         raise LogNotInitializedError
     log.critical(_massage_line(key, message, None), exc_info=e)

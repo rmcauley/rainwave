@@ -136,6 +136,7 @@ async def get_cursor():
             yield RainwaveCursor(psy_cursor)
 
 
+@asynccontextmanager
 async def get_tx_cursor():
     pool = get_pool()
     async with pool.connection() as conn:

@@ -132,14 +132,19 @@ trim_election_age = 86400
 # How many songs worth of playback history to keep
 trim_history_length = 1000
 
-# Enable album art processing.
-album_art_enabled = False
 # Where to store resized album art processed by Rainwave.
 album_art_file_path = "/var/www/mydomain.com/static/album_art"
 # URL that browsers will load art from."
 album_art_url_path = "/static/album_art"
-# When saving album art, what station ID takes priority when 1 album has multiple art?
-album_art_master_sid = 1
+# Order of importance of album art, e.g. station 1 should use album art from 1, then 6, etc.
+album_art_order: dict[int, list[int]] = {
+    1: [1, 6, 4, 2],
+    2: [2, 4],
+    3: [3, 4, 6, 2],
+    4: [4, 6, 1, 2, 3],
+    5: [2, 4, 1, 6, 3],
+    6: [6, 1, 4, 2, 3],
+}
 
 # How many ratings until Rainwave will show a public rating on the site?
 rating_threshold_for_calc = 10

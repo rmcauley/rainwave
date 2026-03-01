@@ -3,13 +3,10 @@ import asyncio
 
 from common.cache import cache
 from common.db.connection import db_connect
-from scanner.filemonitor import (
-    monitor,
-    set_on_screen,
-    full_art_update,
-    full_music_scan,
-)
 from common import config, log
+from scanner.file_monitor.file_monitor import file_monitor
+from scanner.full_art_scan import full_art_update
+from scanner.full_scan import full_scan
 
 
 async def main() -> None:
@@ -27,13 +24,12 @@ async def main() -> None:
     )
 
     async with db_connect(), cache.cache_connect():
-        set_on_screen(on_screen)
         if args.art:
-            full_art_update()
+            await full_art_update()
         elif args.full:
-            full_music_scan(args.reset)
+            await full_scan(args.reset)
         else:
-            monitor()
+            await file_monitor()
 
 
 if __name__ == "__main__":
