@@ -1,5 +1,8 @@
-from typing import TypedDict
+from typing import TypedDict, cast
 
+import orjson
+
+from api import rainwave_typeddicts
 from common.db.cursor import RainwaveCursor
 
 
@@ -107,3 +110,50 @@ async def get_user_requests(
         else:
             song["valid"] = True
     return requests
+
+
+def user_requests_to_api(
+    requests: list[UserRequestedSong],
+) -> list[rainwave_typeddicts.Request]:
+    requests_api: list[rainwave_typeddicts.Request] = []
+    for song_request in requests:
+        album: rainwave_typeddicts.RequestAlbum = {
+            "art": song_request["album_art_url"],
+            "id": song_request["album_id"],
+            "name": song_request["album_name"],
+            "rating": song_request["rating"],
+            "rating_complete": song_request["album_rating_complete"],
+            "rating_user": song_request["rating_user"],
+        }
+        song_request_api: rainwave_typeddicts.Request = {
+            "albums": [album],
+            "artists": [
+                {"id": artist["name"], "name": artist["name"]}
+                for artist in orjson.loads(song_request["artist_parseable"])
+            ],
+            "cool": song_request["cool"],
+            "cool_end": song_request["cool_end"],
+            "elec_blocked": song_request["elec_blocked"],
+            "elec_blocked_by": cast(
+                rainwave_typeddicts.ElecBlockedBy, song_request["elec_blocked_by"]
+            ),
+            "elec_blocked_num": song_request["elec_blocked_num"],
+            "fave": song_request["fave"],
+            "good": song_request["good"],
+            "id": song_request["id"],
+            "length": song_request["length"],
+            "link_text": song_request["song_link_text"],
+            "order": song_request["order"],
+            "origin_sid": cast(
+                rainwave_typeddicts.StationId, song_request["origin_sid"]
+            ),
+            "rating": song_request["rating"],
+            "rating_user": song_request["rating_user"],
+            "request_id": song_request["request_id"],
+            "sid": cast(rainwave_typeddicts.StationId, song_request["sid"]),
+            "title": song_request["title"],
+            "url": song_request["song_url"],
+            "valid": song_request["valid"],
+        }
+        requests_api.append(song_request_api)
+    return requests_api

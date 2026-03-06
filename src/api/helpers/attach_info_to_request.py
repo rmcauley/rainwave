@@ -1,17 +1,50 @@
 import asyncio
-from typing import cast
-
-import orjson
+from typing import TypedDict, cast
 
 from api.exceptions import APIException
 from api.handler_classes.rainwave_handler import RainwaveHandler
 from common.cache.cache import cache_get
 from common.cache.station_cache import cache_get_station
+from common.cache.timeline_cache import TimelineApiCache
+from common.cache.update_user_rating_acl import UserRatingACL
 from common.db.cursor import RainwaveCursor
 from api import rainwave_typeddicts
 from common.playlist.album.model.album_on_station import AlbumDiff
-from common.requests.get_user_requests import get_user_requests
-from common.schedule.timeline_types import TimelineOnStation
+from common.requests.get_user_requests import get_user_requests, user_requests_to_api
+from common.schedule.is_api_timeline_entry_an_election import (
+    is_api_timeline_entry_an_election,
+)
+
+
+class SongRatingRow(TypedDict):
+    song_id: int
+    song_rating_user: float | None
+    song_fave: bool | None
+
+
+class AlbumRatingRow(TypedDict):
+    album_id: int
+    album_rating_user: float | None
+    album_fave: bool | None
+
+
+SongRatings = dict[int, tuple[float | None, bool | None]]
+AlbumRatings = dict[int, tuple[float | None, bool | None]]
+
+
+def _attach_rating_to_song(
+    song_ratings: SongRatings,
+    album_ratings: AlbumRatings,
+    song: rainwave_typeddicts.TimelineSong,
+) -> None:
+    (rating_user, fave) = song_ratings.get(song["id"], (None, None))
+    (album_rating_user, album_fave) = album_ratings.get(
+        song["albums"][0]["id"], (None, None)
+    )
+    song["rating_user"] = rating_user
+    song["fave"] = fave
+    song["albums"][0]["rating_user"] = album_rating_user
+    song["albums"][0]["fave"] = album_fave
 
 
 async def attach_info_to_request(
@@ -28,16 +61,18 @@ async def attach_info_to_request(
             request.sid, "request_line"
         )
 
-    (timeline_api, album_diff, all_station_info) = cast(
+    (timeline_api, album_diff, all_station_info, user_rating_acl) = cast(
         tuple[
-            TimelineOnStation | None,
+            TimelineApiCache | None,
             list[AlbumDiff],
             rainwave_typeddicts.AllStationsInfo,
+            UserRatingACL | None,
         ],
         await asyncio.gather(
             cache_get_station(request.sid, "timeline_api"),
             cache_get_station(request.sid, "album_diff"),
             cache_get("all_stations_info"),
+            cache_get_station(request.sid, "user_rating_acl"),
         ),
     )
     if timeline_api is None:
@@ -47,99 +82,115 @@ async def attach_info_to_request(
             http_code=500,
         )
 
+    sched_current = timeline_api["sched_current"]
+    sched_history = timeline_api["sched_history"]
+    sched_next = timeline_api["sched_next"]
+
     if request.user and not request.user.is_anonymous():
         song_requests = await get_user_requests(cursor, request.sid, request.user.id)
-        request.response["requests"] = []
-        for song_request in song_requests:
-            album: rainwave_typeddicts.RequestAlbum = {
-                "art": song_request["album_art_url"],
-                "id": song_request["album_id"],
-                "name": song_request["album_name"],
-                "rating": song_request["rating"],
-                "rating_complete": song_request["album_rating_complete"],
-                "rating_user": song_request["rating_user"],
-            }
-            song_request_api: rainwave_typeddicts.Request = {
-                "albums": [album],
-                "artists": [
-                    {"id": artist["name"], "name": artist["name"]}
-                    for artist in orjson.loads(song_request["artist_parseable"])
-                ],
-                "cool": song_request["cool"],
-                "cool_end": song_request["cool_end"],
-                "elec_blocked": song_request["elec_blocked"],
-                "elec_blocked_by": cast(
-                    rainwave_typeddicts.ElecBlockedBy, song_request["elec_blocked_by"]
-                ),
-                "elec_blocked_num": song_request["elec_blocked_num"],
-                "fave": song_request["fave"],
-                "good": song_request["good"],
-                "id": song_request["id"],
-                "length": song_request["length"],
-                "link_text": song_request["song_link_text"],
-                "order": song_request["order"],
-                "origin_sid": cast(
-                    rainwave_typeddicts.StationId, song_request["origin_sid"]
-                ),
-                "rating": song_request["rating"],
-                "rating_user": song_request["rating_user"],
-                "request_id": song_request["request_id"],
-                "sid": cast(rainwave_typeddicts.StationId, song_request["sid"]),
-                "title": song_request["title"],
-                "url": song_request["song_url"],
-                "valid": song_request["valid"],
-            }
-            request.response["requests"].append(song_request_api)
+        request.response["requests"] = user_requests_to_api(song_requests)
+
+        song_ids: list[int] = []
+        album_ids: list[int] = []
+        for upnext in sched_next:
+            for song in upnext["songs"]:
+                song_ids.append(song["id"])
+                album_ids.append(song["albums"][0]["id"])
+        for song in sched_current["songs"]:
+            song_ids.append(song["id"])
+            album_ids.append(song["albums"][0]["id"])
+        for song in sched_history:
+            song_ids.append(song["id"])
+            album_ids.append(song["albums"][0]["id"])
+
+        song_rating_rows = await cursor.fetch_all(
+            """
+            SELECT 
+                song_id, 
+                song_rating_user, 
+                song_fave 
+            FROM r4_song_ratings 
+            WHERE 
+                song_id = ANY (%s) 
+                AND user_id = %s
+            """,
+            (song_ids, request.user.id),
+            row_type=SongRatingRow,
+        )
+        album_rating_rows = await cursor.fetch_all(
+            """
+            SELECT 
+                r4_album_sid.album_id AS album_id,
+                album_rating_user, 
+                album_fave 
+            FROM r4_album_sid 
+                LEFT JOIN r4_album_ratings ON (
+                    r4_album_sid.album_id = r4_album_ratings.album_id
+                    AND r4_album_sid.sid = r4_album_ratings.sid
+                )
+                LEFT JOIN r4_album_faves ON (
+                    r4_album_sid.album_id = r4_album_faves.album_id
+                )
+            WHERE
+                r4_album_sid.album_id = ANY (%s)
+                AND r4_album_sid.sid = %s
+            """,
+            (album_ids, request.sid),
+            row_type=AlbumRatingRow,
+        )
+
+        song_ratings = {
+            row["song_id"]: (row["song_rating_user"], row["song_fave"])
+            for row in song_rating_rows
+        }
+        album_ratings = {
+            row["album_id"]: (
+                row["album_rating_user"],
+                row["album_fave"],
+            )
+            for row in album_rating_rows
+        }
 
         if request.user.is_tunedin():
-            sched_current[""]
-            sched_current.get_song().data["rating_allowed"] = True
-        sched_current = sched_current.to_dict(request.user)
-        sched_next = []
-        sched_next_objects = cast(
-            list[BaseEvent], cache.get_station(request.sid, "sched_next")
-        )
-        for evt in sched_next_objects:
-            sched_next.append(evt.to_dict(request.user))
+            sched_current["songs"][0]["rating_allowed"] = True
+
         if (
             len(sched_next) > 0
             and request.user.is_tunedin()
-            and sched_next_objects[0].is_election
-            and len(sched_next_objects[0].songs) > 1
-        ):
-            sched_next[0]["voting_allowed"] = True
-        if request.user.is_tunedin() and request.user.has_perks():
-            for i in range(1, len(sched_next)):
-                if (
-                    sched_next_objects[i].is_election
-                    and len(sched_next_objects[i].songs) > 1
-                ):
-                    sched_next[i]["voting_allowed"] = True
-        sched_history = []
-        for evt in cast(
-            list[BaseEvent], cache.get_station(request.sid, "sched_history")
-        ):
-            sched_history.append(evt.to_dict(request.user, check_rating_acl=True))
-    elif request.user:
-        sched_current = cache.get_station(request.sid, "sched_current_dict")
-        if not sched_current:
-            raise APIException(
-                "server_just_started",
-                "Rainwave is Rebooting, Please Try Again in a Few Minutes",
-                http_code=500,
-            )
-        sched_next = cast(list[dict], cache.get_station(request.sid, "sched_next_dict"))
-        sched_history = cache.get_station(request.sid, "sched_history_dict")
-        if (
-            len(sched_next) > 0
-            and request.user.is_tunedin()
-            and sched_next[0]["type"] == "Election"
+            and is_api_timeline_entry_an_election(sched_next[0])
             and len(sched_next[0]["songs"]) > 1
         ):
             sched_next[0]["voting_allowed"] = True
-    request.append("sched_current", sched_current)
-    request.append("sched_next", sched_next)
-    request.append("sched_history", sched_history)
+
+        if request.user.is_tunedin() and request.user.has_perks():
+            for i in range(1, len(sched_next)):
+                if (
+                    is_api_timeline_entry_an_election(sched_next[0])
+                    and len(sched_next[0]["songs"]) > 1
+                ):
+                    sched_next[i]["voting_allowed"] = True
+
+        for upnext in sched_next:
+            for song in upnext["songs"]:
+                _attach_rating_to_song(song_ratings, album_ratings, song)
+        for song in sched_current["songs"]:
+            _attach_rating_to_song(song_ratings, album_ratings, song)
+        for song in sched_history:
+            _attach_rating_to_song(song_ratings, album_ratings, song)
+            if request.user.has_perks():
+                song["rating_allowed"] = True
+            elif (
+                user_rating_acl
+                and song["id"] in user_rating_acl
+                and request.user.id in user_rating_acl[song["id"]]
+            ):
+                song["rating_allowed"] = True
+
+    request.response["sched_current"] = sched_current
+    request.response["sched_next"] = sched_next
+    # Need to change the type everywhere to be schedule entries :(
+    request.response["sched_history"] = sched_history
+
     if request.user:
         if not request.user.is_anonymous():
             user_vote_cache = cache.get_user(request.user, "vote_history")
