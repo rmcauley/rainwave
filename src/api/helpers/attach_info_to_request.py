@@ -7,9 +7,9 @@ from common.cache.cache import cache_get
 from common.cache.station_cache import cache_get_station
 from common.cache.timeline_cache import TimelineApiCache
 from common.cache.update_user_rating_acl import UserRatingACL
+from common.cache.user_cache import cache_get_user
 from common.db.cursor import RainwaveCursor
 from api import rainwave_typeddicts
-from common.playlist.album.model.album_on_station import AlbumDiff
 from common.requests.get_user_requests import get_user_requests, user_requests_to_api
 from common.schedule.is_api_timeline_entry_an_election import (
     is_api_timeline_entry_an_election,
@@ -64,7 +64,7 @@ async def attach_info_to_request(
     (timeline_api, album_diff, all_station_info, user_rating_acl) = cast(
         tuple[
             TimelineApiCache | None,
-            list[AlbumDiff],
+            rainwave_typeddicts.AlbumDiff,
             rainwave_typeddicts.AllStationsInfo,
             UserRatingACL | None,
         ],
@@ -99,9 +99,10 @@ async def attach_info_to_request(
         for song in sched_current["songs"]:
             song_ids.append(song["id"])
             album_ids.append(song["albums"][0]["id"])
-        for song in sched_history:
-            song_ids.append(song["id"])
-            album_ids.append(song["albums"][0]["id"])
+        for history_entry in sched_history:
+            for song in history_entry["songs"]:
+                song_ids.append(song["id"])
+                album_ids.append(song["albums"][0]["id"])
 
         song_rating_rows = await cursor.fetch_all(
             """
@@ -175,40 +176,42 @@ async def attach_info_to_request(
                 _attach_rating_to_song(song_ratings, album_ratings, song)
         for song in sched_current["songs"]:
             _attach_rating_to_song(song_ratings, album_ratings, song)
-        for song in sched_history:
-            _attach_rating_to_song(song_ratings, album_ratings, song)
-            if request.user.has_perks():
-                song["rating_allowed"] = True
-            elif (
-                user_rating_acl
-                and song["id"] in user_rating_acl
-                and request.user.id in user_rating_acl[song["id"]]
-            ):
-                song["rating_allowed"] = True
+        for history_entry in sched_history:
+            for song in history_entry["songs"]:
+                _attach_rating_to_song(song_ratings, album_ratings, song)
+                if request.user.has_perks():
+                    song["rating_allowed"] = True
+                elif (
+                    user_rating_acl
+                    and song["id"] in user_rating_acl
+                    and request.user.id in user_rating_acl[song["id"]]
+                ):
+                    song["rating_allowed"] = True
 
     request.response["sched_current"] = sched_current
     request.response["sched_next"] = sched_next
-    # Need to change the type everywhere to be schedule entries :(
     request.response["sched_history"] = sched_history
 
     if request.user:
-        if not request.user.is_anonymous():
-            user_vote_cache = cache.get_user(request.user, "vote_history")
-            if user_vote_cache:
-                request.append("already_voted", user_vote_cache)
-        else:
+        if request.user.is_anonymous():
             if (
                 len(sched_next) > 0
-                and request.user.data.get("voted_entry")
-                and request.user.data.get("voted_entry") > 0  # type: ignore
-                and request.user.data["lock_sid"] == request.sid
+                and request.user.private_data["voted_entry"] is not None
+                and request.user.private_data["voted_entry"] > 0
+                and request.user.private_data["lock_sid"] == request.sid
             ):
-                request.append(
-                    "already_voted",
-                    [(sched_next[0]["id"], request.user.data["voted_entry"])],
-                )
+                request.response["already_voted"] = [
+                    [sched_next[0]["id"], request.user.private_data["voted_entry"]]
+                ]
+        else:
+            user_vote_cache = await cache_get_user(request.user.id, "vote_history")
+            if user_vote_cache:
+                request.response["already_voted"] = user_vote_cache
 
-    request.append("all_stations_info", cache.get("all_stations_info"))
+    request.response["all_stations_info"] = all_station_info
+    request.response["album_diff"] = album_diff
 
-    if live_voting:
-        request.append("live_voting", cache.get_station(request.sid, "live_voting"))
+    if include_live_voting:
+        request.response["live_voting"] = await cache_get_station(
+            request.sid, "live_voting"
+        )

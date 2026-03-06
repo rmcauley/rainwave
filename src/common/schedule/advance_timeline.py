@@ -28,7 +28,7 @@ async def advance_timeline(
     await timeline.current.finish(cursor)
 
     timeline.history = timeline.history[:4]
-    timeline.history.insert(0, just_ended_song)
+    timeline.history.insert(0, timeline.current)
     timeline.current = timeline.upnext.pop(0)
 
     await cursor.update(

@@ -30,7 +30,7 @@ class BooleanResult(TypedDict):
     tl_key: str
 
 
-type ElecBlockedBy = Literal['in_election', 'album', 'group'] | None
+type ElecBlockedBy = Literal["in_election", "album", "group"] | None
 
 
 type ElectionSongType = Literal[2, 4]
@@ -75,17 +75,17 @@ type RatingUser = float | None
 
 
 RatingHistogram = TypedDict(
-    'RatingHistogram',
+    "RatingHistogram",
     {
-        '1.0': int,
-        '1.5': int,
-        '2.0': int,
-        '2.5': int,
-        '3.0': int,
-        '3.5': int,
-        '4.0': int,
-        '4.5': int,
-        '5.0': int,
+        "1.0": int,
+        "1.5": int,
+        "2.0": int,
+        "2.5": int,
+        "3.0": int,
+        "3.5": int,
+        "4.0": int,
+        "4.5": int,
+        "5.0": int,
     },
 )
 
@@ -165,7 +165,7 @@ class StationListStation(TypedDict):
 type Time = int
 
 
-type TimelineEntryType = Literal['Election', 'OneUp', 'PVPElection']
+type TimelineEntryType = Literal["Election", "OneUp", "PVPElection"]
 
 
 class TimelineSongAlbum(TypedDict):
@@ -219,6 +219,7 @@ class AlbumDiffItem(TypedDict):
     cool_lowest: NotRequired[Time]
     id: NotRequired[int]
     newest_song_time: NotRequired[Time]
+    rating: float | None
 
 
 type AlbumDiff = list[AlbumDiffItem]
@@ -314,13 +315,13 @@ class FaveSongResult(BooleanResult):
 
 
 RatingsCompletion = TypedDict(
-    'RatingsCompletion',
+    "RatingsCompletion",
     {
-        '1': int,
-        '2': int,
-        '3': int,
-        '4': int,
-        '6': int,
+        "1": int,
+        "2": int,
+        "3": int,
+        "4": int,
+        "6": int,
     },
 )
 
@@ -429,14 +430,14 @@ type Songs = list[Song1]
 
 
 StationList = TypedDict(
-    'StationList',
+    "StationList",
     {
-        '1': NotRequired[StationListStation],
-        '2': NotRequired[StationListStation],
-        '3': NotRequired[StationListStation],
-        '4': NotRequired[StationListStation],
-        '5': NotRequired[StationListStation],
-        '6': NotRequired[StationListStation],
+        "1": NotRequired[StationListStation],
+        "2": NotRequired[StationListStation],
+        "3": NotRequired[StationListStation],
+        "4": NotRequired[StationListStation],
+        "5": NotRequired[StationListStation],
+        "6": NotRequired[StationListStation],
     },
 )
 
@@ -670,27 +671,27 @@ class AllAlbumsPaginated(TypedDict):
 
 
 AllStationsInfo = TypedDict(
-    'AllStationsInfo',
+    "AllStationsInfo",
     {
-        '1': StationInfo,
-        '2': StationInfo,
-        '3': StationInfo,
-        '4': StationInfo,
-        '5': StationInfo,
-        '6': StationInfo,
+        "1": StationInfo,
+        "2": StationInfo,
+        "3": StationInfo,
+        "4": StationInfo,
+        "5": StationInfo,
+        "6": StationInfo,
     },
 )
 
 
 AllSongs1 = TypedDict(
-    'AllSongs1',
+    "AllSongs1",
     {
-        '1': NotRequired[dict[str, list[SongInArtist]]],
-        '2': NotRequired[dict[str, list[SongInArtist]]],
-        '3': NotRequired[dict[str, list[SongInArtist]]],
-        '4': NotRequired[dict[str, list[SongInArtist]]],
-        '5': NotRequired[dict[str, list[SongInArtist]]],
-        '6': NotRequired[dict[str, list[SongInArtist]]],
+        "1": NotRequired[dict[str, list[SongInArtist]]],
+        "2": NotRequired[dict[str, list[SongInArtist]]],
+        "3": NotRequired[dict[str, list[SongInArtist]]],
+        "4": NotRequired[dict[str, list[SongInArtist]]],
+        "5": NotRequired[dict[str, list[SongInArtist]]],
+        "6": NotRequired[dict[str, list[SongInArtist]]],
     },
 )
 

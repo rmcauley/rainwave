@@ -3,6 +3,7 @@ from time import time as timestamp
 import math
 from typing import TypedDict
 
+from api.rainwave_typeddicts import AlbumDiffItem
 from common import config
 from common import log
 from common.db.cursor import RainwaveCursor
@@ -49,15 +50,6 @@ class AlbumOnStationExtraDetail(TypedDict):
     album_request_rank_percentile: int
     album_genres: list[AlbumOnStationExtraDetailsGenreRow]
     album_rating_histogram: RatingHistogram
-
-
-class AlbumDiff(TypedDict):
-    id: int
-    cool: bool
-    cool_lowest: int
-    newest_song_time: int
-    rating: float
-    name: str
 
 
 class AlbumOnStation:
@@ -323,14 +315,13 @@ class AlbumOnStation:
                     % (rating, self.data["album_name"], sid),
                 )
 
-    def to_album_diff(self) -> AlbumDiff:
+    def to_album_diff(self) -> AlbumDiffItem:
         return {
             "id": self.album_id,
             "cool": self.data["album_cool"],
             "cool_lowest": self.data["album_cool_lowest"],
             "newest_song_time": self.data.get("album_newest_song_time", 0) or 0,
             "rating": self.data["album_rating"],
-            "name": self.data["album_name"],
         }
 
     @staticmethod

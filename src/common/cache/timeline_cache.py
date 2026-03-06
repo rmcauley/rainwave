@@ -2,7 +2,7 @@ from typing import TypedDict
 
 from common.cache.station_cache import cache_get_station, cache_set_station
 from common.db.cursor import RainwaveCursor
-from common.playlist.album.model.album_on_station import AlbumDiff, AlbumOnStation
+from common.playlist.album.model.album_on_station import AlbumOnStation
 from common.schedule.timeline import TimelineOnStation
 from api import rainwave_typeddicts
 from common.schedule.update_live_voting import update_live_voting_cache
@@ -11,7 +11,7 @@ from common.schedule.update_live_voting import update_live_voting_cache
 class TimelineApiCache(TypedDict):
     sched_current: rainwave_typeddicts.TimelineEntry
     sched_next: list[rainwave_typeddicts.TimelineEntry]
-    sched_history: list[rainwave_typeddicts.TimelineSong]
+    sched_history: list[rainwave_typeddicts.TimelineEntry]
 
 
 async def update_timeline_api_cache(
@@ -31,9 +31,9 @@ async def update_timeline_api_cache(
             await update_live_voting_cache(cursor, sid, api_entry["id"])
     await cache_set_station(sid, "sched_next_dict", sched_next)
 
-    sched_history: list[rainwave_typeddicts.TimelineSong] = []
-    for song_on_station in timeline.history:
-        sched_history.append(await song_on_station.to_api_timeline_song(cursor))
+    sched_history: list[rainwave_typeddicts.TimelineEntry] = []
+    for timeline_entry in timeline.history:
+        sched_history.append(await timeline_entry.to_api(cursor))
     await cache_set_station(sid, "sched_history_dict", sched_history)
 
     timeline_api_cache: TimelineApiCache = {
@@ -63,7 +63,9 @@ async def update_timeline_api_cache(
 async def get_timeline_api_cache(
     sid: int,
 ) -> tuple[
-    TimelineApiCache | None, rainwave_typeddicts.StationInfo | None, list[AlbumDiff]
+    TimelineApiCache | None,
+    rainwave_typeddicts.StationInfo | None,
+    rainwave_typeddicts.AlbumDiff,
 ]:
     return (
         await cache_get_station(sid, "timeline_api"),
