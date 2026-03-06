@@ -9,5 +9,5 @@ class ClearRating(SubmitRatingRequest):
     fields = {"song_id": (fieldtypes.song_id, True)}
 
     async def post(self):
-        self.clear_rating(input["song_id"))
+        self.clear_rating(input.)
         self.write_rainwave_output()

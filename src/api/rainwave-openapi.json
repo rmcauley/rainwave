@@ -1642,7 +1642,14 @@
     "schemas": {
       "_album_art": {
         "description": "Base album art URL for Rainwave. Usage: `art = album_art ? \"https://rainwave.cc/${albumArt}_320.jpg\" : \"https://rainwave.cc/static/images4/noart_1.jpg\"`",
-        "oneOf": [{ "type": "string" }, { "type": "null" }]
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
       "_album_core": {
         "properties": {
@@ -1846,6 +1853,9 @@
           "code": {
             "type": "number"
           },
+          "success": {
+            "type": "boolean"
+          },
           "text": {
             "type": "string"
           },
@@ -1854,9 +1864,6 @@
           },
           "traceback": {
             "type": "string"
-          },
-          "success": {
-            "type": "boolean"
           }
         },
         "required": ["status", "tl_key", "text"],
@@ -2006,14 +2013,6 @@
       "_rating": {
         "type": "number"
       },
-      "_rating_user": {
-        "oneOf": [
-          {
-            "type": "number"
-          },
-          { "type": "null" }
-        ]
-      },
       "_rating_histogram": {
         "properties": {
           "1.0": {
@@ -2046,6 +2045,16 @@
         },
         "required": ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"],
         "type": "object"
+      },
+      "_rating_user": {
+        "oneOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
       "_relay": {
         "properties": {
@@ -2088,20 +2097,6 @@
         },
         "required": ["name", "id", "rating", "rating_user", "rating_complete", "art"],
         "type": "object"
-      },
-      "_request_line_entry_song": {
-        "oneOf": [
-          { "type": "null" },
-          {
-            "type": "object",
-            "properties": {
-              "album_name": { "type": "string" },
-              "id": { "type": "integer" },
-              "title": { "type": "string" }
-            },
-            "required": ["album_name", "id", "title"]
-          }
-        ]
       },
       "_request_line_entry": {
         "properties": {
@@ -2169,6 +2164,28 @@
           "position"
         ],
         "type": "object"
+      },
+      "_request_line_entry_song": {
+        "oneOf": [
+          {
+            "type": "null"
+          },
+          {
+            "properties": {
+              "album_name": {
+                "type": "string"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "title": {
+                "type": "string"
+              }
+            },
+            "required": ["album_name", "id", "title"],
+            "type": "object"
+          }
+        ]
       },
       "_search_album": {
         "properties": {
@@ -2380,10 +2397,24 @@
             "type": "string"
           },
           "event_name": {
-            "oneOf": [{ "type": "string" }, { "type": "null" }]
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "event_type": {
-            "oneOf": [{ "$ref": "#/components/schemas/_timeline_entry_type" }, { "type": "null" }]
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/_timeline_entry_type"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "title": {
             "type": "string"
@@ -2491,30 +2522,6 @@
         "enum": ["Election", "OneUp", "PVPElection"],
         "type": "string"
       },
-      "_timeline_song_album": {
-        "type": "object",
-        "properties": {
-          "art": {
-            "$ref": "#/components/schemas/_album_art"
-          },
-          "fave": {
-            "type": "boolean"
-          },
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "rating": {
-            "type": "number"
-          },
-          "rating_user": {
-            "$ref": "#/components/schemas/_rating_user"
-          }
-        },
-        "required": ["id", "rating", "art", "name", "rating_user", "fave"]
-      },
       "_timeline_song": {
         "allOf": [
           {
@@ -2523,8 +2530,12 @@
           {
             "properties": {
               "albums": {
-                "type": "array",
-                "prefixItems": [{ "$ref": "#/components/schemas/_timeline_song_album" }]
+                "prefixItems": [
+                  {
+                    "$ref": "#/components/schemas/_timeline_song_album"
+                  }
+                ],
+                "type": "array"
               },
               "artists": {
                 "items": {
@@ -2627,6 +2638,30 @@
             "type": "object"
           }
         ]
+      },
+      "_timeline_song_album": {
+        "properties": {
+          "art": {
+            "$ref": "#/components/schemas/_album_art"
+          },
+          "fave": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "rating_user": {
+            "$ref": "#/components/schemas/_rating_user"
+          }
+        },
+        "required": ["id", "rating", "art", "name", "rating_user", "fave"],
+        "type": "object"
       },
       "_updated_album_rating": {
         "properties": {
@@ -3132,7 +3167,14 @@
             ]
           },
           "colour": {
-            "oneOf": [{ "type": "string" }, { "type": "null" }]
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "losing_votes": {
             "deprecated": true,
@@ -3146,7 +3188,14 @@
             "type": "string"
           },
           "rank": {
-            "oneOf": [{ "type": "string" }, { "type": "null" }]
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "rating_spread": {
             "items": {
@@ -3330,6 +3379,40 @@
         },
         "required": ["ping"],
         "type": "object"
+      },
+      "power_hours": {
+        "items": {
+          "properties": {
+            "end": {
+              "$ref": "#/components/schemas/_time"
+            },
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "sid": {
+              "$ref": "#/components/schemas/_station_id"
+            },
+            "start": {
+              "$ref": "#/components/schemas/_time"
+            },
+            "url": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": ["sid", "id", "name", "start", "end", "url"],
+          "type": "object"
+        },
+        "type": "array"
       },
       "rate_result": {
         "allOf": [
@@ -3583,55 +3666,58 @@
         ],
         "type": "object"
       },
+      "_search_song": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/_song_bare"
+          },
+          {
+            "properties": {
+              "added_on": {
+                "$ref": "#/components/schemas/_time"
+              },
+              "album_id": {
+                "type": "integer"
+              },
+              "album_name": {
+                "type": "string"
+              },
+              "cool": {
+                "type": "boolean"
+              },
+              "cool_end": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/_time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "origin_sid": {
+                "$ref": "#/components/schemas/_station_id"
+              },
+              "requestable": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "added_on",
+              "album_id",
+              "album_name",
+              "cool_end",
+              "cool",
+              "origin_sid",
+              "requestable"
+            ],
+            "type": "object"
+          }
+        ]
+      },
       "songs": {
         "items": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/_song_bare"
-            },
-            {
-              "properties": {
-                "added_on": {
-                  "$ref": "#/components/schemas/_time"
-                },
-                "album_id": {
-                  "type": "integer"
-                },
-                "album_name": {
-                  "type": "string"
-                },
-                "cool": {
-                  "type": "boolean"
-                },
-                "cool_end": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/_time"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "origin_sid": {
-                  "$ref": "#/components/schemas/_station_id"
-                },
-                "requestable": {
-                  "type": "boolean"
-                }
-              },
-              "required": [
-                "added_on",
-                "album_id",
-                "album_name",
-                "cool_end",
-                "cool",
-                "origin_sid",
-                "requestable"
-              ],
-              "type": "object"
-            }
-          ]
+          "$ref": "#/components/schemas/_search_song"
         },
         "type": "array"
       },
@@ -3703,6 +3789,41 @@
       "sync_result": {
         "items": {
           "$ref": "#/components/schemas/_error"
+        },
+        "type": "array"
+      },
+      "tip_jar": {
+        "items": {
+          "properties": {
+            "amount": {
+              "type": "number"
+            },
+            "id": {
+              "type": "integer"
+            },
+            "message": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "name": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": ["id", "amount", "message", "name"],
+          "type": "object"
         },
         "type": "array"
       },
@@ -3958,21 +4079,6 @@
         },
         "required": ["tl_key", "text"],
         "type": "object"
-      },
-      "power_hours": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "sid": { "$ref": "#/components/schemas/_station_id" },
-            "id": { "type": "integer" },
-            "name": { "type": "string" },
-            "start": { "$ref": "#/components/schemas/_time" },
-            "end": { "$ref": "#/components/schemas/_time" },
-            "url": { "oneOf": [{ "type": "string" }, { "type": "null" }] }
-          },
-          "required": ["sid", "id", "name", "start", "end", "url"]
-        }
       }
     }
   }

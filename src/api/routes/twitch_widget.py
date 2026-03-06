@@ -1,6 +1,5 @@
 from api.handle_url import handle_url
-from api.web import HTMLRequest
-from common import config
+from api.handler_classes.html_handler import HTMLRequest
 
 
 @handle_url("/twitch/?")
@@ -12,7 +11,7 @@ class StreamHelp(HTMLRequest):
     def get(self):
         self.render(
             "stream_help.html",
-            revision_number=config.build_number,
+            revision_number=1000,
             title="Rainwave Current Song Widget for Twitch Streamers",
         )
 
@@ -24,6 +23,4 @@ class StreamIndex(HTMLRequest):
     sid_required = True
 
     def get(self):
-        self.render(
-            "stream_widget.html", sid=self.sid, revision_number=config.build_number
-        )
+        self.render("stream_widget.html", sid=self.sid, revision_number=1000)

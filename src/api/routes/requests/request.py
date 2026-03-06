@@ -16,7 +16,7 @@ class SubmitRequest(APIHandler):
     async def post(self):
         if self.user.is_anonymous():
             raise APIException("must_login_and_tune_in_to_request")
-        if self.user.add_request(self.sid, input["song_id")):
+        if self.user.add_request(self.sid, input.):
             self.append_standard("request_success")
                         self.response["requests"] = self.user.get_requests(self.sid)
         else:

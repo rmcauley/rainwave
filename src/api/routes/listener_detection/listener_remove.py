@@ -27,16 +27,16 @@ class RemoveListener(IcecastHandler):
         async with get_cursor() as cursor:
             listener = await cursor.fetch_row(
                 "SELECT user_id, listener_key FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
-                (self.relay, input["client")),
+                (self.relay, input.),
             )
             if not listener:
                 # removal not working is normal, since any reconnecting listener gets a new listener ID
-                # self.append("      RMFAIL: %s %s." % ('{:<15}'.format(self.relay), '{:<10}'.format(input["client"))))
+                # self.append("      RMFAIL: %s %s." % ('{:<15}'.format(self.relay), '{:<10}'.format(input.)))
                 return
 
             await cursor.update(
                 "UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s",
-                (self.relay, input["client")),
+                (self.relay, input.),
             )
             if listener["user_id"] > 1:
                 await cursor.update(
@@ -52,7 +52,7 @@ class RemoveListener(IcecastHandler):
                 % (
                     "{:<5}".format(listener["user_id"]),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input["client")),
+                    "{:<10}".format(input.),
                 )
             )
             self.failed = False

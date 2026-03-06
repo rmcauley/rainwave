@@ -19,7 +19,7 @@ class SubmitFaveAllSongs(SubmitAlbumFave):
         async with get_cursor() as cursor:
             song_ids = await cursor.fetch_list(
                 "SELECT r4_song_sid.song_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s",
-                (input["album_id"), self.sid),
+                (input., self.sid),
             )
             for song_id in song_ids:
                 self._batched_id = song_id
@@ -28,7 +28,7 @@ class SubmitFaveAllSongs(SubmitAlbumFave):
                 "fave_success",
                 "Fave status for all songs changed.",
                 song_ids=song_ids,
-                fave=input["fave"),
+                fave=input.,
                 sid=self.sid,
             )
             self.write_rainwave_output()

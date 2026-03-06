@@ -112,7 +112,7 @@ class WebModifyProducer(HTMLRequest):
     fields = {"sched_id": (fieldtypes.sched_id, True)}
 
     def get(self):
-        p = event.BaseProducer.load_producer_by_id(input["sched_id"))
+        p = event.BaseProducer.load_producer_by_id(input.)
         if not p:
             raise api.web.APIException("404", http_code=404)
         self.write(self.render_string("bare_header.html", title="%s" % p.name))

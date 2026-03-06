@@ -2,9 +2,10 @@ import json  # We have some features of stdlib JSON we need here, don't use ujso
 
 import tornado.web
 
-import api.web
 from api.handle_url import handle_url
-from common.locale import locale
+from api.handler_classes.html_handler import HTMLRequest
+from common.locale.locale import translations
+from common.locale.locale_explanation import locale_explanation
 
 
 @handle_url("/locale/")
@@ -20,7 +21,7 @@ class LocaleIndex(HTMLRequest):
             )
         )
         self.write("<p style='white-space: pre;'>")
-        self.write(locale.locale_explanation)
+        self.write(locale_explanation)
         self.write("</p><hr>")
 
         self.write(
@@ -30,7 +31,7 @@ class LocaleIndex(HTMLRequest):
         self.write(
             "<hr><p>The following languages exist, but may have missing lines: <ul>"
         )
-        for k, v in locale.translations.items():
+        for k, v in translations.items():
             if k != "en_CA":
                 self.write(
                     "<li><a href='/locale/%s'>%s</a> - %s missing lines</a>"
@@ -46,8 +47,8 @@ class LocaleMissingLines(HTMLRequest):
     auth_required = False
     sid_required = False
 
-    def get(self, request_locale):
-        if not request_locale in locale.translations:
+    def get(self, request_locale: str):
+        if not request_locale in translations:
             raise tornado.web.HTTPError(404)
 
         self.write(
@@ -64,7 +65,7 @@ class LocaleMissingLines(HTMLRequest):
         self.write("<div class='json'>")
         self.write(
             json.dumps(
-                locale.translations[request_locale].missing,
+                translations[request_locale].missing,
                 sort_keys=True,
                 indent=4,
                 separators=(",", ": "),

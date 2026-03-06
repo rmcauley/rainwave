@@ -13,7 +13,7 @@ class ShufflePowerHour(APIHandler):
     fields = {"sched_id": (fieldtypes.sched_id, True)}
 
     async def post(self):
-        ph = OneUpProducer.load_producer_by_id(input["sched_id"))
+        ph = OneUpProducer.load_producer_by_id(input.)
         if not ph:
             raise APIException("404", http_code=404)
         ph.shuffle_songs()

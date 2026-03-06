@@ -1,4 +1,11 @@
+from typing import cast
+
+from api import rainwave_typeddicts
+from api.handle_url import handle_api_url
 from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+from api.helpers import public_relays
+from api.routes.tune_in import get_round_robin_url
+from common import stations
 
 
 @handle_api_url("stations")
@@ -10,20 +17,17 @@ class StationsRequest(APIHandlerWithGet):
     allow_cors = True
 
     async def post(self):
-        station_list = []
-        for station_id in config.station_ids:
+        station_list: rainwave_typeddicts.Stations = []
+        for station_id in stations.station_ids:
             station_list.append(
                 {
-                    "id": station_id,
-                    "name": config.station_id_friendly[station_id],
+                    "id": cast(rainwave_typeddicts.StationId, station_id),
+                    "name": stations.station_id_friendly[station_id],
                     "description": self.locale.translate(
                         "station_description_id_%s" % station_id
                     ),
-                    "stream": routes.tune_in.get_round_robin_url(
-                        station_id, user=self.user
-                    ),
-                    "relays": config.public_relays[station_id],
-                    "key": config.get_station(station_id, "stream_filename"),
+                    "stream": get_round_robin_url(station_id, user=self.optional_user),
+                    "relays": public_relays.public_relays[station_id],
                 }
             )
-                self.response[self.return_name] = station_list
+        self.response["stations"] = station_list

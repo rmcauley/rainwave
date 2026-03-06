@@ -25,7 +25,7 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
 
             possible_id = await cursor.fetch_var(
                 "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
-                (input["discord_user_id"),),
+                (input.,),
             )
             if possible_id:
                 possible_sid = await cursor.fetch_var(

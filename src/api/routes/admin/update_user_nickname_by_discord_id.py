@@ -27,8 +27,8 @@ class UpdateUserNicknameByDiscordId(APIHandler):
                     f"{self.request.remote_ip} is not allowed to access this endpoint.",
                 )
 
-            discord_user_id = input["discord_user_id")
-            nickname = input["nickname")
+            discord_user_id = input.
+            nickname = input.
 
             possible_id = await cursor.fetch_var(
                 "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",

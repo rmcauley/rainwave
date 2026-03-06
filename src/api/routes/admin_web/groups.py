@@ -24,7 +24,7 @@ class AssociateGroupAddSong(APIHandler):
         songs = cache.get_user(self.user, "admin_associate_groups_songs")
         if not songs:
             songs = []
-        songs.append(input["song_id"))
+        songs.append(input.)
         cache.set_user(self.user, "admin_associate_groups_songs", songs)
         self.append_standard("song_added")
         self.write_rainwave_output()
@@ -43,7 +43,7 @@ class AssociateGroupAddAlbum(APIHandler):
         albums = cache.get_user(self.user, "admin_associate_groups_albums")
         if not albums:
             albums = []
-        albums.append((input["album_id"), input["album_sid")))
+        albums.append((input., input.))
         cache.set_user(self.user, "admin_associate_groups_albums", albums)
         self.append_standard("album_added")
         self.write_rainwave_output()
@@ -241,7 +241,7 @@ class GroupEditSongList(HTMLRequest):
 
     async def get(self):
         async with get_cursor() as cursor:
-            group = SongGroup.load_from_id(input["id"))
+            group = SongGroup.load_from_id(input.)
             self.write(self.render_string("bare_header.html", title="Song List"))
             self.write("<h2>%s Songs</h2>" % (group.data["name"]))
             self.write("<table>")

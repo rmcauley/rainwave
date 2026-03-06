@@ -1,14 +1,16 @@
+from typing import Any
+
+from psycopg import sql
+
+from api import rainwave_typeddicts
 from api.handler_classes.api_handler import APIHandler
-from api.web import PrettyPrintAPIMixin
-from api.handler_classes.api_handler_with_get import APIHandlerWithGet
-from api.handle_url import handle_api_url
 from api.handle_url import handle_api_html_url
 
+from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 
 
-@handle_api_url("tip_jar")
-class TipJarContents(APIHandlerWithGet):
+class TipJarContents(APIHandler):
     description = "Returns a list of donations Rainwave has had."
     return_name = "tip_jar"
     login_required = False
@@ -18,28 +20,31 @@ class TipJarContents(APIHandlerWithGet):
 
     async def post(self):
         async with get_cursor() as cursor:
-            self.response[self.return_name] = await cursor.fetch_all(
-                """
-                SELECT
-                    donation_id AS id,
-                    donation_amount AS amount,
-                    donation_message AS message,
-                    CASE WHEN donation_private IS TRUE THEN 'Anonymous' ELSE COALESCE(radio_username, username) END AS name
-                FROM r4_donations
-                    LEFT JOIN phpbb_users USING (user_id)
-                ORDER BY donation_id DESC
-                """
-                + self.get_sql_limit_string()
+            self.response["tip_jar"] = await cursor.fetch_all(
+                sql.SQL(
+                    """
+                    SELECT
+                        donation_id AS id,
+                        donation_amount AS amount,
+                        donation_message AS message,
+                        CASE WHEN donation_private IS TRUE THEN 'Anonymous' ELSE COALESCE(radio_username, username) END AS name
+                    FROM r4_donations
+                        LEFT JOIN phpbb_users USING (user_id)
+                    ORDER BY donation_id DESC
+                    """
+                )
+                + get_pagination_sql_limit_string(self),
+                params=None,
+                row_type=rainwave_typeddicts.TipJarItem,
             )
         self.write_rainwave_output()
 
 
 @handle_api_html_url("tip_jar")
-class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
-    login_required = False
-    auth_required = False
+class TipJarHTML(TipJarContents):
+    pretty_print_html = True
 
-    async def get(self):  # pylint: disable=E0202
+    async def get(self):
         self.write(
             self.render_string(
                 "basic_header.html", title=self.locale.translate("tip_jar")
@@ -59,11 +64,17 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
         )
 
         async with get_cursor() as cursor:
-            all_donations = await cursor.fetch_var(
-                "SELECT ROUND(SUM(donation_amount)) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0"
+            all_donations = await cursor.fetch_guaranteed(
+                "SELECT ROUND(SUM(donation_amount)) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0",
+                params=None,
+                default=0.0,
+                var_type=float,
             )
-            balance = await cursor.fetch_var(
-                "SELECT ROUND(SUM(donation_amount)) FROM r4_donations"
+            balance = await cursor.fetch_guaranteed(
+                "SELECT ROUND(SUM(donation_amount)) FROM r4_donations",
+                params=None,
+                default=0.0,
+                var_type=float,
             )
         self.write(
             "<p>%s: %s</p>"
@@ -76,5 +87,5 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 
         super().get(write_header=False)
 
-    def sort_keys(self, keys):
+    def sort_keys(self, _keys: Any):
         return ["name", "amount", "message"]

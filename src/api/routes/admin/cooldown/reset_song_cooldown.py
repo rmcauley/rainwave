@@ -19,6 +19,6 @@ class ResetSongCooldown(APIHandler):
         async with get_cursor() as cursor:
             await cursor.update(
                 "UPDATE r4_songs SET song_cool_multiply = 1, song_cool_override = NULL WHERE song_id = %s",
-                (input["song_id"),),
+                (input.,),
             )
                     self.response[self.return_name] = {"success": True, "text": "Song cooldown reset."}

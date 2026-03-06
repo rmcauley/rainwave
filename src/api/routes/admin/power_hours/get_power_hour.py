@@ -12,7 +12,7 @@ class GetPowerHour(APIHandler):
     fields = {"sched_id": (fieldtypes.sched_id, True)}
 
     async def post(self):
-        ph = OneUpProducer.load_producer_by_id(input["sched_id"))
+        ph = OneUpProducer.load_producer_by_id(input.)
         if ph:
             self.response[self.return_name] = ph.to_dict()
         else:

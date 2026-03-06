@@ -23,7 +23,7 @@ class SubmitRatingRequest(APIHandler):
     sync_across_sessions = True
 
     async def post(self):
-        self.rate(input["song_id"), input["rating"))
+        self.rate(input., input.)
         self.write_rainwave_output()
 
     def rate(self, song_id, rating):

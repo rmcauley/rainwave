@@ -18,13 +18,13 @@ class SetAlbumCooldown(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            if input["multiply") and input["override"):
+            if input. and input.:
                 await cursor.update(
                     "UPDATE r4_album_sid SET album_cool_multiply = %s, album_cool_override = %s WHERE album_id = %s AND sid = %s",
                     (
-                        input["multiply"),
-                        input["override"),
-                        input["album_id"),
+                        input.,
+                        input.,
+                        input.,
                         self.sid,
                     ),
                 )
@@ -32,12 +32,12 @@ class SetAlbumCooldown(APIHandler):
                         "success": True,
                         "text": "Album cooldown multiplier and override updated.",
                     },
-            elif input["multiply"):
+            elif input.:
                 await cursor.update(
                     "UPDATE r4_album_sid SET album_cool_multiply = %s WHERE album_id = %s AND sid = %s",
                     (
-                        input["multiply"),
-                        input["album_id"),
+                        input.,
+                        input.,
                         self.sid,
                     ),
                 )
@@ -45,12 +45,12 @@ class SetAlbumCooldown(APIHandler):
                         "success": True,
                         "text": "Album cooldown multiplier updated.  Override untouched.",
                     },
-            elif input["override"):
+            elif input.:
                 await cursor.update(
                     "UPDATE r4_album_sid SET album_cool_override = %s WHERE album_id = %s AND sid = %s",
                     (
-                        input["override"),
-                        input["album_id"),
+                        input.,
+                        input.,
                         self.sid,
                     ),
                 )

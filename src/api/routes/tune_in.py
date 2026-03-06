@@ -1,9 +1,11 @@
 import tornado.web
 
+from api import fieldtypes
 from api.handle_url import handle_url
-import api.web
+from api.handler_classes.html_handler import HTMLRequest
+from api.helpers import public_relays
 
-from common import config
+from common import config, stations
 from typing import Any
 
 
@@ -20,7 +22,7 @@ def get_round_robin_url(
 def get_stream_filename(
     sid: int, filetype: str = "mp3", user: Any | None = None
 ) -> str:
-    filename = config.get_station(sid, "stream_filename")
+    filename = config.stations[sid]["stream_filename"]
 
     if user is None or user.is_anonymous():
         return "%s.%s" % (filename, filetype)
@@ -30,6 +32,7 @@ def get_stream_filename(
 
 @handle_url(r"/tune_in/(\w+|\d)\.(ogg|mp3)(.m3u)?")
 class TuneInIndex(HTMLRequest):
+    content_type = "audio/x-mpegurl"
     description = (
         "Provides the user with an M3U file containing Ogg or MP3 URLs to relays."
     )
@@ -37,17 +40,15 @@ class TuneInIndex(HTMLRequest):
     auth_required = False
     sid_required = False
 
-    async def prepare(self):
-        super().prepare()
-        self.set_header("Content-Type", "audio/x-mpegurl")
+    def set_default_headers(self):
+        super().set_default_headers()
         self.set_header("Cache-Control", "no-cache, must-revalidate")
-        self.set_header("Expires", "Mon, 26 Jul 1997 05:00:00 GMT")
 
-    def set_sid(self, url_param, filetype):
+    def set_sid(self, url_param: str | None, filetype: str | None):
         if url_param:
-            url_param_int = api.web.fieldtypes.positive_integer(url_param)
+            url_param_int = fieldtypes.positive_integer(url_param)
             if not url_param_int:
-                for k, v in config.station_id_friendly.items():
+                for k, v in stations.station_id_friendly.items():
                     if v.lower() == url_param.lower():
                         self.sid = k
                         break
@@ -56,33 +57,33 @@ class TuneInIndex(HTMLRequest):
 
         if not self.sid:
             raise tornado.web.HTTPError(404)
-        if not self.sid in config.station_ids:
+        if not self.sid in stations.station_ids:
             raise tornado.web.HTTPError(404)
 
         self.set_header(
             "Content-Disposition",
             'inline; filename="rainwave_%s_%s.m3u"'
-            % (config.station_id_friendly[self.sid].lower(), filetype),
+            % (stations.station_id_friendly[self.sid].lower(), filetype),
         )
 
-    def get(self, url_param, filetype, m3u=None):
+    def get(self, url_param: str, filetype: str, _m3u: str | None = None):
         self.set_sid(url_param, filetype)
 
-        stream_filename = get_stream_filename(self.sid, filetype, self.user)
+        stream_filename = get_stream_filename(self.sid, filetype, self.optional_user)
 
         self.write(
             "#EXTINF:0,Rainwave %s: %s\n"
             % (
-                config.station_id_friendly[self.sid],
+                stations.station_id_friendly[self.sid],
                 self.locale.translate("random_relay"),
             )
         )
-        self.write(get_round_robin_url(self.sid, filetype, self.user) + "\n")
+        self.write(get_round_robin_url(self.sid, filetype, self.optional_user) + "\n")
 
-        for relay in config.public_relays[self.sid]:
+        for relay in public_relays.public_relays[self.sid]:
             self.write(
                 "#EXTINF:0, Rainwave %s: %s Relay\n"
-                % (config.station_id_friendly[self.sid], relay["name"])
+                % (stations.station_id_friendly[self.sid], relay["name"])
             )
             self.write(
                 "%s%s:%s/%s\n"

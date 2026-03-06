@@ -18,23 +18,23 @@ class SetSongRequestOnly(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            if input["request_only"):
+            if input.:
                 await cursor.update(
                     "UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = NULL WHERE song_id = %s AND sid = %s",
-                    (input["song_id"), self.sid),
+                    (input., self.sid),
                 )
                             self.response[self.return_name] = {
                         "success": True,
                         "text": "Song ID %s is now request only."
-                        % input["song_id"),
+                        % input.,
                     },
             else:
                 await cursor.update(
                     "UPDATE r4_song_sid SET song_request_only_end = 0 WHERE song_id = %s AND sid = %s",
-                    (input["song_id"), self.sid),
+                    (input., self.sid),
                 )
                             self.response[self.return_name] = {
                         "success": True,
                         "text": "Song ID %s is not request only."
-                        % input["song_id"),
+                        % input.,
                     },

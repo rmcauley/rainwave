@@ -5,7 +5,7 @@ from time import time as timestamp
 import tornado
 from api import fieldtypes
 from api.exceptions import APIException
-from api.handler_classes.api_handler import APIHandler
+from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
 from api.handle_url import handle_api_url
 from api.routes.sync_websocket.sync import sessions
 from common import config
@@ -16,7 +16,7 @@ import routes
 
 
 @handle_api_url("sync")
-class Sync(APIHandler):
+class Sync(AuthRequiredAPIHandler):
     description = (
         "Presents the same information as the 'info' requests, but will wait until the next song change in order to deliver the information. "
         "Will send whitespace every 20 seconds in a bid to keep the connection alive.  Use offline_ack to have the connection long poll until "
@@ -40,12 +40,12 @@ class Sync(APIHandler):
 
         self.set_header("Content-Type", "application/json")
 
-        if not input["resync"):
+        if not input.:
             sched_current_dict = cache.get_station(self.sid, "sched_current_dict")
             if (
-                input["known_event_id")
+                input.
                 and sched_current_dict
-                and (sched_current_dict["id"] != input["known_event_id"))
+                and (sched_current_dict["id"] != input.)
             ):
                 self.update()
             else:

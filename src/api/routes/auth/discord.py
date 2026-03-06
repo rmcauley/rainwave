@@ -34,7 +34,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
     _OAUTH_ACCESS_TOKEN_URL = "https://discord.com/api/oauth2/token"
 
     async def get(self):
-        if input["code", False):
+        if input.:
             # step 2 - we've come back from Discord with a state parameter
             # that needs to be verified against the user's cookie.
             oauth_secret = self.get_cookie("r4_oauth_secret")
@@ -46,7 +46,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 oauth_secret.encode(), OAUTH_STATE_SALT
             ).decode("utf-8")
             self.set_cookie("r4_oauth_secret", "")
-            state_argument = input["state")
+            state_argument = input.
             if isinstance(state_argument, bytes):
                 state_argument = state_argument.decode()
             if not isinstance(state_argument, str):
@@ -58,7 +58,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 raise OAuthRejectedError("oAuth State Mismatch")
             # step 3 - we've come back from Discord with a unique auth code, get
             # token that we can use to act on behalf of user with discord
-            token_argument = input["code")
+            token_argument = input.
             if isinstance(token_argument, bytes):
                 token_argument = token_argument.decode()
             if not isinstance(token_argument, str):

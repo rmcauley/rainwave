@@ -15,7 +15,7 @@ class SongHandler(APIHandler):
 
     async def post(self):
         song = playlist.Song.load_from_id(
-            input["id"),
+            input.,
             self.sid,
             all_categories=self.get_argument_bool("all_categories") or False,
         )

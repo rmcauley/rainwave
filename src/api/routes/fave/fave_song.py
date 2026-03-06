@@ -17,7 +17,7 @@ class SubmitSongFave(APIHandler):
     sync_across_sessions = True
 
     async def post(self):
-        object_id = input[self._fave_type + "_id")
+        object_id = input[self._fave_type + "_id"]
         fave = self.get_argument_bool("fave") or False
         result = False
 

@@ -19,8 +19,8 @@ class AddAlbumToPowerHour(APIHandler):
     }
 
     async def post(self):
-        ph = OneUpProducer.load_producer_by_id(input["sched_id"))
+        ph = OneUpProducer.load_producer_by_id(input.)
         if not ph:
             raise APIException("404", http_code=404)
-        ph.add_album_id(input["album_id"), input["album_sid"))
+        ph.add_album_id(input., input.)
                 self.response[self.return_name] = ph.to_dict()

@@ -15,20 +15,20 @@ class ChangeProducerURL(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            producer = BaseProducer.load_producer_by_id(input["sched_id"))
+            producer = BaseProducer.load_producer_by_id(input.)
             if not producer:
                 raise APIException(
                     "internal_error",
-                    "Producer ID %s not found." % input["sched_id"),
+                    "Producer ID %s not found." % input.,
                 )
             await cursor.update(
                 "UPDATE r4_schedule SET sched_url = %s WHERE sched_id = %s",
-                (input["url"), input["sched_id")),
+                (input., input.),
             )
-            if input["url"):
+            if input.:
                 self.append_standard(
                     "success",
-                    "Producer URL changed to '%s'." % input["url"),
+                    "Producer URL changed to '%s'." % input.,
                 )
             else:
                 self.append_standard("success", "Producer URL removed.")

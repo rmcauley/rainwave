@@ -321,7 +321,6 @@ class AlbumOnStation:
             "cool": self.data["album_cool"],
             "cool_lowest": self.data["album_cool_lowest"],
             "newest_song_time": self.data.get("album_newest_song_time", 0) or 0,
-            "rating": self.data["album_rating"],
         }
 
     @staticmethod

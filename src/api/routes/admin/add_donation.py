@@ -22,10 +22,10 @@ class AddDonationHandler(APIHandler):
             if await cursor.update(
                 "INSERT INTO r4_donations (user_id, donation_amount, donation_message, donation_private) values (%s, %s, %s, %s)",
                 (
-                    input["donor_id"),
-                    input["amount"),
-                    input["message"),
-                    input["private"),
+                    input.,
+                    input.,
+                    input.,
+                    input.,
                 ),
             ):
                 self.append_standard("donation_added", "Donation added.")

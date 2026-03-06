@@ -31,7 +31,7 @@ class RainwaveResponse(TypedDict, total=False):
     all_stations_info: rainwave_typeddicts.AllStationsInfo
     already_voted: rainwave_typeddicts.AlreadyVoted
     api_info: rainwave_typeddicts.ApiInfo
-    artists: rainwave_typeddicts.SearchArtist
+    artists: list[rainwave_typeddicts.SearchArtist]
     artist: rainwave_typeddicts.Artist
     build_version: rainwave_typeddicts.BuildVersion
     cookie_domain: rainwave_typeddicts.CookieDomain
@@ -66,12 +66,13 @@ class RainwaveResponse(TypedDict, total=False):
     sched_history: rainwave_typeddicts.SchedHistory
     sched_next: rainwave_typeddicts.SchedNext
     song: rainwave_typeddicts.Song
-    songs: rainwave_typeddicts.Songs
+    songs: list[rainwave_typeddicts.SearchSong]
     station_list: rainwave_typeddicts.StationList
     station_song_count: rainwave_typeddicts.StationSongCount
     stations: rainwave_typeddicts.Stations
     stream_filename: rainwave_typeddicts.StreamFilename
     sync_result: rainwave_typeddicts.SyncResult
+    tip_jar: rainwave_typeddicts.TipJar
     top_100: rainwave_typeddicts.Top100
     unpause_request_queue_result: rainwave_typeddicts.UnpauseRequestQueueResult
     unrated_songs: rainwave_typeddicts.UnratedSongs
@@ -139,6 +140,7 @@ RainwaveResponseKey = Literal[
     "stations",
     "stream_filename",
     "sync_result",
+    "tip_jar",
     "top_100",
     "unpause_request_queue_result",
     "unrated_songs",

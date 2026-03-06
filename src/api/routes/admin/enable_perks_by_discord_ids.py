@@ -28,7 +28,7 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
                 )
 
             list_as_tuple = tuple(
-                cast(list[str], input["discord_user_ids"))
+                cast(list[str], input.)
             )
 
             await cursor.update(

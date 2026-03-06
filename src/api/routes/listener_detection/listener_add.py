@@ -25,9 +25,9 @@ class AddListener(IcecastHandler):
         self.mount, self.user_id, self.listen_key, self.listener_ip = (
             self.get_argument_required("mount")
         )
-        self.agent = input["agent")
+        self.agent = input.
         if self.listener_ip is None:
-            self.listener_ip = input["ip")
+            self.listener_ip = input.
 
         if sid:
             try:
@@ -67,7 +67,7 @@ class AddListener(IcecastHandler):
                 (
                     sid,
                     self.listener_ip,
-                    input["client"),
+                    input.,
                     self.relay,
                     self.agent,
                     self.user_id,
@@ -80,7 +80,7 @@ class AddListener(IcecastHandler):
                     sid,
                     "{:<15}".format(self.listener_ip),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input["client")),
+                    "{:<10}".format(input.),
                     self.agent,
                     self.listen_key,
                 )
@@ -102,7 +102,7 @@ class AddListener(IcecastHandler):
                     sid,
                     self.user_id,
                     self.listener_ip,
-                    input["client"),
+                    input.,
                     self.relay,
                     self.agent,
                 ),
@@ -114,7 +114,7 @@ class AddListener(IcecastHandler):
                     sid,
                     "{:<15}".format(self.listener_ip),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input["client")),
+                    "{:<10}".format(input.),
                     self.agent,
                     self.listen_key,
                 )
@@ -155,8 +155,8 @@ class AddListener(IcecastHandler):
                     self.listener_ip,
                     1,
                     self.relay,
-                    input["agent"),
-                    input["client"),
+                    input.,
+                    input.,
                     self.listen_key,
                 ),
             )
@@ -167,7 +167,7 @@ class AddListener(IcecastHandler):
                     sid,
                     "{:<15}".format(self.listener_ip),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input["client")),
+                    "{:<10}".format(input.),
                     self.agent,
                     self.listen_key,
                 )
@@ -199,8 +199,8 @@ class AddListener(IcecastHandler):
                     sid,
                     self.listener_ip,
                     self.relay,
-                    input["agent"),
-                    input["client"),
+                    input.,
+                    input.,
                     self.listen_key,
                     listener_id,
                 ),
@@ -212,7 +212,7 @@ class AddListener(IcecastHandler):
                     sid,
                     "{:<15}".format(self.listener_ip),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input["client")),
+                    "{:<10}".format(input.),
                     self.agent,
                     self.listen_key,
                 )

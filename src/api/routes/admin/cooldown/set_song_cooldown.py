@@ -19,32 +19,32 @@ class SetSongCooldown(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            if input["multiply") and input["override"):
+            if input. and input.:
                 await cursor.update(
                     "UPDATE r4_songs SET song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s",
                     (
-                        input["multiply"),
-                        input["override"),
-                        input["song_id"),
+                        input.,
+                        input.,
+                        input.,
                     ),
                 )
                             self.response[self.return_name] = {
                         "success": True,
                         "text": "Song cooldown multiplier and override updated.",
                     },
-            elif input["multiply"):
+            elif input.:
                 await cursor.update(
                     "UPDATE r4_songs SET song_cool_multiply = %s WHERE song_id = %s",
-                    (input["multiply"), input["song_id")),
+                    (input., input.),
                 )
                             self.response[self.return_name] = {
                         "success": True,
                         "text": "Song cooldown multiplier updated.  Override untouched.",
                     },
-            elif input["override"):
+            elif input.:
                 await cursor.update(
                     "UPDATE r4_songs SET AND song_cool_override = %s WHERE song_id = %s",
-                    (input["override"), input["song_id")),
+                    (input., input.),
                 )
                             self.response[self.return_name] = {
                         "success": True,
