@@ -1,3 +1,10 @@
+from api import fieldtypes
+from api.exceptions import APIException
+from api.handle_url import handle_api_url
+from api.handler_classes.api_handler import APIHandler
+from common.rainwave import rating
+
+
 @handle_api_url("fave_song")
 class SubmitSongFave(APIHandler):
     _fave_type = "song"
@@ -9,7 +16,7 @@ class SubmitSongFave(APIHandler):
     fields = {"song_id": (fieldtypes.song_id, True), "fave": (fieldtypes.boolean, True)}
     sync_across_sessions = True
 
-    def post(self):
+    async def post(self):
         object_id = self.get_argument(self._fave_type + "_id")
         fave = self.get_argument_bool("fave") or False
         result = False
@@ -31,3 +38,4 @@ class SubmitSongFave(APIHandler):
             )
         else:
             raise APIException("fave_failed", "Fave failed.")
+        self.write_rainwave_output()

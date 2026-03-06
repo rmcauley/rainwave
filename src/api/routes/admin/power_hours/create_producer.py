@@ -1,3 +1,12 @@
+from api import fieldtypes
+from api.exceptions import APIException
+from api.handle_url import handle_api_url
+from api.handler_classes.api_handler import APIHandler
+
+from common.rainwave.events import event
+from common.rainwave.events.event import BaseProducer
+
+
 @handle_api_url("admin/create_producer")
 class CreateProducer(APIHandler):
     return_name = "power_hour"
@@ -12,7 +21,7 @@ class CreateProducer(APIHandler):
         "fill_unrated": (fieldtypes.boolean, False),
     }
 
-    def post(self):
+    async def post(self):
         p = event.all_producers[self.get_argument("producer_type")].create(
             sid=self.sid,
             start=self.get_argument("start_utc_time"),
@@ -29,4 +38,4 @@ class CreateProducer(APIHandler):
                 self.sid,
                 end_time - start_time,
             )
-        self.append(self.return_name, p.to_dict())
+                self.response[self.return_name] = p.to_dict()

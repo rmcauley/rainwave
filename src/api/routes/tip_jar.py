@@ -4,7 +4,7 @@ from api.handler_classes.api_handler_with_get import APIHandlerWithGet
 from api.handle_url import handle_api_url
 from api.handle_url import handle_api_html_url
 
-from common.libs import db
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("tip_jar")
@@ -16,10 +16,9 @@ class TipJarContents(APIHandlerWithGet):
     sid_required = False
     auth_required = False
 
-    def post(self):
-        self.append(
-            self.return_name,
-            await cursor.fetch_all(
+    async def post(self):
+        async with get_cursor() as cursor:
+            self.response[self.return_name] = await cursor.fetch_all(
                 """
                 SELECT
                     donation_id AS id,
@@ -29,10 +28,10 @@ class TipJarContents(APIHandlerWithGet):
                 FROM r4_donations
                     LEFT JOIN phpbb_users USING (user_id)
                 ORDER BY donation_id DESC
-"""
+                """
                 + self.get_sql_limit_string()
-            ),
-        )
+            )
+        self.write_rainwave_output()
 
 
 @handle_api_html_url("tip_jar")
@@ -40,7 +39,7 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
     login_required = False
     auth_required = False
 
-    def get(self):  # pylint: disable=E0202
+    async def get(self):  # pylint: disable=E0202
         self.write(
             self.render_string(
                 "basic_header.html", title=self.locale.translate("tip_jar")
@@ -59,17 +58,18 @@ class TipJarHTML(PrettyPrintAPIMixin, TipJarContents):
 			</div>"""
         )
 
-        all_donations = await cursor.fetch_var(
-            "SELECT ROUND(SUM(donation_amount)) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0"
-        )
+        async with get_cursor() as cursor:
+            all_donations = await cursor.fetch_var(
+                "SELECT ROUND(SUM(donation_amount)) FROM r4_donations WHERE user_id != 2 AND donation_amount > 0"
+            )
+            balance = await cursor.fetch_var(
+                "SELECT ROUND(SUM(donation_amount)) FROM r4_donations"
+            )
         self.write(
             "<p>%s: %s</p>"
             % (self.locale.translate("tip_jar_all_donations"), all_donations)
         )
 
-        balance = await cursor.fetch_var(
-            "SELECT ROUND(SUM(donation_amount)) FROM r4_donations"
-        )
         self.write(
             "<p>%s: %s</p>" % (self.locale.translate("tip_jar_balance"), balance)
         )

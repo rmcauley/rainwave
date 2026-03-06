@@ -1,4 +1,5 @@
 from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("playback_history")
@@ -9,35 +10,31 @@ class PlaybackHistory(APIHandlerWithGet):
     sid_required = True
     pagination = True
 
-    def post(self):
-        if self.user.is_anonymous():
-            self.append(
-                self.return_name,
-                await cursor.fetch_all(
-                    """
-                    SELECT
-                        r4_song_history.song_id AS id,
-                        song_title AS title,
-                        album_id,
-                        album_name,
-                        songhist_time AS song_played_at,
-                        song_artist_parseable AS artist_parseable,
-                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating
-                    FROM r4_song_history
-                    JOIN r4_song_sid USING (song_id, sid)
-                    JOIN r4_songs USING (song_id)
-                    JOIN r4_albums USING (album_id)
-                    WHERE r4_song_history.sid = %s
-                    ORDER BY songhist_id DESC
+    async def post(self):
+        async with get_cursor() as cursor:
+            if self.user.is_anonymous():
+                            self.response[self.return_name] = await cursor.fetch_all(
+                        """
+                        SELECT
+                            r4_song_history.song_id AS id,
+                            song_title AS title,
+                            album_id,
+                            album_name,
+                            songhist_time AS song_played_at,
+                            song_artist_parseable AS artist_parseable,
+                            CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating
+                        FROM r4_song_history
+                        JOIN r4_song_sid USING (song_id, sid)
+                        JOIN r4_songs USING (song_id)
+                        JOIN r4_albums USING (album_id)
+                        WHERE r4_song_history.sid = %s
+                        ORDER BY songhist_id DESC
 """
                     + self.get_sql_limit_string(),
                     (self.sid,),
                 ),
-            )
         else:
-            self.append(
-                self.return_name,
-                await cursor.fetch_all(
+                        self.response[self.return_name] = await cursor.fetch_all(
                     """
                     SELECT
                         r4_song_history.song_id AS id,
@@ -62,7 +59,7 @@ class PlaybackHistory(APIHandlerWithGet):
                     + self.get_sql_limit_string(),
                     (self.user.id, self.sid),
                 ),
-            )
+        self.write_rainwave_output()
 
 
 @handle_api_html_url("playback_history")

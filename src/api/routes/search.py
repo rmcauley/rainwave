@@ -4,6 +4,7 @@ from api.handle_url import handle_api_url
 from common.libs import db
 from common.rainwave.playlist_objects.metadata import make_searchable_string
 from api.exceptions import APIException
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("search")
@@ -13,26 +14,27 @@ class SearchHandler(APIHandler):
     sid_required = True
     fields = {"search": (fieldtypes.string, True)}
 
-    def post(self):
-        s = make_searchable_string(self.get_argument("search"))
-        if len(s) < 3:
-            raise APIException("search_string_too_short")
+    async def post(self):
+        async with get_cursor() as cursor:
+            s = make_searchable_string(self.get_argument("search"))
+            if len(s) < 3:
+                raise APIException("search_string_too_short")
 
-        s = "%%%s%%" % s
+            s = "%%%s%%" % s
 
-        artists = await cursor.fetch_all(
-            """
-            SELECT
-                DISTINCT artist_id AS id,
-                artist_name AS name
-            FROM r4_song_sid
-                JOIN r4_song_artist USING (song_id)
-                JOIN r4_artists USING (artist_id)
-            WHERE sid = %s
-                AND song_exists = TRUE
-                AND artist_name_searchable LIKE %s
-            ORDER BY artist_name
-            LIMIT 50
+            artists = await cursor.fetch_all(
+                """
+                SELECT
+                    DISTINCT artist_id AS id,
+                    artist_name AS name
+                FROM r4_song_sid
+                    JOIN r4_song_artist USING (song_id)
+                    JOIN r4_artists USING (artist_id)
+                WHERE sid = %s
+                    AND song_exists = TRUE
+                    AND artist_name_searchable LIKE %s
+                ORDER BY artist_name
+                LIMIT 50
 """,
             (self.sid, s),
         )
@@ -168,6 +170,6 @@ class SearchHandler(APIHandler):
                 (s, self.user.id, self.sid),
             )
 
-        self.append("artists", artists)
-        self.append("albums", albums)
-        self.append("songs", songs)
+                self.response["artists"] = artists
+                self.response["albums"] = albums
+                self.response["songs"] = songs

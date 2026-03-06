@@ -22,8 +22,9 @@ class SubmitRatingRequest(APIHandler):
     }
     sync_across_sessions = True
 
-    def post(self):
+    async def post(self):
         self.rate(self.get_argument("song_id"), self.get_argument("rating"))
+        self.write_rainwave_output()
 
     def rate(self, song_id, rating):
         if not self.user.data["rate_anything"]:

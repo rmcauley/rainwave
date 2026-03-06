@@ -1,3 +1,12 @@
+from typing import cast
+
+from api import fieldtypes
+from api.handle_url import handle_api_url
+from api.handler_classes.api_handler import APIHandler
+from common.rainwave import playlist
+from libs import cache
+
+
 def get_all_artists(sid: int) -> list[playlist.Artist]:
     return cast(list[playlist.Artist], cache.get_station(sid, "all_artists"))
 
@@ -8,8 +17,6 @@ class AllArtistsHandler(APIHandler):
     return_name = "all_artists"
     fields = {"no_searchable": (fieldtypes.boolean, None)}
 
-    def post(self):
-        self.append(
-            self.return_name,
-            get_all_artists(self.sid),
-        )
+    async def post(self):
+                self.response[self.return_name] = get_all_artists(self.sid),
+        self.write_rainwave_output()

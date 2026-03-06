@@ -1,3 +1,7 @@
+from api.handle_url import handle_api_url
+from api.handler_classes.api_handler import APIHandler
+
+
 @handle_api_url("user_info")
 class UserInfoRequest(APIHandler):
     description = (
@@ -6,5 +10,6 @@ class UserInfoRequest(APIHandler):
     auth_required = True
     sid_required = False
 
-    def post(self):
-        self.append("user_info", self.user.to_private_dict())
+    async def post(self):
+                self.response["user_info"] = self.user.to_private_dict()
+        self.write_rainwave_output()

@@ -3,6 +3,7 @@ import api.web
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api import fieldtypes
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("admin/set_song_request_only")
@@ -15,30 +16,25 @@ class SetSongRequestOnly(APIHandler):
         "request_only": (fieldtypes.boolean, True),
     }
 
-    def post(self):
-        if self.get_argument("request_only"):
-            await cursor.update(
-                "UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = NULL WHERE song_id = %s AND sid = %s",
-                (self.get_argument("song_id"), self.sid),
-            )
-            self.append(
-                self.return_name,
-                {
-                    "success": True,
-                    "text": "Song ID %s is now request only."
-                    % self.get_argument("song_id"),
-                },
-            )
-        else:
-            await cursor.update(
-                "UPDATE r4_song_sid SET song_request_only_end = 0 WHERE song_id = %s AND sid = %s",
-                (self.get_argument("song_id"), self.sid),
-            )
-            self.append(
-                self.return_name,
-                {
-                    "success": True,
-                    "text": "Song ID %s is not request only."
-                    % self.get_argument("song_id"),
-                },
-            )
+    async def post(self):
+        async with get_cursor() as cursor:
+            if self.get_argument("request_only"):
+                await cursor.update(
+                    "UPDATE r4_song_sid SET song_request_only = TRUE, song_request_only_end = NULL WHERE song_id = %s AND sid = %s",
+                    (self.get_argument("song_id"), self.sid),
+                )
+                            self.response[self.return_name] = {
+                        "success": True,
+                        "text": "Song ID %s is now request only."
+                        % self.get_argument("song_id"),
+                    },
+            else:
+                await cursor.update(
+                    "UPDATE r4_song_sid SET song_request_only_end = 0 WHERE song_id = %s AND sid = %s",
+                    (self.get_argument("song_id"), self.sid),
+                )
+                            self.response[self.return_name] = {
+                        "success": True,
+                        "text": "Song ID %s is not request only."
+                        % self.get_argument("song_id"),
+                    },

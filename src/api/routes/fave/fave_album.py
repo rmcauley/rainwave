@@ -1,3 +1,8 @@
+from api import fieldtypes
+from api.handle_url import handle_api_url
+from .fave_song import SubmitSongFave
+
+
 @handle_api_url("fave_album")
 class SubmitAlbumFave(SubmitSongFave):
     sid_required = True

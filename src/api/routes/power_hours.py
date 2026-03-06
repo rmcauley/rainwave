@@ -10,6 +10,7 @@ from common.libs import db
 from common import config
 
 from routes.admin_web.power_hours import get_ph_formatted_time
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("power_hours")
@@ -19,26 +20,27 @@ class ListPowerHours(APIHandler):
     sid_required = False
     auth_required = False
 
-    def post(self):
-        self.append(
-            self.return_name,
-            await cursor.fetch_all(
-                """
-                SELECT
-                    sid,
-                    sched_id AS id,
-                    sched_name AS name,
-                    sched_start AS start,
-                    sched_end AS end,
-                    sched_url AS url
-                FROM r4_schedule
-                WHERE sched_type = 'OneUpProducer'
-                    AND sched_start > %s
-                ORDER BY sched_start ASC
+    async def post(self):
+        async with get_cursor() as cursor:
+            self.response[self.return_name] = (
+                await cursor.fetch_all(
+                    """
+                    SELECT
+                        sid,
+                        sched_id AS id,
+                        sched_name AS name,
+                        sched_start AS start,
+                        sched_end AS end,
+                        sched_url AS url
+                    FROM r4_schedule
+                    WHERE sched_type = 'OneUpProducer'
+                        AND sched_start > %s
+                    ORDER BY sched_start ASC
 """,
-                (timestamp(),),
-            ),
-        )
+                    (timestamp(),),
+                ),
+            )
+        self.write_rainwave_output()
 
 
 SHOW_TIMEZONES = [

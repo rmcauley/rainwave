@@ -57,7 +57,7 @@ class ErrorReport(APIHandler):
         else:
             return super().prepare()
 
-    def post(self):
+    async def post(self):
         # limit size of submission
         for k, v in self.cleaned_args.items():
             if isinstance(object, str):
@@ -77,3 +77,4 @@ class ErrorReport(APIHandler):
         cache.set_global("error_reports", reports)
 
         self.append_standard("report_submitted", "Error report submitted.")
+        self.write_rainwave_output()

@@ -14,6 +14,7 @@ from common import config, log
 
 from .errors import OAuthNetworkError, OAuthRejectedError
 from .r4_mixin import R4SetupSessionMixin
+from common.db.cursor import get_cursor
 
 # add discord bot to react to role changes/logins
 # need account merging because people don't know they're logged in
@@ -119,14 +120,15 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
         except aiohttp.ClientConnectionError:
             raise OAuthNetworkError()
 
-    def get_user_id_by_discord_user_id(self, discord_user_id: str):
-        return (
-            await cursor.fetch_var(
-                "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s ORDER BY user_id ASC",
-                (discord_user_id,),
+    async def get_user_id_by_discord_user_id(self, discord_user_id: str):
+        async with get_cursor() as cursor:
+            return (
+                await cursor.fetch_var(
+                    "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s ORDER BY user_id ASC",
+                    (discord_user_id,),
+                )
+                or 1
             )
-            or 1
-        )
 
     async def oauth2_request(self, url, access_token, data=None, **args):
         async with aiohttp.ClientSession(
@@ -140,62 +142,65 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 return await response.json()
 
     async def register_and_login(self, token: str, destination: str):
-        discord_user = await self.oauth2_request(
-            "https://discord.com/api/users/@me", access_token=token
-        )
-
-        radio_username = discord_user["username"]
-        discord_user_id = discord_user["id"]
-        user_avatar = f"https://cdn.discordapp.com/avatars/{discord_user_id}/{discord_user['avatar']}.png?size=320"
-        user_avatar_type = "avatar.driver.remote"
-        user_id = 1
-        username = str(uuid.uuid4())
-
-        discord_id_used_user_id = self.get_user_id_by_discord_user_id(discord_user_id)
-
-        if self.user.id > 1:
-            if discord_id_used_user_id > 1 and discord_id_used_user_id != self.user.id:
-                await cursor.update(
-                    "UPDATE phpbb_users SET discord_user_id = '' WHERE discord_user_id = %s",
-                    (discord_user_id,),
-                )
-            user_id = self.user.id
-            radio_username = self.user.data["name"]
-            username = self.user.data["name"]
-            log.debug(
-                "discord",
-                f"Connected legacy phpBB {user_id} to Discord {discord_user_id}",
+        async with get_cursor() as cursor:
+            discord_user = await self.oauth2_request(
+                "https://discord.com/api/users/@me", access_token=token
             )
-        else:
-            user_id = discord_id_used_user_id
-            if user_id > 1:
+
+            radio_username = discord_user["username"]
+            discord_user_id = discord_user["id"]
+            user_avatar = f"https://cdn.discordapp.com/avatars/{discord_user_id}/{discord_user['avatar']}.png?size=320"
+            user_avatar_type = "avatar.driver.remote"
+            user_id = 1
+            username = str(uuid.uuid4())
+
+            discord_id_used_user_id = await self.get_user_id_by_discord_user_id(
+                discord_user_id
+            )
+
+            if self.user.id > 1:
+                if discord_id_used_user_id > 1 and discord_id_used_user_id != self.user.id:
+                    await cursor.update(
+                        "UPDATE phpbb_users SET discord_user_id = '' WHERE discord_user_id = %s",
+                        (discord_user_id,),
+                    )
+                user_id = self.user.id
+                radio_username = self.user.data["name"]
+                username = self.user.data["name"]
                 log.debug(
                     "discord",
-                    f"Connected linked phpBB {user_id} to Discord {discord_user_id}",
+                    f"Connected legacy phpBB {user_id} to Discord {discord_user_id}",
                 )
             else:
-                log.debug(
-                    "discord",
-                    f"Could not find existing user for Discord {discord_user_id}",
-                )
+                user_id = discord_id_used_user_id
+                if user_id > 1:
+                    log.debug(
+                        "discord",
+                        f"Connected linked phpBB {user_id} to Discord {discord_user_id}",
+                    )
+                else:
+                    log.debug(
+                        "discord",
+                        f"Could not find existing user for Discord {discord_user_id}",
+                    )
 
-        if user_id > 1:
-            log.info(
-                "discord",
-                f"Updating exising user {user_id} from Discord {discord_user_id}",
-            )
-            await cursor.update(
-                (
-                    """
-                    UPDATE phpbb_users
-                    SET discord_user_id = %s,
-                        radio_username = %s,
-                        user_avatar_type = %s,
-                        user_avatar = %s,
-                        user_password = '',
-                        user_email = '',
-                        user_email_hash = 0
-                    WHERE user_id = %s
+            if user_id > 1:
+                log.info(
+                    "discord",
+                    f"Updating exising user {user_id} from Discord {discord_user_id}",
+                )
+                await cursor.update(
+                    (
+                        """
+                        UPDATE phpbb_users
+                        SET discord_user_id = %s,
+                            radio_username = %s,
+                            user_avatar_type = %s,
+                            user_avatar = %s,
+                            user_password = '',
+                            user_email = '',
+                            user_email_hash = 0
+                        WHERE user_id = %s
 """
                 ),
                 (
@@ -231,9 +236,9 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                     user_avatar,
                 ),
             )
-            user_id = self.get_user_id_by_discord_user_id(discord_user_id)
+            user_id = await self.get_user_id_by_discord_user_id(discord_user_id)
             log.info(
                 "discord", f"Created new user {user_id} from Discord {discord_user_id}"
             )
 
-        self.setup_rainwave_session_and_redirect(user_id, destination)
+        await self.setup_rainwave_session_and_redirect(user_id, destination)

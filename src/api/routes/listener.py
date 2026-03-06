@@ -1,4 +1,5 @@
 import math
+from typing import TypedDict
 
 from api import fieldtypes
 from api.handle_url import handle_api_html_url, handle_api_url
@@ -7,6 +8,16 @@ from api.web import PrettyPrintAPIMixin, APIException
 from libs import cache, db
 from common.rainwave import playlist
 from common.rainwave import user as UserLib
+from common.db.cursor import get_cursor
+
+class UserListenerApiRow(TypedDict):
+    user_id: int
+    name: str
+    avatar: str
+    avatar_type: str
+    colour: str
+    rank: str
+    regdate: int
 
 
 @handle_api_url("listener")
@@ -16,31 +27,32 @@ class ListenerDetailRequest(APIHandler):
     login_required = False
     fields = {"id": (fieldtypes.user_id, True)}
 
-    def post(self):
-        user = await cursor.fetch_row(
-            """
-            SELECT
-                user_id,
-                COALESCE(radio_username, username) AS name,
-                user_avatar AS avatar,
-                user_avatar_type AS avatar_type,
-                user_colour AS colour,
-                rank_title AS rank,
-                0 AS total_votes,
-                0 AS total_ratings,
-                0 AS mind_changes,
-                0 AS total_requests,
-                0 AS winning_votes,
-                0 AS losing_votes,
-                0 AS winning_requests,
-                0 AS losing_requests,
-                user_regdate AS regdate
-            FROM phpbb_users
-                LEFT JOIN phpbb_ranks ON (
-                    user_rank = rank_id
-                )
-            WHERE user_id = %s
-""",
+    async def post(self):
+        async with get_cursor() as cursor:
+            user = await cursor.fetch_row(
+                """
+                SELECT
+                    user_id,
+                    COALESCE(radio_username, username) AS name,
+                    user_avatar AS avatar,
+                    user_avatar_type AS avatar_type,
+                    user_colour AS colour,
+                    rank_title AS rank,
+                    0 AS total_votes,
+                    0 AS total_ratings,
+                    0 AS mind_changes,
+                    0 AS total_requests,
+                    0 AS winning_votes,
+                    0 AS losing_votes,
+                    0 AS winning_requests,
+                    0 AS losing_requests,
+                    user_regdate AS regdate
+                FROM phpbb_users
+                    LEFT JOIN phpbb_ranks ON (
+                        user_rank = rank_id
+                    )
+                WHERE user_id = %s
+            """,
             (self.get_argument("id"),),
         )
 
@@ -201,4 +213,4 @@ class ListenerDetailRequest(APIHandler):
             (self.get_argument("id"),),
         )
 
-        self.append("listener", user)
+                self.response["listener"] = user

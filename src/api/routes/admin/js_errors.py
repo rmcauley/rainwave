@@ -11,6 +11,6 @@ class JSErrors(APIHandler):
     sid_required = False
     description = "A list of errors that have happened to users using the site."
 
-    def post(self):
+    async def post(self):
         errors = cache.get("error_reports") or []
-        self.append(self.return_name, errors)
+                self.response[self.return_name] = errors

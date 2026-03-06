@@ -14,6 +14,7 @@ from common import config
 from libs import log
 from common.libs import db
 from libs import zeromq
+from common.db.cursor import get_cursor
 
 
 def append_success_to_request(request: APIHandler, elec_id: int, entry_id: int) -> None:
@@ -30,7 +31,7 @@ class SubmitVote(APIHandler):
     fields = {"entry_id": (fieldtypes.integer, True)}
     sync_across_sessions = True
 
-    def post(self):
+    async def post(self):
         lock_count = 0
         voted = False
         elec_id = None
@@ -46,7 +47,7 @@ class SubmitVote(APIHandler):
                 and len(event.songs) > 1
             ):
                 elec_id = event.id
-                voted = self.vote(self.get_argument("entry_id"), event, lock_count)
+                voted = await self.vote(self.get_argument("entry_id"), event, lock_count)
                 break
             if not self.user.data["perks"]:
                 break
@@ -59,6 +60,7 @@ class SubmitVote(APIHandler):
                 elec_id=elec_id,
                 entry_id=self.get_argument("entry_id"),
             )
+        self.write_rainwave_output()
 
     # this will never get executed for WebSocket connections, so this code
     # is duplicated in sync.py
@@ -74,103 +76,104 @@ class SubmitVote(APIHandler):
         )
         super().on_finish()
 
-    def vote(self, entry_id, event, lock_count):
-        # Subtract a previous vote from the song's total if there was one
-        already_voted = False
-        if self.user.is_anonymous():
-            # log.debug("vote", "Anon already voted: %s" % (self.user.data['voted_entry'],))
-            if (
-                self.user.data["voted_entry"]
-                and self.user.data["voted_entry"] == entry_id
-            ):
-                # immediately return and a success will be registered
-                return True
-            if self.user.data["voted_entry"]:
-                already_voted = self.user.data["voted_entry"]
-        else:
-            previous_vote = await cursor.fetch_row(
-                "SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s",
-                (self.user.id, event.id),
-            )
-            # log.debug("vote", "Already voted: %s" % repr(already_voted))
-            if previous_vote and previous_vote["entry_id"] == entry_id:
-                # immediately return and a success will be registered
-                return True
-            elif previous_vote:
-                already_voted = previous_vote["entry_id"]
-
-        await cursor.start_transaction()
-        try:
-            if already_voted:
-                if not event.add_vote_to_entry(already_voted, -1):
-                    log.warn(
-                        "vote",
-                        "Could not subtract vote from entry: listener ID %s voting for entry ID %s."
-                        % (self.user.data["listener_id"], already_voted),
-                    )
-                    raise APIException("internal_error")
-
-            # If this is a new vote, we need to check to make sure the listener is not locked.
-            if (
-                not already_voted
-                and self.user.data["lock"]
-                and self.user.data["lock_sid"] != self.sid
-            ):
-                raise APIException(
-                    "user_locked",
-                    "User locked to %s for %s more song(s)."
-                    % (
-                        config.station_id_friendly[self.user.data["lock_sid"]],
-                        self.user.data["lock_counter"],
-                    ),
-                )
-            # Issue the listener lock (will extend a lock if necessary)
-            if not self.user.lock_to_sid(self.sid, lock_count):
-                log.warn(
-                    "vote",
-                    "Could not lock user: listener ID %s voting for entry ID %s, tried to lock for %s events."
-                    % (self.user.data["listener_id"], entry_id, lock_count),
-                )
-                raise APIException(
-                    "internal_error",
-                    "Internal server error.  User is now locked to station ID %s."
-                    % self.sid,
-                )
-
+    async def vote(self, entry_id, event, lock_count):
+        async with get_cursor() as cursor:
+            # Subtract a previous vote from the song's total if there was one
+            already_voted = False
             if self.user.is_anonymous():
-                if not await cursor.update(
-                    "UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s",
-                    (entry_id, self.user.data["listener_id"]),
+                # log.debug("vote", "Anon already voted: %s" % (self.user.data['voted_entry'],))
+                if (
+                    self.user.data["voted_entry"]
+                    and self.user.data["voted_entry"] == entry_id
                 ):
-                    log.warn(
-                        "vote",
-                        "Could not set voted_entry: listener ID %s voting for entry ID %s."
-                        % (self.user.data["listener_id"], entry_id),
-                    )
-                    raise APIException("internal_error")
-                self.user.update({"voted_entry": entry_id})
+                    # immediately return and a success will be registered
+                    return True
+                if self.user.data["voted_entry"]:
+                    already_voted = self.user.data["voted_entry"]
             else:
+                previous_vote = await cursor.fetch_row(
+                    "SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s",
+                    (self.user.id, event.id),
+                )
+                # log.debug("vote", "Already voted: %s" % repr(already_voted))
+                if previous_vote and previous_vote["entry_id"] == entry_id:
+                    # immediately return and a success will be registered
+                    return True
+                elif previous_vote:
+                    already_voted = previous_vote["entry_id"]
+
+            await cursor.start_transaction()
+            try:
                 if already_voted:
-                    await cursor.update(
-                        "UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE user_id = %s and entry_id = %s",
-                        (
-                            event.get_entry(entry_id).id,
-                            entry_id,
-                            self.user.id,
-                            already_voted,
+                    if not event.add_vote_to_entry(already_voted, -1):
+                        log.warn(
+                            "vote",
+                            "Could not subtract vote from entry: listener ID %s voting for entry ID %s."
+                            % (self.user.data["listener_id"], already_voted),
+                        )
+                        raise APIException("internal_error")
+
+                # If this is a new vote, we need to check to make sure the listener is not locked.
+                if (
+                    not already_voted
+                    and self.user.data["lock"]
+                    and self.user.data["lock_sid"] != self.sid
+                ):
+                    raise APIException(
+                        "user_locked",
+                        "User locked to %s for %s more song(s)."
+                        % (
+                            config.station_id_friendly[self.user.data["lock_sid"]],
+                            self.user.data["lock_counter"],
                         ),
                     )
-                else:
-                    await cursor.update(
-                        """
-                        INSERT INTO r4_vote_history (
-                            elec_id,
-                            entry_id,
-                            user_id,
-                            song_id,
-                            sid
+                # Issue the listener lock (will extend a lock if necessary)
+                if not self.user.lock_to_sid(self.sid, lock_count):
+                    log.warn(
+                        "vote",
+                        "Could not lock user: listener ID %s voting for entry ID %s, tried to lock for %s events."
+                        % (self.user.data["listener_id"], entry_id, lock_count),
+                    )
+                    raise APIException(
+                        "internal_error",
+                        "Internal server error.  User is now locked to station ID %s."
+                        % self.sid,
+                    )
+
+                if self.user.is_anonymous():
+                    if not await cursor.update(
+                        "UPDATE r4_listeners SET listener_voted_entry = %s WHERE listener_id = %s",
+                        (entry_id, self.user.data["listener_id"]),
+                    ):
+                        log.warn(
+                            "vote",
+                            "Could not set voted_entry: listener ID %s voting for entry ID %s."
+                            % (self.user.data["listener_id"], entry_id),
                         )
-                        VALUES (%s, %s, %s, %s, %s)
+                        raise APIException("internal_error")
+                    self.user.update({"voted_entry": entry_id})
+                else:
+                    if already_voted:
+                        await cursor.update(
+                            "UPDATE r4_vote_history SET song_id = %s, entry_id = %s WHERE user_id = %s and entry_id = %s",
+                            (
+                                event.get_entry(entry_id).id,
+                                entry_id,
+                                self.user.id,
+                                already_voted,
+                            ),
+                        )
+                    else:
+                        await cursor.update(
+                            """
+                            INSERT INTO r4_vote_history (
+                                elec_id,
+                                entry_id,
+                                user_id,
+                                song_id,
+                                sid
+                            )
+                            VALUES (%s, %s, %s, %s, %s)
 """,
                         (
                             event.id,

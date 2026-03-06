@@ -6,6 +6,7 @@ from api.handle_url import handle_api_url
 from api import fieldtypes
 from api.exceptions import APIException
 from common import config
+from common.db.cursor import get_cursor
 
 PRIVILEGED_GROUP_IDS = (18, 5, 4)
 
@@ -18,18 +19,22 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
     help_hidden = True
     fields = {"discord_user_ids": (fieldtypes.string_list, True)}
 
-    def post(self):
-        if self.request.remote_ip not in config.api_trusted_ip_addresses:
-            raise APIException(
-                "auth_failed",
-                f"{self.request.remote_ip} is not allowed to access this endpoint.",
+    async def post(self):
+        async with get_cursor() as cursor:
+            if self.request.remote_ip not in config.api_trusted_ip_addresses:
+                raise APIException(
+                    "auth_failed",
+                    f"{self.request.remote_ip} is not allowed to access this endpoint.",
+                )
+
+            list_as_tuple = tuple(
+                cast(list[str], self.get_argument("discord_user_ids"))
             )
 
-        list_as_tuple = tuple(cast(list[str], self.get_argument("discord_user_ids")))
+            await cursor.update(
+                "UPDATE phpbb_users SET group_id = 8 WHERE discord_user_id IN %s AND group_id NOT IN %s AND group_id != 8",
+                (list_as_tuple, PRIVILEGED_GROUP_IDS),
+            )
 
-        await cursor.update(
-            "UPDATE phpbb_users SET group_id = 8 WHERE discord_user_id IN %s AND group_id NOT IN %s AND group_id != 8",
-            (list_as_tuple, PRIVILEGED_GROUP_IDS),
-        )
-
-        self.append_standard("yes")
+            self.append_standard("yes")
+            self.write_rainwave_output()

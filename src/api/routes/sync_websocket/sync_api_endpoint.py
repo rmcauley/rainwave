@@ -1,3 +1,20 @@
+import asyncio
+import typing
+from time import time as timestamp
+
+import tornado
+from api import fieldtypes
+from api.exceptions import APIException
+from api.handler_classes.api_handler import APIHandler
+from api.handle_url import handle_api_url
+from api.routes.sync_websocket.sync import sessions
+from common import config
+from common import log
+from libs import cache
+
+import routes
+
+
 @handle_api_url("sync")
 class Sync(APIHandler):
     description = (
@@ -16,7 +33,7 @@ class Sync(APIHandler):
     is_websocket = False
     wait_future = None
 
-    async def post(self):
+    async async def post(self):
         global sessions
 
         routes.info.check_sync_status(self.sid, self.get_argument_bool("offline_ack"))
@@ -93,15 +110,12 @@ class Sync(APIHandler):
         self.user.refresh(self.sid)
         if "requests_paused" in self.user.data:
             del self.user.data["requests_paused"]
-        self.append("user", self.user.to_private_dict())
+                self.response["user"] = self.user.to_private_dict()
         self.finish()
 
     def login_mixup_warn(self):
-        self.append(
-            "redownload_m3u",
-            {
+                self.response["redownload_m3u"] = {
                 "tl_key": "redownload_m3u",
                 "text": self.locale.translate("redownload_m3u"),
             },
-        )
         self.finish()

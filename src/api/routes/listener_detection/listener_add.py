@@ -1,4 +1,13 @@
+from common.db.cursor import get_cursor
 @handle_api_url(r"listener_add/(\d+)")
+from api import fieldtypes
+from api.exceptions import APIException
+from api.handle_url import handle_api_url
+from api.routes.listener_detection.icecast_handler import IcecastHandler
+from common.zeromq import sync_to_front
+from common.user.user_model import make_user
+
+
 class AddListener(IcecastHandler):
     fields = {
         "client": (fieldtypes.integer, True),
@@ -32,27 +41,28 @@ class AddListener(IcecastHandler):
         else:
             self.add_anonymous(self.sid)
 
-    def add_registered(self, sid):
-        real_key = await cursor.fetch_var(
-            "SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s",
-            (self.user_id,),
-        )
-        if real_key != self.listen_key:
-            raise APIException("invalid_argument", reason="mismatched listen_key.")
-        tunedin = await cursor.fetch_var(
-            "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,)
-        )
-        if tunedin:
-            await cursor.update(
-                """
-                UPDATE r4_listeners
-                SET sid = %s,
-                    listener_ip = %s,
-                    listener_purge = FALSE,
-                    listener_icecast_id = %s,
-                    listener_relay = %s,
-                    listener_agent = %s
-                WHERE user_id = %s
+    async def add_registered(self, sid):
+        async with get_cursor() as cursor:
+            real_key = await cursor.fetch_var(
+                "SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s",
+                (self.user_id,),
+            )
+            if real_key != self.listen_key:
+                raise APIException("invalid_argument", reason="mismatched listen_key.")
+            tunedin = await cursor.fetch_var(
+                "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,)
+            )
+            if tunedin:
+                await cursor.update(
+                    """
+                    UPDATE r4_listeners
+                    SET sid = %s,
+                        listener_ip = %s,
+                        listener_purge = FALSE,
+                        listener_icecast_id = %s,
+                        listener_relay = %s,
+                        listener_agent = %s
+                    WHERE user_id = %s
 """,
                 (
                     sid,
@@ -117,27 +127,28 @@ class AddListener(IcecastHandler):
                 u.put_in_request_line(sid)
         sync_to_front.sync_frontend_user_id(self.user_id)
 
-    def add_anonymous(self, sid):
-        if not self.listen_key:
-            self.failed = False
-            return
+    async def add_anonymous(self, sid):
+        async with get_cursor() as cursor:
+            if not self.listen_key:
+                self.failed = False
+                return
 
-        records = await cursor.fetch_list(
-            "SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1",
-            (self.listener_ip, self.listen_key),
-        )
-        if len(records) == 0:
-            await cursor.update(
-                """
-                INSERT INTO r4_listeners
-                (sid,
-                    listener_ip,
-                    user_id,
-                    listener_relay,
-                    listener_agent,
-                    listener_icecast_id,
-                    listener_key)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            records = await cursor.fetch_list(
+                "SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1",
+                (self.listener_ip, self.listen_key),
+            )
+            if len(records) == 0:
+                await cursor.update(
+                    """
+                    INSERT INTO r4_listeners
+                    (sid,
+                        listener_ip,
+                        user_id,
+                        listener_relay,
+                        listener_agent,
+                        listener_icecast_id,
+                        listener_key)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
 """,
                 (
                     sid,

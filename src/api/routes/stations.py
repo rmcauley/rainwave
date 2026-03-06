@@ -9,7 +9,7 @@ class StationsRequest(APIHandlerWithGet):
     sid_required = False
     allow_cors = True
 
-    def post(self):
+    async def post(self):
         station_list = []
         for station_id in config.station_ids:
             station_list.append(
@@ -26,4 +26,4 @@ class StationsRequest(APIHandlerWithGet):
                     "key": config.get_station(station_id, "stream_filename"),
                 }
             )
-        self.append(self.return_name, station_list)
+                self.response[self.return_name] = station_list

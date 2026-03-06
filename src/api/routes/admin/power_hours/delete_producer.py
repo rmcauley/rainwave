@@ -9,6 +9,7 @@ from api.exceptions import APIException
 from api import fieldtypes
 from common.rainwave.events import event
 from common.rainwave.events.event import BaseProducer
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("admin/delete_producer")
@@ -17,15 +18,17 @@ class DeleteProducer(APIHandler):
     sid_required = False
     fields = {"sched_id": (fieldtypes.sched_id, True)}
 
-    def post(self):
-        producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
-        if not producer:
-            raise APIException(
-                "internal_error",
-                "Producer ID %s not found." % self.get_argument("sched_id"),
+    async def post(self):
+        async with get_cursor() as cursor:
+            producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+            if not producer:
+                raise APIException(
+                    "internal_error",
+                    "Producer ID %s not found." % self.get_argument("sched_id"),
+                )
+            await cursor.update(
+                "DELETE FROM r4_schedule WHERE sched_id = %s",
+                (self.get_argument("sched_id"),),
             )
-        await cursor.update(
-            "DELETE FROM r4_schedule WHERE sched_id = %s",
-            (self.get_argument("sched_id"),),
-        )
-        self.append_standard("success", "Producer deleted.")
+            self.append_standard("success", "Producer deleted.")
+            self.write_rainwave_output()

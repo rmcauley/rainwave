@@ -5,6 +5,7 @@ import api.web
 from api.handle_url import handle_url
 
 from routes.admin.scan_errors import BackendScanErrors
+from common.db.cursor import get_cursor
 
 
 def relative_time(epoch_time: float) -> str:
@@ -48,15 +49,16 @@ class ScanResults(api.web.PrettyPrintAPIMixin, BackendScanErrors):
 class LatestSongs(api.web.HTMLRequest):
     admin_required = True
 
-    def get(self):
-        self.write(self.render_string("basic_header.html", title="Latest Songs"))
-        self.write(
-            "<style type='text/css'>div { margin-bottom: 8px; border-bottom: solid 1px #888; }</style>"
-        )
-        self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
+    async def get(self):
+        async with get_cursor() as cursor:
+            self.write(self.render_string("basic_header.html", title="Latest Songs"))
+            self.write(
+                "<style type='text/css'>div { margin-bottom: 8px; border-bottom: solid 1px #888; }</style>"
+            )
+            self.write("<script>\nwindow.top.refresh_all_screens = false;\n</script>")
 
-        for fn in await cursor.fetch_list(
-            "SELECT song_filename FROM r4_songs ORDER BY song_file_mtime DESC LIMIT 20"
-        ):
-            self.write("<div>%s</div>" % fn)
-        self.write(self.render_string("basic_footer.html"))
+            for fn in await cursor.fetch_list(
+                "SELECT song_filename FROM r4_songs ORDER BY song_file_mtime DESC LIMIT 20"
+            ):
+                self.write("<div>%s</div>" % fn)
+            self.write(self.render_string("basic_footer.html"))

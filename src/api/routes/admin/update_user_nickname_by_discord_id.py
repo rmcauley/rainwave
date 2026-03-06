@@ -5,6 +5,7 @@ from api.handle_url import handle_api_url
 from api import fieldtypes
 from api.exceptions import APIException
 from common import config
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("update_user_nickname_by_discord_id")
@@ -18,33 +19,35 @@ class UpdateUserNicknameByDiscordId(APIHandler):
         "nickname": (fieldtypes.string, True),
     }
 
-    def post(self):
-        if self.request.remote_ip not in config.api_trusted_ip_addresses:
-            raise APIException(
-                "auth_failed",
-                f"{self.request.remote_ip} is not allowed to access this endpoint.",
+    async def post(self):
+        async with get_cursor() as cursor:
+            if self.request.remote_ip not in config.api_trusted_ip_addresses:
+                raise APIException(
+                    "auth_failed",
+                    f"{self.request.remote_ip} is not allowed to access this endpoint.",
+                )
+
+            discord_user_id = self.get_argument("discord_user_id")
+            nickname = self.get_argument("nickname")
+
+            possible_id = await cursor.fetch_var(
+                "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
+                (discord_user_id,),
             )
-
-        discord_user_id = self.get_argument("discord_user_id")
-        nickname = self.get_argument("nickname")
-
-        possible_id = await cursor.fetch_var(
-            "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s",
-            (discord_user_id,),
-        )
-        if possible_id:
-            await cursor.update(
-                (
-                    """
-                    UPDATE phpbb_users
-                    SET radio_username = %s
-                    WHERE user_id = %s
+            if possible_id:
+                await cursor.update(
+                    (
+                        """
+                        UPDATE phpbb_users
+                        SET radio_username = %s
+                        WHERE user_id = %s
 """
-                ),
-                (
-                    nickname,
-                    possible_id,
-                ),
-            )
+                    ),
+                    (
+                        nickname,
+                        possible_id,
+                    ),
+                )
 
         self.append_standard("yes")
+        self.write_rainwave_output()

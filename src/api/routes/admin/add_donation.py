@@ -4,6 +4,7 @@ from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
 from api import fieldtypes
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("admin/add_donation")
@@ -16,16 +17,18 @@ class AddDonationHandler(APIHandler):
         "private": (fieldtypes.boolean, True),
     }
 
-    def post(self):
-        if await cursor.update(
-            "INSERT INTO r4_donations (user_id, donation_amount, donation_message, donation_private) values (%s, %s, %s, %s)",
-            (
-                self.get_argument("donor_id"),
-                self.get_argument("amount"),
-                self.get_argument("message"),
-                self.get_argument("private"),
-            ),
-        ):
-            self.append_standard("donation_added", "Donation added.")
-        else:
-            raise APIException("donation_failed")
+    async def post(self):
+        async with get_cursor() as cursor:
+            if await cursor.update(
+                "INSERT INTO r4_donations (user_id, donation_amount, donation_message, donation_private) values (%s, %s, %s, %s)",
+                (
+                    self.get_argument("donor_id"),
+                    self.get_argument("amount"),
+                    self.get_argument("message"),
+                    self.get_argument("private"),
+                ),
+            ):
+                self.append_standard("donation_added", "Donation added.")
+            else:
+                raise APIException("donation_failed")
+            self.write_rainwave_output()

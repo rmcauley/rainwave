@@ -1,3 +1,13 @@
+from typing import Any
+
+from api import fieldtypes
+from api.handle_url import handle_api_url
+from api.handler_classes.api_handler import APIHandler
+from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT as PAGE_LIMIT
+from common.rainwave import playlist
+from libs import cache
+
+
 def get_all_albums(sid: int, user: Any | None = None) -> Any:
     if not user or user.is_anonymous():
         return cache.get_station(sid, "all_albums")
@@ -11,11 +21,9 @@ class AllAlbumsHandler(APIHandler):
     return_name = "all_albums"
     fields = {"no_searchable": (fieldtypes.boolean, None)}
 
-    def post(self):
-        self.append(
-            self.return_name,
-            get_all_albums(
+    async def post(self):
+                self.response[self.return_name] = get_all_albums(
                 self.sid,
                 self.user,
             ),
-        )
+        self.write_rainwave_output()

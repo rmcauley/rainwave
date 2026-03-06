@@ -1,4 +1,6 @@
+from api.handle_url import handle_api_url
 from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+from common.cache.cache import cache_get
 
 
 @handle_api_url("info_all")
@@ -7,5 +9,6 @@ class InfoAllRequest(APIHandlerWithGet):
     description = "Returns a basic dict containing rudimentary information on what is currently playing on all stations."
     allow_cors = True
 
-    def post(self):
-        self.append("all_stations_info", cache.get("all_stations_info"))
+    async def post(self):
+        self.response["all_stations_info"] = await cache_get("all_stations_info")
+        self.write_rainwave_output()

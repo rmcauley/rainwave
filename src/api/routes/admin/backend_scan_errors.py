@@ -12,8 +12,8 @@ class BackendScanErrors(APIHandler):
     sid_required = False
     description = "A list of errors that have occurred while scanning music."
 
-    def post(self):
+    async def post(self):
         errors = cache.get("backend_scan_errors") or [
             {"time": timestamp(), "backend_scan_errors": "No errors in memory."}
         ]
-        self.append(self.return_name, errors)
+                self.response[self.return_name] = errors

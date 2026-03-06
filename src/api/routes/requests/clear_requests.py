@@ -1,3 +1,7 @@
+from api.handler_classes.api_handler import APIHandler
+from api.handle_url import handle_api_url
+
+
 @handle_api_url("clear_requests")
 class ClearRequests(APIHandler):
     description = "Clears all requests from the user's queue."
@@ -6,6 +10,6 @@ class ClearRequests(APIHandler):
     unlocked_listener_only = False
     sync_across_sessions = True
 
-    def post(self):
+    async def post(self):
         self.user.clear_all_requests()
-        self.append("requests", self.user.get_requests(self.sid))
+                self.response["requests"] = self.user.get_requests(self.sid)

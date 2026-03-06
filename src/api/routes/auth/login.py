@@ -4,6 +4,7 @@ from api.web import HTMLRequest
 from common.libs import db
 from routes.error import APIException
 from .r4_mixin import R4SetupSessionMixin
+from common.db.cursor import get_cursor
 
 
 def phpbb_passwd_compare(password: str, db_password: str) -> bool:
@@ -26,35 +27,37 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             destination=self.get_argument("destination", "web"),
         )
 
-    def post(self):
-        username = self.get_argument("username")
-        password = self.get_argument("password")
-        if not username:
-            raise APIException("username_required")
-        if not password:
-            raise APIException("password_required")
+    async def post(self):
+        async with get_cursor() as cursor:
+            username = self.get_argument("username")
+            password = self.get_argument("password")
+            if not username:
+                raise APIException("username_required")
+            if not password:
+                raise APIException("password_required")
 
-        db_entry = await cursor.fetch_row(
-            "SELECT user_id, user_password, user_login_attempts, discord_user_id FROM phpbb_users WHERE LOWER(username) = %s",
-            (username.lower(),),
-        )
-        if not db_entry:
-            raise APIException("login_failed")
-        if db_entry["discord_user_id"]:
-            raise APIException("login_password_disabled")
-        db_password = db_entry["user_password"]
-        if not db_password.startswith("$2y$"):
-            raise APIException("login_too_old")
-        if db_entry["user_login_attempts"] >= 5:
-            raise APIException("login_limit")
-        if not phpbb_passwd_compare(password, db_password):
-            await cursor.update(
-                "UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s",
-                (username,),
+            db_entry = await cursor.fetch_row(
+                "SELECT user_id, user_password, user_login_attempts, discord_user_id FROM phpbb_users WHERE LOWER(username) = %s",
+                (username.lower(),),
             )
-            raise APIException("login_failed")
+            if not db_entry:
+                raise APIException("login_failed")
+            if db_entry["discord_user_id"]:
+                raise APIException("login_password_disabled")
+            db_password = db_entry["user_password"]
+            if not db_password.startswith("$2y$"):
+                raise APIException("login_too_old")
+            if db_entry["user_login_attempts"] >= 5:
+                raise APIException("login_limit")
+            if not phpbb_passwd_compare(password, db_password):
+                await cursor.update(
+                    "UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s",
+                    (username,),
+                )
+                raise APIException("login_failed")
 
-        # setup/save r4 session
-        self.setup_rainwave_session_and_redirect(
-            db_entry["user_id"], self.get_destination()
-        )
+            # setup/save r4 session
+            self.setup_rainwave_session_and_redirect(
+                db_entry["user_id"], self.get_destination()
+            )
+            self.write_rainwave_output()
