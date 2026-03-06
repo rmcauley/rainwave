@@ -16,13 +16,6 @@ from common.schedule.timeline_types import TimelineOnStation
 from common.schedule.schedule_models.timeline_entry_base import TimelineEntryBase
 
 
-timeline_by_station: dict[int, TimelineOnStation] = {}
-
-
-def update_timeline(sid: int, timeline: TimelineOnStation) -> None:
-    timeline_by_station[sid] = timeline
-
-
 async def load_timeline(cursor: RainwaveCursor, sid: int) -> TimelineOnStation:
     history: list[TimelineEntryBase] = await TimelineSingleSongFromHistory.load_last_5(
         cursor, sid

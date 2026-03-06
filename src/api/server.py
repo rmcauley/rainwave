@@ -18,10 +18,6 @@ app: tornado.web.Application | None = None
 
 
 class APIServer:
-    def __init__(self) -> None:
-        super().__init__()
-        self.ioloop: tornado.ioloop.IOLoop | None = None
-
     async def _listen(self, task_id: int) -> None:
         global app
 
@@ -36,7 +32,7 @@ class APIServer:
         log_file = f"logs/rw_api_%{port_no}.log"
         log.init(log_file, config.log_level)
         log.debug("start", "Server booting, port %s." % port_no)
-        async with db_connect(auto_retry=False), cache_connect():
+        async with db_connect(auto_retry=True), cache_connect():
             app = tornado.web.Application(
                 request_classes,
                 debug=config.developer_mode,
@@ -54,12 +50,13 @@ class APIServer:
                 log.debug("start", "   Handler: %s" % str(request))
             log.info("start", "Max open files: %s" % resource.RLIMIT_NOFILE)
             log.info("start", "API server on port %s ready to go." % port_no)
-            self.ioloop = tornado.ioloop.IOLoop.instance()
+
+            ioloop = tornado.ioloop.IOLoop.instance()
 
             try:
                 await asyncio.Event().wait()
             finally:
-                self.ioloop.stop()
+                ioloop.stop()
                 http_server.stop()
                 log.info("stop", "Server has been shutdown.")
 

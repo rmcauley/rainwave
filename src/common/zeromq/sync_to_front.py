@@ -1,4 +1,4 @@
-from libs import zeromq
+from . import zeromq
 
 
 def sync_frontend_all(sid: int) -> None:

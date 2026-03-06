@@ -7,6 +7,7 @@ from common.listeners.unlock_listeners import unlock_listeners
 from common.playlist.album.get_album_on_station import get_many_album_on_station
 from common.playlist.album.warm_cooled_albums import warm_cooled_albums
 from common.playlist.reduce_song_blocks_by_one import reduce_song_blocks_by_one
+from common.playlist.song.model.song_on_station import SongOnStation
 from common.playlist.song.start_song_cooldown import (
     start_song_cooldown_and_update_rating,
 )
@@ -19,6 +20,14 @@ from common.schedule.trim_schedule import trim_schedule
 from common.schedule.update_tunein import update_tunein
 
 
+async def get_next_timeline_song(
+    cursor: RainwaveCursor, sid: int, timeline: TimelineOnStation
+) -> SongOnStation:
+    timeline_entry_starting = timeline.upnext[0]
+    await timeline_entry_starting.start(cursor)
+    return timeline_entry_starting.get_song_on_station_to_play()
+
+
 async def advance_timeline(
     cursor: RainwaveCursor, sid: int, timeline: TimelineOnStation
 ) -> None:
@@ -29,6 +38,9 @@ async def advance_timeline(
 
     timeline.history = timeline.history[:4]
     timeline.history.insert(0, timeline.current)
+    # At this point in code, get_next_timeline_song should have already been called and
+    # that function calls timeline.upnext[0].start(),  so we do not need to call timeline.current.start()
+    # here.  Just move upnext[0] into timeline.current.
     timeline.current = timeline.upnext.pop(0)
 
     await cursor.update(

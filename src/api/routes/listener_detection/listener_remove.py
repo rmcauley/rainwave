@@ -10,7 +10,7 @@ from libs import cache
 from libs import log
 from common.libs import db
 from common.user.user_model import make_user
-from backend import sync_to_front
+from common.zeromq import sync_to_front
 
 # Sample Icecast query:
 # &server=myserver.com&port=8000&client=1&mount=/live&user=&pass=&ip=127.0.0.1&agent="My%20player"

@@ -1,43 +1,45 @@
 import asyncio
+from typing import Any, Coroutine
 import aiohttp
 from xml.etree import ElementTree
-from typing import Any
 
-from libs import cache
-from common import config
-from libs import log
-from common.libs import db
+from common import config, log
+from common.db.cursor import get_cursor
 
 
 class IcecastSyncCall:
     def __init__(
-        self, relay_name: str, relay_info: dict[str, Any], ftype: str, sid: int
+        self,
+        relay_name: str,
+        relay_info: config.RelayConfig,
+        file_extension: str,
+        sid: int,
     ) -> None:
+        super().__init__()
         self.relay_name = relay_name
         self.relay_info = relay_info
         self.sid = sid
-        self.ftype = ftype
+        self.file_extension = file_extension
         self.response: bytes | None = None
 
-    def get_listeners(self) -> list[Any] | int:
+    def get_listeners(self) -> int:
         if not self.response:
             return 0
-        listeners = []
+        listener_count = 0
         sources = ElementTree.fromstring(self.response).find("source")
         if sources:
-            for listener in sources.iter("listener"):
-                listeners.append(listener)
+            listener_count = len(sources)
         log.debug(
             "icecast_sync",
             "%s %s %s count: %s"
             % (
                 self.relay_name,
                 config.station_id_friendly[self.sid],
-                self.ftype,
-                len(listeners),
+                self.file_extension,
+                listener_count,
             ),
         )
-        return listeners
+        return listener_count
 
     async def request(self, client: aiohttp.ClientSession, url: str) -> None:
         async with client.get(url, ssl=False) as response:
@@ -48,7 +50,7 @@ class IcecastSyncCall:
                     % (
                         self.relay_name,
                         config.station_id_friendly[self.sid],
-                        self.ftype,
+                        self.file_extension,
                         response.status,
                         response.reason,
                     ),
@@ -60,14 +62,10 @@ class IcecastSyncCall:
 async def _start() -> None:
     loop = asyncio.get_running_loop()
 
-    stream_names = {}
-    for sid in config.station_ids:
-        stream_names[sid] = config.get_station(sid, "stream_filename")
-
-    calls = []
-    requests = []
-    clients = []
-    for relay, relay_info in config.relays.items():
+    calls: list[IcecastSyncCall] = []
+    requests: list[Coroutine[Any, Any, None]] = []
+    clients: list[aiohttp.ClientSession] = []
+    for relay_name, relay_info in config.relays.items():
         client = aiohttp.ClientSession(
             loop=loop,
             timeout=aiohttp.ClientTimeout(total=5),
@@ -83,13 +81,15 @@ async def _start() -> None:
             relay_info["port"],
         )
         for sid in relay_info["sids"]:
-            for ftype in (".mp3", ".ogg"):
-                call = IcecastSyncCall(relay, relay_info, ftype, sid)
+            for file_extension in (".mp3", ".ogg"):
+                call = IcecastSyncCall(relay_name, relay_info, file_extension, sid)
                 calls.append(call)
                 requests.append(
                     call.request(
                         client=client,
-                        url=relay_base_url + stream_names[sid] + ftype,
+                        url=relay_base_url
+                        + config.stations[sid]["stream_filename"]
+                        + file_extension,
                     )
                 )
 
@@ -101,39 +101,39 @@ async def _start() -> None:
 
     log.debug("icecast_sync", "All responses came back for counting.")
 
-    try:
-        stations = {}
-        for sid in config.station_ids:
-            stations[sid] = 0
+    async with get_cursor() as cursor:
+        try:
+            stations: dict[int, int] = {}
+            for sid in config.station_ids:
+                stations[sid] = 0
 
-        relays = {}
-        for relay, _relay_info in config.relays.items():
-            relays[relay] = 0
+            relays: dict[str, int] = {}
+            for relay_name in config.relays.keys():
+                relays[relay_name] = 0
 
-        for call in calls:
-            listeners = call.get_listeners()
-            stations[call.sid] += len(listeners)
-            relays[call.relay_name] += len(listeners)
+            for call in calls:
+                listener_count = call.get_listeners()
+                stations[call.sid] += listener_count
+                relays[call.relay_name] += listener_count
 
-        for sid, listener_count in stations.items():
-            log.debug(
-                "icecast_sync",
-                "%s has %s listeners."
-                % (config.station_id_friendly[sid], listener_count),
-            )
-            await cursor.update(
-                "INSERT INTO r4_listener_counts (sid, lc_guests) VALUES (%s, %s)",
-                (sid, listener_count),
-            )
+            for sid, listener_count in stations.items():
+                log.debug(
+                    "icecast_sync",
+                    "%s has %s listeners."
+                    % (config.station_id_friendly[sid], listener_count),
+                )
+                await cursor.update(
+                    "INSERT INTO r4_listener_counts (sid, lc_guests) VALUES (%s, %s)",
+                    (sid, listener_count),
+                )
 
-        for relay, count in relays.items():
-            log.debug("icecast_sync", "%s total listeners: %s" % (relay, count))
-
-        cache.set_global("relay_status", relays)
-
-        # await cursor.update("DELETE FROM r4_listener_counts WHERE lc_time <= %s", (current_time - config.trim_history_length,))
-    except Exception as e:
-        log.exception("icecast_sync", "Could not finish counting listeners.", e)
+            for relay_name, count in relays.items():
+                log.debug(
+                    "icecast_sync", "%s total listeners: %s" % (relay_name, count)
+                )
+        except Exception as e:
+            log.exception("icecast_sync", "Could not finish counting listeners.", e)
+            raise
 
 
 def start() -> None:

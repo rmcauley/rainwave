@@ -1,148 +1,92 @@
-from time import time as timestamp
+import asyncio
+from datetime import timedelta
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.process
-import tornado.options
-from typing import Any
 
-from backend import sync_to_front
-from common.rainwave import schedule
-from common.rainwave import playlist
-from libs import log
-from common import config
-from common.libs import db
-from libs import cache
-from libs import memory_trace
-from libs import zeromq
-
-# TODO  await prepare_cooldown_algorithm(cursor, sid) every hour
-
-
-class AdvanceScheduleRequest(tornado.web.RequestHandler):
-    processed = False
-    success = False
-    sid = None
-
-    def get(self, sid: str) -> None:
-        self.success = False
-        self.sid = None
-        if int(sid) in config.station_ids:
-            self.sid = int(sid)
-        else:
-            return
-
-        try:
-            schedule.advance_station(self.sid)
-        except db.transaction_rollback_errors:
-            log.warn(
-                "backend",
-                "Database transaction deadlock.  Re-opening database and setting retry timeout.",
-            )
-            db.close()
-            db.connect()
-            raise
-
-        to_send = None
-        if not config.liquidsoap_annotations:
-            to_send = schedule.get_advancing_file(self.sid)
-        else:
-            to_send = self._get_annotated(schedule.get_advancing_event(self.sid))
-        self.success = True
-        if not cache.get_station(self.sid, "get_next_socket_timeout"):
-            self.write(to_send)
-
-    def _get_annotated(self, e: Any) -> str:
-        string = 'annotate:crossfade="'
-        if e.use_crossfade == True:
-            string += "1"
-        elif e.use_crossfade:
-            string += e.use_crossfade
-        else:
-            string += "0"
-        string += '",'
-
-        string += 'use_suffix="'
-        if e.use_tag_suffix:
-            string += "1"
-        else:
-            string += "0"
-        string += '"'
-
-        if hasattr(e, "songs"):
-            string += ',suffix="%s"' % config.get_station(self.sid, "stream_suffix")
-        elif e.name:
-            string += ',title="%s"' % e.name
-
-        if hasattr(e, "replay_gain") and e.replay_gain:
-            string += ',replay_gain="%s"' % e.replay_gain
-
-        string += ":" + e.get_filename()
-        return string
+from backend.backend_requests.advance_station import AdvanceScheduleRequest
+from backend.periodic_callbacks.api_key_pruning import api_key_pruning
+from backend.periodic_callbacks.mark_users_radio_inactive import (
+    mark_users_radio_inactive,
+)
+from backend.periodic_callbacks.periodic_cooldown_algo_updating import (
+    get_periodic_cooldown_algo_updating_function,
+)
+from common import config, log
+from common.cache.cache import cache_connect
+from common.db.connection import db_connect
+from common.db.cursor import get_cursor
+from common.playlist.cooldown_config import prepare_cooldown_algorithm
+from common.zeromq import zeromq
 
 
-class SongChangeApiServer:
-    def _listen(self, sid: int) -> None:
-        log.init(
-            "%s/rw_%s.log"
-            % (
-                config.get_directory("log_dir"),
-                config.station_id_friendly[sid].lower(),
-            ),
-            config.log_level,
-        )
-        db.connect()
-        cache.connect()
-        zeromq.init_pub()
-        memory_trace.setup(config.station_id_friendly[sid].lower())
-
-        # (r"/refresh/([0-9]+)", RefreshScheduleRequest)
-        app = tornado.web.Application(
-            [
-                (r"/advance/([0-9]+)", AdvanceScheduleRequest),
-            ],
-            debug=config.developer_mode,
-        )
-
-        port = int(config.backend_port) + sid
-        server = tornado.httpserver.HTTPServer(app)
-        server.listen(port, address="127.0.0.1")
-
-        for station_id in config.station_ids:
-            playlist.prepare_cooldown_algorithm(station_id)
-        schedule.load()
-        log.debug(
-            "start",
-            "Backend server started, station %s port %s, ready to go."
-            % (config.station_id_friendly[sid], port),
-        )
-
-        ioloop = tornado.ioloop.IOLoop.instance()
-        try:
-            ioloop.start()
-        finally:
-            ioloop.stop()
-            server.stop()
-            db.close()
-            log.info("stop", "Backend has been shutdown.")
-            log.close()
-
-    def _import_cron_modules(self) -> None:
-        # pylint: disable=import-outside-toplevel,unused-import
-        # This method breaks pylint and quite on purpose, its job is to just load
-        # the cron jobs that run occasionally.
-        import backend.api_key_pruning
-        import backend.inactive
-
-        # pylint: enable=import-outside-toplevel,unused-import
-
+class BackendServer:
     def start(self) -> None:
-        stations = list(config.station_ids)
-        tornado.process.fork_processes(len(stations))
+        station_id_list = list(config.station_ids)
+        tornado.process.fork_processes(len(station_id_list))
 
         task_id = tornado.process.task_id()
+
         if task_id == 0:
             zeromq.init_proxy()
-            self._import_cron_modules()
+
+            key_pruning = tornado.ioloop.PeriodicCallback(
+                api_key_pruning, timedelta(hours=6)
+            )
+            key_pruning.start()
+
+            user_inactive_marking = tornado.ioloop.PeriodicCallback(
+                mark_users_radio_inactive, timedelta(hours=6)
+            )
+            user_inactive_marking.start()
+
         if task_id != None:
-            self._listen(stations[task_id])
+            asyncio.run(self._listen(station_id_list[task_id]))
+
+    async def _listen(self, sid: int) -> None:
+        async with db_connect(auto_retry=True), cache_connect():
+            log.init(
+                "%s/rw_%s.log"
+                % (
+                    config.log_dir,
+                    config.station_id_friendly[sid].lower(),
+                ),
+                config.log_level,
+            )
+
+            app = tornado.web.Application(
+                [
+                    (r"/advance/([0-9]+)", AdvanceScheduleRequest),
+                ],
+                debug=config.developer_mode,
+            )
+
+            port = int(config.backend_port) + sid
+            server = tornado.httpserver.HTTPServer(app)
+            server.listen(port, address="127.0.0.1")
+
+            async with db_connect(auto_retry=True), cache_connect():
+                async with get_cursor() as cursor:
+                    await prepare_cooldown_algorithm(cursor, sid)
+
+                cooldown_algo_updating = tornado.ioloop.PeriodicCallback(
+                    get_periodic_cooldown_algo_updating_function(sid),
+                    timedelta(hours=1),
+                )
+                cooldown_algo_updating.start()
+
+                log.debug(
+                    "start",
+                    "Backend server started, station %s port %s, ready to go."
+                    % (config.station_id_friendly[sid], port),
+                )
+
+                ioloop = tornado.ioloop.IOLoop.instance()
+
+                try:
+                    await asyncio.Event().wait()
+                finally:
+                    ioloop.stop()
+                    server.stop()
+                    log.info("stop", "Server has been shutdown.")
