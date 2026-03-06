@@ -1,6 +1,7 @@
 from time import time as timestamp
 from common.libs import db
 import api.web
+from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
 from api import fieldtypes
@@ -9,7 +10,7 @@ from common.rainwave.events.oneup import OneUpProducer
 
 
 @handle_api_url("admin/move_up_in_power_hour")
-class MoveUpInPowerHour(api.web.APIHandler):
+class MoveUpInPowerHour(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

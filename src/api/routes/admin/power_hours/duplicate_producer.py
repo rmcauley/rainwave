@@ -1,5 +1,5 @@
 @handle_api_url("admin/duplicate_producer")
-class DuplicateProducer(api.web.APIHandler):
+class DuplicateProducer(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

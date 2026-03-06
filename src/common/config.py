@@ -1,5 +1,3 @@
-import orjson
-
 from typing import Literal, TypedDict, TypeAlias
 
 
@@ -84,7 +82,7 @@ api_external_url_prefix = "//localhost:20000/api4/"
 # any sort of CDN (e.g. CloudFlare) , enter a host here.
 # If you're not using a CDN, leave as None.
 # An example would be 'websockets.mydomain.com'
-websocket_host: str | None = None
+websocket_host: str = ""
 
 # What domains/IP addresses should WebSocket connections be allowed from?
 # Set to * to allow from anywhere.
@@ -277,69 +275,3 @@ song_dirs = {
     "/home/rainwave/music": [1],
 }
 monitor_dir = "/home/rainwave/music"
-
-# Everything below here is calculated based on the above, no more hand-configuration necessary.
-
-station_ids: set[int] = set(k for k in stations.keys())
-station_id_friendly: dict[int, str] = {sid: v["name"] for (sid, v) in stations.items()}
-
-station_mount_filenames = {sid: v["stream_filename"] for (sid, v) in stations.items()}
-stream_filename_to_sid: dict[str, int] = {
-    v["stream_filename"]: sid for (sid, v) in stations.items()
-}
-csp_header = ""
-
-# Used to generate URLs for listeners to tune in to
-public_relays: dict[int, list[PublicRelayConfig]] = {}
-# Used for pre-dumped object to stuff into requests
-public_relays_json = {}
-
-# Used to generate CSP security headers for browsers
-relay_hostnames: set[str] = set()
-relay_hostnames.add(round_robin_relay_protocol + round_robin_relay_host)
-
-for sid in station_ids:
-    public_relays[sid] = []
-    for relay_name, relay in relays.items():
-        if sid in relay["sids"]:
-            public_relays[sid].append(
-                {
-                    "name": relay_name,
-                    "protocol": relay["protocol"],
-                    "hostname": relay["hostname"],
-                    "port": relay["port"],
-                }
-            )
-            relay_hostnames.add(relay["protocol"] + relay["hostname"])
-            relay_hostnames.add(
-                "{}{}:{}".format(relay["protocol"], relay["hostname"], relay["port"])
-            )
-    public_relays_json[sid] = orjson.dumps(public_relays[sid])
-
-# Generate the CSP header to send to browsers
-relay_hosts = " ".join(relay_hostnames)
-csp_header = ";".join(
-    [
-        f"default-src 'self' {hostname} *.{hostname}",
-        "object-src 'none'",
-        f"media-src {relay_hosts}",
-        f"font-src 'self'",
-        f"connect-src wss://{websocket_host}",
-        f"style-src 'self' {hostname} 'unsafe-inline'",
-        f"img-src 'self' {hostname} *.{hostname} https://cdn.discordapp.com",
-    ]
-)
-
-# Sent to the frontend for menu display
-station_list = {}
-station_mounts = {}
-for station_id, station in stations.items():
-    station_list[str(station_id)] = {
-        "id": station_id,
-        "name": station_id_friendly[station_id],
-        "url": "{}{}/".format(base_site_url, station_mount_filenames[station_id]),
-    }
-    station_mounts[station["stream_filename"] + ".mp3"] = station_id
-    station_mounts[station["stream_filename"] + ".ogg"] = station_id
-
-station_list_json = orjson.dumps(station_list)

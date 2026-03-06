@@ -4,7 +4,7 @@ import math
 from typing import TypedDict
 
 from api.rainwave_typeddicts import AlbumDiffItem
-from common import config
+from common import config, stations
 from common import log
 from common.db.cursor import RainwaveCursor
 from common.playlist.extra_detail_histogram import (
@@ -297,7 +297,7 @@ class AlbumOnStation:
                 % (
                     rating_count,
                     self.data["album_name"],
-                    config.station_id_friendly[sid],
+                    stations.station_id_friendly[sid],
                 ),
             )
 

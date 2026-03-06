@@ -1,8 +1,10 @@
+from time import time as timestamp
 from api.exceptions import APIException
 from common import log
 from common.db.cursor import RainwaveCursor
 from common.listeners.get_lock_in_effect import get_lock_in_effect
 from common.playlist.song.model.song_on_station import SongOnStation
+from common.user.api_key import generate_api_key_and_listen_key
 from common.user.model.user_base import UserBase
 from common.user.model.user_data_types import (
     UserPrivateData,
@@ -36,7 +38,7 @@ class AnonymousUser(UserBase):
                 listener_lock_counter, 
                 listener_voted_entry
             FROM r4_api_keys 
-                JOIN r4_listeners ON (
+                LEFT JOIN r4_listeners ON (
                     r4_api_keys.api_key_listen_key = r4_listeners.listener_key
                     AND listener_purge = FALSE
                 )
@@ -47,7 +49,7 @@ class AnonymousUser(UserBase):
         )
 
         if not refresh_data:
-            log.debug("auth", "Invalid anonymous API key and listener key combination.")
+            log.debug("auth", "Invalid anonymous API key combination.")
             raise APIException("auth_failed")
 
         avatar = DEFAULT_AVATAR
@@ -61,6 +63,7 @@ class AnonymousUser(UserBase):
         return (
             {"avatar": avatar, "id": user_id, "name": refresh_data["name"]},
             {
+                "api_key": api_key,
                 "admin": admin,
                 "listen_key": refresh_data["listen_key"],
                 "lock": refresh_data["listener_lock"] or False,
@@ -86,6 +89,40 @@ class AnonymousUser(UserBase):
                 "listener_id": refresh_data["listener_id"],
                 "listener_sid": refresh_data["listener_sid"],
             },
+        )
+
+    @staticmethod
+    async def create_anonymous_user_with_api_key(
+        cursor: RainwaveCursor, sid: int, ip_address: str
+    ) -> AnonymousUser:
+        (api_key, listen_key) = await generate_api_key_and_listen_key(
+            cursor, 1, int(timestamp()) + 86400
+        )
+        return AnonymousUser(
+            {"avatar": DEFAULT_AVATAR, "id": 1, "name": "Anonymous"},
+            {
+                "api_key": api_key,
+                "admin": False,
+                "listen_key": listen_key,
+                "lock": False,
+                "lock_counter": 0,
+                "lock_in_effect": False,
+                "lock_sid": None,
+                "perks": False,
+                "rate_anything": False,
+                "request_expires_at": None,
+                "request_position": None,
+                "requests_paused": False,
+                "sid": sid,
+                "tuned_in": False,
+                "voted_entry": None,
+            },
+            {
+                "group_id": 0,
+                "listener_id": None,
+                "listener_sid": None,
+            },
+            ip_address,
         )
 
     async def get_remaining_request_slots(self, cursor: RainwaveCursor) -> int:

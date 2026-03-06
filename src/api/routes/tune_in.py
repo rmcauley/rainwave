@@ -37,7 +37,7 @@ class TuneInIndex(api.web.HTMLRequest):
     auth_required = False
     sid_required = False
 
-    def prepare(self):
+    async def prepare(self):
         super().prepare()
         self.set_header("Content-Type", "audio/x-mpegurl")
         self.set_header("Cache-Control", "no-cache, must-revalidate")

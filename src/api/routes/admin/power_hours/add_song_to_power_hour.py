@@ -1,5 +1,5 @@
 @handle_api_url("admin/add_song_to_power_hour")
-class AddSongToPowerHour(api.web.APIHandler):
+class AddSongToPowerHour(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

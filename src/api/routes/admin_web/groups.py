@@ -3,6 +3,7 @@ from libs import cache
 from common.libs import db
 
 import api.web
+from api.handler_classes.api_handler import APIHandler
 import api.fieldtypes
 from api.handle_url import handle_url
 from api.handle_url import handle_api_url
@@ -13,7 +14,7 @@ from common.rainwave.playlist import Song, Album, SongGroup
 
 
 @handle_api_url("admin/associate_groups_add_song")
-class AssociateGroupAddSong(api.web.APIHandler):
+class AssociateGroupAddSong(APIHandler):
     admin_required = True
     sid_required = False
     fields = {"song_id": (api.fieldtypes.song_id, True)}
@@ -28,7 +29,7 @@ class AssociateGroupAddSong(api.web.APIHandler):
 
 
 @handle_api_url("admin/associate_groups_add_album")
-class AssociateGroupAddAlbum(api.web.APIHandler):
+class AssociateGroupAddAlbum(APIHandler):
     admin_required = True
     sid_required = False
     fields = {
@@ -175,7 +176,6 @@ class GroupEditTool(api.web.HTMLRequest):
 @handle_url("/admin/album_list/group_edit")
 class GroupEditGroupList(api.web.HTMLRequest):
     admin_required = True
-    allow_get = True
 
     def get(self):
         self.write(self.render_string("bare_header.html", title="Group List"))

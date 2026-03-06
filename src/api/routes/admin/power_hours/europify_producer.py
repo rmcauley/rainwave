@@ -1,5 +1,5 @@
 @handle_api_url("admin/europify_producer")
-class EuropifyProducer(api.web.APIHandler):
+class EuropifyProducer(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

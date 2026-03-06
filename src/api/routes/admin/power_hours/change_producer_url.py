@@ -1,5 +1,5 @@
 @handle_api_url("admin/change_producer_url")
-class ChangeProducerURL(api.web.APIHandler):
+class ChangeProducerURL(APIHandler):
     admin_required = True
     sid_required = False
     fields = {"sched_id": (fieldtypes.sched_id, True), "url": (fieldtypes.string, None)}

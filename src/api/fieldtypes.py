@@ -5,7 +5,7 @@ from datetime import datetime
 from urllib.parse import parse_qsl, urlparse
 from typing import Any, cast
 
-from common import config
+from common import config, stations
 
 
 def string(input: Any) -> str | None:
@@ -109,7 +109,7 @@ def sid(input: Any) -> int | None:
     this_sid = zero_or_greater_integer(input)
     if not this_sid:
         return None
-    if this_sid in config.station_ids:
+    if this_sid in stations.station_ids:
         return this_sid
     return None
 

@@ -13,7 +13,7 @@ from backend.periodic_callbacks.mark_users_radio_inactive import (
 from backend.periodic_callbacks.periodic_cooldown_algo_updating import (
     get_periodic_cooldown_algo_updating_function,
 )
-from common import config, log
+from common import config, log, stations
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
@@ -23,7 +23,7 @@ from common.zeromq import zeromq
 
 class BackendServer:
     def start(self) -> None:
-        station_id_list = list(config.station_ids)
+        station_id_list = list(stations.station_ids)
         tornado.process.fork_processes(len(station_id_list))
 
         task_id = tornado.process.task_id()
@@ -50,7 +50,7 @@ class BackendServer:
                 "%s/rw_%s.log"
                 % (
                     config.log_dir,
-                    config.station_id_friendly[sid].lower(),
+                    stations.station_id_friendly[sid].lower(),
                 ),
                 config.log_level,
             )
@@ -79,7 +79,7 @@ class BackendServer:
                 log.debug(
                     "start",
                     "Backend server started, station %s port %s, ready to go."
-                    % (config.station_id_friendly[sid], port),
+                    % (stations.station_id_friendly[sid], port),
                 )
 
                 ioloop = tornado.ioloop.IOLoop.instance()

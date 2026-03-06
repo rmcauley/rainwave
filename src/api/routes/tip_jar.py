@@ -1,5 +1,6 @@
-from api.web import APIHandler
+from api.handler_classes.api_handler import APIHandler
 from api.web import PrettyPrintAPIMixin
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
 from api.handle_url import handle_api_url
 from api.handle_url import handle_api_html_url
 
@@ -7,10 +8,9 @@ from common.libs import db
 
 
 @handle_api_url("tip_jar")
-class TipJarContents(APIHandler):
+class TipJarContents(APIHandlerWithGet):
     description = "Returns a list of donations Rainwave has had."
     return_name = "tip_jar"
-    allow_get = True
     login_required = False
     pagination = True
     sid_required = False

@@ -1,5 +1,5 @@
 @handle_api_url("admin/reset_song_cooldown")
-class ResetSongCooldown(api.web.APIHandler):
+class ResetSongCooldown(APIHandler):
     admin_required = True
     sid_required = False
     description = (

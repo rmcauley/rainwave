@@ -1,5 +1,5 @@
 @handle_api_url("admin/list_producers_all")
-class ListProducersAll(api.web.APIHandler):
+class ListProducersAll(APIHandler):
     return_name = "producers"
     admin_required = True
     sid_required = False

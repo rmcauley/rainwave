@@ -1,11 +1,13 @@
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+
+
 @handle_api_url("stations")
-class StationsRequest(APIHandler):
+class StationsRequest(APIHandlerWithGet):
     description = "Get information about all available stations."
     auth_required = False
     return_name = "stations"
     sid_required = False
     allow_cors = True
-    allow_get = True
 
     def post(self):
         station_list = []

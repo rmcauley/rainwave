@@ -1,11 +1,12 @@
 from time import time as timestamp
 from libs import cache
 import api.web
+from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 
 
 @handle_api_url("admin/backend_scan_errors")
-class BackendScanErrors(api.web.APIHandler):
+class BackendScanErrors(APIHandler):
     return_name = "backend_scan_errors"
     admin_required = True
     sid_required = False

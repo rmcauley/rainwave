@@ -1,11 +1,12 @@
 from common.libs import db
 import api.web
+from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api import fieldtypes
 
 
 @handle_api_url("admin/reset_album_cooldown")
-class ResetAlbumCooldown(api.web.APIHandler):
+class ResetAlbumCooldown(APIHandler):
     admin_required = True
     description = (
         "Sets album cooldown override to null and sets cooldown multiplier to 1."

@@ -1,9 +1,11 @@
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+
+
 @handle_api_url("all_songs")
-class AllSongsHandler(APIHandler):
+class AllSongsHandler(APIHandlerWithGet):
     return_name = "all_songs"
     login_required = True
     sid_required = False
-    allow_get = True
     description = "Gets every song including a user's ratings.  Order field can be 'name', sorting by album and song title, or 'rating'."
     pagination = True
     fields = {"order": (fieldtypes.string, False)}

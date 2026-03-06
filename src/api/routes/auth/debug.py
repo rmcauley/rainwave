@@ -7,7 +7,6 @@ from common.libs import db
 @handle_url("/oauth/debug")
 class DebugAuth(HTMLRequest):
     auth_required = False
-    phpbb_auth = False
     auth_required = False
     sid_required = False
 

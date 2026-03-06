@@ -1,5 +1,5 @@
 @handle_api_url("admin/shuffle_power_hour")
-class ShufflePowerHour(api.web.APIHandler):
+class ShufflePowerHour(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

@@ -1,10 +1,12 @@
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+
+
 @handle_api_url("top_100")
-class Top100Songs(APIHandler):
+class Top100Songs(APIHandlerWithGet):
     description = "Get the 100 highest-rated songs on the entirety of Rainwave, or by station if a station ID is specified in the arguments."
     return_name = "top_100"
     login_required = False
     sid_required = False
-    allow_get = True
 
     def post(self):
         if "sid" in self.request.arguments:

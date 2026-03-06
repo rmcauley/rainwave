@@ -1,5 +1,5 @@
 @handle_api_url("admin/remove_from_power_hour")
-class RemoveFromPowerHour(api.web.APIHandler):
+class RemoveFromPowerHour(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

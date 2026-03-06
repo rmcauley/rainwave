@@ -1,7 +1,8 @@
 from time import time as timestamp
 import hashlib
 
-from api.web import APIHandler
+from api.handler_classes.api_handler import APIHandler
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 
@@ -10,12 +11,11 @@ from common.libs import db
 
 
 @handle_api_url(r"test/create_anon_tuned_in/(\d+)")
-class CreateAnonTunedIn(APIHandler):
+class CreateAnonTunedIn(APIHandlerWithGet):
     description = "Creates a fake tune-in record for an anonymous user at 127.0.0.1."
     local_only = True
     sid_required = False
     auth_required = False
-    allow_get = True
     return_name = "create_anon_tuned_in_result"
 
     def post(self, sid):
@@ -69,12 +69,11 @@ class CreateAnonTunedIn(APIHandler):
         )
 
 
-class TestUserRequest(APIHandler):
+class TestUserRequest(APIHandlerWithGet):
     description = "Login as a user."
     local_only = True
     sid_required = False
     auth_required = False
-    allow_get = True
 
     def post(self, sid):
         user_id = await cursor.fetch_var("SELECT MAX(user_id) FROM phpbb_users")

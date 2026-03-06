@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from common import config
+from common import stations
 from common.db.cursor import RainwaveCursor
 from common.playlist.remove_diacritics import remove_diacritics
 
@@ -63,7 +63,7 @@ class SongGroup:
             row_type=ReconcileSidsRow,
         )
         new_sids = [row["sid"] for row in new_sids_all]
-        for sid in config.station_ids:
+        for sid in stations.station_ids:
             if sid in new_sids:
                 await cursor.update(
                     """

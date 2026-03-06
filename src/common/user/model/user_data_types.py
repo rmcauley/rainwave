@@ -8,6 +8,7 @@ class UserPublicData(TypedDict):
 
 
 class UserPrivateData(TypedDict):
+    api_key: str
     admin: bool
     listen_key: str
     lock_counter: int

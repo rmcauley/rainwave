@@ -1,5 +1,5 @@
 @handle_api_url("admin/change_producer_end_time")
-class ChangeProducerEndTime(api.web.APIHandler):
+class ChangeProducerEndTime(APIHandler):
     return_name = "producer"
     admin_required = True
     sid_required = True

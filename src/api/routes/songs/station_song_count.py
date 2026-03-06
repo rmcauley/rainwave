@@ -1,10 +1,12 @@
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+
+
 @handle_api_url("station_song_count")
-class StationSongCountRequest(APIHandler):
+class StationSongCountRequest(APIHandlerWithGet):
     description = "Get the total number of songs in the playlist on each station."
     return_name = "station_song_count"
     login_required = False
     sid_required = False
-    allow_get = True
 
     def post(self):
         self.append(

@@ -1,5 +1,6 @@
 from common.libs import db
 import api.web
+from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api import fieldtypes
 from api.exceptions import APIException
@@ -7,7 +8,7 @@ from common import config
 
 
 @handle_api_url("update_user_nickname_by_discord_id")
-class UpdateUserNicknameByDiscordId(api.web.APIHandler):
+class UpdateUserNicknameByDiscordId(APIHandler):
     auth_required = False
     sid_required = False
     description = "Accessible only to localhost connections, for wormgas."

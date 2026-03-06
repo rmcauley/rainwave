@@ -3,6 +3,7 @@ from pytz import timezone
 from time import time as timestamp
 from common.libs import db
 import api.web
+from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
 from api import fieldtypes
@@ -11,7 +12,7 @@ from common.rainwave.events.event import BaseProducer
 
 
 @handle_api_url("admin/delete_producer")
-class DeleteProducer(api.web.APIHandler):
+class DeleteProducer(APIHandler):
     admin_required = True
     sid_required = False
     fields = {"sched_id": (fieldtypes.sched_id, True)}

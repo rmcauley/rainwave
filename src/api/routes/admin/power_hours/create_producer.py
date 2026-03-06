@@ -1,5 +1,5 @@
 @handle_api_url("admin/create_producer")
-class CreateProducer(api.web.APIHandler):
+class CreateProducer(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

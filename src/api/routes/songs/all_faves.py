@@ -1,10 +1,12 @@
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+
+
 @handle_api_url("all_faves")
-class AllFavHandler(APIHandler):
+class AllFavHandler(APIHandlerWithGet):
     description = "Get all songs that have been faved by the user."
     return_name = "all_faves"
     login_required = True
     sid_required = False
-    allow_get = True
     pagination = True
 
     def post(self):

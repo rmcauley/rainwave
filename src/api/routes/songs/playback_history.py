@@ -1,10 +1,12 @@
+from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+
+
 @handle_api_url("playback_history")
-class PlaybackHistory(APIHandler):
+class PlaybackHistory(APIHandlerWithGet):
     description = "Get the last 100 songs that played on the station."
     return_name = "playback_history"
     login_required = False
     sid_required = True
-    allow_get = True
     pagination = True
 
     def post(self):

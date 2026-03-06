@@ -1,5 +1,5 @@
 @handle_api_url("admin/set_album_cooldown")
-class SetAlbumCooldown(api.web.APIHandler):
+class SetAlbumCooldown(APIHandler):
     admin_required = True
     description = "Sets the album cooldown multiplier and override PER STATION.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
     fields = {

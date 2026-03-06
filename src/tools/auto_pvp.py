@@ -4,7 +4,7 @@ from typing import cast
 from pytz import timezone
 from pytz.tzinfo import DstTzInfo
 
-from common import config, log
+from common import config, log, stations
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
@@ -56,7 +56,7 @@ async def main() -> None:
                         start_datetime.day,
                         start_datetime.hour,
                         start_datetime.minute,
-                        config.station_id_friendly[sid],
+                        stations.station_id_friendly[sid],
                         tz.__class__.__name__,
                     ),
                 )

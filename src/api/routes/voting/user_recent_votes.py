@@ -1,7 +1,7 @@
 from typing import cast, Any
 import math
 
-from api.web import APIHandler
+from api.handler_classes.api_handler import APIHandler
 from api.web import PrettyPrintAPIMixin
 from api import fieldtypes
 from api.handle_url import handle_api_url

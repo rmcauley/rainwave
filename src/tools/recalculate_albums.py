@@ -1,7 +1,7 @@
 import asyncio
 from typing import TypedDict
 
-from common import config, log
+from common import log, stations
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
@@ -44,7 +44,7 @@ async def main() -> None:
                 await album.reconcile_sids(cursor)
                 await album.update_all_user_ratings(cursor)
                 await album.reset_user_completed_flags(cursor)
-                for sid in config.station_ids:
+                for sid in stations.station_ids:
                     for album_on_station in await get_many_album_on_station(
                         cursor, [album.id], sid
                     ):

@@ -4,6 +4,7 @@ import api
 from api.handle_url import handle_api_url
 from api.handle_url import handle_api_html_url
 import api.web
+from api.handler_classes.api_handler import APIHandler
 from api.web import PrettyPrintAPIMixin
 from common.libs import db
 from common import config
@@ -12,7 +13,7 @@ from routes.admin_web.power_hours import get_ph_formatted_time
 
 
 @handle_api_url("power_hours")
-class ListPowerHours(api.web.APIHandler):
+class ListPowerHours(APIHandler):
     return_name = "power_hours"
     admin_required = False
     sid_required = False

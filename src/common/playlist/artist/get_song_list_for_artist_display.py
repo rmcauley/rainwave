@@ -1,6 +1,6 @@
 from psycopg import sql
 from typing import TypedDict
-from common import config
+from common import stations
 from common.db.cursor import RainwaveCursor
 
 
@@ -77,12 +77,14 @@ async def get_song_list_by_album_for_artist_display(
     )
     query_params = (sid, sid, user_id, artist_id)
 
-    to_return: SongListByAlbumForArtistDisplay = {sid: {} for sid in config.station_ids}
+    to_return: SongListByAlbumForArtistDisplay = {
+        sid: {} for sid in stations.station_ids
+    }
     requestable = True if user_id > 1 else False
     async for song in cursor.for_each_row(
         query, query_params, row_type=SongListForArtistDisplayRow
     ):
-        if not song["sid"] in config.station_ids:
+        if not song["sid"] in stations.station_ids:
             continue
         song["requestable"] = requestable and song["requestable"]
         if not song["album_id"] in to_return[song["sid"]]:

@@ -1,5 +1,6 @@
 from common.libs import db
 import api.web
+from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api import fieldtypes
 from api.exceptions import APIException
@@ -7,7 +8,7 @@ from common import config
 
 
 @handle_api_url("user_search")
-class UserSearchRequest(api.web.APIHandler):
+class UserSearchRequest(APIHandler):
     description = "Returns a user ID and station they're currently tuned to based on the username provided."
     fields = {"username": (fieldtypes.string, True)}
     auth_required = False

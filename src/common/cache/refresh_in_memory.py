@@ -1,6 +1,6 @@
 import asyncio
 from api.exceptions import APIException
-from common import config
+from common import stations
 from .cache import client, in_memory, cache_set
 from .station_cache import cache_get_station
 
@@ -38,7 +38,7 @@ async def refresh_in_memory_station_cache(sid: int) -> None:
     )
 
     all_stations = {}
-    for station_id in config.station_ids:
+    for station_id in stations.station_ids:
         all_stations[station_id] = await cache_get_station(
             station_id, "all_station_info"
         )

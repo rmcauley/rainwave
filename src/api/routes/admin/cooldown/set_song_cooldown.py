@@ -1,5 +1,5 @@
 @handle_api_url("admin/set_song_cooldown")
-class SetSongCooldown(api.web.APIHandler):
+class SetSongCooldown(APIHandler):
     admin_required = True
     sid_required = False
     description = "Sets the song cooldown multiplier and override.  Passing null or false for either argument will retain its current setting. (non-destructive update)"

@@ -1,5 +1,5 @@
 @handle_api_url("admin/change_producer_name")
-class ChangeProducerName(api.web.APIHandler):
+class ChangeProducerName(APIHandler):
     admin_required = True
     sid_required = False
     fields = {

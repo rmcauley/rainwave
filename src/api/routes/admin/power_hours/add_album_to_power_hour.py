@@ -1,5 +1,5 @@
 @handle_api_url("admin/add_album_to_power_hour")
-class AddAlbumToPowerHour(api.web.APIHandler):
+class AddAlbumToPowerHour(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

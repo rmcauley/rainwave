@@ -1,5 +1,5 @@
 from common.db.cursor import RainwaveCursor
-from common import config
+from common import stations
 
 num_songs_total = 0
 num_songs: dict[int, int] = {}
@@ -23,7 +23,7 @@ async def update_playlist_object_counts(
         default=0,
         var_type=int,
     )
-    for sid in config.station_ids:
+    for sid in stations.station_ids:
         num_songs[sid] = await cursor.fetch_guaranteed(
             "SELECT COUNT(song_id) FROM r4_song_sid WHERE song_exists = TRUE AND sid = %s",
             (sid,),

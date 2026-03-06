@@ -1,5 +1,5 @@
 @handle_api_url("admin/get_power_hour")
-class GetPowerHour(api.web.APIHandler):
+class GetPowerHour(APIHandler):
     return_name = "power_hour"
     admin_required = True
     sid_required = True

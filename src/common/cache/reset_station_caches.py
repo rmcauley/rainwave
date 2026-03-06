@@ -1,11 +1,11 @@
-from common import config
+from common import stations
 from .cache import cache_set
 from .station_cache import cache_set_station
 
 
 async def reset_station_caches() -> None:
     await cache_set("request_expire_times", None, save_in_memory=True)
-    for sid in config.station_ids:
+    for sid in stations.station_ids:
         await cache_set_station(sid, "album_diff", None, save_in_memory=True)
         await cache_set_station(sid, "sched_next", None, save_in_memory=True)
         await cache_set_station(sid, "sched_history", None, save_in_memory=True)

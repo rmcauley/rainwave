@@ -2,7 +2,7 @@ import typing
 from time import time as timestamp
 
 from api import fieldtypes
-from api.web import APIHandler
+from api.handler_classes.api_handler import APIHandler
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 import rainwave.schedule

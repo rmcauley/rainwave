@@ -6,7 +6,7 @@ class IcecastHandler(RainwaveHandler):
     failed = True
     relay = None
 
-    def prepare(self):
+    async def prepare(self):
         self.failed = True  # Assume failure unless otherwise
         self.relay = fieldtypes.valid_relay(self.request.remote_ip)
 

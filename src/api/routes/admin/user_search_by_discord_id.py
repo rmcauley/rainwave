@@ -1,5 +1,5 @@
 @handle_api_url("user_search_by_discord_user_id")
-class UserSearchByDiscordUserIdRequest(api.web.APIHandler):
+class UserSearchByDiscordUserIdRequest(APIHandler):
     auth_required = False
     sid_required = False
     description = "Accessible only to localhost connections, for wormgas."

@@ -1,5 +1,3 @@
-import random
-import string
 from time import time as timestamp
 from common import config
 from common.db.cursor import RainwaveCursor
@@ -24,6 +22,7 @@ from common.user.get_unrated_songs_for_requesting import (
     get_unrated_songs_on_cooldown_for_requesting,
 )
 from common.user.solve_avatar import solve_avatar
+from common.user.listen_key import generate_listen_key
 
 from common.db.cursor import RainwaveCursor
 from common.user.model.user_data_types import (
@@ -93,6 +92,7 @@ class RegisteredUser(UserBase):
         return (
             {"avatar": avatar, "id": user_id, "name": refresh_data["name"]},
             {
+                "api_key": api_key,
                 "admin": admin,
                 "listen_key": refresh_data["listen_key"],
                 "lock": refresh_data["listener_lock"] or False,
@@ -268,12 +268,7 @@ class RegisteredUser(UserBase):
         )
 
     async def generate_listen_key(self, cursor: RainwaveCursor) -> str:
-        listen_key = "".join(
-            random.choice(
-                string.ascii_uppercase + string.digits + string.ascii_lowercase
-            )
-            for _ in range(10)
-        )
+        listen_key = generate_listen_key()
         await cursor.update(
             "UPDATE phpbb_users SET radio_listenkey = %s WHERE user_id = %s",
             (listen_key, self.id),

@@ -3,7 +3,7 @@ from typing import Any, Coroutine
 import aiohttp
 from xml.etree import ElementTree
 
-from common import config, log
+from common import config, log, stations
 from common.db.cursor import get_cursor
 
 
@@ -34,7 +34,7 @@ class IcecastSyncCall:
             "%s %s %s count: %s"
             % (
                 self.relay_name,
-                config.station_id_friendly[self.sid],
+                stations.station_id_friendly[self.sid],
                 self.file_extension,
                 listener_count,
             ),
@@ -49,7 +49,7 @@ class IcecastSyncCall:
                     "%s %s %s failed query: %s %s"
                     % (
                         self.relay_name,
-                        config.station_id_friendly[self.sid],
+                        stations.station_id_friendly[self.sid],
                         self.file_extension,
                         response.status,
                         response.reason,
@@ -103,9 +103,9 @@ async def _start() -> None:
 
     async with get_cursor() as cursor:
         try:
-            stations: dict[int, int] = {}
-            for sid in config.station_ids:
-                stations[sid] = 0
+            station_listener_count: dict[int, int] = {}
+            for sid in stations.station_ids:
+                station_listener_count[sid] = 0
 
             relays: dict[str, int] = {}
             for relay_name in config.relays.keys():
@@ -113,14 +113,14 @@ async def _start() -> None:
 
             for call in calls:
                 listener_count = call.get_listeners()
-                stations[call.sid] += listener_count
+                station_listener_count[call.sid] += listener_count
                 relays[call.relay_name] += listener_count
 
-            for sid, listener_count in stations.items():
+            for sid, listener_count in station_listener_count.items():
                 log.debug(
                     "icecast_sync",
                     "%s has %s listeners."
-                    % (config.station_id_friendly[sid], listener_count),
+                    % (stations.station_id_friendly[sid], listener_count),
                 )
                 await cursor.update(
                     "INSERT INTO r4_listener_counts (sid, lc_guests) VALUES (%s, %s)",
