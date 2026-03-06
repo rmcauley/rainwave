@@ -8,7 +8,7 @@ from common.locale import locale
 
 
 @handle_url("/locale/")
-class LocaleIndex(api.web.HTMLRequest):
+class LocaleIndex(HTMLRequest):
     description = "Lists the currently available Rainwave locales/translations and how many lines are missing in them, as compared to the English master locale."
     auth_required = False
     sid_required = False
@@ -41,7 +41,7 @@ class LocaleIndex(api.web.HTMLRequest):
 
 
 @handle_url(r"/locale/(\w+)")
-class LocaleMissingLines(api.web.HTMLRequest):
+class LocaleMissingLines(HTMLRequest):
     description = "Lists all the missing lines in a locale/translation file."
     auth_required = False
     sid_required = False

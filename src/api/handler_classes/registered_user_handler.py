@@ -1,16 +1,14 @@
-from abc import ABC
-from typing import cast
-
-from api.handler_classes.api_handler import APIHandler
+from api.exceptions import APIException
+from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
 from common.user.model.registered_user import RegisteredUser
 
 
-class RegisteredUserAPIHandler(APIHandler, ABC):
+class RegisteredUserAPIHandler(AuthRequiredAPIHandler):
     login_required = True
-    registered_user: RegisteredUser
+    user: RegisteredUser  # pyright: ignore[reportIncompatibleVariableOverride]
 
     async def prepare(self) -> None:
         await super().prepare()
 
-        # super().prepare() guarantees that registered_user is available
-        self.registered_user = cast(RegisteredUser, self.user)
+        if self.user.id == 1:
+            raise APIException("login_required", http_code=403)

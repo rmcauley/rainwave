@@ -34,9 +34,12 @@ class SessionApiKeyRow(TypedDict):
 
 
 class RainwaveHandler(RequestHandler, ABC):
+    # What is the default response key for this request, for e.g. error handling
+    return_name: RainwaveResponseKey
+    # What is the response type?
     content_type = "text/html"
     # Do we need a Rainwave auth key for this request?
-    auth_required = True
+    auth_required = False
     # Validate user's tuned in status first.
     tunein_required = False
     # Validate user's logged in status first.
@@ -51,13 +54,14 @@ class RainwaveHandler(RequestHandler, ABC):
     perks_required = False
     # Automatically add pagination to an API request.
     pagination = False
-    # set to allow from any source
+    # Set to True to allow from any source
     allow_cors = False
     # Should the user be free to vote and rate?
     unlocked_listener_only = False
+    # Should the output of this API request be pretty-printed from its JSON?
     pretty_print_html = False
 
-    user: UserBase | None = None
+    optional_user: UserBase | None = None
     locale: RainwaveLocale = translations["en-CA"]  # type: ignore
     response: RainwaveResponse = {}
     error_response: dict[RainwaveResponseKey, RainwaveErrorObject] = {}
@@ -113,18 +117,13 @@ class RainwaveHandler(RequestHandler, ABC):
 
         self.permission_checks(user, self.sid)
 
-        self.user = user
+        self.optional_user = user
 
     def set_default_headers(self) -> None:
         self.set_header("Content-Type", self.content_type)
 
     @abstractmethod
     def get_request_args(self) -> None:
-        raise NotImplementedError()
-
-    @property
-    @abstractmethod
-    def return_name(self) -> RainwaveResponseKey:
         raise NotImplementedError()
 
     def set_cookie(self, name: str, value: Any, *args: Any, **kwargs: Any) -> None:

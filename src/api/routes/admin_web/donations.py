@@ -3,7 +3,7 @@ from api.handle_url import handle_url
 
 
 @handle_url("/admin/tools/donations")
-class UserSearchTool(api.web.HTMLRequest):
+class UserSearchTool(HTMLRequest):
     admin_required = True
 
     def get(self):
@@ -20,7 +20,7 @@ class UserSearchTool(api.web.HTMLRequest):
 
 
 @handle_url("/admin/album_list/donations")
-class DonationAddTool(api.web.HTMLRequest):
+class DonationAddTool(HTMLRequest):
     admin_required = True
 
     def get(self):

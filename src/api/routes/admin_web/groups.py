@@ -50,7 +50,7 @@ class AssociateGroupAddAlbum(APIHandler):
 
 
 @handle_url(r"/admin/tools/associate_groups_finish/(\d+)")
-class AssociateGroupToolFinish(api.web.HTMLRequest):
+class AssociateGroupToolFinish(HTMLRequest):
     admin_required = True
     sid_required = False
 
@@ -74,7 +74,7 @@ class AssociateGroupToolFinish(api.web.HTMLRequest):
 
 
 @handle_url("/admin/tools/associate_groups_cache_reset")
-class AssociateGroupCacheReset(api.web.HTMLRequest):
+class AssociateGroupCacheReset(HTMLRequest):
     admin_required = True
     sid_required = False
 
@@ -89,7 +89,7 @@ class AssociateGroupCacheReset(api.web.HTMLRequest):
 
 
 @handle_url("/admin/tools/associate_groups")
-class AssociateGroupTool(api.web.HTMLRequest):
+class AssociateGroupTool(HTMLRequest):
     admin_required = True
     sid_required = False
 
@@ -167,7 +167,7 @@ class AssociateGroupSongList(SongList):
 
 
 @handle_url("/admin/tools/group_edit")
-class GroupEditTool(api.web.HTMLRequest):
+class GroupEditTool(HTMLRequest):
     admin_required = True
 
     def get(self):
@@ -180,7 +180,7 @@ class GroupEditTool(api.web.HTMLRequest):
 
 
 @handle_url("/admin/album_list/group_edit")
-class GroupEditGroupList(api.web.HTMLRequest):
+class GroupEditGroupList(HTMLRequest):
     admin_required = True
 
     async def get(self):
@@ -235,7 +235,7 @@ class GroupEditGroupList(api.web.HTMLRequest):
 
 
 @handle_url("/admin/song_list/group_edit")
-class GroupEditSongList(api.web.HTMLRequest):
+class GroupEditSongList(HTMLRequest):
     admin_required = True
     fields = {"id": (api.web.fieldtypes.group_id, True)}
 
@@ -263,7 +263,7 @@ class GroupEditSongList(api.web.HTMLRequest):
 
 
 @handle_url("/admin/tools/disassociate_groups")
-class DisassociateGroupTool(api.web.HTMLRequest):
+class DisassociateGroupTool(HTMLRequest):
     admin_required = True
 
     def get(self):

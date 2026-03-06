@@ -29,7 +29,7 @@ def get_stream_filename(
 
 
 @handle_url(r"/tune_in/(\w+|\d)\.(ogg|mp3)(.m3u)?")
-class TuneInIndex(api.web.HTMLRequest):
+class TuneInIndex(HTMLRequest):
     description = (
         "Provides the user with an M3U file containing Ogg or MP3 URLs to relays."
     )

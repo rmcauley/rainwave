@@ -53,8 +53,8 @@ async def attach_info_to_request(
     include_request_line: bool,
     include_live_voting: bool,
 ) -> None:
-    if request.user:
-        request.response["user"] = request.user.to_api_with_private_data()
+    if request.optional_user:
+        request.response["user"] = request.optional_user.to_api_with_private_data()
 
     if include_request_line:
         request.response["request_line"] = await cache_get_station(
@@ -86,8 +86,10 @@ async def attach_info_to_request(
     sched_history = timeline_api["sched_history"]
     sched_next = timeline_api["sched_next"]
 
-    if request.user and not request.user.is_anonymous():
-        song_requests = await get_user_requests(cursor, request.sid, request.user.id)
+    if request.optional_user and not request.optional_user.is_anonymous():
+        song_requests = await get_user_requests(
+            cursor, request.sid, request.optional_user.id
+        )
         request.response["requests"] = user_requests_to_api(song_requests)
 
         song_ids: list[int] = []
@@ -115,7 +117,7 @@ async def attach_info_to_request(
                 song_id = ANY (%s) 
                 AND user_id = %s
             """,
-            (song_ids, request.user.id),
+            (song_ids, request.optional_user.id),
             row_type=SongRatingRow,
         )
         album_rating_rows = await cursor.fetch_all(
@@ -152,18 +154,18 @@ async def attach_info_to_request(
             for row in album_rating_rows
         }
 
-        if request.user.is_tunedin():
+        if request.optional_user.is_tunedin():
             sched_current["songs"][0]["rating_allowed"] = True
 
         if (
             len(sched_next) > 0
-            and request.user.is_tunedin()
+            and request.optional_user.is_tunedin()
             and is_api_timeline_entry_an_election(sched_next[0])
             and len(sched_next[0]["songs"]) > 1
         ):
             sched_next[0]["voting_allowed"] = True
 
-        if request.user.is_tunedin() and request.user.has_perks():
+        if request.optional_user.is_tunedin() and request.optional_user.has_perks():
             for i in range(1, len(sched_next)):
                 if (
                     is_api_timeline_entry_an_election(sched_next[0])
@@ -179,12 +181,12 @@ async def attach_info_to_request(
         for history_entry in sched_history:
             for song in history_entry["songs"]:
                 _attach_rating_to_song(song_ratings, album_ratings, song)
-                if request.user.has_perks():
+                if request.optional_user.has_perks():
                     song["rating_allowed"] = True
                 elif (
                     user_rating_acl
                     and song["id"] in user_rating_acl
-                    and request.user.id in user_rating_acl[song["id"]]
+                    and request.optional_user.id in user_rating_acl[song["id"]]
                 ):
                     song["rating_allowed"] = True
 
@@ -192,19 +194,24 @@ async def attach_info_to_request(
     request.response["sched_next"] = sched_next
     request.response["sched_history"] = sched_history
 
-    if request.user:
-        if request.user.is_anonymous():
+    if request.optional_user:
+        if request.optional_user.is_anonymous():
             if (
                 len(sched_next) > 0
-                and request.user.private_data["voted_entry"] is not None
-                and request.user.private_data["voted_entry"] > 0
-                and request.user.private_data["lock_sid"] == request.sid
+                and request.optional_user.private_data["voted_entry"] is not None
+                and request.optional_user.private_data["voted_entry"] > 0
+                and request.optional_user.private_data["lock_sid"] == request.sid
             ):
                 request.response["already_voted"] = [
-                    [sched_next[0]["id"], request.user.private_data["voted_entry"]]
+                    [
+                        sched_next[0]["id"],
+                        request.optional_user.private_data["voted_entry"],
+                    ]
                 ]
         else:
-            user_vote_cache = await cache_get_user(request.user.id, "vote_history")
+            user_vote_cache = await cache_get_user(
+                request.optional_user.id, "vote_history"
+            )
             if user_vote_cache:
                 request.response["already_voted"] = user_vote_cache
 

@@ -28,6 +28,30 @@
     }
   ],
   "paths": {
+    "/api4/power_hours": {
+      "post": {
+        "operationId": "getPowerHours",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "album": {
+                      "$ref": "#/components/schemas/power_hours"
+                    }
+                  },
+                  "required": ["power_hours"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Statistics"]
+      }
+    },
     "/api4/album": {
       "post": {
         "operationId": "getAlbum",
@@ -3934,6 +3958,21 @@
         },
         "required": ["tl_key", "text"],
         "type": "object"
+      },
+      "power_hours": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sid": { "$ref": "#/components/schemas/_station_id" },
+            "id": { "type": "integer" },
+            "name": { "type": "string" },
+            "start": { "$ref": "#/components/schemas/_time" },
+            "end": { "$ref": "#/components/schemas/_time" },
+            "url": { "oneOf": [{ "type": "string" }, { "type": "null" }] }
+          },
+          "required": ["sid", "id", "name", "start", "end", "url"]
+        }
       }
     }
   }

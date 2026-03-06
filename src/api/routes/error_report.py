@@ -1,37 +1,22 @@
-import urllib
-import tornado.web
-from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from typing import cast
 from urllib.parse import urlsplit
-import urllib.parse
-import time
-from api import fieldtypes
-from api.handler_classes.api_handler import APIHandler
+from time import time as timestamp
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
-from libs import cache
+from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
+from api.helpers.js_error_reports import (
+    JavaScriptErrorReport,
+    JavaScriptErrorReportDict,
+)
 from common import config
-from libs import log
-import json
+from common.cache.cache import cache_get, cache_set
 
 
 @handle_api_url("error_report")
-class ErrorReport(APIHandler):
-    login_required = False
-    tunein_required = False
-    sid_required = False
-    help_hidden = True
+class ErrorReport(AuthRequiredAPIHandler):
     description = "Handles taking automated error reports from backend.rainwave."
     return_name = "error_report_result"
-    fields = {
-        "name": (fieldtypes.string, True),
-        "message": (fieldtypes.string, True),
-        "lineNumber": (fieldtypes.integer, None),
-        "columnNumber": (fieldtypes.integer, None),
-        "stack": (fieldtypes.string, True),
-        "location": (fieldtypes.string, True),
-        "user_agent": (fieldtypes.string, True),
-        "browser_language": (fieldtypes.string, True),
-    }
+    sid_required = False
 
     async def prepare(self):
         if not self.request.headers.get("Referer"):
@@ -44,7 +29,7 @@ class ErrorReport(APIHandler):
         if refhost == config.hostname:
             failed = False
         elif (
-            config.has("accept_error_reports_from_hosts")
+            config.accept_error_reports_from_hosts
             and refhost in config.accept_error_reports_from_hosts
         ):
             failed = False
@@ -55,26 +40,42 @@ class ErrorReport(APIHandler):
                 % refhost,
             )
         else:
-            return super().prepare()
+            await super().prepare()
 
     async def post(self):
-        # limit size of submission
-        for k, v in self.cleaned_args.items():
-            if isinstance(object, str):
-                self.cleaned_args[k] = v[:2048]
-        self.cleaned_args["user_id"] = self.user.id
-        self.cleaned_args["username"] = self.user.data["name"]
-        self.cleaned_args["time"] = time.time()
+        error_report = self.get_validated_input(JavaScriptErrorReport)
 
-        reports = cache.get("error_reports")
+        reports = cast(
+            list[JavaScriptErrorReportDict] | None, await cache_get("error_reports")
+        )
         if not isinstance(reports, list):
             reports = []
 
         while len(reports) > 30:
             reports.pop()
 
-        reports.insert(0, self.cleaned_args)
-        cache.set_global("error_reports", reports)
+        reports.insert(
+            0,
+            {
+                "browserLanguage": error_report.browserLanguage,
+                "columnNumber": error_report.columnNumber,
+                "lineNumber": error_report.lineNumber,
+                "location": error_report.location,
+                "message": error_report.location,
+                "name": error_report.name[:2048],
+                "stack": error_report.stack[:2048],
+                "time": int(timestamp()),
+                "user_id": self.user.id,
+                "userAgent": error_report.userAgent,
+                "username": self.user.public_data["name"],
+            },
+        )
 
-        self.append_standard("report_submitted", "Error report submitted.")
+        await cache_set("error_reports", reports)
+
+        self.response["error_report_result"] = {
+            "success": True,
+            "text": "Submitted",
+            "tl_key": "report_submitted",
+        }
         self.write_rainwave_output()

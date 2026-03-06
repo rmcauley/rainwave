@@ -6,7 +6,7 @@ from routes.admin_web.index import SongList
 
 
 @handle_url("/admin/tools/cooldown")
-class CooldownTool(api.web.HTMLRequest):
+class CooldownTool(HTMLRequest):
     admin_required = True
 
     def get(self):

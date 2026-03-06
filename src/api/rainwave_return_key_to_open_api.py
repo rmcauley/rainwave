@@ -52,6 +52,7 @@ class RainwaveResponse(TypedDict, total=False):
     ping: rainwave_typeddicts.Ping
     pong: rainwave_typeddicts.Pong
     pongConfirm: rainwave_typeddicts.PongConfirm
+    power_hours: rainwave_typeddicts.PowerHours
     playback_history: rainwave_typeddicts.PlaybackHistory
     rate_result: rainwave_typeddicts.RateResult
     redownload_m3u: rainwave_typeddicts.RedownloadM3u
@@ -119,6 +120,7 @@ RainwaveResponseKey = Literal[
     "pong",
     "pongConfirm",
     "playback_history",
+    "power_hours",
     "rate_result",
     "redownload_m3u",
     "relays",

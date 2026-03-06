@@ -46,7 +46,7 @@ class ScanResults(api.web.PrettyPrintAPIMixin, BackendScanErrors):
 
 
 @handle_url("/admin/tools/scan_results")
-class LatestSongs(api.web.HTMLRequest):
+class LatestSongs(HTMLRequest):
     admin_required = True
 
     async def get(self):

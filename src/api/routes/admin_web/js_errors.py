@@ -59,7 +59,7 @@ class JSErrorDisplay(api.web.PrettyPrintAPIMixin, JSErrors):
 
 
 @handle_url("/admin/tools/js_errors")
-class JSErrorsDummy(api.web.HTMLRequest):
+class JSErrorsDummy(HTMLRequest):
     admin_required = True
 
     def get(self):

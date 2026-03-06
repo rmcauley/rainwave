@@ -15,7 +15,7 @@ from common.rainwave import schedule  # pylint: disable=W0611
 
 
 @handle_url("/admin/tools/producers")
-class WebCreateProducer(api.web.HTMLRequest):
+class WebCreateProducer(HTMLRequest):
     admin_required = True
     sid_required = True
 
@@ -106,7 +106,7 @@ class WebListProducersAll(WebListProducersBase, producers.ListProducersAll):
 
 
 @handle_url("/admin/album_list/modify_producer")
-class WebModifyProducer(api.web.HTMLRequest):
+class WebModifyProducer(HTMLRequest):
     admin_required = True
     sid_required = True
     fields = {"sched_id": (fieldtypes.sched_id, True)}

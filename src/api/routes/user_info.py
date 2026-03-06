@@ -11,5 +11,5 @@ class UserInfoRequest(APIHandler):
     sid_required = False
 
     async def post(self):
-                self.response["user_info"] = self.user.to_private_dict()
+        self.response["user_info"] = self.user.to_private_dict()
         self.write_rainwave_output()

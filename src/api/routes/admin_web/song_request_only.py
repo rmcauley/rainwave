@@ -6,7 +6,7 @@ from routes.admin_web.index import SongList
 
 
 @handle_url("/admin/tools/song_request_only")
-class SongRequestOnlyTool(api.web.HTMLRequest):
+class SongRequestOnlyTool(HTMLRequest):
     admin_required = True
 
     def get(self):
