@@ -1,4 +1,5 @@
 import asyncio
+from datetime import timedelta
 import os
 import resource
 
@@ -13,6 +14,7 @@ from common import config, log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from api.handle_url import request_classes
+from common.playlist.object_counts import update_playlist_object_counts
 
 app: tornado.web.Application | None = None
 
@@ -45,6 +47,13 @@ class APIServer:
             )
             http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
             http_server.listen(port_no)
+
+            await update_playlist_object_counts()
+            playlist_object_count_update = tornado.ioloop.PeriodicCallback(
+                update_playlist_object_counts,
+                timedelta(hours=1),
+            )
+            playlist_object_count_update.start()
 
             for request in request_classes:
                 log.debug("start", "   Handler: %s" % str(request))

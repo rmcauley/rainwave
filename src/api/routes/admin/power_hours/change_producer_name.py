@@ -18,17 +18,17 @@ class ChangeProducerName(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+            producer = BaseProducer.load_producer_by_id(input["sched_id"))
             if not producer:
                 raise APIException(
                     "internal_error",
-                    "Producer ID %s not found." % self.get_argument("sched_id"),
+                    "Producer ID %s not found." % input["sched_id"),
                 )
             await cursor.update(
                 "UPDATE r4_schedule SET sched_name = %s WHERE sched_id = %s",
-                (self.get_argument("name"), self.get_argument("sched_id")),
+                (input["name"), input["sched_id")),
             )
             self.append_standard(
-                "success", "Producer name changed to '%s'." % self.get_argument("name")
+                "success", "Producer name changed to '%s'." % input["name")
             )
             self.write_rainwave_output()

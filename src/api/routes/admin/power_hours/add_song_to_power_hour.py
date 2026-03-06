@@ -19,8 +19,8 @@ class AddSongToPowerHour(APIHandler):
     }
 
     async def post(self):
-        ph = OneUpProducer.load_producer_by_id(self.get_argument("sched_id"))
+        ph = OneUpProducer.load_producer_by_id(input["sched_id"))
         if not ph:
             raise APIException("404", http_code=404)
-        ph.add_song_id(self.get_argument("song_id"), self.get_argument("song_sid"))
+        ph.add_song_id(input["song_id"), input["song_sid"))
                 self.response[self.return_name] = ph.to_dict()

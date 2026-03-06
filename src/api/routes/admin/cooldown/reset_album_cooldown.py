@@ -18,6 +18,6 @@ class ResetAlbumCooldown(APIHandler):
         async with get_cursor() as cursor:
             await cursor.update(
                 "UPDATE r4_album_sid SET album_cool_multiply = 1, album_cool_override = NULL WHERE album_id = %s AND sid = %s",
-                (self.get_argument("album_id"), self.sid),
+                (input["album_id"), self.sid),
             )
                     self.response[self.return_name] = {"success": True, "text": "Album cooldown multiplier and override reset."},

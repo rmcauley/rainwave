@@ -19,32 +19,32 @@ class SetSongCooldown(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            if self.get_argument("multiply") and self.get_argument("override"):
+            if input["multiply") and input["override"):
                 await cursor.update(
                     "UPDATE r4_songs SET song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s",
                     (
-                        self.get_argument("multiply"),
-                        self.get_argument("override"),
-                        self.get_argument("song_id"),
+                        input["multiply"),
+                        input["override"),
+                        input["song_id"),
                     ),
                 )
                             self.response[self.return_name] = {
                         "success": True,
                         "text": "Song cooldown multiplier and override updated.",
                     },
-            elif self.get_argument("multiply"):
+            elif input["multiply"):
                 await cursor.update(
                     "UPDATE r4_songs SET song_cool_multiply = %s WHERE song_id = %s",
-                    (self.get_argument("multiply"), self.get_argument("song_id")),
+                    (input["multiply"), input["song_id")),
                 )
                             self.response[self.return_name] = {
                         "success": True,
                         "text": "Song cooldown multiplier updated.  Override untouched.",
                     },
-            elif self.get_argument("override"):
+            elif input["override"):
                 await cursor.update(
                     "UPDATE r4_songs SET AND song_cool_override = %s WHERE song_id = %s",
-                    (self.get_argument("override"), self.get_argument("song_id")),
+                    (input["override"), input["song_id")),
                 )
                             self.response[self.return_name] = {
                         "success": True,

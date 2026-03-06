@@ -16,8 +16,8 @@ class ChangeProducerEndTime(APIHandler):
     }
 
     async def post(self):
-        producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+        producer = BaseProducer.load_producer_by_id(input["sched_id"))
         if not producer:
             raise APIException("404", http_code=404)
-        producer.change_end(self.get_argument("utc_time"))
+        producer.change_end(input["utc_time"))
                 self.response[self.return_name] = producer.to_dict()

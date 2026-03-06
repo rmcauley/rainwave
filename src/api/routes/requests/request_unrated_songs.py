@@ -14,7 +14,7 @@ class RequestUnratedSongs(APIHandler):
     sync_across_sessions = True
 
     async def post(self):
-        if self.user.add_unrated_requests(self.sid, self.get_argument("limit")) > 0:
+        if self.user.add_unrated_requests(self.sid, input["limit")) > 0:
             self.append_standard("request_unrated_songs_success")
                         self.response["requests"] = self.user.get_requests(self.sid)
         else:

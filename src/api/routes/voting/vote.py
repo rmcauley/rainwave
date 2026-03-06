@@ -42,23 +42,23 @@ class SubmitVote(APIHandler):
             if (
                 event.is_election
                 and typing.cast(Election, event).has_entry_id(
-                    self.get_argument("entry_id")
+                    input["entry_id")
                 )
                 and len(event.songs) > 1
             ):
                 elec_id = event.id
-                voted = await self.vote(self.get_argument("entry_id"), event, lock_count)
+                voted = await self.vote(input["entry_id"), event, lock_count)
                 break
             if not self.user.data["perks"]:
                 break
         if voted:
-            append_success_to_request(self, elec_id, self.get_argument("entry_id"))
+            append_success_to_request(self, elec_id, input["entry_id"))
         else:
             self.append_standard(
                 "cannot_vote_for_this_now",
                 success=False,
                 elec_id=elec_id,
-                entry_id=self.get_argument("entry_id"),
+                entry_id=input["entry_id"),
             )
         self.write_rainwave_output()
 

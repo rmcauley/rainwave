@@ -16,7 +16,7 @@ class SearchHandler(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            s = make_searchable_string(self.get_argument("search"))
+            s = make_searchable_string(input["search"))
             if len(s) < 3:
                 raise APIException("search_string_too_short")
 

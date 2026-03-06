@@ -3,10 +3,11 @@ from http.client import responses
 import time
 from time import time as timestamp
 import traceback
-from typing import Any, TypedDict, cast
+from typing import Any, Type, TypedDict, cast
 from urllib.parse import urlencode
 
 import orjson
+import pydantic
 from tornado.web import HTTPError, RequestHandler
 
 from api import fieldtypes
@@ -452,3 +453,42 @@ class RainwaveHandler(RequestHandler, ABC):
                 new_keys.append(key)
         new_keys.extend(key for key in keys if key not in new_keys)
         return new_keys
+
+    def get_validated_input[T: pydantic.BaseModel](
+        self, dto: Type[T], data: Any = None
+    ) -> T:
+        try:
+            if data is None:
+                data = self.request.arguments
+            return dto.model_validate(data)
+        except pydantic.ValidationError as exc:
+            for err in exc.errors():
+                field = (
+                    ".".join(str(part) for part in err["loc"] if part != "__root__")
+                    or "body"
+                )
+
+                # missing required value
+                if err["type"] == "missing":
+                    raise APIException(
+                        "missing_argument",
+                        argument=field,
+                        http_code=400,
+                    )
+
+                # everything else -> invalid argument
+                reason = err.get("msg") or "invalid value"
+                # optional: use expected type if available
+                expected = err.get("ctx", {}).get("expected_type")
+                if expected:
+                    reason = f"{field} should be {expected} type"
+
+                raise APIException(
+                    "invalid_argument",
+                    argument=field,
+                    http_code=400,
+                    reason=reason,
+                )
+
+            # fallback (normally unreachable because loop handles all errors)
+            raise APIException("invalid_argument", argument="request", http_code=400)

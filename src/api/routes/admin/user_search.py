@@ -26,7 +26,7 @@ class UserSearchRequest(APIHandler):
 
             possible_id = await cursor.fetch_var(
                 "SELECT user_id FROM phpbb_users WHERE username = %s OR radio_username = %s",
-                (self.get_argument("username"), self.get_argument("username")),
+                (input["username"), input["username")),
             )
             if possible_id:
                 possible_sid = await cursor.fetch_var(

@@ -28,7 +28,7 @@ class R4SetupSessionMixin:
         return False
 
     def get_destination(self):
-        destination = self.get_argument("destination", "web")
+        destination = input["destination", "web")
         if destination not in ALLOWED_DESTINATIONS:
             destination = "web"
         return destination

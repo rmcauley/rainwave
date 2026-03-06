@@ -27,8 +27,8 @@ class UpdateUserAvatarByDiscordId(APIHandler):
                     f"{self.request.remote_ip} is not allowed to access this endpoint.",
                 )
 
-            discord_user_id = self.get_argument("discord_user_id")
-            avatar_url = self.get_argument("avatar")
+            discord_user_id = input["discord_user_id")
+            avatar_url = input["avatar")
             user_avatar_type = "avatar.driver.remote"
 
             possible_id = await cursor.fetch_var(

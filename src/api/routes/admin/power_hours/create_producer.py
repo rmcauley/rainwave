@@ -22,14 +22,14 @@ class CreateProducer(APIHandler):
     }
 
     async def post(self):
-        p = event.all_producers[self.get_argument("producer_type")].create(
+        p = event.all_producers[input["producer_type")].create(
             sid=self.sid,
-            start=self.get_argument("start_utc_time"),
-            end=self.get_argument("end_utc_time"),
-            name=self.get_argument("name"),
-            url=self.get_argument("url"),
+            start=input["start_utc_time"),
+            end=input["end_utc_time"),
+            name=input["name"),
+            url=input["url"),
         )
-        if self.get_argument("fill_unrated") and getattr(p, "fill_unrated", False):
+        if input["fill_unrated") and getattr(p, "fill_unrated", False):
             end_time = self.get_argument_int("end_utc_time")
             start_time = self.get_argument_int("start_utc_time")
             if not end_time or not start_time:

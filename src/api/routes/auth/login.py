@@ -24,13 +24,13 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             "login.html",
             request=self,
             locale=self.locale,
-            destination=self.get_argument("destination", "web"),
+            destination=input["destination", "web"),
         )
 
     async def post(self):
         async with get_cursor() as cursor:
-            username = self.get_argument("username")
-            password = self.get_argument("password")
+            username = input["username")
+            password = input["password")
             if not username:
                 raise APIException("username_required")
             if not password:

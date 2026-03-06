@@ -15,7 +15,7 @@ class AllSongsHandler(APIHandlerWithGet):
         async with get_cursor() as cursor:
             order = "album_name, song_title"
             distinct_on = "album_name, song_title"
-            if self.get_argument("order") == "rating":
+            if input["order") == "rating":
                 order = "song_rating_user DESC, album_name, song_title"
                 distinct_on = "song_rating_user, album_name, song_title"
                     self.response[self.return_name] = await cursor.fetch_all(

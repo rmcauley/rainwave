@@ -21,12 +21,12 @@ class MoveUpInPowerHour(APIHandler):
         async with get_cursor() as cursor:
             ph_id = await cursor.fetch_var(
                 "SELECT sched_id FROM r4_one_ups WHERE one_up_id = %s",
-                (self.get_argument("one_up_id"),),
+                (input["one_up_id"),),
             )
             if not ph_id:
                 raise APIException("invalid_argument", "Invalid One Up ID.")
             ph = OneUpProducer.load_producer_by_id(ph_id)
             if not ph:
                 raise APIException("404", http_code=404)
-            ph.move_song_up(self.get_argument("one_up_id"))
+            ph.move_song_up(input["one_up_id"))
                     self.response[self.return_name] = ph.to_dict()

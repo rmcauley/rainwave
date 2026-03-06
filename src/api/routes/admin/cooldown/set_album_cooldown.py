@@ -18,13 +18,13 @@ class SetAlbumCooldown(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            if self.get_argument("multiply") and self.get_argument("override"):
+            if input["multiply") and input["override"):
                 await cursor.update(
                     "UPDATE r4_album_sid SET album_cool_multiply = %s, album_cool_override = %s WHERE album_id = %s AND sid = %s",
                     (
-                        self.get_argument("multiply"),
-                        self.get_argument("override"),
-                        self.get_argument("album_id"),
+                        input["multiply"),
+                        input["override"),
+                        input["album_id"),
                         self.sid,
                     ),
                 )
@@ -32,12 +32,12 @@ class SetAlbumCooldown(APIHandler):
                         "success": True,
                         "text": "Album cooldown multiplier and override updated.",
                     },
-            elif self.get_argument("multiply"):
+            elif input["multiply"):
                 await cursor.update(
                     "UPDATE r4_album_sid SET album_cool_multiply = %s WHERE album_id = %s AND sid = %s",
                     (
-                        self.get_argument("multiply"),
-                        self.get_argument("album_id"),
+                        input["multiply"),
+                        input["album_id"),
                         self.sid,
                     ),
                 )
@@ -45,12 +45,12 @@ class SetAlbumCooldown(APIHandler):
                         "success": True,
                         "text": "Album cooldown multiplier updated.  Override untouched.",
                     },
-            elif self.get_argument("override"):
+            elif input["override"):
                 await cursor.update(
                     "UPDATE r4_album_sid SET album_cool_override = %s WHERE album_id = %s AND sid = %s",
                     (
-                        self.get_argument("override"),
-                        self.get_argument("album_id"),
+                        input["override"),
+                        input["album_id"),
                         self.sid,
                     ),
                 )

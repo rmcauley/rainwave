@@ -19,11 +19,11 @@ class EuropifyProducer(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            producer = BaseProducer.load_producer_by_id(self.get_argument("sched_id"))
+            producer = BaseProducer.load_producer_by_id(input["sched_id"))
             if not producer:
                 raise APIException(
                     "internal_error",
-                    "Producer ID %s not found." % self.get_argument("sched_id"),
+                    "Producer ID %s not found." % input["sched_id"),
                 )
             new_producer = producer.duplicate()
             new_producer.name += " Reprisal"

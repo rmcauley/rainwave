@@ -13,7 +13,7 @@ class KeyDelete(KeyIndex):
         async with get_cursor() as cursor:
             await cursor.update(
                 "DELETE FROM r4_api_keys WHERE user_id = %s AND api_id = %s",
-                (self.user.id, self.get_argument("delete_key")),
+                (self.user.id, input["delete_key")),
             )
             self.user.get_all_api_keys()
             super().get()

@@ -3108,7 +3108,7 @@
             ]
           },
           "colour": {
-            "type": "string"
+            "oneOf": [{ "type": "string" }, { "type": "null" }]
           },
           "losing_votes": {
             "deprecated": true,
@@ -3122,7 +3122,7 @@
             "type": "string"
           },
           "rank": {
-            "type": "string"
+            "oneOf": [{ "type": "string" }, { "type": "null" }]
           },
           "rating_spread": {
             "items": {

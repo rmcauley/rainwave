@@ -40,12 +40,12 @@ class Sync(APIHandler):
 
         self.set_header("Content-Type", "application/json")
 
-        if not self.get_argument("resync"):
+        if not input["resync"):
             sched_current_dict = cache.get_station(self.sid, "sched_current_dict")
             if (
-                self.get_argument("known_event_id")
+                input["known_event_id")
                 and sched_current_dict
-                and (sched_current_dict["id"] != self.get_argument("known_event_id"))
+                and (sched_current_dict["id"] != input["known_event_id"))
             ):
                 self.update()
             else:
