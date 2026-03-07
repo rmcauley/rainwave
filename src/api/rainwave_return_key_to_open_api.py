@@ -20,6 +20,20 @@ class ArtistWithSongs(rainwave_typeddicts.Artist):
 
 
 class RainwaveResponse(TypedDict, total=False):
+    update_user_nickname_by_discord_id_result: (
+        rainwave_typeddicts.UpdateUserNicknameByDiscordIdResult
+    )
+    update_user_avatar_by_discord_id_result: (
+        rainwave_typeddicts.UpdateUserAvatarByDiscordIdResult
+    )
+    enable_perks_by_discord_ids_result: (
+        rainwave_typeddicts.EnablePerksByDiscordIdsResult
+    )
+    add_donation_result: rainwave_typeddicts.AddDonationResult
+    delete_power_hour_result: rainwave_typeddicts.DeletePowerHourResult
+    set_song_request_only_result: rainwave_typeddicts.SetSongRequestOnlyResult
+    set_song_cooldown_result: rainwave_typeddicts.SetSongCooldownResult
+    set_album_cooldown_result: rainwave_typeddicts.SetAlbumCooldownResult
     admin_js_errors: rainwave_typeddicts.AdminJsErrors
     admin_music_scan_errors: rainwave_typeddicts.AdminMusicScanErrors
     admin_power_hour: rainwave_typeddicts.AdminPowerHour
@@ -163,6 +177,14 @@ RainwaveResponseKey = Literal[
     "wsok",
     "wsthrottle",
     "wserror",
+    "update_user_nickname_by_discord_id_result",
+    "update_user_avatar_by_discord_id_result",
+    "enable_perks_by_discord_ids_result",
+    "add_donation_result",
+    "delete_power_hour_result",
+    "set_song_request_only_result",
+    "set_song_cooldown_result",
+    "set_album_cooldown_result",
 ]
 
 

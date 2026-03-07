@@ -46,5 +46,4 @@ class UpdateUserNicknameByDiscordId(APIHandler):
                         possible_id,
                     ),
                 )
-
         self.write_rainwave_output()

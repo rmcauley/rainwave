@@ -43,4 +43,4 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
                 (list_as_tuple, PRIVILEGED_GROUP_IDS),
             )
 
-            self.write_rainwave_output()
+        self.write_rainwave_output()

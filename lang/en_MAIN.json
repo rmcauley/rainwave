@@ -627,5 +627,6 @@
   "cool_end": "Cooldown End",
   "power_hours": "Power Hours",
   "start": "Start",
-  "end": "End"
+  "end": "End",
+  "success": "Success"
 }

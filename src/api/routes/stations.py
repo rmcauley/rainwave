@@ -31,3 +31,4 @@ class StationsRequest(APIHandlerWithGet):
                 }
             )
         self.response["stations"] = station_list
+        self.write_rainwave_output()

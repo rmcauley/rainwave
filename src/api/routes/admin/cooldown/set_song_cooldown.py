@@ -1,57 +1,65 @@
-from api import fieldtypes
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
-
+from pydantic import BaseModel
 
 from common.db.cursor import get_cursor
 
 
+class SetSongCooldownPostRequest(BaseModel):
+    song_id: int
+    multiply: float | None = None
+    override: int | None = None
+
+
 @handle_api_url("admin/set_song_cooldown")
 class SetSongCooldown(APIHandler):
+    return_name = "set_song_cooldown_result"
     admin_required = True
-    sid_required = False
     description = "Sets the song cooldown multiplier and override.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
-    fields = {
-        "song_id": (fieldtypes.song_id, True),
-        "multiply": (fieldtypes.float_num, None),
-        "override": (fieldtypes.integer, None),
-    }
 
     async def post(self):
+        input = self.get_validated_input(SetSongCooldownPostRequest)
         async with get_cursor() as cursor:
-            if input. and input.:
+            if input.multiply is not None and input.override is not None:
                 await cursor.update(
                     "UPDATE r4_songs SET song_cool_multiply = %s, song_cool_override = %s WHERE song_id = %s",
                     (
-                        input.,
-                        input.,
-                        input.,
+                        input.multiply,
+                        input.override,
+                        input.song_id,
                     ),
                 )
-                            self.response[self.return_name] = {
-                        "success": True,
-                        "text": "Song cooldown multiplier and override updated.",
-                    },
-            elif input.:
+                self.response["set_song_cooldown_result"] = {
+                    "tl_key": "success",
+                    "success": True,
+                    "text": "Song cooldown multiplier and override updated.",
+                }
+            elif input.multiply is not None:
                 await cursor.update(
                     "UPDATE r4_songs SET song_cool_multiply = %s WHERE song_id = %s",
-                    (input., input.),
+                    (input.multiply, input.song_id),
                 )
-                            self.response[self.return_name] = {
-                        "success": True,
-                        "text": "Song cooldown multiplier updated.  Override untouched.",
-                    },
-            elif input.:
+                self.response["set_song_cooldown_result"] = {
+                    "tl_key": "success",
+                    "success": True,
+                    "text": "Song cooldown multiplier updated.  Override untouched.",
+                }
+
+            elif input.override is not None:
                 await cursor.update(
-                    "UPDATE r4_songs SET AND song_cool_override = %s WHERE song_id = %s",
-                    (input., input.),
+                    "UPDATE r4_songs SET song_cool_override = %s WHERE song_id = %s",
+                    (input.override, input.song_id),
                 )
-                            self.response[self.return_name] = {
-                        "success": True,
-                        "text": "Song cooldown override updated.  Multiplier untouched.",
-                    },
+                self.response["set_song_cooldown_result"] = {
+                    "tl_key": "success",
+                    "success": True,
+                    "text": "Song cooldown override updated.  Multiplier untouched.",
+                }
+
             else:
-                            self.response[self.return_name] = {
-                        "success": False,
-                        "text": "Neither multiply or override parameters set.",
-                    },
+                self.response["set_song_cooldown_result"] = {
+                    "tl_key": "oops",
+                    "success": False,
+                    "text": "Neither multiply or override parameters set.",
+                }
+        self.write_rainwave_output()

@@ -11,5 +11,5 @@ class JSErrors(APIHandler):
     description = "A list of errors that have happened to users using the site."
 
     async def post(self):
-        errors = await get_error_reports()
-        self.response["admin_js_errors"] = errors
+        self.response["admin_js_errors"] = await get_error_reports()
+        self.write_rainwave_output()

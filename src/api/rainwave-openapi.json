@@ -4209,7 +4209,23 @@
       "admin_power_hours": {
         "type": "array",
         "items": { "$ref": "#/components/schemas/admin_power_hour" }
-      }
+      },
+      "update_user_nickname_by_discord_id_result": {
+        "allOf": [{ "$ref": "#/components/schemas/_boolean_result" }]
+      },
+      "update_user_avatar_by_discord_id_result": {
+        "allOf": [{ "$ref": "#/components/schemas/_boolean_result" }]
+      },
+      "enable_perks_by_discord_ids_result": {
+        "allOf": [{ "$ref": "#/components/schemas/_boolean_result" }]
+      },
+      "add_donation_result": { "allOf": [{ "$ref": "#/components/schemas/_boolean_result" }] },
+      "delete_power_hour_result": { "allOf": [{ "$ref": "#/components/schemas/_boolean_result" }] },
+      "set_song_request_only_result": {
+        "allOf": [{ "$ref": "#/components/schemas/_boolean_result" }]
+      },
+      "set_song_cooldown_result": { "allOf": [{ "$ref": "#/components/schemas/_boolean_result" }] },
+      "set_album_cooldown_result": { "allOf": [{ "$ref": "#/components/schemas/_boolean_result" }] }
     }
   }
 }
