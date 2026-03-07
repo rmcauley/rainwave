@@ -7,7 +7,7 @@ import bcrypt
 import aiohttp
 from api.handle_url import handle_url
 from api.web import HTMLRequest
-from common.libs import db
+
 from tornado.auth import OAuth2Mixin
 
 from common import config, log

@@ -3,7 +3,7 @@
 ### Typing ignored for whole file
 
 import uuid
-from common.libs import db
+
 from common.user.user_model import make_user
 from api.web import RainwaveHandler
 from common.db.cursor import get_cursor

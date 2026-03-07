@@ -1,15 +1,15 @@
-from typing import cast
 from urllib.parse import urlsplit
 from time import time as timestamp
+from api import rainwave_typeddicts
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
 from api.helpers.js_error_reports import (
     JavaScriptErrorReport,
-    JavaScriptErrorReportDict,
+    get_error_reports,
+    set_error_reports,
 )
 from common import config
-from common.cache.cache import cache_get, cache_set
 
 
 @handle_api_url("error_report")
@@ -44,18 +44,7 @@ class ErrorReport(AuthRequiredAPIHandler):
 
     async def post(self):
         error_report = self.get_validated_input(JavaScriptErrorReport)
-
-        reports = cast(
-            list[JavaScriptErrorReportDict] | None, await cache_get("error_reports")
-        )
-        if not isinstance(reports, list):
-            reports = []
-
-        while len(reports) > 30:
-            reports.pop()
-
-        reports.insert(
-            0,
+        error_report_dict: rainwave_typeddicts.AdminJsError = (
             {
                 "browserLanguage": error_report.browserLanguage,
                 "columnNumber": error_report.columnNumber,
@@ -71,7 +60,14 @@ class ErrorReport(AuthRequiredAPIHandler):
             },
         )
 
-        await cache_set("error_reports", reports)
+        reports = await get_error_reports()
+
+        while len(reports) > 30:
+            reports.pop()
+
+        reports.insert(0, error_report_dict)
+
+        await set_error_reports(reports)
 
         self.response["error_report_result"] = {
             "success": True,

@@ -8,7 +8,7 @@ from api.exceptions import APIException
 
 from libs import cache
 from libs import log
-from common.libs import db
+
 from common.user.user_model import make_user
 from common.zeromq import sync_to_front
 from common.db.cursor import get_cursor

@@ -12,7 +12,7 @@ from common.rainwave.events.election import Election
 from libs import cache
 from common import config
 from libs import log
-from common.libs import db
+
 from libs import zeromq
 from common.db.cursor import get_cursor
 

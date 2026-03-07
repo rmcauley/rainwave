@@ -1,7 +1,7 @@
 import bcrypt
 from api.handle_url import handle_url
 from api.web import HTMLRequest
-from common.libs import db
+
 from routes.error import APIException
 from .r4_mixin import R4SetupSessionMixin
 from common.db.cursor import get_cursor

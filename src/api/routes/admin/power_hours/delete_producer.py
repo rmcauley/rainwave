@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from pytz import timezone
 from time import time as timestamp
-from common.libs import db
+
 import api.web
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url

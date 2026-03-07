@@ -3,7 +3,7 @@ from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.exceptions import APIException
 from common.rainwave.events.oneup import OneUpProducer
-from common.libs import db
+
 
 
 @handle_api_url("admin/add_song_to_power_hour")

@@ -4,7 +4,7 @@ from api import fieldtypes
 from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT as PAGE_LIMIT
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from common.libs import db
+
 from common.rainwave import playlist
 from common.db.cursor import get_cursor
 

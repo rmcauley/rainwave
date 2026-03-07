@@ -5,7 +5,7 @@ from api.handler_classes.api_handler import APIHandler
 from common import config
 from common.rainwave import playlist
 from common.rainwave.playlist_objects.metadata import MetadataNotFoundError
-from common.libs import db
+
 from libs import cache
 from common.db.cursor import get_cursor
 

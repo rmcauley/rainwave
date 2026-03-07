@@ -1,7 +1,7 @@
 from api.handle_url import handle_url
 from api.web import HTMLRequest
 from routes.main import Bootstrap
-from common.libs import db
+
 from common.db.cursor import get_cursor
 
 
@@ -13,7 +13,9 @@ class DebugAuth(HTMLRequest):
 
     async def get(self):
         async with get_cursor() as cursor:
-            self.write(self.render_string("basic_header.html", title="RW Auth Debug Page"))
+            self.write(
+                self.render_string("basic_header.html", title="RW Auth Debug Page")
+            )
             has_phpbb_auth = self.do_phpbb_auth()
             has_session_auth = await self.do_rw_session_auth()
             discord_id = await cursor.fetch_var(
@@ -24,7 +26,8 @@ class DebugAuth(HTMLRequest):
                 "SELECT username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
             )
             radio_username = await cursor.fetch_var(
-                "SELECT radio_username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
+                "SELECT radio_username FROM phpbb_users WHERE user_id = %s",
+                (self.user.id,),
             )
 
             self.write(f"User ID: {self.user.id}<br />")

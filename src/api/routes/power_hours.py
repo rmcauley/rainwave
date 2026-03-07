@@ -4,7 +4,7 @@ from api import rainwave_typeddicts
 from api.handle_url import handle_api_url
 from api.handle_url import handle_api_html_url
 from api.handler_classes.api_handler import APIHandler
-from api.routes.admin_web.power_hours import get_ph_formatted_time
+from api.routes.admin.power_hours.power_hours import get_ph_formatted_time
 from common import stations
 
 from common.db.cursor import get_cursor

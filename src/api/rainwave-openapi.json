@@ -4079,6 +4079,66 @@
         },
         "required": ["tl_key", "text"],
         "type": "object"
+      },
+      "admin_user_search_result": {
+        "type": "object",
+        "properties": {
+          "user_id": { "oneOf": [{ "type": "integer" }, { "type": "null" }] },
+          "sid": { "oneOf": [{ "type": "integer" }, { "type": "null" }] }
+        },
+        "required": ["user_id", "sid"]
+      },
+      "_admin_js_error": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer" },
+          "username": { "type": "string" },
+          "time": { "type": "integer" },
+          "name": { "type": "object" },
+          "message": { "type": "object" },
+          "lineNumber": {
+            "oneOf": [{ "type": "integer" }, { "type": "string" }, { "type": "null" }]
+          },
+          "columnNumber": {
+            "oneOf": [{ "type": "integer" }, { "type": "string" }, { "type": "null" }]
+          },
+          "stack": { "type": "object" },
+          "location": { "type": "object" },
+          "userAgent": { "type": "object" },
+          "browserLanguage": { "type": "object" }
+        },
+        "required": [
+          "user_id",
+          "username",
+          "time",
+          "name",
+          "message",
+          "lineNumber",
+          "columnNumber",
+          "stack",
+          "location",
+          "userAgent",
+          "browserLanguage"
+        ]
+      },
+      "admin_js_errors": {
+        "type": "array",
+        "items": { "$ref": "#/components/schemas/_admin_js_error" }
+      },
+      "_admin_music_scan_error": {
+        "type": "object",
+        "properties": {
+          "time": { "type": "integer" },
+          "file": { "type": "string" },
+          "type": { "type": "string" },
+          "error": { "type": "string" },
+          "traceback": { "type": "string" }
+        },
+        "required": ["time", "file", "type", "error", "traceback"]
+      },
+      "admin_music_scan_errors": {
+        "type": "array",
+        "items": { "$ref": "#/components/schemas/_admin_music_scan_error" }
       }
     }
   }

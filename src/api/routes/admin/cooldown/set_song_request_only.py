@@ -1,4 +1,4 @@
-from common.libs import db
+
 import api.web
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url

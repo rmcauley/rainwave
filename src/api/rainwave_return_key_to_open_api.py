@@ -20,6 +20,9 @@ class ArtistWithSongs(rainwave_typeddicts.Artist):
 
 
 class RainwaveResponse(TypedDict, total=False):
+    admin_js_errors: rainwave_typeddicts.AdminJsErrors
+    admin_music_scan_errors: rainwave_typeddicts.AdminMusicScanErrors
+    admin_user_search_result: rainwave_typeddicts.AdminUserSearchResult
     album: rainwave_typeddicts.Album
     album_diff: rainwave_typeddicts.AlbumDiff
     albums: rainwave_typeddicts.Albums
@@ -88,6 +91,9 @@ class RainwaveResponse(TypedDict, total=False):
 
 
 RainwaveResponseKey = Literal[
+    "admin_js_errors",
+    "admin_music_scan_errors",
+    "admin_user_search_result",
     "album",
     "album_diff",
     "albums",

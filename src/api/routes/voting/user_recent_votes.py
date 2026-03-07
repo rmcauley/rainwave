@@ -14,7 +14,7 @@ except ImportError:
     import json
 
 from libs import cache
-from common.libs import db
+
 from common import config
 from libs.pretty_date import pretty_date
 from common.rainwave import playlist

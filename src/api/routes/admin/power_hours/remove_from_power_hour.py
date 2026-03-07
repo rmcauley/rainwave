@@ -2,7 +2,7 @@ from api import fieldtypes
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.exceptions import APIException
-from common.libs import db
+
 from common.rainwave.events.oneup import OneUpProducer
 from common.db.cursor import get_cursor
 
