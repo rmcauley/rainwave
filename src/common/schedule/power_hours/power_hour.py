@@ -1,6 +1,7 @@
 import random
 from typing import Sequence, TypedDict
 
+from api.exceptions import APIException
 from common.db.cursor import RainwaveCursor
 from common.playlist.album.get_song_list_for_album_display import (
     get_songs_for_album_display,
@@ -138,6 +139,15 @@ class PowerHour(ScheduleEntry):
                 default=0,
                 var_type=int,
             )
+        song_on_station = await cursor.fetch_var(
+            "SELECT sid FROM r4_song_sid WHERE song_id = %s AND sid = %s AND song_exists = TRUE",
+            (song_id, self.sid),
+            var_type=int,
+        )
+        if not song_on_station:
+            raise APIException(
+                "invalid_station_id", "Song does not exist on target station."
+            )
         await cursor.update(
             "INSERT INTO r4_one_ups (sched_id, song_id, one_up_order, one_up_sid) VALUES (%s, %s, %s, %s)",
             (self.id, song_id, order, self.sid),
@@ -163,12 +173,10 @@ class PowerHour(ScheduleEntry):
             order += 1
         await self._update_length(cursor)
 
-    async def remove_one_up(
-        self, cursor: RainwaveCursor, power_hour_song_id: int
-    ) -> bool:
+    async def remove_song(self, cursor: RainwaveCursor, one_up_id: int) -> bool:
         if (
             await cursor.update(
-                "DELETE FROM r4_one_ups WHERE one_up_id = %s", (power_hour_song_id,)
+                "DELETE FROM r4_one_ups WHERE one_up_id = %s", (one_up_id,)
             )
             >= 1
         ):

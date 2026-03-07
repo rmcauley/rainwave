@@ -4139,6 +4139,76 @@
       "admin_music_scan_errors": {
         "type": "array",
         "items": { "$ref": "#/components/schemas/_admin_music_scan_error" }
+      },
+      "_admin_power_hour_song": {
+        "type": "object",
+        "properties": {
+          "one_up_id": { "type": "integer" },
+          "sched_id": { "type": "integer" },
+          "song_id": { "type": "integer" },
+          "one_up_order": { "oneOf": [{ "type": "integer" }, { "type": "null" }] },
+          "one_up_used": { "type": "boolean" },
+          "one_up_queued": { "type": "boolean" },
+          "one_up_sid": { "type": "integer" },
+          "one_up_start_actual": { "oneOf": [{ "type": "integer" }, { "type": "null" }] },
+          "song_title": { "type": "string" },
+          "album_name": { "type": "string" },
+          "album_id": { "type": "integer" },
+          "song_length": { "type": "integer" }
+        },
+        "required": [
+          "one_up_id",
+          "sched_id",
+          "song_id",
+          "one_up_order",
+          "one_up_used",
+          "one_up_queued",
+          "one_up_sid",
+          "one_up_start_actual",
+          "song_title",
+          "album_name",
+          "album_id",
+          "song_length"
+        ]
+      },
+      "admin_power_hour": {
+        "type": "object",
+        "properties": {
+          "sched_start": { "oneOf": [{ "type": "integer" }, { "type": "null" }] },
+          "sched_end": { "oneOf": [{ "type": "integer" }, { "type": "null" }] },
+          "sched_type": { "type": "string" },
+          "sched_name": { "oneOf": [{ "type": "string" }, { "type": "null" }] },
+          "sched_url": { "oneOf": [{ "type": "string" }, { "type": "null" }] },
+          "sid": { "type": "integer" },
+          "sched_timed": { "type": "boolean" },
+          "sched_creator_user_id": { "oneOf": [{ "type": "integer" }, { "type": "null" }] },
+          "sched_id": { "type": "integer" },
+          "sched_start_actual": { "oneOf": [{ "type": "integer" }, { "type": "null" }] },
+          "sched_end_actual": { "oneOf": [{ "type": "integer" }, { "type": "null" }] },
+          "sched_used": { "type": "boolean" },
+          "songs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/_admin_power_hour_song" }
+          }
+        },
+        "required": [
+          "sched_start",
+          "sched_end",
+          "sched_type",
+          "sched_name",
+          "sched_url",
+          "sid",
+          "sched_timed",
+          "sched_creator_user_id",
+          "sched_id",
+          "sched_start_actual",
+          "sched_end_actual",
+          "sched_used"
+        ]
+      },
+      "admin_power_hours": {
+        "type": "array",
+        "items": { "$ref": "#/components/schemas/admin_power_hour" }
       }
     }
   }
