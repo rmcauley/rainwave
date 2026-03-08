@@ -40,12 +40,13 @@ async def create_election_entry(
     entry_type: int,
     elec_request_user_id: int | None,
     elec_request_username: str | None,
+    entry_votes: int,
 ) -> ElectionEntry:
     to_create: ElectionEntryCreate = {
         "elec_id": election_id,
         "entry_position": entry_position,
         "entry_type": entry_type,
-        "entry_votes": 0,
+        "entry_votes": entry_votes,
         "song_id": song_on_station.id,
     }
     entry = await cursor.fetch_row(

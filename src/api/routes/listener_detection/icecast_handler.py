@@ -1,7 +1,6 @@
 from api import fieldtypes
 from api.exceptions import APIException
 from api.handler_classes.rainwave_handler import RainwaveHandler
-from api.handle_url import handle_url
 
 from libs import log
 

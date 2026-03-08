@@ -13,4 +13,4 @@ class GroupHandler(APIHandler):
     async def post(self):
         group = playlist.SongGroup.load_from_id(input.)
         group.load_songs_from_sid(self.sid, self.user.id)
-                self.response[self.return_name] = group.to_dict_full(self.user)
+                self.response["group"] = group.to_dict_full(self.user)

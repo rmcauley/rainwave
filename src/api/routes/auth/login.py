@@ -1,4 +1,5 @@
 import bcrypt
+from typing import TypedDict
 from api.handle_url import handle_url
 from api.web import HTMLRequest
 
@@ -12,6 +13,13 @@ def phpbb_passwd_compare(password: str, db_password: str) -> bool:
         password.encode(), db_password[:29].encode()
     ).decode("utf-8")
     return db_password == hashed_password
+
+
+class PhpbbLoginRow(TypedDict):
+    user_id: int
+    user_password: str
+    user_login_attempts: int
+    discord_user_id: str
 
 
 @handle_url("/oauth/login")
@@ -35,10 +43,10 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
                 raise APIException("username_required")
             if not password:
                 raise APIException("password_required")
-
             db_entry = await cursor.fetch_row(
                 "SELECT user_id, user_password, user_login_attempts, discord_user_id FROM phpbb_users WHERE LOWER(username) = %s",
                 (username.lower(),),
+                row_type=PhpbbLoginRow,
             )
             if not db_entry:
                 raise APIException("login_failed")

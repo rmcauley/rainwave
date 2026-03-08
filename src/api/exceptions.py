@@ -31,6 +31,7 @@ ErrorTranslationKeys = (
     | Literal["station_offline"]
     | Literal["server_just_started"]
     | Literal["search_string_too_short"]
+    | Literal["user_locked"]
 )
 
 

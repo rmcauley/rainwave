@@ -57,7 +57,9 @@ class RegisteredUser(UserBase):
                 listener_lock, 
                 listener_lock_sid, 
                 listener_lock_counter, 
-                listener_voted_entry
+                listener_voted_entry,
+                radio_last_active,
+                radio_inactive
             FROM r4_api_keys 
                 JOIN phpbb_users USING (user_id)
                 LEFT JOIN r4_listeners ON (
@@ -117,6 +119,8 @@ class RegisteredUser(UserBase):
                 "group_id": refresh_data["group_id"],
                 "listener_id": refresh_data["listener_id"],
                 "listener_sid": refresh_data["listener_sid"],
+                "radio_inactive": refresh_data["radio_inactive"],
+                "radio_last_active": refresh_data["radio_last_active"],
             },
         )
 

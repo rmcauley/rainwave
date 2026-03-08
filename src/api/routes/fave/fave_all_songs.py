@@ -20,6 +20,7 @@ class SubmitFaveAllSongs(SubmitAlbumFave):
             song_ids = await cursor.fetch_list(
                 "SELECT r4_song_sid.song_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s",
                 (input., self.sid),
+                row_type=int,
             )
             for song_id in song_ids:
                 self._batched_id = song_id

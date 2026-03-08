@@ -3,11 +3,11 @@ from typing import TypedDict, cast
 
 from api.exceptions import APIException
 from api.handler_classes.rainwave_handler import RainwaveHandler
+from api.helpers.user_vote_cache import get_user_vote_cache
 from common.cache.cache import cache_get
 from common.cache.station_cache import cache_get_station
 from common.cache.timeline_cache import TimelineApiCache
 from common.cache.update_user_rating_acl import UserRatingACL
-from common.cache.user_cache import cache_get_user
 from common.db.cursor import RainwaveCursor
 from api import rainwave_typeddicts
 from common.requests.get_user_requests import get_user_requests, user_requests_to_api
@@ -209,9 +209,7 @@ async def attach_info_to_request(
                     ]
                 ]
         else:
-            user_vote_cache = await cache_get_user(
-                request.optional_user.id, "vote_history"
-            )
+            user_vote_cache = await get_user_vote_cache(request.optional_user.id)
             if user_vote_cache:
                 request.response["already_voted"] = user_vote_cache
 

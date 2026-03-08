@@ -13,4 +13,4 @@ class ArtistHandler(APIHandler):
     async def post(self):
         artist = playlist.Artist.load_from_id(input.)
         artist.load_all_songs(self.sid, self.user.id)
-                self.response[self.return_name] = artist.to_dict_full(self.user)
+                self.response["artist"] = artist.to_dict_full(self.user)

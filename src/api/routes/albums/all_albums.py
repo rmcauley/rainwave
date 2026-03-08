@@ -22,7 +22,7 @@ class AllAlbumsHandler(APIHandler):
     fields = {"no_searchable": (fieldtypes.boolean, None)}
 
     async def post(self):
-                self.response[self.return_name] = get_all_albums(
+                self.response["all_albums"] = get_all_albums(
                 self.sid,
                 self.user,
             ),

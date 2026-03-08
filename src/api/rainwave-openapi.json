@@ -5130,7 +5130,7 @@
           {
             "properties": {
               "elec_id": {
-                "type": "integer"
+                "oneOf": [{ "type": "integer" }, { "type": "null" }]
               },
               "entry_id": {
                 "type": "integer"

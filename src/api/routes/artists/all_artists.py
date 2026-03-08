@@ -18,5 +18,5 @@ class AllArtistsHandler(APIHandler):
     fields = {"no_searchable": (fieldtypes.boolean, None)}
 
     async def post(self):
-                self.response[self.return_name] = get_all_artists(self.sid),
+                self.response["all_artists"] = get_all_artists(self.sid),
         self.write_rainwave_output()

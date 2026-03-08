@@ -1,29 +1,14 @@
-from typing import cast, Any
-import math
+from api import rainwave_typeddicts
+from psycopg import sql
 
-from api.handler_classes.api_handler import APIHandler
-from api.web import PrettyPrintAPIMixin
-from api import fieldtypes
-from api.handle_url import handle_api_url
-from api.handle_url import handle_api_html_url
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from api.handle_url import handle_api_url, handle_api_html_url
+from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
-
-try:
-    import ujson as json
-except ImportError:
-    import json
-
-from libs import cache
-
-from common import config
-from libs.pretty_date import pretty_date
-from common.rainwave import playlist
-from common.rainwave.playlist_objects.metadata import MetadataNotFoundError
-from api.exceptions import APIException
 
 
 @handle_api_url("user_recent_votes")
-class RecentlyVotedSongs(APIHandler):
+class RecentlyVotedSongs(RegisteredUserAPIHandler):
     description = "Shows the user's recently voted on songs."
     return_name = "user_recent_votes"
     login_required = True
@@ -32,8 +17,8 @@ class RecentlyVotedSongs(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            self.response[self.return_name] = (
-                await cursor.fetch_all(
+            self.response["user_recent_votes"] = await cursor.fetch_all(
+                sql.SQL(
                     """
                     SELECT
                         r4_songs.song_id AS id,
@@ -54,14 +39,15 @@ class RecentlyVotedSongs(APIHandler):
                         AND r4_vote_history.user_id = %s
                         AND song_verified = TRUE
                     ORDER BY vote_id DESC
-"""
-                    + self.get_sql_limit_string(),
-                    (self.sid, self.user.id),
-                ),
+                    """
+                )
+                + get_pagination_sql_limit_string(self),
+                (self.sid, self.user.id),
+                row_type=rainwave_typeddicts.UserRecentVote,
             )
         self.write_rainwave_output()
 
 
 @handle_api_html_url("user_recent_votes")
-class RecentlyVotedSongsHTML(PrettyPrintAPIMixin, RecentlyVotedSongs):
-    pass
+class RecentlyVotedSongsHTML(RecentlyVotedSongs):
+    pretty_print_html = True

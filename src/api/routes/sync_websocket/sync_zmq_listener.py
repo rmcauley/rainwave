@@ -1,4 +1,4 @@
-import json
+import orjson as json
 import typing
 import types
 from time import time as timestamp

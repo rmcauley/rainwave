@@ -26,7 +26,7 @@ class AllGroupsHandler(APIHandler):
 
     async def post(self):
         if input.:
-            self.response[self.return_name] = (get_all_groups_power(self.sid),)
+            self.response["all_groups"] = (get_all_groups_power(self.sid),)
         else:
-            self.response[self.return_name] = (get_all_groups(self.sid),)
+            self.response["all_groups"] = (get_all_groups(self.sid),)
         self.write_rainwave_output()

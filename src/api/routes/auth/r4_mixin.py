@@ -19,6 +19,7 @@ class R4SetupSessionMixin:
                 user_id = await cursor.fetch_var(
                     "SELECT user_id FROM r4_sessions WHERE session_id = %s",
                     (rw_session_id,),
+                    var_type=int,
                 )
                 if user_id:
                     self.user = make_user(user_id)

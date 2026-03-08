@@ -1,4 +1,4 @@
-import json  # We have some features of stdlib JSON we need here, don't use ujson
+import orjson as json
 
 import tornado.web
 
@@ -66,10 +66,8 @@ class LocaleMissingLines(HTMLRequest):
         self.write(
             json.dumps(
                 translations[request_locale].missing,
-                sort_keys=True,
-                indent=4,
-                separators=(",", ": "),
-            )
+                option=json.OPT_SORT_KEYS | json.OPT_INDENT_2,
+            ).decode()
         )
         self.write("</div>")
         self.write(self.render_string("basic_footer.html"))

@@ -1,5 +1,9 @@
 from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+from api import rainwave_typeddicts
+from api.handle_url import handle_api_html_url, handle_api_url
+from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
+from psycopg import sql
 
 
 @handle_api_url("playback_history")
@@ -13,7 +17,8 @@ class PlaybackHistory(APIHandlerWithGet):
     async def post(self):
         async with get_cursor() as cursor:
             if self.user.is_anonymous():
-                            self.response[self.return_name] = await cursor.fetch_all(
+                self.response["playback_history"] = await cursor.fetch_all(
+                    sql.SQL(
                         """
                         SELECT
                             r4_song_history.song_id AS id,
@@ -29,41 +34,45 @@ class PlaybackHistory(APIHandlerWithGet):
                         JOIN r4_albums USING (album_id)
                         WHERE r4_song_history.sid = %s
                         ORDER BY songhist_id DESC
-"""
-                    + self.get_sql_limit_string(),
+                        """
+                    ) + get_pagination_sql_limit_string(self),
                     (self.sid,),
-                ),
-        else:
-                        self.response[self.return_name] = await cursor.fetch_all(
-                    """
-                    SELECT
-                        r4_song_history.song_id AS id,
-                        song_title AS title,
-                        album_id,
-                        album_name,
-                        song_rating_user AS rating_user,
-                        song_fave AS fave,
-                        songhist_time AS song_played_at,
-                        song_artist_parseable AS artist_parseable,
-                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
-                        song_rating_user AS rating_user
-                    FROM r4_song_history
-                    JOIN r4_song_sid USING (song_id, sid)
-                    JOIN r4_songs USING (song_id)
-                    JOIN r4_albums USING (album_id)
-                    LEFT JOIN r4_song_ratings
-                        ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s
-                    WHERE r4_song_history.sid = %s
-                    ORDER BY songhist_id DESC
-"""
-                    + self.get_sql_limit_string(),
+                    row_type=rainwave_typeddicts.PlaybackHistoryEntry,
+                )
+            else:
+                self.response["playback_history"] = await cursor.fetch_all(
+                    sql.SQL(
+                        """
+                        SELECT
+                            r4_song_history.song_id AS id,
+                            song_title AS title,
+                            album_id,
+                            album_name,
+                            song_rating_user AS rating_user,
+                            song_fave AS fave,
+                            songhist_time AS song_played_at,
+                            song_artist_parseable AS artist_parseable,
+                            CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating,
+                            song_rating_user AS rating_user
+                        FROM r4_song_history
+                        JOIN r4_song_sid USING (song_id, sid)
+                        JOIN r4_songs USING (song_id)
+                        JOIN r4_albums USING (album_id)
+                        LEFT JOIN r4_song_ratings
+                            ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s
+                        WHERE r4_song_history.sid = %s
+                        ORDER BY songhist_id DESC
+                        """
+                    ) + get_pagination_sql_limit_string(self),
                     (self.user.id, self.sid),
-                ),
+                    row_type=rainwave_typeddicts.PlaybackHistoryEntry,
+                )
         self.write_rainwave_output()
 
 
 @handle_api_html_url("playback_history")
-class PlaybackHistoryHTML(PrettyPrintAPIMixin, PlaybackHistory):
+class PlaybackHistoryHTML(PlaybackHistory):
+    pretty_print_html = True
     login_required = False
     auth_required = False
 

@@ -1,3 +1,5 @@
+from api import rainwave_typeddicts
+from api.handle_url import handle_api_html_url, handle_api_url
 from api.handler_classes.api_handler_with_get import APIHandlerWithGet
 from common.db.cursor import get_cursor
 
@@ -12,34 +14,35 @@ class Top100Songs(APIHandlerWithGet):
     async def post(self):
         async with get_cursor() as cursor:
             if "sid" in self.request.arguments:
-                            self.response[self.return_name] = await cursor.fetch_all(
-                        """
-                        SELECT
-                            DISTINCT ON (song_rating, song_id) 
-                            song_origin_sid AS origin_sid,
-                            song_id AS id,
-                            song_title AS title,
-                            album_name,
-                            CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS song_rating,
-                            song_rating_count
-                        FROM r4_song_sid
-                            JOIN r4_songs USING (song_id)
-                            JOIN r4_albums USING (album_id)
-                        WHERE 
-                            r4_song_sid.sid = %s
-                            AND song_rating_count > 20
-                            AND song_verified = TRUE
-                        ORDER BY 
-                            song_rating DESC,
-                            song_id,
-                            song_rating_count DESC,
-                            song_id
-                        LIMIT 100
+                self.response["top_100"] = await cursor.fetch_all(
+                    """
+                    SELECT
+                        DISTINCT ON (song_rating, song_id) 
+                        song_origin_sid AS origin_sid,
+                        song_id AS id,
+                        song_title AS title,
+                        album_name,
+                        CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS song_rating,
+                        song_rating_count
+                    FROM r4_song_sid
+                        JOIN r4_songs USING (song_id)
+                        JOIN r4_albums USING (album_id)
+                    WHERE 
+                        r4_song_sid.sid = %s
+                        AND song_rating_count > 20
+                        AND song_verified = TRUE
+                    ORDER BY 
+                        song_rating DESC,
+                        song_id,
+                        song_rating_count DESC,
+                        song_id
+                    LIMIT 100
 """,
                     (self.sid,),
-                ),
-        else:
-                        self.response[self.return_name] = await cursor.fetch_all(
+                    row_type=rainwave_typeddicts.Top100Item,
+                )
+            else:
+                self.response["top_100"] = await cursor.fetch_all(
                     """
                     SELECT
                         DISTINCT ON (song_rating, song_id) 
@@ -59,11 +62,12 @@ class Top100Songs(APIHandlerWithGet):
                         song_rating DESC,
                         song_id
                     LIMIT 100
-"""
-                ),
+""",
+                    row_type=rainwave_typeddicts.Top100Item,
+                )
         self.write_rainwave_output()
 
 
 @handle_api_html_url("top_100")
-class Top100SongsHTML(PrettyPrintAPIMixin, Top100Songs):
-    pass
+class Top100SongsHTML(Top100Songs):
+    pretty_print_html = True

@@ -1,4 +1,5 @@
 from time import time as timestamp
+from typing import TypedDict
 
 from api import fieldtypes
 from api.web import RainwaveHandler
@@ -12,6 +13,11 @@ from libs import log
 from common.user.user_model import make_user
 from common.zeromq import sync_to_front
 from common.db.cursor import get_cursor
+
+
+class ListenerRow(TypedDict):
+    user_id: int
+    listener_key: str
 
 # Sample Icecast query:
 # &server=myserver.com&port=8000&client=1&mount=/live&user=&pass=&ip=127.0.0.1&agent="My%20player"
@@ -28,6 +34,7 @@ class RemoveListener(IcecastHandler):
             listener = await cursor.fetch_row(
                 "SELECT user_id, listener_key FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
                 (self.relay, input.),
+                row_type=ListenerRow,
             )
             if not listener:
                 # removal not working is normal, since any reconnecting listener gets a new listener ID

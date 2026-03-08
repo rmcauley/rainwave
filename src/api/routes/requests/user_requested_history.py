@@ -1,13 +1,9 @@
-from api import fieldtypes
+from api import rainwave_typeddicts
+from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from api.handle_url import handle_api_html_url, handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from api.handler_classes.api_pretty_print_handler import (
+from psycopg import sql
 from common.db.cursor import get_cursor
-    PrettyPrintAPIHandler as PrettyPrintAPIMixin,
-)
-
-from libs import db, cache
-
 
 @handle_api_url("user_requested_history")
 class AllRequestedSongs(APIHandler):
@@ -19,7 +15,8 @@ class AllRequestedSongs(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-                    self.response[self.return_name] = await cursor.fetch_all(
+            self.response["user_requested_history"] = await cursor.fetch_all(
+                sql.SQL(
                     """
                     SELECT
                         r4_songs.song_id AS id,
@@ -41,12 +38,13 @@ class AllRequestedSongs(APIHandler):
                         AND song_verified = TRUE
                     ORDER BY request_fulfilled_at DESC
 """
-                + self.get_sql_limit_string(),
+                ) + get_pagination_sql_limit_string(self),
                 (self.sid, self.user.id),
-            ),
+                row_type=rainwave_typeddicts.UserRecentVote,
+            )
         self.write_rainwave_output()
 
 
 @handle_api_html_url("user_requested_history")
-class AllRequestedSongsHTML(PrettyPrintAPIMixin, AllRequestedSongs):
-    pass
+class AllRequestedSongsHTML(AllRequestedSongs):
+    pretty_print_html = True

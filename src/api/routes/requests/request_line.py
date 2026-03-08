@@ -1,10 +1,6 @@
 from api import fieldtypes
 from api.handle_url import handle_api_html_url, handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from api.handler_classes.api_pretty_print_handler import (
-from common.db.cursor import get_cursor
-    PrettyPrintAPIHandler as PrettyPrintAPIMixin,
-)
 from libs import cache
 
 
@@ -16,7 +12,9 @@ class ListRequestLine(APIHandler):
     async def post(self):
         async with get_cursor() as cursor:
             # A 13 year old bug means it's returning "request_line_result" here.
-                    self.response[self.return_name] = cache.get_station(self.sid, "request_line")
+                    self.response["request_line_result"] = cache.get_station(
+                        self.sid, "request_line"
+                    )
             # It _should_ be "request_line" for now and future APIs, so... we return both. 😬
                     self.response["request_line"] = cache.get_station(self.sid, "request_line")
             self.write_rainwave_output()
@@ -24,5 +22,5 @@ class ListRequestLine(APIHandler):
 
 
 @handle_api_html_url("request_line")
-class ListRequestLineHTML(PrettyPrintAPIMixin, ListRequestLine):
-    pass
+class ListRequestLineHTML(ListRequestLine):
+    pretty_print_html = True

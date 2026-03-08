@@ -1,5 +1,5 @@
 import datetime
-import json
+import orjson as json
 import numbers
 import sys
 import uuid

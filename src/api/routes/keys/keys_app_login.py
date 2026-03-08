@@ -1,6 +1,5 @@
 from api.handle_url import handle_url
 from api.handler_classes.html_handler import HTMLRequest
-from libs import db
 from common.db.cursor import get_cursor
 
 
@@ -22,6 +21,7 @@ class AppLogin(HTMLRequest):
             key = await cursor.fetch_var(
                 "SELECT api_key FROM r4_api_keys WHERE user_id = %s LIMIT 1",
                 (self.user.id,),
+                var_type=str,
             )
 
             self.render(

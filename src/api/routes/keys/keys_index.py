@@ -1,8 +1,17 @@
 import asyncio
+from typing import TypedDict
 
 from api.handler_classes.html_handler import HTMLRequest
 from api.handle_url import handle_url
 from common.db.cursor import get_cursor
+
+
+class ApiKeyRow(TypedDict):
+    api_id: int
+    user_id: int
+    api_key: str
+    api_expiry: int | None
+    api_key_listen_key: str | None
 
 
 @handle_url("/keys/")
@@ -41,7 +50,9 @@ class KeyIndex(HTMLRequest):
                 )
             )
             for key in await cursor.fetch_all(
-                "SELECT * FROM r4_api_keys WHERE user_id = %s", (self.user.id,)
+                "SELECT * FROM r4_api_keys WHERE user_id = %s",
+                (self.user.id,),
+                row_type=ApiKeyRow,
             ):
                 url = "rw://%s:%s@rainwave.cc" % (self.user.id, key["api_key"])
                 qr_url = qr_service % (url,)

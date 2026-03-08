@@ -88,6 +88,8 @@ class AnonymousUser(UserBase):
                 "group_id": refresh_data["group_id"],
                 "listener_id": refresh_data["listener_id"],
                 "listener_sid": refresh_data["listener_sid"],
+                "radio_inactive": False,
+                "radio_last_active": None,
             },
         )
 
@@ -121,6 +123,8 @@ class AnonymousUser(UserBase):
                 "group_id": 0,
                 "listener_id": None,
                 "listener_sid": None,
+                "radio_inactive": False,
+                "radio_last_active": None,
             },
             ip_address,
         )

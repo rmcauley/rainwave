@@ -1,6 +1,5 @@
 from api.handle_url import handle_url
 from api.web import HTMLRequest
-from routes.main import Bootstrap
 
 from common.db.cursor import get_cursor
 
@@ -21,13 +20,17 @@ class DebugAuth(HTMLRequest):
             discord_id = await cursor.fetch_var(
                 "SELECT discord_user_id FROM phpbb_users WHERE user_id = %s",
                 (self.user.id,),
+                var_type=str,
             )
             username = await cursor.fetch_var(
-                "SELECT username FROM phpbb_users WHERE user_id = %s", (self.user.id,)
+                "SELECT username FROM phpbb_users WHERE user_id = %s",
+                (self.user.id,),
+                var_type=str,
             )
             radio_username = await cursor.fetch_var(
                 "SELECT radio_username FROM phpbb_users WHERE user_id = %s",
                 (self.user.id,),
+                var_type=str,
             )
 
             self.write(f"User ID: {self.user.id}<br />")

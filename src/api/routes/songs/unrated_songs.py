@@ -1,8 +1,6 @@
 from api.handle_url import handle_api_html_url, handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from api.handler_classes.api_pretty_print_handler import (
-    PrettyPrintAPIHandler as PrettyPrintAPIMixin,
-)
+from api.helpers.paginated_requests import get_pagination_params
 from common.rainwave import playlist
 
 
@@ -14,12 +12,13 @@ class UnratedSongsHandler(APIHandler):
     pagination = True
 
     async def post(self):
-                self.response[self.return_name] = playlist.get_unrated_songs_for_user(
-                self.user.id, self.get_sql_limit_string()
-            ),
+        limit, _ = get_pagination_params(self)
+        self.response["unrated_songs"] = playlist.get_unrated_songs_for_user(
+            self.user.id, limit
+        ),
         self.write_rainwave_output()
 
 
 @handle_api_html_url("unrated_songs")
-class UnratedSongsHTML(PrettyPrintAPIMixin, UnratedSongsHandler):
-    pass
+class UnratedSongsHTML(UnratedSongsHandler):
+    pretty_print_html = True

@@ -29,6 +29,8 @@ class UserServerData(TypedDict):
     group_id: int
     listener_id: int | None
     listener_sid: int | None
+    radio_last_active: int | None
+    radio_inactive: bool
 
 
 class UserRefreshDataRow(TypedDict):
@@ -46,6 +48,8 @@ class UserRefreshDataRow(TypedDict):
     name: str
     requests_paused: bool
     total_ratings: int
+    radio_last_active: int | None
+    radio_inactive: bool
 
 
 class RequestStoreRow(TypedDict):

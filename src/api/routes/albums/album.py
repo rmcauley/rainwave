@@ -32,12 +32,13 @@ class AlbumHandler(APIHandler):
                 album.load_extra_detail(
                     self.sid, self.get_argument_bool("all_categories") or False
                 )
-            except MetadataNotFoundError:
-                self.return_name = "album_error"
-                valid_sids = await cursor.fetch_list(
-                    "SELECT sid FROM r4_album_sid WHERE album_id = %s ORDER BY sid",
-                    (input.,),
-                )
+                except MetadataNotFoundError:
+                    self.return_name = "album_error"
+                    valid_sids = await cursor.fetch_list(
+                        "SELECT sid FROM r4_album_sid WHERE album_id = %s ORDER BY sid",
+                        (input.,),
+                        row_type=int,
+                    )
                 if config.default_station in valid_sids:
                     raise APIException(
                         "album_on_other_station",

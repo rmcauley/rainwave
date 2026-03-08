@@ -22,6 +22,7 @@ from common.schedule.election.election_entry import (
     ElectionEntryType,
 )
 from common.schedule.election.election_entry import create_election_entry
+from common.schedule.election.insert_vote_into_history import insert_vote_into_history
 from common.schedule.schedule_models.timeline_entry_base import (
     TimelineEntryAlreadyUsed,
     TimelineEntryBase,
@@ -226,9 +227,18 @@ class Election(TimelineEntryBase):
                     ElectionEntryType.request,
                     elec_request_user_id=request_line_entry["user_id"],
                     elec_request_username=request_line_entry["username"],
+                    entry_votes=1,
                 )
                 await song_on_station.start_election_block(cursor)
                 self.entries.append(entry)
+                await insert_vote_into_history(
+                    cursor,
+                    self.id,
+                    entry["entry_id"],
+                    request_line_entry["user_id"],
+                    song_on_station.id,
+                    self.sid,
+                )
         elif self.data["elec_type"] == "PVPElection":
             for _i in range(0, 2):
                 request = await get_next_request_ignoring_sequencing(
@@ -247,6 +257,7 @@ class Election(TimelineEntryBase):
                         ElectionEntryType.request,
                         elec_request_user_id=request_line_entry["user_id"],
                         elec_request_username=request_line_entry["username"],
+                        entry_votes=0,
                     )
                     await song_on_station.start_election_block(cursor)
                     self.entries.append(entry)
@@ -277,6 +288,7 @@ class Election(TimelineEntryBase):
                 ElectionEntryType.normal,
                 None,
                 None,
+                entry_votes=0,
             )
             await song_on_station.start_election_block(cursor)
             self.entries.append(entry)

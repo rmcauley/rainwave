@@ -46,11 +46,12 @@ class AddListener(IcecastHandler):
             real_key = await cursor.fetch_var(
                 "SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s",
                 (self.user_id,),
+                var_type=str,
             )
             if real_key != self.listen_key:
                 raise APIException("invalid_argument", reason="mismatched listen_key.")
             tunedin = await cursor.fetch_var(
-                "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,)
+                "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,), var_type=int
             )
             if tunedin:
                 await cursor.update(
@@ -136,6 +137,7 @@ class AddListener(IcecastHandler):
             records = await cursor.fetch_list(
                 "SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1",
                 (self.listener_ip, self.listen_key),
+                row_type=int,
             )
             if len(records) == 0:
                 await cursor.update(

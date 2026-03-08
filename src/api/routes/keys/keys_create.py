@@ -1,6 +1,5 @@
-import api.web
 from api.handle_url import handle_url
-from api import fieldtypes
+from api.routes.keys.keys_index import KeyIndex
 
 
 @handle_url("/keys/create")

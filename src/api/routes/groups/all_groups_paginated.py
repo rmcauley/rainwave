@@ -19,7 +19,7 @@ class AllGroupsPaginatedHandler(APIHandler):
         )
         offset = self.get_argument_int("after", 0) or 0
         page = all_groups[offset : offset + PAGE_LIMIT]
-                self.response[self.return_name] = {
+                self.response["all_groups_paginated"] = {
                 "data": page,
                 "has_more": page[-1] != all_groups[-1],
                 "progress": min(

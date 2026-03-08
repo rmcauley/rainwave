@@ -126,6 +126,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 await cursor.fetch_var(
                     "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s ORDER BY user_id ASC",
                     (discord_user_id,),
+                    var_type=int,
                 )
                 or 1
             )
