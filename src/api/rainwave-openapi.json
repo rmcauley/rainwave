@@ -25,23 +25,46 @@
     {
       "description": "Endpoints that begin websocket connections for Rainwave, or are related to maintaining Websocket status.",
       "name": "Websocket"
+    },
+    {
+      "description": "Administrative endpoints.",
+      "name": "Admin"
     }
   ],
   "paths": {
-    "/api4/power_hours": {
+    "/api4/admin/add_album_to_power_hour": {
       "post": {
-        "operationId": "getPowerHours",
+        "operationId": "adminAddAlbumToPowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  },
+                  "album_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sched_id", "album_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "default": {
             "content": {
               "application/json": {
                 "schema": {
                   "properties": {
-                    "album": {
-                      "$ref": "#/components/schemas/power_hours"
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
                     }
                   },
-                  "required": ["power_hours"],
+                  "required": ["admin_power_hour"],
                   "type": "object"
                 }
               }
@@ -49,7 +72,1069 @@
             "description": ""
           }
         },
-        "tags": ["Statistics"]
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/add_donation": {
+      "post": {
+        "operationId": "adminAddDonation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "donor_id": {
+                    "type": "integer"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "private": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["donor_id", "amount", "message", "private"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "add_donation_result": {
+                      "$ref": "#/components/schemas/add_donation_result"
+                    }
+                  },
+                  "required": ["add_donation_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/add_song_to_power_hour": {
+      "post": {
+        "operationId": "adminAddSongToPowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  },
+                  "song_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sched_id", "song_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/change_producer_name": {
+      "post": {
+        "operationId": "adminChangeProducerName",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["sched_id", "name"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/change_producer_start_time": {
+      "post": {
+        "operationId": "adminChangeProducerStartTime",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  },
+                  "utc_time": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sched_id", "utc_time"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/change_producer_url": {
+      "post": {
+        "operationId": "adminChangeProducerUrl",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  },
+                  "url": {
+                    "oneOf": [{ "type": "string" }, { "type": "null" }]
+                  }
+                },
+                "required": ["sched_id", "url"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/create_power_hour": {
+      "post": {
+        "operationId": "adminCreatePowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "start_utc_time": {
+                    "type": "integer"
+                  },
+                  "end_utc_time": {
+                    "type": "integer"
+                  },
+                  "url": {
+                    "oneOf": [{ "type": "string" }, { "type": "null" }]
+                  },
+                  "fill_unrated": {
+                    "oneOf": [{ "type": "boolean" }, { "type": "null" }]
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "name",
+                  "start_utc_time",
+                  "end_utc_time",
+                  "url",
+                  "fill_unrated",
+                  "sid"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/delete_power_hour": {
+      "post": {
+        "operationId": "adminDeletePowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sched_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "delete_power_hour_result": {
+                      "$ref": "#/components/schemas/delete_power_hour_result"
+                    }
+                  },
+                  "required": ["delete_power_hour_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/duplicate_power_hour": {
+      "post": {
+        "operationId": "adminDuplicatePowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sched_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/europify_power_hour": {
+      "post": {
+        "operationId": "adminEuropifyPowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sched_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/js_errors": {
+      "post": {
+        "operationId": "adminJSErrors",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_js_errors": {
+                      "$ref": "#/components/schemas/admin_js_errors"
+                    }
+                  },
+                  "required": ["admin_js_errors"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/music_scan_errors": {
+      "post": {
+        "operationId": "adminMusicScanErrors",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_music_scan_errors": {
+                      "$ref": "#/components/schemas/admin_music_scan_errors"
+                    }
+                  },
+                  "required": ["admin_music_scan_errors"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/move_song_up_in_power_hour": {
+      "post": {
+        "operationId": "adminMoveSongUpInPowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "one_up_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["one_up_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/power_hour": {
+      "post": {
+        "operationId": "adminGetPowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sched_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/power_hour_remove_song": {
+      "post": {
+        "operationId": "adminRemoveSongFromPowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "one_up_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["one_up_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/power_hours": {
+      "post": {
+        "operationId": "adminGetPowerHours",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hours": {
+                      "$ref": "#/components/schemas/admin_power_hours"
+                    }
+                  },
+                  "required": ["admin_power_hours"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/reset_album_cooldown": {
+      "post": {
+        "operationId": "adminResetAlbumCooldown",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "album_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["album_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "set_album_cooldown_result": {
+                      "$ref": "#/components/schemas/set_album_cooldown_result"
+                    }
+                  },
+                  "required": ["set_album_cooldown_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/reset_song_cooldown": {
+      "post": {
+        "operationId": "adminResetSongCooldown",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "song_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["song_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "set_song_cooldown_result": {
+                      "$ref": "#/components/schemas/set_song_cooldown_result"
+                    }
+                  },
+                  "required": ["set_song_cooldown_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/set_album_cooldown": {
+      "post": {
+        "operationId": "adminSetAlbumCooldown",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "album_id": {
+                    "type": "integer"
+                  },
+                  "multiply": {
+                    "oneOf": [{ "type": "number" }, { "type": "null" }]
+                  },
+                  "override": {
+                    "oneOf": [{ "type": "integer" }, { "type": "null" }]
+                  }
+                },
+                "required": ["album_id", "multiply", "override"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "set_album_cooldown_result": {
+                      "$ref": "#/components/schemas/set_album_cooldown_result"
+                    }
+                  },
+                  "required": ["set_album_cooldown_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/set_song_cooldown": {
+      "post": {
+        "operationId": "adminSetSongCooldown",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "song_id": {
+                    "type": "integer"
+                  },
+                  "multiply": {
+                    "oneOf": [{ "type": "number" }, { "type": "null" }]
+                  },
+                  "override": {
+                    "oneOf": [{ "type": "integer" }, { "type": "null" }]
+                  }
+                },
+                "required": ["song_id", "multiply", "override"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "set_song_cooldown_result": {
+                      "$ref": "#/components/schemas/set_song_cooldown_result"
+                    }
+                  },
+                  "required": ["set_song_cooldown_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/set_song_request_only": {
+      "post": {
+        "operationId": "adminSetSongRequestOnly",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "song_id": {
+                    "type": "integer"
+                  },
+                  "request_only": {
+                    "type": "boolean"
+                  },
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["song_id", "request_only", "sid"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "set_song_request_only_result": {
+                      "$ref": "#/components/schemas/set_song_request_only_result"
+                    }
+                  },
+                  "required": ["set_song_request_only_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/shuffle_power_hour": {
+      "post": {
+        "operationId": "adminShufflePowerHour",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sched_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sched_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_power_hour": {
+                      "$ref": "#/components/schemas/admin_power_hour"
+                    }
+                  },
+                  "required": ["admin_power_hour"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/update_user_avatar_by_discord_id": {
+      "post": {
+        "operationId": "adminUpdateUserAvatarByDiscordId",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "discord_user_id": {
+                    "type": "string"
+                  },
+                  "avatar": {
+                    "type": "string"
+                  }
+                },
+                "required": ["discord_user_id", "avatar"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "update_user_avatar_by_discord_id_result": {
+                      "$ref": "#/components/schemas/update_user_avatar_by_discord_id_result"
+                    }
+                  },
+                  "required": ["update_user_avatar_by_discord_id_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/update_user_nickname_by_discord_id": {
+      "post": {
+        "operationId": "adminUpdateUserNicknameByDiscordId",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "discord_user_id": {
+                    "type": "string"
+                  },
+                  "nickname": {
+                    "type": "string"
+                  }
+                },
+                "required": ["discord_user_id", "nickname"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "update_user_nickname_by_discord_id_result": {
+                      "$ref": "#/components/schemas/update_user_nickname_by_discord_id_result"
+                    }
+                  },
+                  "required": ["update_user_nickname_by_discord_id_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/enable_perks_by_discord_ids": {
+      "post": {
+        "operationId": "adminEnablePerksByDiscordIds",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "discord_user_ids": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": ["discord_user_ids"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "enable_perks_by_discord_ids_result": {
+                      "$ref": "#/components/schemas/enable_perks_by_discord_ids_result"
+                    }
+                  },
+                  "required": ["enable_perks_by_discord_ids_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/user_search": {
+      "post": {
+        "operationId": "adminUserSearch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  }
+                },
+                "required": ["username"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_user_search_result": {
+                      "$ref": "#/components/schemas/admin_user_search_result"
+                    }
+                  },
+                  "required": ["admin_user_search_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/user_search_by_discord_user_id": {
+      "post": {
+        "operationId": "adminUserSearchByDiscordUserId",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "discord_user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["discord_user_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_user_search_result": {
+                      "$ref": "#/components/schemas/admin_user_search_result"
+                    }
+                  },
+                  "required": ["admin_user_search_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
       }
     },
     "/api4/album": {

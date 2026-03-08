@@ -5,13 +5,9 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
-from pydantic import BaseModel, PositiveInt
+from api.rainwave_dto import Api4AdminMoveSongUpInPowerHourPostRequest
 
 from common.db.cursor import get_cursor
-
-
-class MoveUpInPowerHourPostRequest(BaseModel):
-    one_up_id: PositiveInt
 
 
 @handle_api_url("admin/move_song_up_in_power_hour")
@@ -21,7 +17,7 @@ class MoveUpInPowerHour(APIHandler):
     sid_required = True
 
     async def post(self):
-        input = self.get_validated_input(MoveUpInPowerHourPostRequest)
+        input = self.get_validated_input(Api4AdminMoveSongUpInPowerHourPostRequest)
         async with get_cursor() as cursor:
             sched_id = await cursor.fetch_var(
                 "SELECT sched_id FROM r4_one_ups WHERE one_up_id = %s",

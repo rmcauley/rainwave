@@ -1,14 +1,10 @@
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
+from api.rainwave_dto import Api4UserSearchByDiscordUserIdPostRequest
 from api.exceptions import APIException
 from common import config
-from pydantic import BaseModel
 
 from common.db.cursor import get_cursor
-
-
-class UserSearchByDiscordUserIdPostRequest(BaseModel):
-    discord_user_id: str
 
 
 @handle_api_url("user_search_by_discord_user_id")
@@ -18,7 +14,7 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
     description = "Accessible only to localhost connections, for wormgas."
 
     async def post(self):
-        input = self.get_validated_input(UserSearchByDiscordUserIdPostRequest)
+        input = self.get_validated_input(Api4UserSearchByDiscordUserIdPostRequest)
         async with get_cursor() as cursor:
             if self.request.remote_ip not in config.api_trusted_ip_addresses:
                 raise APIException(

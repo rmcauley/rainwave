@@ -1,11 +1,7 @@
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
+from api.rainwave_dto import Api4AdminResetAlbumCooldownPostRequest
 from common.db.cursor import get_cursor
-from pydantic import BaseModel
-
-
-class ResetAlbumCooldownPostRequest(BaseModel):
-    album_id: int
 
 
 @handle_api_url("admin/reset_album_cooldown")
@@ -16,7 +12,7 @@ class ResetAlbumCooldown(APIHandler):
     )
 
     async def post(self):
-        input = self.get_validated_input(ResetAlbumCooldownPostRequest)
+        input = self.get_validated_input(Api4AdminResetAlbumCooldownPostRequest)
         async with get_cursor() as cursor:
             await cursor.update(
                 "UPDATE r4_album_sid SET album_cool_multiply = 1, album_cool_override = NULL WHERE album_id = %s AND sid = %s",

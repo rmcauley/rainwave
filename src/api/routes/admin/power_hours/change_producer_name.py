@@ -1,17 +1,12 @@
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from pydantic import BaseModel
+from api.rainwave_dto import Api4AdminChangeProducerNamePostRequest
 
 from api.routes.admin.power_hours.get_power_hour_by_id import (
     get_api_power_hour,
     get_power_hour_by_id,
 )
 from common.db.cursor import get_cursor
-
-
-class ChangeProducerNamePostRequest(BaseModel):
-    sched_id: int
-    name: str
 
 
 @handle_api_url("admin/change_producer_name")
@@ -21,7 +16,7 @@ class ChangeProducerName(APIHandler):
     sid_required = False
 
     async def post(self):
-        input = self.get_validated_input(ChangeProducerNamePostRequest)
+        input = self.get_validated_input(Api4AdminChangeProducerNamePostRequest)
         async with get_cursor() as cursor:
             await get_power_hour_by_id(cursor, input.sched_id)
             await cursor.update(

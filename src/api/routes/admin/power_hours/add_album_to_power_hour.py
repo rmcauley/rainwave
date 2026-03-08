@@ -5,12 +5,7 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
     get_power_hour_by_id,
 )
 from common.db.cursor import get_cursor
-from pydantic import BaseModel
-
-
-class AddAlbumToPowerHourPostRequest(BaseModel):
-    sched_id: int
-    album_id: int
+from api.rainwave_dto import Api4AdminAddAlbumToPowerHourPostRequest
 
 
 @handle_api_url("admin/add_album_to_power_hour")
@@ -21,7 +16,7 @@ class AddAlbumToPowerHour(APIHandler):
     allow_sid_zero = True
 
     async def post(self):
-        input = self.get_validated_input(AddAlbumToPowerHourPostRequest)
+        input = self.get_validated_input(Api4AdminAddAlbumToPowerHourPostRequest)
         async with get_cursor() as cursor:
             power_hour = await get_power_hour_by_id(cursor, input.sched_id)
             await power_hour.add_album_id(cursor, input.album_id)

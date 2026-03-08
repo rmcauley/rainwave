@@ -1,13 +1,9 @@
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
+from api.rainwave_dto import Api4UserSearchPostRequest
 from common import config
 from common.db.cursor import get_cursor
-from pydantic import BaseModel
-
-
-class UserSearchPostRequest(BaseModel):
-    username: str
 
 
 @handle_api_url("user_search")
@@ -17,7 +13,7 @@ class UserSearchRequest(APIHandler):
     sid_required = False
 
     async def post(self):
-        input = self.get_validated_input(UserSearchPostRequest)
+        input = self.get_validated_input(Api4UserSearchPostRequest)
         async with get_cursor() as cursor:
             if self.request.remote_ip not in config.api_trusted_ip_addresses:
                 raise APIException(

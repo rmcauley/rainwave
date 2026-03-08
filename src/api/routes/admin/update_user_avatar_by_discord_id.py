@@ -1,14 +1,9 @@
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
+from api.rainwave_dto import Api4UpdateUserAvatarByDiscordIdPostRequest
 from common import config
-from pydantic import BaseModel
 from common.db.cursor import get_cursor
-
-
-class UpdateUserAvatarByDiscordIdPostRequest(BaseModel):
-    discord_user_id: str
-    avatar: str
 
 
 @handle_api_url("update_user_avatar_by_discord_id")
@@ -18,7 +13,7 @@ class UpdateUserAvatarByDiscordId(APIHandler):
     description = "Accessible only to localhost connections, for wormgas."
 
     async def post(self):
-        input = self.get_validated_input(UpdateUserAvatarByDiscordIdPostRequest)
+        input = self.get_validated_input(Api4UpdateUserAvatarByDiscordIdPostRequest)
         async with get_cursor() as cursor:
             if self.request.remote_ip not in config.api_trusted_ip_addresses:
                 raise APIException(

@@ -1,20 +1,11 @@
 from api.handle_url import handle_api_url
-from pydantic import BaseModel, PositiveInt
+from api.rainwave_dto import Api4AdminCreatePowerHourPostRequest
 
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.routes.admin.power_hours.get_power_hour_by_id import get_api_power_hour
 from common.db.cursor import get_tx_cursor
 from common.schedule.create_schedule_entry import create_schedule_entry
 from common.schedule.power_hours.power_hour import PowerHour
-
-
-class CreatePowerHourPostRequest(BaseModel):
-    name: str
-    start_utc_time: PositiveInt
-    end_utc_time: PositiveInt
-    url: str | None = None
-    fill_unrated: bool | None = None
-    sid: int
 
 
 @handle_api_url("admin/create_power_hour")
@@ -24,7 +15,7 @@ class CreatePowerHour(RegisteredUserAPIHandler):
     sid_required = False
 
     async def post(self):
-        input = self.get_validated_input(CreatePowerHourPostRequest)
+        input = self.get_validated_input(Api4AdminCreatePowerHourPostRequest)
         async with get_tx_cursor() as cursor:
             schedule_entry_row = await create_schedule_entry(
                 cursor,

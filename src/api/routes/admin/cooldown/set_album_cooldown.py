@@ -1,15 +1,9 @@
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from pydantic import BaseModel
+from api.rainwave_dto import Api4AdminSetAlbumCooldownPostRequest
 
 
 from common.db.cursor import get_cursor
-
-
-class SetAlbumCooldownPostRequest(BaseModel):
-    album_id: int
-    multiply: float | None = None
-    override: int | None = None
 
 
 @handle_api_url("admin/set_album_cooldown")
@@ -18,7 +12,7 @@ class SetAlbumCooldown(APIHandler):
     description = "Sets the album cooldown multiplier and override PER STATION.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
 
     async def post(self):
-        input = self.get_validated_input(SetAlbumCooldownPostRequest)
+        input = self.get_validated_input(Api4AdminSetAlbumCooldownPostRequest)
         async with get_cursor() as cursor:
             if input.multiply is not None and input.override is not None:
                 await cursor.update(

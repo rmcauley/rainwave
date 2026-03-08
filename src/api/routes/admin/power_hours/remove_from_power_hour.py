@@ -1,17 +1,13 @@
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.exceptions import APIException
+from api.rainwave_dto import Api4AdminPowerHourRemoveSongPostRequest
 
 from api.routes.admin.power_hours.get_power_hour_by_id import (
     get_api_power_hour,
     get_power_hour_by_id,
 )
 from common.db.cursor import get_cursor
-from pydantic import BaseModel, PositiveInt
-
-
-class RemoveFromPowerHourPostRequest(BaseModel):
-    one_up_id: PositiveInt
 
 
 @handle_api_url("admin/power_hour_remove_song")
@@ -21,7 +17,7 @@ class RemoveFromPowerHour(APIHandler):
     sid_required = True
 
     async def post(self):
-        input = self.get_validated_input(RemoveFromPowerHourPostRequest)
+        input = self.get_validated_input(Api4AdminPowerHourRemoveSongPostRequest)
         async with get_cursor() as cursor:
             sched_id = await cursor.fetch_var(
                 "SELECT sched_id FROM r4_one_ups WHERE one_up_id = %s",

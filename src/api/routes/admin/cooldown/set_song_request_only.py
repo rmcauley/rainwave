@@ -1,13 +1,7 @@
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
+from api.rainwave_dto import Api4AdminSetSongRequestOnlyPostRequest
 from common.db.cursor import get_cursor
-from pydantic import BaseModel
-
-
-class SetSongRequestOnlyPostRequest(BaseModel):
-    song_id: int
-    request_only: bool
-    sid: int
 
 
 @handle_api_url("admin/set_song_request_only")
@@ -16,7 +10,7 @@ class SetSongRequestOnly(APIHandler):
     description = "Sets a song to be played only by request."
 
     async def post(self):
-        input = self.get_validated_input(SetSongRequestOnlyPostRequest)
+        input = self.get_validated_input(Api4AdminSetSongRequestOnlyPostRequest)
         async with get_cursor() as cursor:
             if input.request_only:
                 await cursor.update(
