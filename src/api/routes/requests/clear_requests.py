@@ -12,4 +12,4 @@ class ClearRequests(APIHandler):
 
     async def post(self):
         self.user.clear_all_requests()
-                self.response["requests"] = self.user.get_requests(self.sid)
+        self.response["requests"] = self.user.get_requests(self.sid)

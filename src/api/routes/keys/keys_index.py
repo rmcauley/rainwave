@@ -28,7 +28,8 @@ class KeyIndex(HTMLRequest):
 
             ua = self.request.headers.get("User-Agent") or ""
 
-            if ua.lower().find("android") != -1 and not input.:
+            # what was false here from input?
+            if ua.lower().find("android") != -1 and not False:
                 self.redirect("/keys/app")
                 return
 

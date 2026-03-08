@@ -45,7 +45,7 @@ class SearchSongRow(TypedDict):
 @handle_api_url("search")
 class SearchHandler(AuthRequiredAPIHandler):
     description = "Search artists, albums, and songs for a matching string.  Case insensitive.  Submitted string will be stripped of accents and punctuation."
-    return_name = "search_results"
+    return_name = "albums"
     sid_required = True
     fields = {"search": (fieldtypes.string, True)}
 

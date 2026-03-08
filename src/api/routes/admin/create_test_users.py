@@ -21,7 +21,7 @@ class CreateTestUser(RainwaveHandler):
     local_only = True
     sid_required = False
     auth_required = False
-    return_name = "create_anon_tuned_in_result"
+    return_name = "user"
 
     async def get(self, url_sid: str):
         input = self.get_validated_input(CreateTestUserInput)

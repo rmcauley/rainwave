@@ -27,7 +27,7 @@ class ListenerDetailRequest(APIHandler):
     sid_required = False
     login_required = False
 
-    async def post(self):
+    async def post(self) -> None:
         input = self.get_validated_input(Api4ListenerPostRequest)
 
         async with get_cursor() as cursor:
@@ -200,9 +200,9 @@ class ListenerDetailRequest(APIHandler):
                 row_type=rainwave_typeddicts.ListenerRatingsByStation,
             )
 
-            rating_completion: rainwave_typeddicts.RatingsCompletion = {}
+            rating_completion_dict: dict[str, int] = {}
             for row in ratings_by_station:
-                rating_completion[
+                rating_completion_dict[
                     cast(
                         Literal[
                             "1",
@@ -218,6 +218,13 @@ class ListenerDetailRequest(APIHandler):
                     / float(object_counts.num_origin_songs[row["sid"]])
                     * 100
                 )
+            rating_completion: rainwave_typeddicts.RatingsCompletion = {
+                "1": rating_completion_dict.get("1", 0),
+                "2": rating_completion_dict.get("2", 0),
+                "3": rating_completion_dict.get("3", 0),
+                "4": rating_completion_dict.get("4", 0),
+                "6": rating_completion_dict.get("6", 0),
+            }
 
             rating_spread = await cursor.fetch_all(
                 "SELECT COUNT(song_id) AS ratings, song_rating_user AS rating FROM r4_song_ratings JOIN r4_songs USING (song_id) WHERE user_id = %s AND song_rating_user IS NOT NULL AND song_verified IS TRUE GROUP BY song_rating_user ORDER BY song_rating_user",

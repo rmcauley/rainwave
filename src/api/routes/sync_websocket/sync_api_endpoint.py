@@ -33,19 +33,19 @@ class Sync(AuthRequiredAPIHandler):
     is_websocket = False
     wait_future = None
 
-    async async def post(self):
+    async def post(self):
         global sessions
 
         routes.info.check_sync_status(self.sid, self.get_argument_bool("offline_ack"))
 
         self.set_header("Content-Type", "application/json")
 
-        if not input.:
+        if not input.resync:
             sched_current_dict = cache.get_station(self.sid, "sched_current_dict")
             if (
-                input.
+                input.known_event_id
                 and sched_current_dict
-                and (sched_current_dict["id"] != input.)
+                and (sched_current_dict["id"] != input.known_event_id)
             ):
                 self.update()
             else:
@@ -110,12 +110,13 @@ class Sync(AuthRequiredAPIHandler):
         self.user.refresh(self.sid)
         if "requests_paused" in self.user.data:
             del self.user.data["requests_paused"]
-                self.response["user"] = self.user.to_private_dict()
+            self.response["user"] = self.user.to_private_dict()
         self.finish()
 
     def login_mixup_warn(self):
-                self.response["redownload_m3u"] = {
-                "tl_key": "redownload_m3u",
-                "text": self.locale.translate("redownload_m3u"),
-            },
+        self.response["redownload_m3u"] = {
+            "tl_key": "redownload_m3u",
+            "text": self.locale.translate("redownload_m3u"),
+        }
+
         self.finish()

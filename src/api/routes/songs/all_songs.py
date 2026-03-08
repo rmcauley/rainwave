@@ -20,12 +20,13 @@ class AllSongsHandler(APIHandlerWithGet):
         async with get_cursor() as cursor:
             order = "album_name, song_title"
             distinct_on = "album_name, song_title"
-            if input. == "rating":
+            if input.order == "rating":
                 order = "song_rating_user DESC, album_name, song_title"
                 distinct_on = "song_rating_user, album_name, song_title"
-                    self.response["all_songs"] = await cursor.fetch_all(
-                    sql.SQL(
-                        """
+                self.response["all_songs"] = (
+                    await cursor.fetch_all(
+                        sql.SQL(
+                            """
                         SELECT DISTINCT ON ({distinct_on})
                             r4_songs.song_id AS id,
                             song_title AS title,
@@ -42,11 +43,12 @@ class AllSongsHandler(APIHandlerWithGet):
                         WHERE song_verified = TRUE
                         ORDER BY {order}
                         """
-                    ).format(
-                        distinct_on=sql.SQL(distinct_on),
-                        order=sql.SQL(order),
-                    )
-                    + get_pagination_sql_limit_string(self),
-                    (self.user.id,),
-                    row_type=rainwave_typeddicts.AllSong,
-                ),
+                        ).format(
+                            distinct_on=sql.SQL(distinct_on),
+                            order=sql.SQL(order),
+                        )
+                        + get_pagination_sql_limit_string(self),
+                        (self.user.id,),
+                        row_type=rainwave_typeddicts.AllSong,
+                    ),
+                )

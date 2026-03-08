@@ -12,7 +12,7 @@ class PauseRequestQueue(APIHandler):
 
     async def post(self):
         self.user.pause_requests()
-                self.response["user"] = self.user.to_private_dict()
+        self.response["user"] = self.user.to_private_dict()
         if self.user.data["requests_paused"]:
             self.append_standard("request_queue_paused")
         else:

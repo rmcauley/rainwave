@@ -23,4 +23,4 @@ class OrderRequests(APIHandler):
                 )
                 order = order + 1
             self.append_standard("requests_reordered")
-                    self.response["requests"] = self.user.get_requests(self.sid)
+            self.response["requests"] = self.user.get_requests(self.sid)

@@ -14,8 +14,8 @@ class DeleteRequest(APIHandler):
     sync_across_sessions = True
 
     async def post(self):
-        if self.user.remove_request(input.):
+        if self.user.remove_request(input.song_id):
             self.append_standard("request_deleted")
-                        self.response["requests"] = self.user.get_requests(self.sid)
+            self.response["requests"] = self.user.get_requests(self.sid)
         else:
             raise APIException("request_delete_failed")

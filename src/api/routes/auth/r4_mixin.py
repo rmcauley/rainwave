@@ -29,7 +29,7 @@ class R4SetupSessionMixin:
         return False
 
     def get_destination(self):
-        destination = input.
+        destination = input["destination"]
         if destination not in ALLOWED_DESTINATIONS:
             destination = "web"
         return destination
@@ -44,7 +44,9 @@ class R4SetupSessionMixin:
                     user_id,
                 ),
             )
-            self.set_cookie("r4_session_id", session_id, expires_days=365, httponly=True)
+            self.set_cookie(
+                "r4_session_id", session_id, expires_days=365, httponly=True
+            )
 
             if destination == "app" or destination == "rw":
                 user = make_user(user_id)

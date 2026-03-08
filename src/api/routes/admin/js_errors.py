@@ -5,7 +5,7 @@ from api.helpers.js_error_reports import get_error_reports
 
 @handle_api_url("admin/js_errors")
 class JSErrors(APIHandler):
-    return_name = "js_errors"
+    return_name = "admin_js_errors"
     admin_required = True
     sid_required = False
     description = "A list of errors that have happened to users using the site."

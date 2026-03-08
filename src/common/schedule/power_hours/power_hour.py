@@ -167,7 +167,7 @@ class PowerHour(ScheduleEntry):
             var_type=int,
         )
         for song in await get_songs_for_album_display(
-            cursor, album_id, self.sid, 1, "song_title"
+            cursor, album_id, self.sid, 1, None
         ):
             await self.add_song_id(cursor, song["id"], order=None)
             order += 1

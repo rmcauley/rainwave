@@ -1,4 +1,4 @@
-from api import fieldtypes
+from api import fieldtypes, rainwave_dto
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from common.rainwave import playlist
@@ -11,6 +11,7 @@ class ArtistHandler(APIHandler):
     fields = {"id": (fieldtypes.artist_id, True)}
 
     async def post(self):
-        artist = playlist.Artist.load_from_id(input.)
+        input = self.get_validated_input(rainwave_dto.Api4ArtistPostRequest)
+        artist = playlist.Artist.load_from_id(input.id)
         artist.load_all_songs(self.sid, self.user.id)
-                self.response["artist"] = artist.to_dict_full(self.user)
+        self.response["artist"] = artist.to_dict_full(self.user)

@@ -22,6 +22,10 @@ class PhpbbLoginRow(TypedDict):
     discord_user_id: str
 
 
+# this needs fixing
+input = {}
+
+
 @handle_url("/oauth/login")
 class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
     auth_required = False
@@ -32,13 +36,13 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             "login.html",
             request=self,
             locale=self.locale,
-            destination=input.,
+            destination=input["destination"],
         )
 
     async def post(self):
         async with get_cursor() as cursor:
-            username = input.
-            password = input.
+            username = input["username"]
+            password = input["password"]
             if not username:
                 raise APIException("username_required")
             if not password:

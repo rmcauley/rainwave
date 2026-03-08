@@ -8,7 +8,7 @@ def get_all_groups_power(sid: int) -> list[playlist.SongGroup]:
 
 from typing import cast
 
-from api import fieldtypes
+from api import fieldtypes, rainwave_dto
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from common.rainwave import playlist
@@ -25,8 +25,5 @@ class AllGroupsHandler(APIHandler):
     }
 
     async def post(self):
-        if input.:
-            self.response["all_groups"] = (get_all_groups_power(self.sid),)
-        else:
-            self.response["all_groups"] = (get_all_groups(self.sid),)
+        self.response["all_groups"] = (get_all_groups(self.sid),)
         self.write_rainwave_output()

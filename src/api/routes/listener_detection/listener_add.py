@@ -1,5 +1,5 @@
 from common.db.cursor import get_cursor
-@handle_api_url(r"listener_add/(\d+)")
+
 from api import fieldtypes
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
@@ -8,6 +8,7 @@ from common.zeromq import sync_to_front
 from common.user.user_model import make_user
 
 
+@handle_api_url(r"listener_add/(\d+)")
 class AddListener(IcecastHandler):
     fields = {
         "client": (fieldtypes.integer, True),
@@ -22,12 +23,12 @@ class AddListener(IcecastHandler):
     listener_ip = None
 
     def post(self, sid):
-        self.mount, self.user_id, self.listen_key, self.listener_ip = (
+        (self.mount, self.user_id, self.listen_key, self.listener_ip) = (
             self.get_argument_required("mount")
         )
-        self.agent = input.
+        self.agent = self.get_argument("agent")
         if self.listener_ip is None:
-            self.listener_ip = input.
+            self.listener_ip = self.get_argument("ip")
 
         if sid:
             try:
@@ -41,34 +42,25 @@ class AddListener(IcecastHandler):
         else:
             self.add_anonymous(self.sid)
 
-    async def add_registered(self, sid):
-        async with get_cursor() as cursor:
-            real_key = await cursor.fetch_var(
-                "SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s",
-                (self.user_id,),
-                var_type=str,
-            )
-            if real_key != self.listen_key:
-                raise APIException("invalid_argument", reason="mismatched listen_key.")
-            tunedin = await cursor.fetch_var(
-                "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,), var_type=int
-            )
-            if tunedin:
-                await cursor.update(
-                    """
-                    UPDATE r4_listeners
-                    SET sid = %s,
-                        listener_ip = %s,
-                        listener_purge = FALSE,
-                        listener_icecast_id = %s,
-                        listener_relay = %s,
-                        listener_agent = %s
-                    WHERE user_id = %s
-""",
+    def add_registered(self, sid):
+        real_key = db.c.fetch_var(
+            "SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s",
+            (self.user_id,),
+        )
+        if real_key != self.listen_key:
+            raise APIException("invalid_argument", reason="mismatched listen_key.")
+        tunedin = db.c.fetch_var(
+            "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,)
+        )
+        if tunedin:
+            db.c.update(
+                "UPDATE r4_listeners "
+                "SET sid = %s, listener_ip = %s, listener_purge = FALSE, listener_icecast_id = %s, listener_relay = %s, listener_agent = %s "
+                "WHERE user_id = %s",
                 (
                     sid,
                     self.listener_ip,
-                    input.,
+                    self.get_argument("client"),
                     self.relay,
                     self.agent,
                     self.user_id,
@@ -81,29 +73,22 @@ class AddListener(IcecastHandler):
                     sid,
                     "{:<15}".format(self.listener_ip),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input.),
+                    "{:<10}".format(self.get_argument("client")),
                     self.agent,
                     self.listen_key,
                 )
             )
             self.failed = False
         else:
-            await cursor.update(
-                """
-                    INSERT INTO r4_listeners
-                    (sid,
-                        user_id,
-                        listener_ip,
-                        listener_icecast_id,
-                        listener_relay,
-                        listener_agent)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-""",
+            db.c.update(
+                "INSERT INTO r4_listeners "
+                "(sid, user_id, listener_ip, listener_icecast_id, listener_relay, listener_agent) "
+                "VALUES (%s, %s, %s, %s, %s, %s)",
                 (
                     sid,
                     self.user_id,
                     self.listener_ip,
-                    input.,
+                    self.get_argument("client"),
                     self.relay,
                     self.agent,
                 ),
@@ -115,50 +100,40 @@ class AddListener(IcecastHandler):
                     sid,
                     "{:<15}".format(self.listener_ip),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input.),
+                    "{:<10}".format(self.get_argument("client")),
                     self.agent,
                     self.listen_key,
                 )
             )
             self.failed = False
         if not self.failed:
-            u = make_user(self.user_id)
+            u = user.User(self.user_id)
             u.get_listener_record(use_cache=False)
             if u.has_requests():
                 u.put_in_request_line(sid)
         sync_to_front.sync_frontend_user_id(self.user_id)
 
-    async def add_anonymous(self, sid):
-        async with get_cursor() as cursor:
-            if not self.listen_key:
-                self.failed = False
-                return
+    def add_anonymous(self, sid):
+        if not self.listen_key:
+            self.failed = False
+            return
 
-            records = await cursor.fetch_list(
-                "SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1",
-                (self.listener_ip, self.listen_key),
-                row_type=int,
-            )
-            if len(records) == 0:
-                await cursor.update(
-                    """
-                    INSERT INTO r4_listeners
-                    (sid,
-                        listener_ip,
-                        user_id,
-                        listener_relay,
-                        listener_agent,
-                        listener_icecast_id,
-                        listener_key)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-""",
+        records = db.c.fetch_list(
+            "SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1",
+            (self.listener_ip, self.listen_key),
+        )
+        if len(records) == 0:
+            db.c.update(
+                "INSERT INTO r4_listeners "
+                "(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id, listener_key) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s)",
                 (
                     sid,
                     self.listener_ip,
                     1,
                     self.relay,
-                    input.,
-                    input.,
+                    self.get_argument("agent"),
+                    self.get_argument("client"),
                     self.listen_key,
                 ),
             )
@@ -169,7 +144,7 @@ class AddListener(IcecastHandler):
                     sid,
                     "{:<15}".format(self.listener_ip),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input.),
+                    "{:<10}".format(self.get_argument("client")),
                     self.agent,
                     self.listen_key,
                 )
@@ -182,27 +157,19 @@ class AddListener(IcecastHandler):
             while records:
                 popped = records.pop()
                 sync_to_front.sync_frontend_key(popped)
-                await cursor.update(
+                db.c.update(
                     "DELETE FROM r4_listeners WHERE listener_id = %s", (popped,)
                 )
-            await cursor.update(
-                """
-                    UPDATE r4_listeners
-                    SET sid = %s,
-                        listener_ip = %s,
-                        listener_relay = %s,
-                        listener_agent = %s,
-                        listener_icecast_id = %s,
-                        listener_key = %s,
-                        listener_purge = FALSE
-                    WHERE listener_id = %s
-""",
+            db.c.update(
+                "UPDATE r4_listeners "
+                "SET sid = %s, listener_ip = %s, listener_relay = %s, listener_agent = %s, listener_icecast_id = %s, listener_key = %s, listener_purge = FALSE "
+                "WHERE listener_id = %s",
                 (
                     sid,
                     self.listener_ip,
                     self.relay,
-                    input.,
-                    input.,
+                    self.get_argument("agent"),
+                    self.get_argument("client"),
                     self.listen_key,
                     listener_id,
                 ),
@@ -214,7 +181,7 @@ class AddListener(IcecastHandler):
                     sid,
                     "{:<15}".format(self.listener_ip),
                     "{:<15}".format(self.relay),
-                    "{:<10}".format(input.),
+                    "{:<10}".format(self.get_argument("client")),
                     self.agent,
                     self.listen_key,
                 )

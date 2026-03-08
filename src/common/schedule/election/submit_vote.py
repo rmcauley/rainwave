@@ -36,7 +36,7 @@ async def submit_vote(
                 # immediately return and a success will be registered
                 return True
             if user.private_data["voted_entry"]:
-                already_voted = user.private_data["voted_entry"]
+                already_voted = True if user.private_data["voted_entry"] else False
         else:
             previous_vote = await cursor.fetch_row(
                 "SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s",

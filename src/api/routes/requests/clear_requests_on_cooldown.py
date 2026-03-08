@@ -12,4 +12,4 @@ class ClearRequestsOnCooldown(APIHandler):
 
     async def post(self):
         self.user.clear_all_requests_on_cooldown()
-                self.response["requests"] = self.user.get_requests(self.sid)
+        self.response["requests"] = self.user.get_requests(self.sid)

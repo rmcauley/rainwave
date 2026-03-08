@@ -22,8 +22,8 @@ class AllAlbumsHandler(APIHandler):
     fields = {"no_searchable": (fieldtypes.boolean, None)}
 
     async def post(self):
-                self.response["all_albums"] = get_all_albums(
-                self.sid,
-                self.user,
-            ),
+        self.response["all_albums"] = get_all_albums(
+            self.sid,
+            self.user,
+        )
         self.write_rainwave_output()

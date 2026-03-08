@@ -34,7 +34,9 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
     _OAUTH_ACCESS_TOKEN_URL = "https://discord.com/api/oauth2/token"
 
     async def get(self):
-        if input.:
+        input = {}
+        # what was this input?
+        if input["id"]:
             # step 2 - we've come back from Discord with a state parameter
             # that needs to be verified against the user's cookie.
             oauth_secret = self.get_cookie("r4_oauth_secret")
@@ -46,7 +48,8 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 oauth_secret.encode(), OAUTH_STATE_SALT
             ).decode("utf-8")
             self.set_cookie("r4_oauth_secret", "")
-            state_argument = input.
+            # what was this input?
+            state_argument = input["state_argument"]
             if isinstance(state_argument, bytes):
                 state_argument = state_argument.decode()
             if not isinstance(state_argument, str):
@@ -58,7 +61,8 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 raise OAuthRejectedError("oAuth State Mismatch")
             # step 3 - we've come back from Discord with a unique auth code, get
             # token that we can use to act on behalf of user with discord
-            token_argument = input.
+            # what was this input?
+            token_argument = input["token"]
             if isinstance(token_argument, bytes):
                 token_argument = token_argument.decode()
             if not isinstance(token_argument, str):
@@ -160,7 +164,10 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             )
 
             if self.user.id > 1:
-                if discord_id_used_user_id > 1 and discord_id_used_user_id != self.user.id:
+                if (
+                    discord_id_used_user_id > 1
+                    and discord_id_used_user_id != self.user.id
+                ):
                     await cursor.update(
                         "UPDATE phpbb_users SET discord_user_id = '' WHERE discord_user_id = %s",
                         (discord_user_id,),
@@ -203,43 +210,46 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                             user_email_hash = 0
                         WHERE user_id = %s
 """
-                ),
-                (
-                    discord_user_id,
-                    radio_username,
-                    user_avatar_type,
-                    user_avatar,
-                    user_id,
-                ),
-            )
-        else:
-            log.debug("discord", f"Creating new user from Discord {discord_user_id}")
-            await cursor.update(
-                (
-                    """
-                    INSERT INTO phpbb_users (
-                        username,
-                        username_clean,
+                    ),
+                    (
                         discord_user_id,
                         radio_username,
                         user_avatar_type,
-                        user_avatar
-                    )
-                    VALUES (%s , %s, %s , %s , %s , %s)
-"""
-                ),
-                (
-                    username,
-                    username,
-                    discord_user_id,
-                    radio_username,
-                    user_avatar_type,
-                    user_avatar,
-                ),
-            )
-            user_id = await self.get_user_id_by_discord_user_id(discord_user_id)
-            log.info(
-                "discord", f"Created new user {user_id} from Discord {discord_user_id}"
-            )
+                        user_avatar,
+                        user_id,
+                    ),
+                )
+            else:
+                log.debug(
+                    "discord", f"Creating new user from Discord {discord_user_id}"
+                )
+                await cursor.update(
+                    (
+                        """
+                        INSERT INTO phpbb_users (
+                            username,
+                            username_clean,
+                            discord_user_id,
+                            radio_username,
+                            user_avatar_type,
+                            user_avatar
+                        )
+                        VALUES (%s , %s, %s , %s , %s , %s)
+    """
+                    ),
+                    (
+                        username,
+                        username,
+                        discord_user_id,
+                        radio_username,
+                        user_avatar_type,
+                        user_avatar,
+                    ),
+                )
+                user_id = await self.get_user_id_by_discord_user_id(discord_user_id)
+                log.info(
+                    "discord",
+                    f"Created new user {user_id} from Discord {discord_user_id}",
+                )
 
         await self.setup_rainwave_session_and_redirect(user_id, destination)

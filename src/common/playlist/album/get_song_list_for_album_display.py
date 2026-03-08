@@ -1,5 +1,6 @@
 from psycopg import sql
-from typing import Literal, TypedDict
+from typing import TypedDict
+from api import rainwave_dto
 from common.db.cursor import RainwaveCursor
 
 
@@ -27,7 +28,7 @@ async def get_songs_for_album_display(
     album_id: int,
     sid: int,
     user_id: int,
-    sort: Literal["added_on", "song_title"],
+    sort: rainwave_dto.Sort | None,
 ) -> list[SongListForAlbumDisplayRow]:
     requestable = sql.SQL("TRUE") if user_id > 1 else sql.SQL("FALSE")
     order_by = (
