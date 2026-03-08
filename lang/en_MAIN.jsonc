@@ -55,6 +55,7 @@
   ],
   "internal_error": "Internal server error.",
   "song_does_not_exist": "Song does not exist.",
+  "album_does_not_exist": "Album does not exist.",
   "db_error_retry": "Internal database error - please retry.",
   "db_error_permanent": "Server error - internal database is offline.",
   "websocket_throttle": "Slow down!",

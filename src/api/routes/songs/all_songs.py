@@ -1,32 +1,30 @@
-from api import fieldtypes
+from api import rainwave_dto
 from api import rainwave_typeddicts
-from api.handler_classes.api_handler_with_get import APIHandlerWithGet
 from api.handle_url import handle_api_url
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 from psycopg import sql
 
 
 @handle_api_url("all_songs")
-class AllSongsHandler(APIHandlerWithGet):
+class AllSongsHandler(RegisteredUserAPIHandler):
     return_name = "all_songs"
-    login_required = True
     sid_required = False
     description = "Gets every song including a user's ratings.  Order field can be 'name', sorting by album and song title, or 'rating'."
     pagination = True
-    fields = {"order": (fieldtypes.string, False)}
 
     async def post(self):
+        input = self.get_validated_input(rainwave_dto.Api4AllSongsPostRequest)
         async with get_cursor() as cursor:
             order = "album_name, song_title"
             distinct_on = "album_name, song_title"
             if input.order == "rating":
                 order = "song_rating_user DESC, album_name, song_title"
                 distinct_on = "song_rating_user, album_name, song_title"
-                self.response["all_songs"] = (
-                    await cursor.fetch_all(
-                        sql.SQL(
-                            """
+                self.response["all_songs"] = await cursor.fetch_all(
+                    sql.SQL(
+                        """
                         SELECT DISTINCT ON ({distinct_on})
                             r4_songs.song_id AS id,
                             song_title AS title,
@@ -43,12 +41,11 @@ class AllSongsHandler(APIHandlerWithGet):
                         WHERE song_verified = TRUE
                         ORDER BY {order}
                         """
-                        ).format(
-                            distinct_on=sql.SQL(distinct_on),
-                            order=sql.SQL(order),
-                        )
-                        + get_pagination_sql_limit_string(self),
-                        (self.user.id,),
-                        row_type=rainwave_typeddicts.AllSong,
-                    ),
+                    ).format(
+                        distinct_on=sql.SQL(distinct_on),
+                        order=sql.SQL(order),
+                    )
+                    + get_pagination_sql_limit_string(self),
+                    (self.user.id,),
+                    row_type=rainwave_typeddicts.AllSong,
                 )

@@ -1,13 +1,17 @@
-from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+import orjson
+
+from api.handler_classes.api_handler import APIHandler
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_html_url, handle_api_url
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 from psycopg import sql
 
+from common.libs.pretty_date import pretty_date
+
 
 @handle_api_url("playback_history")
-class PlaybackHistory(APIHandlerWithGet):
+class PlaybackHistory(APIHandler):
     description = "Get the last 100 songs that played on the station."
     return_name = "playback_history"
     login_required = False
@@ -16,7 +20,7 @@ class PlaybackHistory(APIHandlerWithGet):
 
     async def post(self):
         async with get_cursor() as cursor:
-            if self.user.is_anonymous():
+            if not self.optional_user or self.optional_user.is_anonymous():
                 self.response["playback_history"] = await cursor.fetch_all(
                     sql.SQL(
                         """
@@ -35,7 +39,8 @@ class PlaybackHistory(APIHandlerWithGet):
                         WHERE r4_song_history.sid = %s
                         ORDER BY songhist_id DESC
                         """
-                    ) + get_pagination_sql_limit_string(self),
+                    )
+                    + get_pagination_sql_limit_string(self),
                     (self.sid,),
                     row_type=rainwave_typeddicts.PlaybackHistoryEntry,
                 )
@@ -63,8 +68,9 @@ class PlaybackHistory(APIHandlerWithGet):
                         WHERE r4_song_history.sid = %s
                         ORDER BY songhist_id DESC
                         """
-                    ) + get_pagination_sql_limit_string(self),
-                    (self.user.id, self.sid),
+                    )
+                    + get_pagination_sql_limit_string(self),
+                    (self.optional_user.id, self.sid),
                     row_type=rainwave_typeddicts.PlaybackHistoryEntry,
                 )
         self.write_rainwave_output()
@@ -81,21 +87,17 @@ class PlaybackHistoryHTML(PlaybackHistory):
     def header_special(self):
         self.write("<th>Artist(s)</th>")
         self.write("<th>Site Rating</th>")
-        if not self.user.is_anonymous():
-            self.write("<th>Your Rating</th>")
+        self.write("<th>Your Rating</th>")
         self.write("<th>Time Played</th>")
 
-    def row_special(self, row):
+    def row_special(self, row: rainwave_typeddicts.PlaybackHistoryEntry):
         self.write("<td>")
-        artists = json.loads(row["artist_parseable"])
+        artists = orjson.loads(row["artist_parseable"])
         for artist in artists:
             self.write("%s" % artist["name"])
             if artist != artists[-1]:
                 self.write(", ")
         self.write("</td>")
-
         self.write("<td>%s</td>" % row["rating"])
-        if "rating_user" in row:
-            self.write("<td>%s</td>" % (row["rating_user"] or ""))
-
+        self.write("<td>%s</td>" % (row["rating_user"] or ""))
         self.write("<td>%s</td>" % pretty_date(row["song_played_at"]))

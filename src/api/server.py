@@ -11,6 +11,7 @@ import tornado.process
 from api.handler_classes.html404 import HTMLError404Handler
 from api.handler_classes.json404 import Error404Handler
 from api.helpers.cached_all_artists import update_all_artists_cache
+from api.helpers.cached_all_groups import update_all_groups_cache
 from common import config, log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
@@ -62,6 +63,13 @@ class APIServer:
                 timedelta(days=1),
             )
             update_all_artists_cache_job.start()
+
+            await update_all_groups_cache()
+            update_all_groups_cache_job = tornado.ioloop.PeriodicCallback(
+                update_all_groups_cache,
+                timedelta(days=1),
+            )
+            update_all_groups_cache_job.start()
 
             for request in request_classes:
                 log.debug("start", "   Handler: %s" % str(request))

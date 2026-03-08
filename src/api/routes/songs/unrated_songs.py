@@ -1,11 +1,12 @@
 from api.handle_url import handle_api_html_url, handle_api_url
-from api.handler_classes.api_handler import APIHandler
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.helpers.paginated_requests import get_pagination_params
-from common.rainwave import playlist
+from common.db.cursor import get_cursor
+from common.user.get_unrated_songs_for_user import get_unrated_songs_for_user
 
 
 @handle_api_url("unrated_songs")
-class UnratedSongsHandler(APIHandler):
+class UnratedSongsHandler(RegisteredUserAPIHandler):
     description = "Get all of a user's unrated songs."
     return_name = "unrated_songs"
     login_required = True
@@ -13,9 +14,11 @@ class UnratedSongsHandler(APIHandler):
 
     async def post(self):
         limit, _ = get_pagination_params(self)
-        self.response["unrated_songs"] = playlist.get_unrated_songs_for_user(
-            self.user.id, limit
-        ),
+        async with get_cursor() as cursor:
+            self.response["unrated_songs"] = await get_unrated_songs_for_user(
+                cursor, self.user.id, limit
+            )
+
         self.write_rainwave_output()
 
 

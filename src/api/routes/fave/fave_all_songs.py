@@ -1,38 +1,58 @@
-from api import fieldtypes, rainwave_dto
-from api.handler_classes.api_handler import APIHandler
+from typing import cast
+
+from psycopg import sql
+from api import rainwave_dto, rainwave_typeddicts
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 
 
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
-from api.routes.fave.fave_album import SubmitAlbumFave
-from common.rainwave import rating
 from common.db.cursor import get_cursor
 
 
 @handle_api_url("fave_all_songs")
 class SubmitFaveAllSongs(AuthRequiredAPIHandler):
     sid_required = True
-    _fave_type = "song_batched"
     perks_required = True
     description = "Faves or un-faves all songs in an album.  Only songs on station ID provided will be faved."
 
     async def post(self):
         input = self.get_validated_input(rainwave_dto.Api4FaveAllSongsPostRequest)
         async with get_cursor() as cursor:
+            album_id = await cursor.fetch_var(
+                "SELECT album_id FROM r4_album_sid WHERE album_id = %s AND sid = %s",
+                (input.album_id, self.sid),
+                var_type=int,
+            )
+            if not album_id:
+                raise APIException("album_does_not_exist")
+
             song_ids = await cursor.fetch_list(
                 "SELECT r4_song_sid.song_id FROM r4_songs JOIN r4_song_sid USING (song_id) WHERE album_id = %s AND sid = %s",
                 (input.album_id, self.sid),
                 row_type=int,
             )
-            for song_id in song_ids:
-                self._batched_id = song_id
-                super().post()
-            self.append_standard(
-                "fave_success",
-                "Fave status for all songs changed.",
-                song_ids=song_ids,
-                fave=input.fave,
-                sid=self.sid,
+
+            insert_rows = [(song_id, self.user.id, input.fave) for song_id in song_ids]
+
+            await cursor.update(
+                sql.SQL(
+                    """
+                INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES {values}
+                ON CONFLICT DO UPDATE SET song_fave = %s
+                """
+                ).format(
+                    values=sql.SQL(", ").join(sql.SQL("(%s, %s, %s)") for _ in song_ids)
+                ),
+                [v for row in insert_rows for v in row],
             )
-            self.write_rainwave_output()
+
+            self.response["fave_all_songs_result"] = {
+                "fave": input.fave,
+                "sid": cast(rainwave_typeddicts.StationId, self.sid),
+                "song_ids": song_ids,
+                "success": True,
+                "text": "Fave status for all songs changed.",
+                "tl_key": "fave_success",
+            }
+        self.write_rainwave_output()

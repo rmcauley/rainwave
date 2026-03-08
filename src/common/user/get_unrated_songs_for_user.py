@@ -1,18 +1,12 @@
 from psycopg import sql
-from typing import TypedDict
 
+from api import rainwave_typeddicts
 from common.db.cursor import RainwaveCursor
-
-
-class UnratedSongsRow(TypedDict):
-    id: int
-    title: str
-    album_name: str
 
 
 async def get_unrated_songs_for_user(
     cursor: RainwaveCursor, user_id: int, limit: int | None
-) -> list[UnratedSongsRow]:
+) -> list[rainwave_typeddicts.UnratedSong]:
     query = sql.SQL(
         """
         SELECT
@@ -36,5 +30,5 @@ async def get_unrated_songs_for_user(
     return await cursor.fetch_all(
         query,
         {"user_id": user_id, "limit": limit},
-        row_type=UnratedSongsRow,
+        row_type=rainwave_typeddicts.UnratedSong,
     )

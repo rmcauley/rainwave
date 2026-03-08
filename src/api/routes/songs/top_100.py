@@ -1,11 +1,11 @@
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_html_url, handle_api_url
-from api.handler_classes.api_handler_with_get import APIHandlerWithGet
+from api.handler_classes.api_handler import APIHandler
 from common.db.cursor import get_cursor
 
 
 @handle_api_url("top_100")
-class Top100Songs(APIHandlerWithGet):
+class Top100Songs(APIHandler):
     description = "Get the 100 highest-rated songs on the entirety of Rainwave, or by station if a station ID is specified in the arguments."
     return_name = "top_100"
     login_required = False

@@ -1,13 +1,13 @@
-from api.handler_classes.api_handler_with_get import APIHandlerWithGet
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_html_url, handle_api_url
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 from psycopg import sql
 
 
 @handle_api_url("all_faves")
-class AllFavHandler(APIHandlerWithGet):
+class AllFavHandler(RegisteredUserAPIHandler):
     description = "Get all songs that have been faved by the user."
     return_name = "all_faves"
     login_required = True
@@ -43,7 +43,8 @@ class AllFavHandler(APIHandlerWithGet):
                             AND song_fave = TRUE
                         ORDER BY album_name, song_title
                         """
-                    ) + get_pagination_sql_limit_string(self),
+                    )
+                    + get_pagination_sql_limit_string(self),
                     (self.sid, self.user.id),
                     row_type=rainwave_typeddicts.AllFave,
                 )
@@ -67,7 +68,8 @@ class AllFavHandler(APIHandlerWithGet):
                             AND song_fave = TRUE
                         ORDER BY album_name, song_title
                     """
-                    ) + get_pagination_sql_limit_string(self),
+                    )
+                    + get_pagination_sql_limit_string(self),
                     (self.user.id,),
                     row_type=rainwave_typeddicts.AllFave,
                 )

@@ -1,41 +1,50 @@
-from api import fieldtypes
+from typing import cast
+
+from api import rainwave_dto, rainwave_typeddicts
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
-from api.handler_classes.api_handler import APIHandler
-from common.rainwave import rating
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from common.db.cursor import get_cursor
 
 
 @handle_api_url("fave_song")
-class SubmitSongFave(APIHandler):
-    _fave_type = "song"
-    _batched_id = None
+class SubmitSongFave(RegisteredUserAPIHandler):
     login_required = True
     tunein_required = False
     sid_required = False
     description = "Fave or un-fave a song."
-    fields = {"song_id": (fieldtypes.song_id, True), "fave": (fieldtypes.boolean, True)}
     sync_across_sessions = True
 
-    async def post(self):
-        object_id = input[self._fave_type + "_id"]
-        fave = self.get_argument_bool("fave") or False
-        result = False
-
-        if self._fave_type == "song_batched":
-            result = rating.set_song_fave(self._batched_id, self.user.id, fave)
-        elif self._fave_type == "song":
-            result = rating.set_song_fave(object_id, self.user.id, fave)
-        elif self._fave_type == "album":
-            result = rating.set_album_fave(self.sid, object_id, self.user.id, fave)
-        if result:
-            text = None
-            if fave:
-                text = "Favourited " + self._fave_type + "."
-            else:
-                text = "Unfavourited " + self._fave_type + "."
-            self.append_standard(
-                "fave_success", text, id=object_id, fave=fave, sid=self.sid
+    async def post(self) -> None:
+        input = self.get_validated_input(rainwave_dto.Api4FaveSongPostRequest)
+        async with get_cursor() as cursor:
+            song_id = await cursor.fetch_var(
+                "SELECT song_id FROM r4_songs WHERE song_id = %s AND song_verified = TRUE",
+                (input.song_id,),
+                var_type=int,
             )
-        else:
-            raise APIException("fave_failed", "Fave failed.")
+            if not song_id:
+                raise APIException("song_does_not_exist")
+            await cursor.update(
+                """
+                INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES (%s, %s, %s)
+                ON CONFLICT DO UPDATE SET song_fave = %s
+                """,
+                (song_id, self.user.id, input.fave, input.fave),
+            )
+
+            text: str | None = None
+            if input.fave:
+                text = "Favourited song."
+            else:
+                text = "Unfavourited song."
+
+            self.response["fave_song_result"] = {
+                "fave": input.fave,
+                "id": song_id,
+                "sid": cast(rainwave_typeddicts.StationId, self.sid),
+                "success": True,
+                "text": text,
+                "tl_key": "fave_success",
+            }
         self.write_rainwave_output()

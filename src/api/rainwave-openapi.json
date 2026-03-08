@@ -4727,8 +4727,11 @@
             ],
             "type": "array"
           },
-          "artist": {
-            "$ref": "#/components/schemas/_artist_with_order"
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_artist_with_order"
+            }
           },
           "cool": {
             "type": "boolean"
@@ -4774,9 +4777,14 @@
           },
           "sid": {
             "$ref": "#/components/schemas/_station_id"
+          },
+          "rating_histogram": {
+            "$ref": "#/components/schemas/_rating_histogram"
           }
         },
         "required": [
+          "album",
+          "artists",
           "cool",
           "elec_blocked_by",
           "elec_blocked",

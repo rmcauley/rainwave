@@ -43,10 +43,8 @@ class SongForArtist(TypedDict):
     album: SongForArtistAlbum
 
 
-async def get_song_list_by_album_for_artist_display(
-    cursor: RainwaveCursor, artist_id: int, sid: int, user_id: int
-) -> rainwave_typeddicts.AllSongsForArtist:
-    query = sql.SQL(
+def get_select_sql_for_songs_for_artist_or_group_display() -> sql.SQL:
+    return sql.SQL(
         """
         SELECT 
             r4_song_artist.song_id AS id, 
@@ -63,6 +61,15 @@ async def get_song_list_by_album_for_artist_display(
             COALESCE(song_fave, FALSE) AS fave, 
             album_name, 
             r4_albums.album_id 
+        """
+    )
+
+
+async def get_song_list_by_album_for_artist_display(
+    cursor: RainwaveCursor, artist_id: int, sid: int, user_id: int
+) -> rainwave_typeddicts.AllSongsForArtist:
+    query = get_select_sql_for_songs_for_artist_or_group_display() + sql.SQL(
+        """
         FROM r4_song_artist 
             JOIN r4_songs USING (song_id) 
             JOIN r4_albums USING (album_id) 

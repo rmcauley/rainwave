@@ -32,6 +32,7 @@ ErrorTranslationKeys = (
     | Literal["server_just_started"]
     | Literal["search_string_too_short"]
     | Literal["user_locked"]
+    | Literal["album_does_not_exist"]
 )
 
 
