@@ -3446,25 +3446,38 @@
         ]
       },
       "_song_on_album": {
-        "properties": {
-          "added_on": {
-            "$ref": "#/components/schemas/_time"
-          },
-          "cool": {
-            "type": "boolean"
-          },
-          "cool_end": {
-            "$ref": "#/components/schemas/_time"
-          },
-          "origin_sid": {
-            "$ref": "#/components/schemas/_station_id"
-          },
-          "requestable": {
-            "type": "boolean"
+        "allOf": [
+          { "$ref": "#/components/schemas/_song_bare" },
+          {
+            "properties": {
+              "artist_parseable": { "type": "string" },
+              "added_on": {
+                "$ref": "#/components/schemas/_time"
+              },
+              "cool": {
+                "type": "boolean"
+              },
+              "cool_end": {
+                "$ref": "#/components/schemas/_time"
+              },
+              "origin_sid": {
+                "$ref": "#/components/schemas/_station_id"
+              },
+              "requestable": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "origin_sid",
+              "added_on",
+              "requestable",
+              "cool",
+              "cool_end",
+              "artist_parseable"
+            ],
+            "type": "object"
           }
-        },
-        "required": ["origin_sid", "added_on", "requestable", "cool", "cool_end"],
-        "type": "object"
+        ]
       },
       "_station_id": {
         "enum": [1, 2, 3, 4, 5, 6],
@@ -3792,6 +3805,20 @@
       },
       "album": {
         "properties": {
+          "added_on": { "$ref": "#/components/schemas/_time" },
+          "art": { "$ref": "#/components/schemas/_album_art" },
+          "cool_lowest": { "$ref": "#/components/schemas/_time" },
+          "cool": { "type": "boolean" },
+          "fave_count": { "type": "integer" },
+          "fave": { "type": "boolean" },
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "played_last": { "$ref": "#/components/schemas/_time" },
+          "rating_count": { "type": "integer" },
+          "rating_user": { "$ref": "#/components/schemas/_rating_user" },
+          "rating": { "oneOf": [{ "type": "number" }, { "type": "null" }] },
+          "song_count": { "type": "integer" },
+          "vote_count": { "type": "integer" },
           "genres": {
             "items": {
               "$ref": "#/components/schemas/_song_group"
@@ -3835,7 +3862,21 @@
           "request_rank",
           "request_rank_percentile",
           "rating_histogram",
-          "songs"
+          "songs",
+          "added_on",
+          "art",
+          "cool_lowest",
+          "cool",
+          "fave_count",
+          "fave",
+          "id",
+          "name",
+          "played_last",
+          "rating_count",
+          "rating_user",
+          "rating",
+          "song_count",
+          "vote_count"
         ],
         "type": "object"
       },
@@ -3873,7 +3914,7 @@
             },
             "type": "array"
           },
-          "has_next": {
+          "has_more": {
             "type": "boolean"
           },
           "next": {
@@ -3883,7 +3924,7 @@
             "type": "integer"
           }
         },
-        "required": ["data", "has_next", "next", "progress"],
+        "required": ["data", "has_more", "next", "progress"],
         "type": "object"
       },
       "all_artists_paginated": {
@@ -3894,7 +3935,7 @@
             },
             "type": "array"
           },
-          "has_next": {
+          "has_more": {
             "type": "boolean"
           },
           "next": {
@@ -3904,7 +3945,7 @@
             "type": "integer"
           }
         },
-        "required": ["data", "has_next", "next", "progress"],
+        "required": ["data", "has_more", "next", "progress"],
         "type": "object"
       },
       "all_faves": {
@@ -3945,7 +3986,7 @@
             },
             "type": "array"
           },
-          "has_next": {
+          "has_more": {
             "type": "boolean"
           },
           "next": {
@@ -3955,7 +3996,7 @@
             "type": "integer"
           }
         },
-        "required": ["data", "has_next", "next", "progress"],
+        "required": ["data", "has_more", "next", "progress"],
         "type": "object"
       },
       "all_songs": {

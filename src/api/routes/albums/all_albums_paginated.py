@@ -1,45 +1,105 @@
+from psycopg import sql
 import math
 
-from api import fieldtypes
+from api import rainwave_dto
 from api import rainwave_typeddicts
 from psycopg import sql
-from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT as PAGE_LIMIT
+from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 
-from common.rainwave import playlist
 from common.db.cursor import get_cursor
+from common.playlist import object_counts
+
+
+def get_all_albums_list_sql(user_id: int | None) -> sql.Composed:
+    if user_id is None or user_id == 1:
+        return sql.SQL(
+            """
+            SELECT 
+                r4_albums.album_id AS id, 
+                album_name AS name, 
+                CAST(ROUND(CAST(album_rating AS NUMERIC), 1) AS REAL) AS rating, 
+                album_cool AS cool, 
+                album_cool_lowest AS cool_lowest, 
+                FALSE AS fave, 
+                0 AS rating_user, 
+                FALSE AS rating_complete, 
+                album_newest_song_time AS newest_song_time 
+            FROM r4_albums 
+                JOIN r4_album_sid USING (album_id) 
+            WHERE 
+                r4_album_sid.sid = {sid}
+                AND r4_album_sid.album_exists = TRUE 
+            """
+        ).format(sid=sql.Placeholder(name="sid"))
+    else:
+        return sql.SQL(
+            """
+            SELECT 
+                r4_albums.album_id AS id, 
+                album_name AS name, 
+                CAST(ROUND(CAST(album_rating AS NUMERIC), 1) AS REAL) AS rating, 
+                album_cool AS cool, 
+                album_cool_lowest AS cool_lowest, 
+                COALESCE(album_fave, FALSE) AS fave, 
+                COALESCE(album_rating_user, 0) AS rating_user, 
+                COALESCE(album_rating_complete, FALSE) AS rating_complete, 
+                album_newest_song_time AS newest_song_time 
+            FROM r4_albums 
+                JOIN r4_album_sid USING (album_id) 
+                LEFT JOIN r4_album_ratings ON 
+                    r4_album_sid.album_id = r4_album_ratings.album_id 
+                    AND r4_album_ratings.user_id = {user_id} 
+                    AND r4_album_ratings.sid = {sid}
+                ) 
+                LEFT JOIN r4_album_faves ON (
+                    r4_album_sid.album_id = r4_album_faves.album_id 
+                    AND r4_album_faves.user_id = {user_id}
+                ) 
+            WHERE 
+                r4_album_sid.sid = {sid} 
+                AND r4_album_sid.album_exists = TRUE 
+            """
+        ).format(
+            user_id=sql.Placeholder(name="user_id"), sid=sql.Placeholder(name="sid")
+        )
 
 
 @handle_api_url("all_albums_paginated")
 class AllAlbumsPaginatedHandler(APIHandler):
     description = "Returns chunks of a list of all albums on the station playlist."
     return_name = "all_albums_paginated"
-    fields = {"after": (fieldtypes.integer, False)}
 
     async def post(self):
+        input = self.get_validated_input(rainwave_dto.Api4AllAlbumsPaginatedPostRequest)
         async with get_cursor() as cursor:
-            base_sql, args = playlist.get_all_albums_list_sql(self.sid, self.user)
-            offset = self.get_argument_int("after", 0) or 0
-            args = args + (offset,)
+            user_id = self.optional_user.id if self.optional_user else 1
+            base_sql = get_all_albums_list_sql(user_id)
+            offset = input.after or 0
             albums = await cursor.fetch_all(
                 sql.SQL(
-                    "{query} ORDER BY album_name LIMIT {page_limit} OFFSET %s"
+                    "{query} ORDER BY album_name LIMIT {page_limit} OFFSET {offset}"
                 ).format(
-                    query=sql.SQL(base_sql),
-                    page_limit=sql.Literal(PAGE_LIMIT),
+                    query=base_sql,
+                    page_limit=sql.Literal(DEFAULT_PAGE_LIMIT),
+                    offset=sql.Placeholder(name="offset"),
                 ),
-                args,
+                {"sid": self.sid, "user_id": user_id, "offset": offset},
                 row_type=rainwave_typeddicts.AlbumInList,
             )
             self.response["all_albums_paginated"] = {
                 "data": albums,
-                "has_more": albums and len(albums) == PAGE_LIMIT,
+                "has_more": (
+                    True if albums and len(albums) == DEFAULT_PAGE_LIMIT else False
+                ),
                 "progress": min(
                     math.ceil(
-                        (offset + len(albums)) / playlist.num_albums[self.sid] * 100
+                        (offset + len(albums))
+                        / object_counts.num_albums[self.sid]
+                        * 100
                     ),
                     100,
                 ),
-                "next": offset + PAGE_LIMIT,
-            },
+                "next": offset + DEFAULT_PAGE_LIMIT,
+            }
