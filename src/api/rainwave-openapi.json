@@ -4077,80 +4077,81 @@
         "required": ["exectime", "time"],
         "type": "object"
       },
-      "artist": {
-        "items": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/_artist"
-            },
-            {
-              "properties": {
-                "all_songs": {
-                  "description": "all_songs[station_id][album_id] = [song1, song2, ...] - for song names, inspect song.album[0].name.",
-                  "properties": {
-                    "1": {
-                      "additionalProperties": {
-                        "items": {
-                          "$ref": "#/components/schemas/_song_in_artist"
-                        },
-                        "type": "array"
-                      },
-                      "type": "object"
-                    },
-                    "2": {
-                      "additionalProperties": {
-                        "items": {
-                          "$ref": "#/components/schemas/_song_in_artist"
-                        },
-                        "type": "array"
-                      },
-                      "type": "object"
-                    },
-                    "3": {
-                      "additionalProperties": {
-                        "items": {
-                          "$ref": "#/components/schemas/_song_in_artist"
-                        },
-                        "type": "array"
-                      },
-                      "type": "object"
-                    },
-                    "4": {
-                      "additionalProperties": {
-                        "items": {
-                          "$ref": "#/components/schemas/_song_in_artist"
-                        },
-                        "type": "array"
-                      },
-                      "type": "object"
-                    },
-                    "5": {
-                      "additionalProperties": {
-                        "items": {
-                          "$ref": "#/components/schemas/_song_in_artist"
-                        },
-                        "type": "array"
-                      },
-                      "type": "object"
-                    },
-                    "6": {
-                      "additionalProperties": {
-                        "items": {
-                          "$ref": "#/components/schemas/_song_in_artist"
-                        },
-                        "type": "array"
-                      },
-                      "type": "object"
-                    }
-                  }
-                }
+      "_artist_detail": {},
+      "_all_songs_for_artist": {
+        "type": "object",
+        "description": "all_songs[station_id][album_id] = [song1, song2, ...] - for song names, inspect song.album[0].name.",
+        "properties": {
+          "1": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/_song_in_artist"
               },
-              "required": ["all_songs"],
-              "type": "object"
+              "type": "array"
+            },
+            "type": "object"
+          },
+          "2": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/_song_in_artist"
+              },
+              "type": "array"
+            },
+            "type": "object"
+          },
+          "3": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/_song_in_artist"
+              },
+              "type": "array"
+            },
+            "type": "object"
+          },
+          "4": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/_song_in_artist"
+              },
+              "type": "array"
+            },
+            "type": "object"
+          },
+          "5": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/_song_in_artist"
+              },
+              "type": "array"
+            },
+            "type": "object"
+          },
+          "6": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/_song_in_artist"
+              },
+              "type": "array"
+            },
+            "type": "object"
+          }
+        }
+      },
+      "artist": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/_artist"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "all_songs": {
+                "$ref": "#/components/schemas/_all_songs_for_artist"
+              }
             }
-          ]
-        },
-        "type": "array"
+          }
+        ]
       },
       "artists": {
         "items": {

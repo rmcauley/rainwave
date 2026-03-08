@@ -10,6 +10,7 @@ import tornado.process
 
 from api.handler_classes.html404 import HTMLError404Handler
 from api.handler_classes.json404 import Error404Handler
+from api.helpers.cached_all_artists import update_all_artists_cache
 from common import config, log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
@@ -49,11 +50,18 @@ class APIServer:
             http_server.listen(port_no)
 
             await update_playlist_object_counts()
-            playlist_object_count_update = tornado.ioloop.PeriodicCallback(
+            update_playlist_object_counts_job = tornado.ioloop.PeriodicCallback(
                 update_playlist_object_counts,
                 timedelta(hours=1),
             )
-            playlist_object_count_update.start()
+            update_playlist_object_counts_job.start()
+
+            await update_all_artists_cache()
+            update_all_artists_cache_job = tornado.ioloop.PeriodicCallback(
+                update_all_artists_cache,
+                timedelta(days=1),
+            )
+            update_all_artists_cache_job.start()
 
             for request in request_classes:
                 log.debug("start", "   Handler: %s" % str(request))

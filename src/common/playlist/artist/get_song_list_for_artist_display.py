@@ -1,5 +1,6 @@
 from psycopg import sql
-from typing import TypedDict
+from typing import Literal, TypedDict, cast
+from api import rainwave_typeddicts
 from common import stations
 from common.db.cursor import RainwaveCursor
 
@@ -42,12 +43,9 @@ class SongForArtist(TypedDict):
     album: SongForArtistAlbum
 
 
-SongListByAlbumForArtistDisplay = dict[int, dict[int, list[SongForArtist]]]
-
-
 async def get_song_list_by_album_for_artist_display(
     cursor: RainwaveCursor, artist_id: int, sid: int, user_id: int
-) -> SongListByAlbumForArtistDisplay:
+) -> rainwave_typeddicts.AllSongsForArtist:
     query = sql.SQL(
         """
         SELECT 
@@ -73,13 +71,11 @@ async def get_song_list_by_album_for_artist_display(
             LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) 
         WHERE r4_song_artist.artist_id = %s AND r4_songs.song_verified = TRUE 
         ORDER BY song_exists DESC, album_name, song_title
-"""
+        """
     )
     query_params = (sid, sid, user_id, artist_id)
 
-    to_return: SongListByAlbumForArtistDisplay = {
-        sid: {} for sid in stations.station_ids
-    }
+    to_return: rainwave_typeddicts.AllSongsForArtist = {}
     requestable = True if user_id > 1 else False
     async for song in cursor.for_each_row(
         query, query_params, row_type=SongListForArtistDisplayRow
@@ -87,19 +83,23 @@ async def get_song_list_by_album_for_artist_display(
         if not song["sid"] in stations.station_ids:
             continue
         song["requestable"] = requestable and song["requestable"]
-        if not song["album_id"] in to_return[song["sid"]]:
-            to_return[song["sid"]][song["album_id"]] = []
-        to_return[song["sid"]][song["album_id"]].append(
+        sid_index = cast(Literal["1", "2", "3", "4", "5", "6"], str(song["sid"]))
+        if not to_return.get(sid_index, None):
+            to_return[sid_index] = {}
+        sid_dict = to_return.get(sid_index, {})
+        album_id_index = str(song["album_id"])
+        if not album_id_index in sid_dict:
+            sid_dict[album_id_index] = []
+        sid_dict[album_id_index].append(
             {
-                "album": {"id": song["album_id"], "name": song["album_name"]},
+                "albums": [{"id": song["album_id"], "name": song["album_name"]}],
                 "id": song["id"],
-                "sid": song["sid"],
+                "sid": cast(rainwave_typeddicts.StationId, song["sid"]),
                 "title": song["title"],
                 "rating": song["rating"],
                 "requestable": song["requestable"],
                 "length": song["length"],
                 "cool": song["cool"],
-                "cool_end": song["cool_end"],
                 "url": song["url"],
                 "link_text": song["link_text"],
                 "rating_user": song["rating_user"],

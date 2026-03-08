@@ -51,7 +51,7 @@ class RainwaveResponse(TypedDict, total=False):
     already_voted: rainwave_typeddicts.AlreadyVoted
     api_info: rainwave_typeddicts.ApiInfo
     artists: list[rainwave_typeddicts.SearchArtist]
-    artist: rainwave_typeddicts.Artist
+    artist: rainwave_typeddicts.Artist1
     build_version: rainwave_typeddicts.BuildVersion
     cookie_domain: rainwave_typeddicts.CookieDomain
     delete_request_result: rainwave_typeddicts.DeleteRequestResult
