@@ -174,7 +174,7 @@
   "login_failed": "Username or password incorrect.",
   "login_limit": "Number of login attempts exceeded.",
   "login_too_old": "Your login is too old to be recovered by password.  Please talk to staff on Discord.",
-  "login_password_disabled": "Password login disabled for this account.",
+  "login_password_disabled": "You have already used Discord to login - please go back and use Discord to login!",
   "signup": "Sign Up",
   "chat": "Mibbit IRC",
   "search": "Search",

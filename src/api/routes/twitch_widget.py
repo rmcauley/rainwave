@@ -1,10 +1,10 @@
 from api.handle_url import handle_url
-from api.handler_classes.html_handler import HTMLRequest
+from api.handler_classes.html_handler import HtmlHandler
 
 
 @handle_url("/twitch/?")
 @handle_url("/widget/?")
-class StreamHelp(HTMLRequest):
+class StreamHelp(HtmlHandler):
     auth_required = False
     sid_required = False
 
@@ -18,7 +18,7 @@ class StreamHelp(HTMLRequest):
 
 @handle_url("/twitch/widget")
 @handle_url("/widget/widget")
-class StreamIndex(HTMLRequest):
+class StreamIndex(HtmlHandler):
     auth_required = False
     sid_required = True
 

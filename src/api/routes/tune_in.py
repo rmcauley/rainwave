@@ -2,7 +2,7 @@ import tornado.web
 
 from api import fieldtypes
 from api.handle_url import handle_url
-from api.handler_classes.html_handler import HTMLRequest
+from api.handler_classes.html_handler import HtmlHandler
 from api.helpers import public_relays
 
 from common import config, stations
@@ -31,7 +31,7 @@ def get_stream_filename(
 
 
 @handle_url(r"/tune_in/(\w+|\d)\.(ogg|mp3)(.m3u)?")
-class TuneInIndex(HTMLRequest):
+class TuneInIndex(HtmlHandler):
     content_type = "audio/x-mpegurl"
     description = (
         "Provides the user with an M3U file containing Ogg or MP3 URLs to relays."

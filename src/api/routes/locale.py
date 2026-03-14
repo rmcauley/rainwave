@@ -3,13 +3,13 @@ import orjson as json
 import tornado.web
 
 from api.handle_url import handle_url
-from api.handler_classes.html_handler import HTMLRequest
+from api.handler_classes.html_handler import HtmlHandler
 from common.locale.locale import translations
 from common.locale.locale_explanation import locale_explanation
 
 
 @handle_url("/locale/")
-class LocaleIndex(HTMLRequest):
+class LocaleIndex(HtmlHandler):
     description = "Lists the currently available Rainwave locales/translations and how many lines are missing in them, as compared to the English master locale."
     auth_required = False
     sid_required = False
@@ -42,7 +42,7 @@ class LocaleIndex(HTMLRequest):
 
 
 @handle_url(r"/locale/(\w+)")
-class LocaleMissingLines(HTMLRequest):
+class LocaleMissingLines(HtmlHandler):
     description = "Lists all the missing lines in a locale/translation file."
     auth_required = False
     sid_required = False
