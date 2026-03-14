@@ -4922,10 +4922,7 @@
         "type": "string"
       },
       "sync_result": {
-        "items": {
-          "$ref": "#/components/schemas/_error"
-        },
-        "type": "array"
+        "$ref": "#/components/schemas/_error"
       },
       "tip_jar": {
         "items": {
@@ -5195,10 +5192,7 @@
         "type": "string"
       },
       "wserror": {
-        "items": {
-          "$ref": "#/components/schemas/_error"
-        },
-        "type": "array"
+        "$ref": "#/components/schemas/_error"
       },
       "wsok": {
         "type": "boolean"

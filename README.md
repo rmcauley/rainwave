@@ -143,10 +143,6 @@ For user tune in recognition to work, you have to use Icecast's
 user authentication system. Sample Icecast configurations are
 included in Rainwave's `etc/` directory.
 
-### LiquidSoap Configuration
-
-A sample LiquidSoap configuration is included in `etc/`.
-
 ## Contact
 
 You can get help for deployment and development through the main

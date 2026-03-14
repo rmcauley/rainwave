@@ -1,1 +1,3 @@
-src/frontend/dist
+frontend/dist
+admin_panel/dist
+stream_widget/dist

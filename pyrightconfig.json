@@ -1,7 +1,15 @@
 {
   "stubPath": "src/typestubs",
   "include": ["src/**/*.py"],
-  "exclude": ["**/__pycache__", "src/frontend", "**/node_modules", "**/.*", ".venv"],
+  "exclude": [
+    "**/__pycache__",
+    "frontend",
+    "admin_panel",
+    "stream_widget",
+    "**/node_modules",
+    "**/.*",
+    ".venv"
+  ],
   "typeCheckingMode": "off",
   "executionEnvironments": [
     {

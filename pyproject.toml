@@ -45,5 +45,5 @@ dev = [
 [tool.mypy]
 files = "src/**/*.py"
 mypy_path = ["src", "src/typestubs"]
-exclude = ["src/frontend"]
+exclude = ["frontend", "admin_panel", "stream_widget"]
 explicit_package_bases = true

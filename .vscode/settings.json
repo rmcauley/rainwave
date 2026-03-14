@@ -6,7 +6,7 @@
     ".venv": true,
     "uv.lock": true,
     ".mypy_cache": true,
-    "node_modules": true,
+    "**/node_modules": true,
     ".pytest_cache": true,
     "src/rainwave.egg-info": true
   },
