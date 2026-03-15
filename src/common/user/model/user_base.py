@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import cast
 
-from api.rainwave_typeddicts import StationId, User
+from api.rainwave_typeddicts import User
 from common.db.cursor import RainwaveCursor
 from common.playlist.song.model.song_on_station import SongOnStation
 from common.user.model.user_data_types import (
@@ -130,7 +129,7 @@ class UserBase(ABC):
             "listener_id": 0,
             "lock_counter": self.private_data["lock_counter"],
             "lock_in_effect": self.private_data["lock_in_effect"],
-            "lock_sid": cast(StationId, self.private_data["lock_sid"]),
+            "lock_sid": self.private_data["lock_sid"],
             "lock": self.private_data["lock"],
             "name": self.public_data["name"],
             "new_privmsg": False,
@@ -139,7 +138,7 @@ class UserBase(ABC):
             "request_expires_at": self.private_data["request_expires_at"],
             "request_position": self.private_data["request_position"],
             "requests_paused": self.private_data["requests_paused"],
-            "sid": cast(StationId, self.private_data["sid"]),
+            "sid": self.private_data["sid"],
             "tuned_in": self.private_data["tuned_in"],
             "voted_entry": self.private_data["voted_entry"],
         }

@@ -3,7 +3,6 @@ from typing import cast
 import orjson
 
 from api import rainwave_dto
-from api import rainwave_typeddicts
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.rainwave_typeddicts import ElecBlockedBy
@@ -50,10 +49,7 @@ class SongHandler(APIHandler):
                     {"id": group["group_id"], "name": group["group_name"]}
                     for group in groups
                 ],
-                "origin_sid": cast(
-                    rainwave_typeddicts.StationId,
-                    song_on_station.data["song_origin_sid"],
-                ),
+                "origin_sid": song_on_station.data["song_origin_sid"],
                 "rating_allowed": (
                     True
                     if self.optional_user and self.optional_user.private_data["perks"]
@@ -66,5 +62,5 @@ class SongHandler(APIHandler):
                 "request_count": 0,
                 "request_rank": 0,
                 "request_rank_percentile": 0,
-                "sid": cast(rainwave_typeddicts.StationId, self.sid),
+                "sid": self.sid,
             }

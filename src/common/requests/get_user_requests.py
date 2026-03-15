@@ -144,13 +144,11 @@ def user_requests_to_api(
             "length": song_request["length"],
             "link_text": song_request["song_link_text"],
             "order": song_request["order"],
-            "origin_sid": cast(
-                rainwave_typeddicts.StationId, song_request["origin_sid"]
-            ),
+            "origin_sid": song_request["origin_sid"],
             "rating": song_request["rating"],
             "rating_user": song_request["rating_user"],
             "request_id": song_request["request_id"],
-            "sid": cast(rainwave_typeddicts.StationId, song_request["sid"]),
+            "sid": song_request["sid"],
             "title": song_request["title"],
             "url": song_request["song_url"],
             "valid": song_request["valid"],

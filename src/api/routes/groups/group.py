@@ -82,7 +82,7 @@ class GroupHandler(APIHandler):
                             {"id": song["album_id"], "name": song["album_name"]}
                         ],
                         "id": song["id"],
-                        "sid": cast(rainwave_typeddicts.StationId, song["sid"]),
+                        "sid": song["sid"],
                         "title": song["title"],
                         "rating": song["rating"],
                         "requestable": song["requestable"],

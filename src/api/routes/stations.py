@@ -1,5 +1,3 @@
-from typing import cast
-
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
@@ -16,12 +14,12 @@ class StationsRequest(APIHandler):
     sid_required = False
     allow_cors = True
 
-    async def post(self):
+    async def post(self) -> None:
         station_list: rainwave_typeddicts.Stations = []
         for station_id in stations.station_ids:
             station_list.append(
                 {
-                    "id": cast(rainwave_typeddicts.StationId, station_id),
+                    "id": station_id,
                     "name": stations.station_id_friendly[station_id],
                     "description": self.locale.translate(
                         "station_description_id_%s" % station_id

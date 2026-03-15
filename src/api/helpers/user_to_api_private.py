@@ -1,7 +1,5 @@
 from api import rainwave_typeddicts
 from common.user.model.user_base import UserBase
-from typing import cast
-from api.rainwave_typeddicts import StationId
 
 
 def user_to_api_private(user: UserBase) -> rainwave_typeddicts.UserInfo:
@@ -15,7 +13,7 @@ def user_to_api_private(user: UserBase) -> rainwave_typeddicts.UserInfo:
         "listener_id": 0,
         "lock_counter": private_data["lock_counter"],
         "lock_in_effect": private_data["lock_in_effect"],
-        "lock_sid": cast(StationId, private_data["lock_sid"]),
+        "lock_sid": private_data["lock_sid"],
         "lock": private_data["lock"],
         "name": public_data["name"],
         "new_privmsg": False,
@@ -24,7 +22,7 @@ def user_to_api_private(user: UserBase) -> rainwave_typeddicts.UserInfo:
         "request_expires_at": private_data["request_expires_at"],
         "request_position": private_data["request_position"],
         "requests_paused": private_data["requests_paused"],
-        "sid": cast(StationId, private_data["sid"]),
+        "sid": private_data["sid"],
         "tuned_in": private_data["tuned_in"],
         "voted_entry": private_data["voted_entry"],
     }

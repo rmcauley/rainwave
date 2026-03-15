@@ -1,13 +1,6 @@
 from typing import TypedDict
-
+from api.rainwave_typeddicts import UpdatedAlbumRating
 from common.db.cursor import RainwaveCursor
-
-
-class UpdatedAlbumRating(TypedDict):
-    sid: int
-    id: int
-    rating_user: float | None
-    rating_complete: bool
 
 
 class GetAssociatedAlbumRow(TypedDict):

@@ -40,6 +40,8 @@ ErrorTranslationKeys = (
     | Literal["login_too_old"]
     | Literal["login_limit"]
     | Literal["login_failed"]
+    | Literal["cannot_rate_now"]
+    | Literal["tunein_to_rate_current_song"]
 )
 
 

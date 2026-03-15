@@ -11,7 +11,7 @@ async def set_song_rating(
         INSERT INTO r4_song_ratings 
             (song_id, user_id, song_rating_user, song_rated_at)
         VALUES (%s, %s, %s, %s)
-""",
+        """,
         (song_id, user_id, rating, timestamp()),
     )
     albums = await update_album_ratings(cursor, sid, song_id, user_id)

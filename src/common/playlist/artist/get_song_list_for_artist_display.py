@@ -101,7 +101,7 @@ async def get_song_list_by_album_for_artist_display(
             {
                 "albums": [{"id": song["album_id"], "name": song["album_name"]}],
                 "id": song["id"],
-                "sid": cast(rainwave_typeddicts.StationId, song["sid"]),
+                "sid": song["sid"],
                 "title": song["title"],
                 "rating": song["rating"],
                 "requestable": song["requestable"],

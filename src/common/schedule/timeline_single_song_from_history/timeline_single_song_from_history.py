@@ -67,7 +67,7 @@ class TimelineSingleSongFromHistory(TimelineEntryBase):
             "id": self.fake_id,
             "length": self.length(),
             "name": self.sched_name,
-            "sid": cast(rainwave_typeddicts.StationId, self.sched_sid),
+            "sid": self.sched_sid,
             "songs": [
                 await self.get_song_on_station_to_play().to_api_timeline_song(cursor)
             ],

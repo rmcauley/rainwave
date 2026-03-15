@@ -1325,8 +1325,7 @@ export interface components {
             origin_sid: components["schemas"]["_station_id"];
             requestable: boolean;
         };
-        /** @enum {integer} */
-        _station_id: 1 | 2 | 3 | 4 | 5 | 6;
+        _station_id: number;
         _station_info: {
             album: string;
             art: components["schemas"]["_album_art"];
@@ -3177,8 +3176,7 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    /** @enum {number} */
-                    rating: 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 | 4.5 | 5;
+                    rating: number;
                     song_id: number;
                 };
             };

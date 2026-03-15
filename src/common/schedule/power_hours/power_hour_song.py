@@ -1,5 +1,5 @@
 from time import time as timestamp
-from typing import TypedDict, cast
+from typing import TypedDict
 
 from api import rainwave_typeddicts
 from common.db.cursor import RainwaveCursor
@@ -81,7 +81,7 @@ class PowerHourSong(TimelineEntryBase):
             "id": self.id,
             "length": self.length(),
             "name": self.sched_name,
-            "sid": cast(rainwave_typeddicts.StationId, self.sched_sid),
+            "sid": self.sched_sid,
             "songs": [
                 await self.get_song_on_station_to_play().to_api_timeline_song(cursor)
             ],

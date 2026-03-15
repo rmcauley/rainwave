@@ -1000,7 +1000,7 @@ requires-dist = [
     { name = "pyinotify", specifier = "==0.9.6" },
     { name = "pytz", specifier = ">=2025.2" },
     { name = "pyzmq", specifier = "==27.1.0" },
-    { name = "qrcode", specifier = ">=8.2" },
+    { name = "qrcode", specifier = "==8.2" },
     { name = "requests", specifier = "==2.32.5" },
     { name = "tornado", specifier = "==6.5.4" },
     { name = "types-pytz", specifier = ">=2025.2.0.20251108" },

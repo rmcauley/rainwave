@@ -1,4 +1,4 @@
-from typing import TypedDict, cast
+from typing import TypedDict
 
 from api import rainwave_dto, rainwave_typeddicts
 from api.exceptions import APIException
@@ -72,9 +72,7 @@ class AlbumHandler(AuthRequiredAPIHandler):
                     "id": song["id"],
                     "title": song["title"],
                     "length": song["length"],
-                    "origin_sid": cast(
-                        rainwave_typeddicts.StationId, song["origin_sid"]
-                    ),
+                    "origin_sid": song["origin_sid"],
                     "added_on": song["added_on"],
                     "rating": song["rating"],
                     "url": song["url"],

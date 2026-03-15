@@ -1,7 +1,5 @@
-from typing import cast
-
 from psycopg import sql
-from api import rainwave_dto, rainwave_typeddicts
+from api import rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 
@@ -49,7 +47,7 @@ class SubmitFaveAllSongs(AuthRequiredAPIHandler):
 
             self.response["fave_all_songs_result"] = {
                 "fave": input.fave,
-                "sid": cast(rainwave_typeddicts.StationId, self.sid),
+                "sid": self.sid,
                 "song_ids": song_ids,
                 "success": True,
                 "text": "Fave status for all songs changed.",

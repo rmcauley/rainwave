@@ -9,9 +9,7 @@ UserRatingACL: TypeAlias = dict[int, dict[int, bool]]
 async def update_user_rating_acl(
     cursor: RainwaveCursor, sid: int, song_id: int
 ) -> None:
-    user_rating_acl: UserRatingACL = await cache_get_station(sid, "user_rating_acl")
-    if not user_rating_acl:
-        user_rating_acl = {}
+    user_rating_acl = await get_user_rating_acl(sid)
 
     songs: list[int] = await cache_get_station(sid, "user_rating_acl_song_index")
     if not songs:
@@ -37,3 +35,10 @@ async def update_user_rating_acl(
             sid, "user_rating_acl_song_index", songs, save_in_memory=True
         ),
     )
+
+
+async def get_user_rating_acl(sid: int) -> UserRatingACL:
+    user_rating_acl: UserRatingACL = await cache_get_station(sid, "user_rating_acl")
+    if not user_rating_acl:
+        user_rating_acl = {}
+    return user_rating_acl

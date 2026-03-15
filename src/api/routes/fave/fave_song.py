@@ -1,6 +1,4 @@
-from typing import cast
-
-from api import rainwave_dto, rainwave_typeddicts
+from api import rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
@@ -42,7 +40,7 @@ class SubmitSongFave(RegisteredUserAPIHandler):
             self.response["fave_song_result"] = {
                 "fave": input.fave,
                 "id": song_id,
-                "sid": cast(rainwave_typeddicts.StationId, self.sid),
+                "sid": self.sid,
                 "success": True,
                 "text": text,
                 "tl_key": "fave_success",

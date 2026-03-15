@@ -307,16 +307,14 @@ class SongOnStation:
             "id": self.id,
             "length": self.data["song_length"],
             "link_text": self.data["song_link_text"],
-            "origin_sid": cast(
-                rainwave_typeddicts.StationId, self.data["song_origin_sid"]
-            ),
+            "origin_sid": self.data["song_origin_sid"],
             "rating": self.data["song_rating"],
             "rating_allowed": False,
             "rating_count": self.data["song_rating_count"],
             "rating_user": None,
             "request_count": 0,
             "request_id": None,
-            "sid": cast(rainwave_typeddicts.StationId, self.sid),
+            "sid": self.sid,
             "title": self.data["song_title"],
             "url": self.data["song_url"],
         }

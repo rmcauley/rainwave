@@ -311,7 +311,7 @@ class Election(TimelineEntryBase):
             "id": self.id,
             "length": self.length(),
             "name": self.sched_name,
-            "sid": cast(rainwave_typeddicts.StationId, self.sched_sid),
+            "sid": self.sched_sid,
             "songs": [
                 await self._entry_to_api(cursor, entry) for entry in self.entries
             ],
