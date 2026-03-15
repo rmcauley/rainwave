@@ -1,7 +1,7 @@
 from api.handle_url import handle_url
 from api.handler_classes.html_registered_user_handler import HtmlRegisteredUserHandler
 from common.db.cursor import get_cursor
-from common.user.api_key import generate_api_key_and_listen_key
+from common.user.ensure_api_key import ensure_api_key
 
 
 @handle_url("/keys/app")
@@ -13,16 +13,7 @@ class AppLogin(HtmlRegisteredUserHandler):
 
     async def get(self):
         async with get_cursor() as cursor:
-            key = await cursor.fetch_var(
-                "SELECT api_key FROM r4_api_keys WHERE user_id = %s LIMIT 1",
-                (self.user.id,),
-                var_type=str,
-            )
-
-            if not key:
-                (key, _listen_key) = await generate_api_key_and_listen_key(
-                    cursor, self.user.id
-                )
+            key = await ensure_api_key(cursor, self.user.id)
 
             self.render(
                 "applogin.html",

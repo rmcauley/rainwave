@@ -1,3 +1,6 @@
+from . import oauth_handler
+
+
 def register_routes() -> None:
     # Import route modules for decorator side effects.
     from . import (
@@ -6,11 +9,10 @@ def register_routes() -> None:
         errors,
         login,
         logout,
-        r4_mixin,
         tos_privacy,
     )
 
-    _ = (debug, discord, errors, login, logout, r4_mixin, tos_privacy)
+    _ = (debug, discord, errors, login, logout, oauth_handler, tos_privacy)
 
 
 __all__ = ["register_routes"]

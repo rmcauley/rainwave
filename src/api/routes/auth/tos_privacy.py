@@ -1,9 +1,9 @@
-from api.web import HTMLRequest
+from api.handler_classes.html_handler import HtmlHandler
 from api.handle_url import handle_url
 
 
 @handle_url("/oauth/tos_privacy")
-class RainwaveTOSPrivacy(HTMLRequest):
+class RainwaveTOSPrivacy(HtmlHandler):
     def get(self):
         self.write(
             self.render_string("bare_header.html", title="Rainwave TOS and Privacy")

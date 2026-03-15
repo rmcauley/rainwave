@@ -275,3 +275,6 @@ song_dirs = {
     "/home/rainwave/music": [1],
 }
 monitor_dir = "/home/rainwave/music"
+
+discord_client_id = ""
+discord_client_secret = ""

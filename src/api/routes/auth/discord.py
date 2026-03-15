@@ -6,14 +6,13 @@ import bcrypt
 
 import aiohttp
 from api.handle_url import handle_url
-from api.web import HTMLRequest
 
 from tornado.auth import OAuth2Mixin
 
+from api.routes.auth.oauth_handler import OAuthHandler
 from common import config, log
 
 from .errors import OAuthNetworkError, OAuthRejectedError
-from .r4_mixin import R4SetupSessionMixin
 from common.db.cursor import get_cursor
 
 # add discord bot to react to role changes/logins
@@ -26,7 +25,7 @@ OAUTH_STATE_SALT = bcrypt.gensalt()
 
 
 @handle_url("/oauth/discord")
-class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
+class DiscordAuth(OAuthHandler, OAuth2Mixin):
     auth_required = False
     sid_required = False
 
@@ -34,45 +33,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
     _OAUTH_ACCESS_TOKEN_URL = "https://discord.com/api/oauth2/token"
 
     async def get(self):
-        input = {}
-        # what was this input?
-        if input["id"]:
-            # step 2 - we've come back from Discord with a state parameter
-            # that needs to be verified against the user's cookie.
-            oauth_secret = self.get_cookie("r4_oauth_secret")
-            if not oauth_secret:
-                raise OAuthRejectedError(
-                    "OAuth 1st party cookie not found - have you disabled cookies for Rainwave?  1st party cookies are required for Discord login to work on Rainwave."
-                )
-            oauth_expected_state = bcrypt.hashpw(
-                oauth_secret.encode(), OAUTH_STATE_SALT
-            ).decode("utf-8")
-            self.set_cookie("r4_oauth_secret", "")
-            # what was this input?
-            state_argument = input["state_argument"]
-            if isinstance(state_argument, bytes):
-                state_argument = state_argument.decode()
-            if not isinstance(state_argument, str):
-                raise OAuthRejectedError(
-                    "State argument was not passed back to Rainwave from Discord."
-                )
-            destination, oauth_state = state_argument.split("$", maxsplit=1)
-            if oauth_expected_state != oauth_state:
-                raise OAuthRejectedError("oAuth State Mismatch")
-            # step 3 - we've come back from Discord with a unique auth code, get
-            # token that we can use to act on behalf of user with discord
-            # what was this input?
-            token_argument = input["token"]
-            if isinstance(token_argument, bytes):
-                token_argument = token_argument.decode()
-            if not isinstance(token_argument, str):
-                raise OAuthRejectedError(
-                    "Token argument was not passed back to Rainwave from Discord."
-                )
-            token = await self.get_token(token_argument)
-            # step 4 - get user info from Discord and login to Rainwave
-            await self.register_and_login(token, destination)
-        else:
+        if not self.get_argument("id"):
             # step 1 - redirect to Discord login page
             destination = self.get_destination()
             if not destination:
@@ -93,6 +54,36 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 response_type="code",
                 extra_params={"prompt": "none", "state": oauth_state},
             )
+        else:
+            # step 2 - we've come back from Discord with a state parameter
+            # that needs to be verified against the user's cookie.
+            oauth_secret = self.get_cookie("r4_oauth_secret")
+            if not oauth_secret:
+                raise OAuthRejectedError(
+                    "OAuth 1st party cookie not found - have you disabled cookies for Rainwave?  1st party cookies are required for Discord login to work on Rainwave."
+                )
+            oauth_expected_state = bcrypt.hashpw(
+                oauth_secret.encode(), OAUTH_STATE_SALT
+            ).decode("utf-8")
+            self.set_cookie("r4_oauth_secret", "")
+            state_argument = self.get_argument("state_argument")
+            if not state_argument:
+                raise OAuthRejectedError(
+                    "State argument was not passed back to Rainwave from Discord."
+                )
+            destination, oauth_state = state_argument.split("$", maxsplit=1)
+            if oauth_expected_state != oauth_state:
+                raise OAuthRejectedError("oAuth State Mismatch")
+            # step 3 - we've come back from Discord with a unique auth code, get
+            # token that we can use to act on behalf of user with discord
+            token_argument = self.get_argument("token")
+            if not token_argument:
+                raise OAuthRejectedError(
+                    "Token argument was not passed back to Rainwave from Discord."
+                )
+            token = await self.get_token(token_argument)
+            # step 4 - get user info from Discord and login to Rainwave
+            await self.register_and_login(token, destination)
 
     async def get_token(self, code: str):
         data = {
@@ -124,28 +115,6 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
         except aiohttp.ClientConnectionError:
             raise OAuthNetworkError()
 
-    async def get_user_id_by_discord_user_id(self, discord_user_id: str):
-        async with get_cursor() as cursor:
-            return (
-                await cursor.fetch_var(
-                    "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s ORDER BY user_id ASC",
-                    (discord_user_id,),
-                    var_type=int,
-                )
-                or 1
-            )
-
-    async def oauth2_request(self, url, access_token, data=None, **args):
-        async with aiohttp.ClientSession(
-            headers={"authorization": access_token},
-            loop=asyncio.get_running_loop(),
-            timeout=DEFAULT_TIMEOUT,
-        ) as session:
-            async with session.get(url, data=data, **args) as response:
-                if response.status != 200:
-                    raise OAuthRejectedError("Discord response was not HTTP 200")
-                return await response.json()
-
     async def register_and_login(self, token: str, destination: str):
         async with get_cursor() as cursor:
             discord_user = await self.oauth2_request(
@@ -159,28 +128,28 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
             user_id = 1
             username = str(uuid.uuid4())
 
-            discord_id_used_user_id = await self.get_user_id_by_discord_user_id(
-                discord_user_id
+            potential_user_id = await cursor.fetch_guaranteed(
+                "SELECT user_id FROM phpbb_users WHERE discord_user_id = %s ORDER BY user_id ASC",
+                (discord_user_id,),
+                var_type=int,
+                default=0,
             )
 
-            if self.user.id > 1:
-                if (
-                    discord_id_used_user_id > 1
-                    and discord_id_used_user_id != self.user.id
-                ):
+            if self.optional_user and not self.optional_user.is_anonymous():
+                if potential_user_id > 1 and potential_user_id != self.optional_user.id:
                     await cursor.update(
                         "UPDATE phpbb_users SET discord_user_id = '' WHERE discord_user_id = %s",
                         (discord_user_id,),
                     )
-                user_id = self.user.id
-                radio_username = self.user.data["name"]
-                username = self.user.data["name"]
+                user_id = self.optional_user.id
+                radio_username = self.optional_user.public_data["name"]
+                username = self.optional_user.public_data["name"]
                 log.debug(
                     "discord",
                     f"Connected legacy phpBB {user_id} to Discord {discord_user_id}",
                 )
             else:
-                user_id = discord_id_used_user_id
+                user_id = potential_user_id
                 if user_id > 1:
                     log.debug(
                         "discord",
@@ -209,7 +178,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                             user_email = '',
                             user_email_hash = 0
                         WHERE user_id = %s
-"""
+                        """
                     ),
                     (
                         discord_user_id,
@@ -223,7 +192,7 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                 log.debug(
                     "discord", f"Creating new user from Discord {discord_user_id}"
                 )
-                await cursor.update(
+                user_id = await cursor.fetch_guaranteed(
                     (
                         """
                         INSERT INTO phpbb_users (
@@ -235,7 +204,8 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                             user_avatar
                         )
                         VALUES (%s , %s, %s , %s , %s , %s)
-    """
+                        RETURNING user_id
+                        """
                     ),
                     (
                         username,
@@ -245,8 +215,9 @@ class DiscordAuth(HTMLRequest, OAuth2Mixin, R4SetupSessionMixin):
                         user_avatar_type,
                         user_avatar,
                     ),
+                    var_type=int,
+                    default=1,
                 )
-                user_id = await self.get_user_id_by_discord_user_id(discord_user_id)
                 log.info(
                     "discord",
                     f"Created new user {user_id} from Discord {discord_user_id}",

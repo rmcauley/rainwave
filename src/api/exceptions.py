@@ -33,6 +33,13 @@ ErrorTranslationKeys = (
     | Literal["search_string_too_short"]
     | Literal["user_locked"]
     | Literal["album_does_not_exist"]
+    | Literal["username_required"]
+    | Literal["password_required"]
+    | Literal["login_failed"]
+    | Literal["login_password_disabled"]
+    | Literal["login_too_old"]
+    | Literal["login_limit"]
+    | Literal["login_failed"]
 )
 
 

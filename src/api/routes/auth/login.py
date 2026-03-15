@@ -1,10 +1,8 @@
 import bcrypt
 from typing import TypedDict
+from api.exceptions import APIException
 from api.handle_url import handle_url
-from api.web import HTMLRequest
-
-from routes.error import APIException
-from .r4_mixin import R4SetupSessionMixin
+from api.routes.auth.oauth_handler import OAuthHandler
 from common.db.cursor import get_cursor
 
 
@@ -22,12 +20,8 @@ class PhpbbLoginRow(TypedDict):
     discord_user_id: str
 
 
-# this needs fixing
-input = {}
-
-
 @handle_url("/oauth/login")
-class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
+class PhpbbAuth(OAuthHandler):
     auth_required = False
     sid_required = False
 
@@ -36,13 +30,13 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
             "login.html",
             request=self,
             locale=self.locale,
-            destination=input["destination"],
+            destination=self.get_argument("destination"),
         )
 
     async def post(self):
         async with get_cursor() as cursor:
-            username = input["username"]
-            password = input["password"]
+            username = self.get_argument("username")
+            password = self.get_argument("password")
             if not username:
                 raise APIException("username_required")
             if not password:
@@ -69,7 +63,7 @@ class PhpbbAuth(HTMLRequest, R4SetupSessionMixin):
                 raise APIException("login_failed")
 
             # setup/save r4 session
-            self.setup_rainwave_session_and_redirect(
+            await self.setup_rainwave_session_and_redirect(
                 db_entry["user_id"], self.get_destination()
             )
             self.write_rainwave_output()
