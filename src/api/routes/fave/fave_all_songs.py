@@ -51,5 +51,5 @@ class SubmitFaveAllSongs(AuthRequiredAPIHandler):
                 "song_ids": song_ids,
                 "success": True,
                 "text": "Fave status for all songs changed.",
-                "tl_key": "fave_success",
+                "tl_key": "success",
             }

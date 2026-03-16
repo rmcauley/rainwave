@@ -11,6 +11,7 @@ import pydantic
 from tornado.web import HTTPError, RequestHandler
 
 from api import fieldtypes
+from api import rainwave_typeddicts
 from api.exceptions import APIException
 from api.helpers.paginated_requests import get_pagination_params
 from api.rainwave_typeddicts import Error as RainwaveErrorObject
@@ -79,9 +80,7 @@ class RainwaveHandler(RequestHandler, ABC):
             self.local_only
             and not self.request.remote_ip in config.api_trusted_ip_addresses
         ):
-            raise APIException(
-                "rejected", text="You are not coming from a trusted address."
-            )
+            raise APIException("404")
 
         if self.allow_cors:
             self.set_header("Access-Control-Allow-Origin", "*")
@@ -341,7 +340,10 @@ class RainwaveHandler(RequestHandler, ABC):
     def _write_rainwave_output_json_pretty_print_html(self) -> None:
         self.write(
             self.render_string(
-                "basic_header.html", title=self.locale.translate(self.return_name)
+                "basic_header.html",
+                title=self.locale.translate(
+                    cast(rainwave_typeddicts.TranslationKey, self.return_name)
+                ),
             )
         )
 

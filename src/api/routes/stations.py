@@ -1,3 +1,5 @@
+from typing import cast
+
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
@@ -22,7 +24,10 @@ class StationsRequest(APIHandler):
                     "id": station_id,
                     "name": stations.station_id_friendly[station_id],
                     "description": self.locale.translate(
-                        "station_description_id_%s" % station_id
+                        cast(
+                            rainwave_typeddicts.TranslationKey,
+                            "station_description_id_%s" % station_id,
+                        )
                     ),
                     "stream": get_round_robin_url(station_id, user=self.optional_user),
                     "relays": public_relays.public_relays[station_id],

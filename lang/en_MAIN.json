@@ -32,6 +32,7 @@
   "tunein_required": "You must be tuned in.",
   "admin_required": "You must be an admin.",
   "perks_required": "You must be a donor.",
+  "user_locked": "You are locked to a different station as you recently voted there.",
   "unlocked_only": [
     "User locked to ",
     {
@@ -58,6 +59,7 @@
   "request_failed": "Request failed.",
   "request_deleted": "Request deleted.",
   "request_delete_failed": "Request delete failed.",
+  "request_unrated_songs_success": "Unrated songs requested.",
   "request_unrated_failed": "Request unrated failed.",
   "request_favorited_songs_success": "Favorites requested.",
   "request_favorited_failed": "No faves available.",

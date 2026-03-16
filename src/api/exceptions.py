@@ -1,60 +1,18 @@
 from tornado.web import HTTPError
-from typing import Any, Literal
+from typing import Any
 
+from api import rainwave_typeddicts
 from api.rainwave_typeddicts import Error as RainwaveErrorObject
 from common.locale.rainwave_locale import RainwaveLocale
-
-# Cross-reference these with keys in en_MAIN.jsonc
-ErrorTranslationKeys = (
-    Literal["missing_station_id"]
-    | Literal["invalid_station_id"]
-    | Literal["missing_argument"]
-    | Literal["invalid_argument"]
-    | Literal["auth_required"]
-    | Literal["auth_failed"]
-    | Literal["login_required"]
-    | Literal["tunein_required"]
-    | Literal["admin_required"]
-    | Literal["perks_required"]
-    | Literal["unlocked_only"]
-    | Literal["internal_error"]
-    | Literal["song_does_not_exist"]
-    | Literal["db_error_retry"]
-    | Literal["db_error_permanent"]
-    | Literal["websocket_throttle"]
-    | Literal["404"]
-    | Literal["too_many_requests"]
-    | Literal["same_request_exists"]
-    | Literal["same_request_album"]
-    | Literal["song_not_requested"]
-    | Literal["rejected"]
-    | Literal["station_offline"]
-    | Literal["server_just_started"]
-    | Literal["search_string_too_short"]
-    | Literal["user_locked"]
-    | Literal["album_does_not_exist"]
-    | Literal["username_required"]
-    | Literal["password_required"]
-    | Literal["login_failed"]
-    | Literal["login_password_disabled"]
-    | Literal["login_too_old"]
-    | Literal["login_limit"]
-    | Literal["login_failed"]
-    | Literal["cannot_rate_now"]
-    | Literal["tunein_to_rate_current_song"]
-    | Literal["request_failed"]
-    | Literal["request_unrated_failed"]
-    | Literal["request_favorited_failed"]
-    | Literal["request_delete_failed"]
-)
 
 
 class APIException(HTTPError):
     http_status: int
+    tl_key: rainwave_typeddicts.TranslationKey
 
     def __init__(
         self,
-        translation_key: ErrorTranslationKeys,
+        translation_key: rainwave_typeddicts.TranslationKey,
         text: str | None = None,
         http_status: int = 200,
         **kwargs: Any

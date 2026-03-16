@@ -41,5 +41,5 @@ class SubmitAlbumFave(RegisteredUserAPIHandler):
                 "sid": self.sid,
                 "success": True,
                 "text": text,
-                "tl_key": "fave_success",
+                "tl_key": "success",
             }

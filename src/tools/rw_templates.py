@@ -152,7 +152,7 @@ def d_ts_start() -> str:
 
 def js_end(template_names: set[str]) -> str:
     buffer = "export default {"
-    for template_name in template_names:
+    for template_name in sorted(template_names):
         buffer += template_name + ","
     buffer += "}"
     return buffer
