@@ -21,4 +21,3 @@ class ChangeProducerStartTime(APIHandler):
         self.response["admin_power_hour"] = await get_api_power_hour(
             cursor, input.sched_id
         )
-        self.write_rainwave_output()

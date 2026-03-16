@@ -25,4 +25,3 @@ class DeletePowerHour(APIHandler):
                 "DELETE FROM r4_schedule WHERE sched_id = %s",
                 (input.sched_id,),
             )
-        self.write_rainwave_output()

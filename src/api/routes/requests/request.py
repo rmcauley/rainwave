@@ -1,23 +1,38 @@
-from api import fieldtypes
+from api import rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
-from api.handler_classes.api_handler import APIHandler
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from common.db.cursor import get_cursor
+from common.playlist.song.model.song_on_station import (
+    SongOnStation,
+    SongOnStationNotFoundError,
+)
+from common.requests.get_user_requests import get_user_requests, user_requests_to_api
 
 
 @handle_api_url("request")
-class SubmitRequest(APIHandler):
+class SubmitRequest(RegisteredUserAPIHandler):
     sid_required = True
     tunein_required = False
     unlocked_listener_only = False
     description = "Submits a request for a song."
-    fields = {"song_id": (fieldtypes.song_id_matching_sid, True)}
     sync_across_sessions = True
 
     async def post(self):
-        if self.user.is_anonymous():
-            raise APIException("must_login_and_tune_in_to_request")
-        if self.user.add_request(self.sid, input.song_id):
-            self.append_standard("request_success")
-            self.response["requests"] = self.user.get_requests(self.sid)
-        else:
-            raise APIException("request_failed")
+        input = self.get_validated_input(rainwave_dto.Api4RequestPostRequest)
+        async with get_cursor() as cursor:
+            try:
+                song_on_station = await SongOnStation.load(
+                    cursor, input.song_id, self.sid
+                )
+            except SongOnStationNotFoundError:
+                raise APIException("song_does_not_exist")
+
+            await self.user.add_request(cursor, song_on_station)
+            self.response["request_result"] = {
+                "success": True,
+                "tl_key": "request_success",
+                "text": self.rainwave_locale.translate("request_success"),
+            }
+            song_requests = await get_user_requests(cursor, self.sid, self.user.id)
+            self.response["requests"] = user_requests_to_api(song_requests)

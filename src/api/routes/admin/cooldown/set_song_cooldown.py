@@ -56,4 +56,3 @@ class SetSongCooldown(APIHandler):
                     "success": False,
                     "text": "Neither multiply or override parameters set.",
                 }
-        self.write_rainwave_output()

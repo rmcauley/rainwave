@@ -63,4 +63,3 @@ class SetAlbumCooldown(APIHandler):
                     "success": False,
                     "text": "Neither multiply or override parameters set.",
                 }
-        self.write_rainwave_output()

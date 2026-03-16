@@ -58,5 +58,3 @@ class SubmitRatingRequest(RegisteredUserAPIHandler):
                 "tl_key": "rating_cleared",
                 "updated_album_ratings": updated_albums,
             }
-
-        self.write_rainwave_output()

@@ -66,4 +66,3 @@ class PhpbbAuth(OAuthHandler):
             await self.setup_rainwave_session_and_redirect(
                 db_entry["user_id"], self.get_destination()
             )
-            self.write_rainwave_output()

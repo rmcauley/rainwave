@@ -225,7 +225,7 @@ class RainwaveHandler(RequestHandler, ABC):
             cast(str, self.request.remote_ip),
         )
 
-    def write_rainwave_output(self) -> None:
+    def _write_rainwave_output(self) -> None:
         if self.pretty_print_html:
             self._write_rainwave_output_json_pretty_print_html()
         else:
@@ -304,7 +304,7 @@ class RainwaveHandler(RequestHandler, ABC):
                 "text": self.locale.translate("internal_error"),
             }
 
-        self.write_rainwave_output()
+        self._write_rainwave_output()
 
     def _write_error_html(self, status_code: int, **kwargs: Any) -> None:
         title = "HTTP %s - %s" % (

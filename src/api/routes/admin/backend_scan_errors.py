@@ -12,4 +12,3 @@ class BackendScanErrors(APIHandler):
 
     async def post(self):
         self.response["admin_music_scan_errors"] = await get_music_scan_errors()
-        self.write_rainwave_output()

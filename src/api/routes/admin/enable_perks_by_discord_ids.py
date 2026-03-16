@@ -42,5 +42,3 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
                 "UPDATE phpbb_users SET group_id = 8 WHERE discord_user_id IN %s AND group_id NOT IN %s AND group_id != 8",
                 (list_as_tuple, PRIVILEGED_GROUP_IDS),
             )
-
-        self.write_rainwave_output()

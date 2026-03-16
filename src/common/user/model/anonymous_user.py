@@ -134,8 +134,8 @@ class AnonymousUser(UserBase):
 
     async def add_request(
         self, cursor: RainwaveCursor, song_on_station: SongOnStation
-    ) -> int:
-        return 0
+    ) -> None:
+        return
 
     async def add_unrated_requests(
         self,

@@ -1,21 +1,29 @@
-from api import fieldtypes
+from api import rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
-from api.handler_classes.api_handler import APIHandler
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from common.db.cursor import get_cursor
+from common.requests.get_user_requests import get_user_requests, user_requests_to_api
 
 
 @handle_api_url("delete_request")
-class DeleteRequest(APIHandler):
+class DeleteRequest(RegisteredUserAPIHandler):
     description = "Removes a request from the user's queue."
     login_required = True
     tunein_required = False
     unlocked_listener_only = False
-    fields = {"song_id": (fieldtypes.song_id, True)}
     sync_across_sessions = True
 
     async def post(self):
-        if self.user.remove_request(input.song_id):
-            self.append_standard("request_deleted")
-            self.response["requests"] = self.user.get_requests(self.sid)
-        else:
-            raise APIException("request_delete_failed")
+        input = self.get_validated_input(rainwave_dto.Api4DeleteRequestPostRequest)
+        async with get_cursor() as cursor:
+            if await self.user.remove_request(cursor, input.song_id):
+                self.response["delete_request_result"] = {
+                    "success": True,
+                    "text": self.rainwave_locale.translate("request_deleted"),
+                    "tl_key": "request_deleted",
+                }
+                song_requests = await get_user_requests(cursor, self.sid, self.user.id)
+                self.response["requests"] = user_requests_to_api(song_requests)
+            else:
+                raise APIException("request_delete_failed")

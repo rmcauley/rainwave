@@ -19,8 +19,6 @@ class UnratedSongsHandler(RegisteredUserAPIHandler):
                 cursor, self.user.id, limit
             )
 
-        self.write_rainwave_output()
-
 
 @handle_api_html_url("unrated_songs")
 class UnratedSongsHTML(UnratedSongsHandler):

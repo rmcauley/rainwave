@@ -45,7 +45,6 @@ class RecentlyVotedSongs(RegisteredUserAPIHandler):
                 (self.sid, self.user.id),
                 row_type=rainwave_typeddicts.UserRecentVote,
             )
-        self.write_rainwave_output()
 
 
 @handle_api_html_url("user_recent_votes")

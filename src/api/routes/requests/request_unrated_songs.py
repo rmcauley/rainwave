@@ -1,21 +1,28 @@
-from api import fieldtypes
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
-from api.handler_classes.api_handler import APIHandler
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from common.db.cursor import get_cursor
+from common.requests.get_user_requests import get_user_requests, user_requests_to_api
 
 
 @handle_api_url("request_unrated_songs")
-class RequestUnratedSongs(APIHandler):
+class RequestUnratedSongs(RegisteredUserAPIHandler):
     description = "Fills the user's request queue with unrated songs."
-    login_required = True
     tunein_required = False
     unlocked_listener_only = False
-    fields = {"limit": (fieldtypes.integer, False)}
     sync_across_sessions = True
 
     async def post(self):
-        if self.user.add_unrated_requests(self.sid, input.limit) > 0:
-            self.append_standard("request_unrated_songs_success")
-            self.response["requests"] = self.user.get_requests(self.sid)
-        else:
-            raise APIException("request_unrated_failed")
+        async with get_cursor() as cursor:
+            if await self.user.add_unrated_requests(cursor, self.sid) > 0:
+                self.response["request_unrated_songs_result"] = {
+                    "success": True,
+                    "text": self.rainwave_locale.translate(
+                        "request_unrated_songs_success"
+                    ),
+                    "tl_key": "request_unrated_songs_success",
+                }
+                song_requests = await get_user_requests(cursor, self.sid, self.user.id)
+                self.response["requests"] = user_requests_to_api(song_requests)
+            else:
+                raise APIException("request_unrated_failed")

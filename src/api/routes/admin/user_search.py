@@ -41,4 +41,3 @@ class UserSearchRequest(APIHandler):
                     "user_id": None,
                     "sid": None,
                 }
-        self.write_rainwave_output()

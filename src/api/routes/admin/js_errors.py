@@ -12,4 +12,3 @@ class JSErrors(APIHandler):
 
     async def post(self):
         self.response["admin_js_errors"] = await get_error_reports()
-        self.write_rainwave_output()

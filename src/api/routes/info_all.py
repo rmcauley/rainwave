@@ -11,4 +11,3 @@ class InfoAllRequest(APIHandler):
 
     async def post(self):
         self.response["all_stations_info"] = await cache_get("all_stations_info")
-        self.write_rainwave_output()

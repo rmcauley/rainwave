@@ -73,7 +73,6 @@ class PlaybackHistory(APIHandler):
                     (self.optional_user.id, self.sid),
                     row_type=rainwave_typeddicts.PlaybackHistoryEntry,
                 )
-        self.write_rainwave_output()
 
 
 @handle_api_html_url("playback_history")

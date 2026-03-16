@@ -113,4 +113,3 @@ class AlbumHandler(AuthRequiredAPIHandler):
                 ],
                 "songs": songs_on_album,
             }
-        self.write_rainwave_output()

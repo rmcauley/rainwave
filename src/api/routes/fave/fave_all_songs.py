@@ -53,4 +53,3 @@ class SubmitFaveAllSongs(AuthRequiredAPIHandler):
                 "text": "Fave status for all songs changed.",
                 "tl_key": "fave_success",
             }
-        self.write_rainwave_output()

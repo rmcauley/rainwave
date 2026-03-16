@@ -23,4 +23,3 @@ class ResetAlbumCooldown(APIHandler):
                 "success": True,
                 "text": "Album cooldown multiplier and override reset.",
             }
-        self.write_rainwave_output()

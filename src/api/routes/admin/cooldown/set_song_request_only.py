@@ -22,5 +22,3 @@ class SetSongRequestOnly(APIHandler):
                     "UPDATE r4_song_sid SET song_request_only_end = 0 WHERE song_id = %s AND sid = %s",
                     (input.song_id, self.sid),
                 )
-
-        self.write_rainwave_output()

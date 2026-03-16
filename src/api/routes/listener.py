@@ -254,4 +254,3 @@ class ListenerDetailRequest(APIHandler):
                 "votes_by_station": votes_by_station,
                 "winning_votes": 0,
             }
-            self.write_rainwave_output()

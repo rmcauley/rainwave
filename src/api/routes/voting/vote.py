@@ -67,4 +67,3 @@ class SubmitVote(AuthRequiredAPIHandler):
                 "elec_id": elec_id,
                 "entry_id": input.entry_id,
             }
-        self.write_rainwave_output()

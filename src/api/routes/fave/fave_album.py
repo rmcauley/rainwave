@@ -43,4 +43,3 @@ class SubmitAlbumFave(RegisteredUserAPIHandler):
                 "text": text,
                 "tl_key": "fave_success",
             }
-        self.write_rainwave_output()

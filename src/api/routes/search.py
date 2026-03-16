@@ -214,5 +214,3 @@ class SearchHandler(AuthRequiredAPIHandler):
             self.response["artists"] = artists
             self.response["albums"] = albums
             self.response["songs"] = songs
-
-        self.write_rainwave_output()

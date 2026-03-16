@@ -26,4 +26,3 @@ class ResetSongCooldown(APIHandler):
                 "success": True,
                 "text": "Song cooldown reset.",
             }
-        self.write_rainwave_output()

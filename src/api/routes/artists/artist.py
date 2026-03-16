@@ -43,4 +43,3 @@ class ArtistHandler(APIHandler):
                 "name": artist["artist_name"],
                 "all_songs": songs,
             }
-        self.write_rainwave_output()

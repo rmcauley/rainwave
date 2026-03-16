@@ -74,4 +74,3 @@ class ErrorReport(AuthRequiredAPIHandler):
             "text": "Submitted",
             "tl_key": "report_submitted",
         }
-        self.write_rainwave_output()

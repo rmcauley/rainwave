@@ -53,4 +53,3 @@ class EuropifyPowerHour(RegisteredUserAPIHandler):
             self.response["admin_power_hour"] = await get_api_power_hour(
                 cursor, new_schedule_entry.id
             )
-        self.write_rainwave_output()

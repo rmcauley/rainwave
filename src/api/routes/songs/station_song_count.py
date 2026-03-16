@@ -24,4 +24,3 @@ class StationSongCountRequest(APIHandler):
                 """,
                 row_type=rainwave_typeddicts.StationSongCountItem,
             )
-        self.write_rainwave_output()

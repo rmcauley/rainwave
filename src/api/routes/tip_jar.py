@@ -37,7 +37,6 @@ class TipJarContents(APIHandler):
                 params=None,
                 row_type=rainwave_typeddicts.TipJarItem,
             )
-        self.write_rainwave_output()
 
 
 @handle_api_html_url("tip_jar")

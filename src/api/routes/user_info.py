@@ -12,4 +12,3 @@ class UserInfoRequest(AuthRequiredAPIHandler):
 
     async def post(self):
         self.response["user_info"] = user_to_api_private(self.user)
-        self.write_rainwave_output()

@@ -42,6 +42,10 @@ ErrorTranslationKeys = (
     | Literal["login_failed"]
     | Literal["cannot_rate_now"]
     | Literal["tunein_to_rate_current_song"]
+    | Literal["request_failed"]
+    | Literal["request_unrated_failed"]
+    | Literal["request_favorited_failed"]
+    | Literal["request_delete_failed"]
 )
 
 

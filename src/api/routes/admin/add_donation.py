@@ -20,4 +20,3 @@ class AddDonationHandler(APIHandler):
                     input.private,
                 ),
             )
-        self.write_rainwave_output()

@@ -134,7 +134,7 @@ class RegisteredUser(UserBase):
 
     async def add_request(
         self, cursor: RainwaveCursor, song_on_station: SongOnStation
-    ) -> int:
+    ) -> None:
         requested_rows = await cursor.fetch_all(
             "SELECT r4_request_store.song_id, r4_songs.album_id FROM r4_request_store JOIN r4_songs USING (song_id) WHERE r4_request_store.user_id = %s",
             (self.id,),
@@ -150,12 +150,11 @@ class RegisteredUser(UserBase):
                 and song_on_station.data["album_id"] == requested["album_id"]
             ):
                 raise APIException("same_request_album")
-        updated_rows = await cursor.update(
+        await cursor.update(
             "INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)",
             (self.id, song_on_station.id, song_on_station.sid),
         )
         await self.put_in_request_line_if_necessary(cursor, song_on_station.sid)
-        return updated_rows
 
     async def add_unrated_requests(
         self,

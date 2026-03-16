@@ -30,4 +30,3 @@ class GetPowerHours(APIHandler):
             for power_hour in power_hours:
                 power_hour["songs"] = []
             self.response["admin_power_hours"] = power_hours
-        self.write_rainwave_output()

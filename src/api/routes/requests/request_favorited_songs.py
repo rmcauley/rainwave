@@ -1,11 +1,13 @@
 from api import fieldtypes
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
-from api.handler_classes.api_handler import APIHandler
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from common.db.cursor import get_cursor
+from common.requests.get_user_requests import get_user_requests, user_requests_to_api
 
 
 @handle_api_url("request_favorited_songs")
-class RequestFavoritedSongs(APIHandler):
+class RequestFavoritedSongs(RegisteredUserAPIHandler):
     description = "Fills the user's request queue with favorited songs."
     login_required = True
     tunein_required = False
@@ -14,8 +16,14 @@ class RequestFavoritedSongs(APIHandler):
     sync_across_sessions = True
 
     async def post(self):
-        if self.user.add_favorited_requests(self.sid, input.limit) > 0:
-            self.append_standard("request_favorited_songs_success")
-            self.response["requests"] = self.user.get_requests(self.sid)
-        else:
-            raise APIException("request_favorited_failed")
+        async with get_cursor() as cursor:
+            if await self.user.add_favorited_requests(cursor, self.sid) > 0:
+                self.response["request_favorited_songs_result"] = {
+                    "success": True,
+                    "text": self.locale.translate("request_favorited_songs_success"),
+                    "tl_key": "request_favorited_songs_success",
+                }
+                song_requests = await get_user_requests(cursor, self.sid, self.user.id)
+                self.response["requests"] = user_requests_to_api(song_requests)
+            else:
+                raise APIException("request_favorited_failed")

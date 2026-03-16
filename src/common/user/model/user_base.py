@@ -75,7 +75,7 @@ class UserBase(ABC):
     @abstractmethod
     async def add_request(
         self, cursor: RainwaveCursor, song_on_station: SongOnStation
-    ) -> int:
+    ) -> None:
         raise NotImplementedError
 
     @abstractmethod

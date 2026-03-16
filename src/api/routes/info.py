@@ -13,4 +13,3 @@ class InfoRequest(APIHandler):
     async def post(self):
         async with get_cursor() as cursor:
             await attach_info_to_request(cursor, self, False, False)
-            self.write_rainwave_output()

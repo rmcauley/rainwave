@@ -99,4 +99,3 @@ class GroupHandler(APIHandler):
                 "id": group["group_id"],
                 "name": group["group_name"],
             }
-        self.write_rainwave_output()

@@ -1582,8 +1582,8 @@ export interface components {
         message_id: {
             message_id?: number;
         };
-        order_requests_result: components["schemas"]["_boolean_result"][];
-        pause_request_queue_result: components["schemas"]["_boolean_result"][];
+        order_requests_result: components["schemas"]["_boolean_result"];
+        pause_request_queue_result: components["schemas"]["_boolean_result"];
         ping: {
             timestamp?: components["schemas"]["_time"];
         };
@@ -1614,10 +1614,10 @@ export interface components {
             tl_key: string;
         };
         relays: components["schemas"]["_relay"][];
-        request_favorited_songs_result: components["schemas"]["_boolean_result"][];
+        request_favorited_songs_result: components["schemas"]["_boolean_result"];
         request_line: components["schemas"]["_request_line_entry"][];
-        request_result: components["schemas"]["_boolean_result"][];
-        request_unrated_songs_result: components["schemas"]["_boolean_result"][];
+        request_result: components["schemas"]["_boolean_result"];
+        request_unrated_songs_result: components["schemas"]["_boolean_result"];
         requests: (components["schemas"]["_song_bare"] & components["schemas"]["_song_bare_artist"] & {
             albums: [
                 components["schemas"]["_request_album"]
@@ -1707,7 +1707,7 @@ export interface components {
             song_rating_count: number;
             title: string;
         }[];
-        unpause_request_queue_result: components["schemas"]["_boolean_result"][];
+        unpause_request_queue_result: components["schemas"]["_boolean_result"];
         unrated_songs: {
             album_name: string;
             id: number;

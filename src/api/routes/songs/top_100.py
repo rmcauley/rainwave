@@ -65,7 +65,6 @@ class Top100Songs(APIHandler):
 """,
                     row_type=rainwave_typeddicts.Top100Item,
                 )
-        self.write_rainwave_output()
 
 
 @handle_api_html_url("top_100")

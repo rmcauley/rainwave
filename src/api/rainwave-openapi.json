@@ -4460,16 +4460,10 @@
         "type": "object"
       },
       "order_requests_result": {
-        "items": {
-          "$ref": "#/components/schemas/_boolean_result"
-        },
-        "type": "array"
+        "$ref": "#/components/schemas/_boolean_result"
       },
       "pause_request_queue_result": {
-        "items": {
-          "$ref": "#/components/schemas/_boolean_result"
-        },
-        "type": "array"
+        "$ref": "#/components/schemas/_boolean_result"
       },
       "ping": {
         "properties": {
@@ -4584,10 +4578,7 @@
         "type": "array"
       },
       "request_favorited_songs_result": {
-        "items": {
-          "$ref": "#/components/schemas/_boolean_result"
-        },
-        "type": "array"
+        "$ref": "#/components/schemas/_boolean_result"
       },
       "request_line": {
         "items": {
@@ -4596,16 +4587,10 @@
         "type": "array"
       },
       "request_result": {
-        "items": {
-          "$ref": "#/components/schemas/_boolean_result"
-        },
-        "type": "array"
+        "$ref": "#/components/schemas/_boolean_result"
       },
       "request_unrated_songs_result": {
-        "items": {
-          "$ref": "#/components/schemas/_boolean_result"
-        },
-        "type": "array"
+        "$ref": "#/components/schemas/_boolean_result"
       },
       "requests": {
         "items": {
@@ -4992,10 +4977,7 @@
         "type": "array"
       },
       "unpause_request_queue_result": {
-        "items": {
-          "$ref": "#/components/schemas/_boolean_result"
-        },
-        "type": "array"
+        "$ref": "#/components/schemas/_boolean_result"
       },
       "unrated_songs": {
         "items": {
