@@ -4,15 +4,18 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
 )
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.exceptions import APIException
 from api.rainwave_dto import Api4AdminMoveSongUpInPowerHourPostRequest
 
 from common.db.cursor import get_cursor
 
-
 @handle_api_url("admin/move_song_up_in_power_hour")
 class MoveUpInPowerHour(APIHandler):
-    return_name = "admin_power_hour"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "admin_power_hour"
     admin_required = True
     sid_required = True
 

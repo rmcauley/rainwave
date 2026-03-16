@@ -1,17 +1,20 @@
 from api import rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from common.cache.timeline_cache import get_timeline_api_cache
 from common.cache.update_user_rating_acl import get_user_rating_acl
 from common.db.cursor import get_cursor
 from common.ratings.set_song_rating import set_song_rating
 
-
 @handle_api_url("rate")
 class SubmitRatingRequest(RegisteredUserAPIHandler):
     sid_required = True
-    return_name = "rate_result"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "rate_result"
     tunein_required = False
     unlocked_listener_only = False
     description = "Rate a song.  The user must have been tuned in for this song to rate it, or they must be tuned in if it's the currently playing song."

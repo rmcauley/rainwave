@@ -1,16 +1,19 @@
 from api import rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from common.db.cursor import get_cursor
 from common.ratings.set_song_rating import set_song_rating
-
 
 @handle_api_url("clear_rating")
 class ClearRating(RegisteredUserAPIHandler):
     sid_required = True
     description = "Erase a rating."
-    return_name = "rate_result"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "rate_result"
     tunein_required = False
     unlocked_listener_only = False
     sync_across_sessions = True

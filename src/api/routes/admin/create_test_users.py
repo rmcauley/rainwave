@@ -2,26 +2,27 @@ import uuid
 
 from pydantic import BaseModel
 
-
 from api.handle_url import handle_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 
 from api.handler_classes.rainwave_handler import RainwaveHandler
 
 from common.db.cursor import get_cursor
-
 
 class CreateTestUserInput(BaseModel):
     admin: bool
     registered: bool
     perks: bool
 
-
 @handle_url(r"test/create_user")
 class CreateTestUser(RainwaveHandler):
     local_only = True
     sid_required = False
     auth_required = False
-    return_name = "user"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "user"
 
     async def get(self, url_sid: str):
         input = self.get_validated_input(CreateTestUserInput)

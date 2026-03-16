@@ -3,6 +3,7 @@ import typing
 from api import fieldtypes, rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
 from common.cache.station_cache import cache_get_station
@@ -10,10 +11,12 @@ from common.schedule.election.election import Election
 from common.schedule.election.submit_vote import submit_vote
 from common.schedule.timeline_types import TimelineOnStation
 
-
 @handle_api_url("vote")
 class SubmitVote(AuthRequiredAPIHandler):
-    return_name = "vote_result"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "vote_result"
     sid_required = True
     tunein_required = True
     description = "Vote for a candidate in an election.  Cannot cancel/delete a vote.  If user has already voted, the vote will be changed to the submitted song."

@@ -1,15 +1,18 @@
 from api import rainwave_dto
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 from psycopg import sql
 
-
 @handle_api_url("all_songs")
 class AllSongsHandler(RegisteredUserAPIHandler):
-    return_name = "all_songs"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "all_songs"
     sid_required = False
     description = "Gets every song including a user's ratings.  Order field can be 'name', sorting by album and song title, or 'rating'."
     pagination = True

@@ -6,11 +6,11 @@ from api import rainwave_typeddicts
 from psycopg import sql
 from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 
 from common.db.cursor import get_cursor
 from common.playlist import object_counts
-
 
 def get_all_albums_list_sql(user_id: int | None) -> sql.Composed:
     if user_id is None or user_id == 1:
@@ -65,11 +65,13 @@ def get_all_albums_list_sql(user_id: int | None) -> sql.Composed:
             user_id=sql.Placeholder(name="user_id"), sid=sql.Placeholder(name="sid")
         )
 
-
 @handle_api_url("all_albums_paginated")
 class AllAlbumsPaginatedHandler(APIHandler):
     description = "Returns chunks of a list of all albums on the station playlist."
-    return_name = "all_albums_paginated"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "all_albums_paginated"
 
     async def post(self):
         input = self.get_validated_input(rainwave_dto.Api4AllAlbumsPaginatedPostRequest)

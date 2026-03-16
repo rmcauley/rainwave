@@ -3,6 +3,7 @@ from pytz import timezone
 
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.rainwave_dto import Api4AdminEuropifyPowerHourPostRequest
 
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
@@ -13,10 +14,12 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
 from common.db.cursor import get_cursor
 from common.schedule.power_hours.duplicate_power_hour import duplicate_power_hour
 
-
 @handle_api_url("admin/europify_power_hour")
 class EuropifyPowerHour(RegisteredUserAPIHandler):
-    return_name = "admin_power_hour"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "admin_power_hour"
     admin_required = True
     sid_required = True
 

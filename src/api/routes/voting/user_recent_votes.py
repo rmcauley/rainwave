@@ -3,14 +3,17 @@ from psycopg import sql
 
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.handle_url import handle_api_url, handle_api_html_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
-
 
 @handle_api_url("user_recent_votes")
 class RecentlyVotedSongs(RegisteredUserAPIHandler):
     description = "Shows the user's recently voted on songs."
-    return_name = "user_recent_votes"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "user_recent_votes"
     login_required = True
     sid_required = True
     pagination = True
@@ -45,7 +48,6 @@ class RecentlyVotedSongs(RegisteredUserAPIHandler):
                 (self.sid, self.user.id),
                 row_type=rainwave_typeddicts.UserRecentVote,
             )
-
 
 @handle_api_html_url("user_recent_votes")
 class RecentlyVotedSongsHTML(RecentlyVotedSongs):

@@ -3,17 +3,20 @@ import orjson
 from api.handler_classes.api_handler import APIHandler
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_html_url, handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 from psycopg import sql
 
 from common.libs.pretty_date import pretty_date
 
-
 @handle_api_url("playback_history")
 class PlaybackHistory(APIHandler):
     description = "Get the last 100 songs that played on the station."
-    return_name = "playback_history"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "playback_history"
     login_required = False
     sid_required = True
     pagination = True
@@ -73,7 +76,6 @@ class PlaybackHistory(APIHandler):
                     (self.optional_user.id, self.sid),
                     row_type=rainwave_typeddicts.PlaybackHistoryEntry,
                 )
-
 
 @handle_api_html_url("playback_history")
 class PlaybackHistoryHTML(PlaybackHistory):

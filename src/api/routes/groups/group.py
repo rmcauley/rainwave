@@ -4,6 +4,7 @@ from psycopg import sql
 from api import rainwave_dto, rainwave_typeddicts
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 from common import stations
 from common.db.cursor import get_cursor
@@ -13,11 +14,13 @@ from common.playlist.artist.get_song_list_for_artist_display import (
 )
 from common.playlist.song_group.song_group import SongGroupRow
 
-
 @handle_api_url("group")
 class GroupHandler(APIHandler):
     description = "Get detailed information about a song group."
-    return_name = "group"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "group"
 
     async def post(self) -> None:
         input = self.get_validated_input(rainwave_dto.Api4GroupPostRequest)

@@ -5323,10 +5323,10 @@
             "type": "integer"
           },
           "name": {
-            "type": "object"
+            "type": "string"
           },
           "message": {
-            "type": "object"
+            "type": "string"
           },
           "lineNumber": {
             "oneOf": [
@@ -5355,16 +5355,16 @@
             ]
           },
           "stack": {
-            "type": "object"
+            "type": "string"
           },
           "location": {
-            "type": "object"
+            "type": "string"
           },
           "userAgent": {
-            "type": "object"
+            "type": "string"
           },
           "browserLanguage": {
-            "type": "object"
+            "type": "string"
           }
         },
         "required": [

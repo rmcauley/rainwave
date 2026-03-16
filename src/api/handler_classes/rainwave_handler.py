@@ -35,8 +35,6 @@ class SessionApiKeyRow(TypedDict):
 
 
 class RainwaveHandler(RequestHandler, ABC):
-    # What is the default response key for this request, for e.g. error handling
-    return_name: RainwaveResponseKey
     # What is the response type?
     content_type = "text/html"
     # Do we need a Rainwave auth key for this request?
@@ -69,6 +67,11 @@ class RainwaveHandler(RequestHandler, ABC):
 
     _startclock: float
     sid: int
+
+    @property
+    @abstractmethod
+    def return_name(cls) -> RainwaveResponseKey:
+        raise NotImplementedError
 
     # Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
     async def prepare(self) -> None:

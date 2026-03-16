@@ -1,15 +1,18 @@
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_html_url, handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 from psycopg import sql
 
-
 @handle_api_url("all_faves")
 class AllFavHandler(RegisteredUserAPIHandler):
     description = "Get all songs that have been faved by the user."
-    return_name = "all_faves"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "all_faves"
     login_required = True
     sid_required = False
     pagination = True
@@ -73,7 +76,6 @@ class AllFavHandler(RegisteredUserAPIHandler):
                     (self.user.id,),
                     row_type=rainwave_typeddicts.AllFave,
                 )
-
 
 @handle_api_html_url("all_faves")
 class AllFavHTML(AllFavHandler):

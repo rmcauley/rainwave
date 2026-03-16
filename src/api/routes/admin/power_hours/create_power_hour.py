@@ -1,4 +1,5 @@
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.rainwave_dto import Api4AdminCreatePowerHourPostRequest
 
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
@@ -7,10 +8,12 @@ from common.db.cursor import get_tx_cursor
 from common.schedule.create_schedule_entry import create_schedule_entry
 from common.schedule.power_hours.power_hour import PowerHour
 
-
 @handle_api_url("admin/create_power_hour")
 class CreatePowerHour(RegisteredUserAPIHandler):
-    return_name = "admin_power_hour"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "admin_power_hour"
     admin_required = True
     sid_required = False
 

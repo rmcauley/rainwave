@@ -1,5 +1,6 @@
 from api import fieldtypes, rainwave_typeddicts
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.exceptions import APIException
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
 from api.rainwave_dto import Api4SearchPostRequest
@@ -7,11 +8,9 @@ from common.db.cursor import get_cursor
 from common.playlist.remove_diacritics import remove_diacritics
 from typing import TypedDict
 
-
 class SearchArtistRow(TypedDict):
     id: int
     name: str
-
 
 class SearchAlbumRow(TypedDict):
     id: int
@@ -21,7 +20,6 @@ class SearchAlbumRow(TypedDict):
     fave: bool
     rating_user: float
     rating_complete: bool
-
 
 class SearchSongRow(TypedDict):
     id: int
@@ -41,11 +39,13 @@ class SearchSongRow(TypedDict):
     album_name: str
     album_id: int
 
-
 @handle_api_url("search")
 class SearchHandler(AuthRequiredAPIHandler):
     description = "Search artists, albums, and songs for a matching string.  Case insensitive.  Submitted string will be stripped of accents and punctuation."
-    return_name = "albums"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "albums"
     sid_required = True
     fields = {"search": (fieldtypes.string, True)}
 

@@ -1757,14 +1757,14 @@ export interface components {
             user_id: number;
             username: string;
             time: number;
-            name: Record<string, never>;
-            message: Record<string, never>;
+            name: string;
+            message: string;
             lineNumber: number | string | null;
             columnNumber: number | string | null;
-            stack: Record<string, never>;
-            location: Record<string, never>;
-            userAgent: Record<string, never>;
-            browserLanguage: Record<string, never>;
+            stack: string;
+            location: string;
+            userAgent: string;
+            browserLanguage: string;
         };
         admin_js_errors: components["schemas"]["_admin_js_error"][];
         _admin_music_scan_error: {

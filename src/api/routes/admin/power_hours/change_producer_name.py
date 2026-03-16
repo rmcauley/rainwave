@@ -1,4 +1,5 @@
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 from api.rainwave_dto import Api4AdminChangeProducerNamePostRequest
 
@@ -8,10 +9,12 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
 )
 from common.db.cursor import get_cursor
 
-
 @handle_api_url("admin/change_producer_name")
 class ChangeProducerName(APIHandler):
-    return_name = "admin_power_hour"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "admin_power_hour"
     admin_required = True
     sid_required = False
 

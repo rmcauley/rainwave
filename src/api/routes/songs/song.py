@@ -4,6 +4,7 @@ import orjson
 
 from api import rainwave_dto
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 from api.rainwave_typeddicts import ElecBlockedBy
 from common.db.cursor import get_cursor
@@ -12,11 +13,13 @@ from common.playlist.song_group.load_groups_from_song_id import (
     load_groups_for_song_on_station,
 )
 
-
 @handle_api_url("song")
 class SongHandler(APIHandler):
     description = "Get detailed information about a song."
-    return_name = "song"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "song"
 
     async def post(self):
         input = self.get_validated_input(rainwave_dto.Api4SongPostRequest)

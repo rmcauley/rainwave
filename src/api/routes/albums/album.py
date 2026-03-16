@@ -3,6 +3,7 @@ from typing import TypedDict
 from api import rainwave_dto, rainwave_typeddicts
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
 
 from common.db.cursor import get_cursor
@@ -11,16 +12,17 @@ from common.playlist.album.get_song_list_for_album_display import (
     get_songs_for_album_display,
 )
 
-
 class AlbumDetailRatingRow(TypedDict):
     album_rating_user: float | None
     album_fave: bool | None
 
-
 @handle_api_url("album")
 class AlbumHandler(AuthRequiredAPIHandler):
     description = "Get detailed information about an album, including a list of songs in the album.  'Sort' can be set to 'added_on' to sort by when the song was added to the radio."
-    return_name = "album"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "album"
 
     async def post(self) -> None:
         input = self.get_validated_input(rainwave_dto.Api4AlbumPostRequest)

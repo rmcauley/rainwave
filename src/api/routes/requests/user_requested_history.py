@@ -2,14 +2,17 @@ from api import rainwave_typeddicts
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from api.handle_url import handle_api_html_url, handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from psycopg import sql
 from common.db.cursor import get_cursor
-
 
 @handle_api_url("user_requested_history")
 class AllRequestedSongs(RegisteredUserAPIHandler):
     description = "Shows the user's completed requests."
-    return_name = "user_requested_history"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "user_requested_history"
     login_required = True
     sid_required = True
     pagination = True
@@ -44,7 +47,6 @@ class AllRequestedSongs(RegisteredUserAPIHandler):
                 (self.sid, self.user.id),
                 row_type=rainwave_typeddicts.UserRecentVote,
             )
-
 
 @handle_api_html_url("user_requested_history")
 class AllRequestedSongsHTML(AllRequestedSongs):

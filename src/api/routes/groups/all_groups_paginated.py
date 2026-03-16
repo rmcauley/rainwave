@@ -2,15 +2,18 @@ import math
 
 from api import rainwave_dto
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 from api.helpers.cached_all_groups import cached_all_groups
 from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT as PAGE_LIMIT
 
-
 @handle_api_url("all_groups_paginated")
 class AllGroupsPaginatedHandler(APIHandler):
     description = "Returns chunks of a list of all groups on the station playlist."
-    return_name = "all_groups_paginated"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "all_groups_paginated"
     sid_required = True
 
     async def post(self):

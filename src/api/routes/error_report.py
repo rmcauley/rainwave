@@ -3,6 +3,7 @@ from time import time as timestamp
 from api import rainwave_typeddicts
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
 from api.helpers.js_error_reports import (
     JavaScriptErrorReport,
@@ -15,7 +16,11 @@ from common import config
 @handle_api_url("error_report")
 class ErrorReport(AuthRequiredAPIHandler):
     description = "Handles taking automated error reports from backend.rainwave."
-    return_name = "error_report_result"
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "error_report_result"
+
     sid_required = False
 
     async def prepare(self):
@@ -42,23 +47,21 @@ class ErrorReport(AuthRequiredAPIHandler):
         else:
             await super().prepare()
 
-    async def post(self):
+    async def post(self) -> None:
         error_report = self.get_validated_input(JavaScriptErrorReport)
-        error_report_dict: rainwave_typeddicts.AdminJsError = (
-            {
-                "browserLanguage": error_report.browserLanguage,
-                "columnNumber": error_report.columnNumber,
-                "lineNumber": error_report.lineNumber,
-                "location": error_report.location,
-                "message": error_report.location,
-                "name": error_report.name[:2048],
-                "stack": error_report.stack[:2048],
-                "time": int(timestamp()),
-                "user_id": self.user.id,
-                "userAgent": error_report.userAgent,
-                "username": self.user.public_data["name"],
-            },
-        )
+        error_report_dict: rainwave_typeddicts.AdminJsError = {
+            "browserLanguage": error_report.browserLanguage,
+            "columnNumber": error_report.columnNumber,
+            "lineNumber": error_report.lineNumber,
+            "location": error_report.location,
+            "message": error_report.location,
+            "name": error_report.name[:2048],
+            "stack": error_report.stack[:2048],
+            "time": int(timestamp()),
+            "user_id": self.user.id,
+            "userAgent": error_report.userAgent,
+            "username": self.user.public_data["name"],
+        }
 
         reports = await get_error_reports()
 
