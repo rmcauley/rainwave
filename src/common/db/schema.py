@@ -542,10 +542,19 @@ async def create_tables() -> None:
                 listener_purge			BOOLEAN		DEFAULT FALSE, \
                 listener_voted_entry	INTEGER		, \
                 listener_key            TEXT        , \
-                user_id					INTEGER		DEFAULT 1 \
+                user_id					INTEGER		NOT NULL DEFAULT 1 \
             )"
         )
         await create_index(cursor, "r4_listeners", ["sid"])
+        await cursor.update(
+            "CREATE UNIQUE INDEX r4_listeners_user_id_unique_idx ON r4_listeners (user_id) WHERE user_id > 1"
+        )
+        await cursor.update(
+            "CREATE UNIQUE INDEX r4_listeners_listener_ip_unique_idx ON r4_listeners (listener_ip) WHERE user_id = 1 AND listener_ip IS NOT NULL"
+        )
+        await cursor.update(
+            "CREATE UNIQUE INDEX r4_listeners_listener_key_unique_idx ON r4_listeners (listener_key) WHERE user_id = 1 AND listener_key IS NOT NULL"
+        )
 
         await create_delete_fk(cursor, "r4_listeners", "phpbb_users", "user_id")
 

@@ -1,18 +1,19 @@
 from time import time as timestamp
 from typing import TypedDict
 
+from pydantic import BaseModel
+import pydantic
+
 from api import fieldtypes
-from api.web import RainwaveHandler
 from api.handle_url import handle_api_url
-from api.handle_url import handle_url
-from api.exceptions import APIException
 
-from libs import cache
-from libs import log
-
-from common.user.user_model import make_user
+from api.routes.listener_detection.icecast_handler import IcecastHandler
 from common.zeromq import sync_to_front
 from common.db.cursor import get_cursor
+
+
+class RemoveListenerDTO(BaseModel):
+    client: int
 
 
 class ListenerRow(TypedDict):
@@ -30,35 +31,36 @@ class RemoveListener(IcecastHandler):
         "client": (fieldtypes.integer, True),
     }
 
-    def post(self, sid=0):
-        listener = db.c.fetch_row(
-            "SELECT user_id, listener_key FROM r4_listeners WHERE listener_relay = %s AND listener_icecast_id = %s",
-            (self.relay, self.get_argument("client")),
-        )
-        if not listener:
-            # removal not working is normal, since any reconnecting listener gets a new listener ID
-            # self.append("      RMFAIL: %s %s." % ('{:<15}'.format(self.relay), '{:<10}'.format(self.get_argument("client"))))
+    async def post(self):
+        try:
+            input = RemoveListenerDTO.model_validate(self.request.arguments)
+        except pydantic.ValidationError:
+            self.write("Invalid Icecast request")
             return
+        async with get_cursor() as cursor:
+            listener = await cursor.fetch_row(
+                """
+                UPDATE r4_listeners 
+                SET listener_purge = TRUE 
+                WHERE listener_relay = %s AND listener_icecast_id = %s
+                RETURNING user_id, listener_key
+                """,
+                (self.relay, input.client),
+                row_type=ListenerRow,
+            )
+            if not listener:
+                return
 
-        db.c.update(
-            "UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s",
-            (self.relay, self.get_argument("client")),
-        )
-        if listener["user_id"] > 1:
-            db.c.update(
-                "UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s",
-                (timestamp() + 600, listener["user_id"]),
+            await cursor.update(
+                "UPDATE r4_listeners SET listener_purge = TRUE WHERE listener_relay = %s AND listener_icecast_id = %s",
+                (self.relay, input.client),
             )
-            cache.set_user(listener["user_id"], "listener_record", None)
-            sync_to_front.sync_frontend_user_id(listener["user_id"])
-        else:
-            sync_to_front.sync_frontend_key(listener["listener_key"])
-        self.append(
-            "%s remove: %s %s."
-            % (
-                "{:<5}".format(listener["user_id"]),
-                "{:<15}".format(self.relay),
-                "{:<10}".format(self.get_argument("client")),
-            )
-        )
-        self.failed = False
+            if listener["user_id"] > 1:
+                await cursor.update(
+                    "UPDATE r4_request_line SET line_expiry_tune_in = %s WHERE user_id = %s",
+                    (timestamp() + 600, listener["user_id"]),
+                )
+                sync_to_front.sync_frontend_user_id(listener["user_id"])
+            else:
+                sync_to_front.sync_frontend_key(listener["listener_key"])
+            self.failed = False

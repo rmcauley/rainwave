@@ -161,3 +161,7 @@ On modernize deployment:
 - ALTER TABLE r4_one_ups ADD PRIMARY KEY (one_up_id);
 - remove r4_album_sid.album_updated as it was replaced with album_updated_at
 - Route https://rainwave.cc/api4/rainwave-openapi.json
+- CREATE UNIQUE INDEX r4_listeners_user_id_unique_idx ON r4_listeners (user_id) WHERE user_id > 1
+- ALTER TABLE r4_listeners SET user_id NOT NULL;
+- CREATE UNIQUE INDEX r4_listeners_listener_key_unique_idx ON r4_listeners (listener_ip) WHERE user_id = 1 AND listener_ip IS NOT NULL
+- CREATE UNIQUE INDEX r4_listeners_listener_key_unique_idx ON r4_listeners (listener_key) WHERE user_id = 1 AND listener_key IS NOT NULL

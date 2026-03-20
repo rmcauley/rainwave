@@ -1,190 +1,147 @@
+from typing import TypedDict
+
+from pydantic import BaseModel, IPvAnyAddress
+import pydantic
+
+from api.routes.listener_detection.parse_icecast_mount import (
+    InvalidIcecastMount,
+    parse_icecast_mount,
+)
+from common.db.build_insert import build_insert, build_insert_on_conflict_do_update
 from common.db.cursor import get_cursor
 
-from api import fieldtypes
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 from api.routes.listener_detection.icecast_handler import IcecastHandler
+from common.user.get_registered_user import get_authorized_registered_user
 from common.zeromq import sync_to_front
-from common.user.user_model import make_user
+
+
+class AddListenerDTO(BaseModel):
+    client: int
+    mount: str
+    ip: IPvAnyAddress
+
+
+class ListenKeyApiKeyUserLookup(TypedDict):
+    radio_listenkey: str
+    api_key: str
 
 
 @handle_api_url(r"listener_add/(\d+)")
 class AddListener(IcecastHandler):
-    fields = {
-        "client": (fieldtypes.integer, True),
-        "mount": (fieldtypes.icecast_mount, True),
-        "ip": (fieldtypes.ip_address, True),
-        "agent": (fieldtypes.media_player, True),
-    }
-    mount = None
-    user_id = None
-    listen_key = None
-    agent = None
-    listener_ip = None
+    async def post(self, sid: str | int):
+        try:
+            input = AddListenerDTO.model_validate(self.request.arguments)
+            (_mount, user_id, listen_key, listener_ip) = parse_icecast_mount(
+                input.mount
+            )
+        except (pydantic.ValidationError, InvalidIcecastMount):
+            self.write("Invalid Icecast request")
+            return
 
-    def post(self, sid):
-        (self.mount, self.user_id, self.listen_key, self.listener_ip) = (
-            self.get_argument_required("mount")
-        )
-        self.agent = self.get_argument("agent")
-        if self.listener_ip is None:
-            self.listener_ip = self.get_argument("ip")
+        if listener_ip is None:
+            listener_ip = self.get_argument("ip")
 
         if sid:
             try:
-                self.sid = int(sid)
+                sid = int(sid)
             except ValueError:
                 raise APIException("invalid_station_id", http_code=400)
         else:
             raise APIException("invalid_station_id", http_code=400)
-        if self.user_id > 1:
-            self.add_registered(self.sid)
-        else:
-            self.add_anonymous(self.sid)
+        if user_id > 1 and listen_key:
+            await self.add_registered(
+                sid, user_id, listen_key, listener_ip, input.client
+            )
+        elif listen_key:
+            await self.add_anonymous(sid, listen_key, listener_ip, input.client)
 
-    def add_registered(self, sid):
-        real_key = db.c.fetch_var(
-            "SELECT radio_listenkey FROM phpbb_users WHERE user_id = %s",
-            (self.user_id,),
-        )
-        if real_key != self.listen_key:
-            raise APIException("invalid_argument", reason="mismatched listen_key.")
-        tunedin = db.c.fetch_var(
-            "SELECT COUNT(*) FROM r4_listeners WHERE user_id = %s", (self.user_id,)
-        )
-        if tunedin:
-            db.c.update(
-                "UPDATE r4_listeners "
-                "SET sid = %s, listener_ip = %s, listener_purge = FALSE, listener_icecast_id = %s, listener_relay = %s, listener_agent = %s "
-                "WHERE user_id = %s",
-                (
-                    sid,
-                    self.listener_ip,
-                    self.get_argument("client"),
-                    self.relay,
-                    self.agent,
-                    self.user_id,
-                ),
+    async def add_registered(
+        self,
+        user_id: int,
+        sid: int,
+        listen_key: str,
+        listener_ip: str,
+        icecast_client_id: int,
+    ):
+        async with get_cursor() as cursor:
+            user_lookup = await cursor.fetch_row(
+                "SELECT radio_listenkey, api_key FROM phpbb_users JOIN r4_api_keys USING (user_id) WHERE phpbb_users.user_id = %s LIMIT 1",
+                (user_id,),
+                row_type=ListenKeyApiKeyUserLookup,
             )
-            self.append(
-                "%s update: %s %s %s %s %s %s."
-                % (
-                    "{:<5}".format(self.user_id),
-                    sid,
-                    "{:<15}".format(self.listener_ip),
-                    "{:<15}".format(self.relay),
-                    "{:<10}".format(self.get_argument("client")),
-                    self.agent,
-                    self.listen_key,
-                )
+            if not user_lookup or user_lookup["radio_listenkey"] != listen_key:
+                raise APIException("invalid_argument", reason="mismatched listen_key.")
+            to_upsert = {
+                "sid": sid,
+                "user_id": user_id,
+                "listener_icecast_id": icecast_client_id,
+                "listener_ip": listener_ip,
+                "listener_purge": False,
+                "listener_relay": self.relay,
+            }
+            await cursor.update(
+                build_insert_on_conflict_do_update(
+                    "r4_listeners", list(to_upsert.keys())
+                ),
+                to_upsert,
             )
             self.failed = False
-        else:
-            db.c.update(
-                "INSERT INTO r4_listeners "
-                "(sid, user_id, listener_ip, listener_icecast_id, listener_relay, listener_agent) "
-                "VALUES (%s, %s, %s, %s, %s, %s)",
-                (
-                    sid,
-                    self.user_id,
-                    self.listener_ip,
-                    self.get_argument("client"),
-                    self.relay,
-                    self.agent,
-                ),
+            user = await get_authorized_registered_user(
+                cursor,
+                sid,
+                user_id,
+                user_lookup["api_key"],
+                listener_ip,
             )
-            self.append(
-                "%s new   : %s %s %s %s %s %s."
-                % (
-                    "{:<5}".format(self.user_id),
-                    sid,
-                    "{:<15}".format(self.listener_ip),
-                    "{:<15}".format(self.relay),
-                    "{:<10}".format(self.get_argument("client")),
-                    self.agent,
-                    self.listen_key,
-                )
-            )
-            self.failed = False
-        if not self.failed:
-            u = user.User(self.user_id)
-            u.get_listener_record(use_cache=False)
-            if u.has_requests():
-                u.put_in_request_line(sid)
-        sync_to_front.sync_frontend_user_id(self.user_id)
+            await user.put_in_request_line_if_necessary(cursor, sid)
+            sync_to_front.sync_frontend_user_id(user_id)
 
-    def add_anonymous(self, sid):
-        if not self.listen_key:
-            self.failed = False
-            return
-
-        records = db.c.fetch_list(
-            "SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1",
-            (self.listener_ip, self.listen_key),
-        )
-        if len(records) == 0:
-            db.c.update(
-                "INSERT INTO r4_listeners "
-                "(sid, listener_ip, user_id, listener_relay, listener_agent, listener_icecast_id, listener_key) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (
-                    sid,
-                    self.listener_ip,
-                    1,
-                    self.relay,
-                    self.get_argument("agent"),
-                    self.get_argument("client"),
-                    self.listen_key,
-                ),
+    async def add_anonymous(
+        self, sid: int, listen_key: str, listener_ip: str, icecast_client_id: int
+    ):
+        async with get_cursor() as cursor:
+            records = await cursor.fetch_list(
+                "SELECT listener_id FROM r4_listeners WHERE (listener_ip = %s OR listener_key = %s) AND user_id = 1",
+                (listener_ip, listen_key),
+                row_type=int,
             )
-            self.append(
-                "%s new   : %s %s %s %s %s %s."
-                % (
-                    "{:<5}".format(self.user_id),
-                    sid,
-                    "{:<15}".format(self.listener_ip),
-                    "{:<15}".format(self.relay),
-                    "{:<10}".format(self.get_argument("client")),
-                    self.agent,
-                    self.listen_key,
+            if len(records) == 0:
+                to_insert = {
+                    "sid": sid,
+                    "user_id": 1,
+                    "listener_ip": listener_ip,
+                    "listener_key": listen_key,
+                    "listener_icecast_id": icecast_client_id,
+                    "listener_relay": self.relay,
+                }
+                await cursor.update(
+                    build_insert("r4_listeners", list(to_insert.keys())), to_insert
                 )
-            )
-            self.failed = False
-        else:
-            # Keep one valid entry on file for the listener by popping once
-            listener_id = records.pop()
-            # Erase the rest
-            while records:
-                popped = records.pop()
-                sync_to_front.sync_frontend_key(popped)
-                db.c.update(
-                    "DELETE FROM r4_listeners WHERE listener_id = %s", (popped,)
+                self.failed = False
+            else:
+                # Keep one valid entry on file for the listener by popping once
+                listener_id = records.pop()
+                if len(records) > 0:
+                    await cursor.update(
+                        "DELETE FROM r4_listeners WHERE listener_id = ANY(%s::int[])",
+                        (records,),
+                    )
+                await cursor.update(
+                    """
+                    UPDATE r4_listeners 
+                    SET sid = %s, listener_ip = %s, listener_relay = %s, listener_icecast_id = %s, listener_key = %s, listener_purge = FALSE 
+                    WHERE listener_id = %s
+                    """,
+                    (
+                        sid,
+                        listener_ip,
+                        self.relay,
+                        icecast_client_id,
+                        listen_key,
+                        listener_id,
+                    ),
                 )
-            db.c.update(
-                "UPDATE r4_listeners "
-                "SET sid = %s, listener_ip = %s, listener_relay = %s, listener_agent = %s, listener_icecast_id = %s, listener_key = %s, listener_purge = FALSE "
-                "WHERE listener_id = %s",
-                (
-                    sid,
-                    self.listener_ip,
-                    self.relay,
-                    self.get_argument("agent"),
-                    self.get_argument("client"),
-                    self.listen_key,
-                    listener_id,
-                ),
-            )
-            self.append(
-                "%s update: %s %s %s %s %s %s."
-                % (
-                    "{:<5}".format(self.user_id),
-                    sid,
-                    "{:<15}".format(self.listener_ip),
-                    "{:<15}".format(self.relay),
-                    "{:<10}".format(self.get_argument("client")),
-                    self.agent,
-                    self.listen_key,
-                )
-            )
-            self.failed = False
-        sync_to_front.sync_frontend_key(self.listen_key)
+                self.failed = False
+            sync_to_front.sync_frontend_key(listen_key)

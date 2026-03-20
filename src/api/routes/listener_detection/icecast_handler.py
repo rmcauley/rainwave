@@ -1,46 +1,44 @@
+from typing import Any, Union
+
+from tornado.web import Finish, RequestHandler
+
 from api import fieldtypes
 from api.exceptions import APIException
-from api.handler_classes.rainwave_handler import RainwaveHandler
-
-from libs import log
+from common import log
 
 
-class IcecastHandler(RainwaveHandler):
+class IcecastHandler(RequestHandler):
     auth_required = False
     sid_required = False
     description = "Accessible only to relays for the purpose of tracking listeners."
 
     failed = True
-    relay = None
+    relay: str | None = None
 
-    async def prepare(self):
+    def prepare(self):
         self.failed = True  # Assume failure unless otherwise
         self.relay = fieldtypes.valid_relay(self.request.remote_ip)
 
         if not self.relay:
             self.set_status(403)
-            self.append("%s is not a valid relay." % self.request.remote_ip)
+            self.write("%s is not a valid relay." % self.request.remote_ip)
             log.debug("ldetect", "%s is not a valid relay." % self.request.remote_ip)
-            self.finish()
-            return
+            raise Finish()
 
-        super().prepare()
-
-    def finish(self, chunk=None):
+    def finish(self, chunk: Any = None):
         if self.failed:
             self.set_status(403)
             self.set_header("icecast-auth-user", "0")
         else:
             self.set_status(200)
             self.set_header("icecast-auth-user", "1")
-        super().finish()
+        return super().finish(chunk)
 
-    def write_error(self, status_code, **kwargs):
+    def write_error(self, status_code: int, **kwargs: Any):
         self.failed = True
         if "exc_info" in kwargs:
             exc = kwargs["exc_info"][1]
             if isinstance(exc, APIException):
-                exc.localize(self.locale)
                 self.set_header("icecast-auth-message", exc.reason or "No reason.")
             log.debug("ldetect", "Relay command failed: %s" % exc.reason)
             log.exception(
@@ -48,7 +46,7 @@ class IcecastHandler(RainwaveHandler):
             )
         super().finish()
 
-    def append(self, message, dct=None):
-        log.debug("ldetect", message)
-        self.set_header("icecast-auth-message", message)
-        self.write(message)
+    def write(self, chunk: Union[str, bytes, dict[Any, Any]]) -> None:
+        log.debug("ldetect", str(chunk))
+        self.set_header("icecast-auth-message", str(chunk))
+        super().write(chunk)
