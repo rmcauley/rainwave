@@ -2010,30 +2010,6 @@
         "tags": ["Core"]
       }
     },
-    "/api4/ping": {
-      "post": {
-        "operationId": "ping",
-        "responses": {
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "pong": {
-                      "$ref": "#/components/schemas/pong"
-                    }
-                  },
-                  "required": ["pong"],
-                  "type": "object"
-                }
-              }
-            },
-            "description": ""
-          }
-        },
-        "tags": ["Websocket"]
-      }
-    },
     "/api4/playback_history": {
       "post": {
         "operationId": "getPlaybackHistory",
@@ -2075,30 +2051,6 @@
           }
         },
         "tags": ["Statistics"]
-      }
-    },
-    "/api4/pong": {
-      "post": {
-        "operationId": "pong",
-        "responses": {
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "pongConfirm": {
-                      "$ref": "#/components/schemas/pongConfirm"
-                    }
-                  },
-                  "required": ["pongConfirm"],
-                  "type": "object"
-                }
-              }
-            },
-            "description": ""
-          }
-        },
-        "tags": ["Websocket"]
       }
     },
     "/api4/rate": {
@@ -4553,39 +4505,11 @@
       "pause_request_queue_result": {
         "$ref": "#/components/schemas/_boolean_result"
       },
-      "ping": {
-        "properties": {
-          "timestamp": {
-            "$ref": "#/components/schemas/_time"
-          }
-        },
-        "required": ["ping"],
-        "type": "object"
-      },
       "playback_history": {
         "items": {
           "$ref": "#/components/schemas/_playback_history_entry"
         },
         "type": "array"
-      },
-      "pong": {
-        "properties": {
-          "timestamp": {
-            "$ref": "#/components/schemas/_time"
-          }
-        },
-        "required": ["ping"],
-        "type": "object"
-      },
-      "pongConfirm": {
-        "description": "This API component had a mistake made: it is not snake-cased, but it should have been.  It will not be fixed.",
-        "properties": {
-          "timestamp": {
-            "$ref": "#/components/schemas/_time"
-          }
-        },
-        "required": ["ping"],
-        "type": "object"
       },
       "power_hours": {
         "items": {

@@ -41,9 +41,7 @@ class handle_url:
 
         request_classes.append((self.url, cls))
 
-        if not getattr(cls, "local_only", False) and not getattr(
-            cls, "is_websocket", False
-        ):
+        if not getattr(cls, "local_only", False):
             api_endpoints[self.url] = cls
         return cls
 

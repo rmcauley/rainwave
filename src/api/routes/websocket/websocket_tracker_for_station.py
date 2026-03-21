@@ -1,13 +1,23 @@
 import asyncio
 
 from api.rainwave_return_key_to_open_api import RainwaveResponse
-from api.routes.sync_websocket.rainwave_websocket_handler import (
+from api.routes.websocket.rainwave_websocket_handler import (
     RainwaveWebsocketHandler,
 )
 from common import log
 
 import datetime
 import tornado
+
+# This throttle timeout is used for e.g. media players tuning in,
+# which can trigger rapidly if the user is e.g. scrolling through a playlist
+# and rapidly connects/disconnects from the site.
+# It is not for live interaction with the site.
+# There can be a small race condition where an update maaaaaaay get dropped,
+# but these updates behave like signals, they are not sending data to us
+# they are telling the WebsocketTracker to have the websocket read from the database.
+# So... good enough!
+SOCKET_UPDATE_THROTTLE_WINDOW = 1000
 
 
 class WebsocketTrackerForStation:
@@ -16,6 +26,8 @@ class WebsocketTrackerForStation:
 
         self._websockets_by_user_id: dict[int, set[RainwaveWebsocketHandler]] = {}
         self._websockets_by_listen_key: dict[str, RainwaveWebsocketHandler] = {}
+        self._debounced_user_updates: dict[int, object] = {}
+        self._debounced_listen_key_updates: dict[str, object] = {}
 
     def __iter__(self):
         for websockets_for_user in self._websockets_by_user_id.values():
@@ -34,10 +46,14 @@ class WebsocketTrackerForStation:
             )
 
     def remove(self, websocket_to_remove: RainwaveWebsocketHandler):
+        user_id = websocket_to_remove.user_id
         if websocket_to_remove.user_id > 1:
-            self._websockets_by_user_id.get(websocket_to_remove.user_id, set()).remove(
-                websocket_to_remove
-            )
+            if websocket_to_remove.user_id in self._websockets_by_user_id:
+                websockets = self._websockets_by_user_id[user_id]
+                if websocket_to_remove in websockets:
+                    websockets.remove(websocket_to_remove)
+                if len(websockets) == 0:
+                    self._websockets_by_user_id.pop(user_id)
         else:
             self._websockets_by_listen_key.pop(websocket_to_remove.listen_key, None)
 
@@ -50,22 +66,6 @@ class WebsocketTrackerForStation:
         self, listen_key: str
     ) -> RainwaveWebsocketHandler | None:
         return self._websockets_by_listen_key.get(listen_key, None)
-
-    def keep_alive(self):
-        for websocket in self:
-            try:
-                websocket.keep_alive()
-            except Exception as e:
-                log.exception("sync", "Session failed keepalive.", e)
-                try:
-                    websocket.rw_finish()
-                except Exception as deep_error:
-                    log.exception(
-                        "sync",
-                        "Failed to finish session after failure to keepalive.",
-                        deep_error,
-                    )
-                self.remove(websocket)
 
     async def _update_session(self, websocket: RainwaveWebsocketHandler) -> bool:
         try:
@@ -114,34 +114,56 @@ class WebsocketTrackerForStation:
                 log.exception("sync", "Session failed finish() during update_user.", e)
             self.remove(websocket)
 
+    async def _run_user_updates(self, user_id: int) -> None:
+        self._debounced_user_updates.pop(user_id, None)
+        await asyncio.gather(
+            *(
+                self._do_user_update(websocket)
+                for websocket in self.find_registered_user_websockets(user_id)
+            ),
+            return_exceptions=True,
+        )
+
+    async def _run_listen_key_update(self, listen_key: str) -> None:
+        self._debounced_listen_key_updates.pop(listen_key, None)
+        websocket = self.find_anonymous_user_websocket_by_listen_key(listen_key)
+        if websocket:
+            await self._do_user_update(websocket)
+
     def send_to_user(
         self, user_id: int, uuid_exclusion: str, data: RainwaveResponse
     ) -> None:
         if "message_id" in data:
             del data["message_id"]
-        for websocket in self.find_registered_user_websockets(user_id):
+        for websocket in tuple(self.find_registered_user_websockets(user_id)):
             if not websocket.uuid == uuid_exclusion:
                 websocket.write_rainwave_response(data)
 
     def send_to_all(self, uuid_exclusion: str, data: RainwaveResponse):
-        for websocket in self:
+        for websocket in tuple(self):
             if not uuid_exclusion == websocket.uuid:
                 websocket.write_rainwave_response(data)
 
-    def _throttle_session(self, websocket: RainwaveWebsocketHandler):
-        if not websocket in self.throttled:
-            self.throttled[websocket] = tornado.ioloop.IOLoop.instance().add_timeout(
-                datetime.timedelta(seconds=2),
-                lambda: self._do_user_update(websocket),
-            )
-
     def update_registered_user(self, user_id: int):
-        # throttle rapid user updates - usually when a user does something like
-        # switch relays on their media player this can happen.
-        for websocket in self.find_registered_user_websockets(user_id):
-            self._throttle_session(websocket)
+        if not self.find_registered_user_websockets(user_id):
+            return
+        if self._debounced_user_updates.get(user_id):
+            return
+        self._debounced_user_updates[
+            user_id
+        ] = tornado.ioloop.IOLoop.current().add_timeout(
+            datetime.timedelta(milliseconds=SOCKET_UPDATE_THROTTLE_WINDOW),
+            lambda: asyncio.create_task(self._run_user_updates(user_id)),
+        )
 
     def update_anonymous_user_by_listen_key(self, listen_key: str):
-        websocket = self.find_anonymous_user_websocket_by_listen_key(listen_key)
-        if websocket:
-            self._throttle_session(websocket)
+        if not self.find_anonymous_user_websocket_by_listen_key(listen_key):
+            return
+        if self._debounced_listen_key_updates.get(listen_key):
+            return
+        self._debounced_listen_key_updates[
+            listen_key
+        ] = tornado.ioloop.IOLoop.current().add_timeout(
+            datetime.timedelta(milliseconds=SOCKET_UPDATE_THROTTLE_WINDOW),
+            lambda: asyncio.create_task(self._run_listen_key_update(listen_key)),
+        )

@@ -129,6 +129,13 @@ class AnonymousUser(UserBase):
             ip_address,
         )
 
+    async def refresh(self, cursor: RainwaveCursor) -> None:
+        (self.public_data, self.private_data, self.server_data) = (
+            await AnonymousUser.get_refreshed_data(
+                cursor, self.private_data["sid"], 1, self.private_data["api_key"]
+            )
+        )
+
     async def get_remaining_request_slots(self, cursor: RainwaveCursor) -> int:
         return 0
 

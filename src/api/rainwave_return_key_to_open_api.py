@@ -68,9 +68,6 @@ class RainwaveResponse(TypedDict, total=False):
     message_id: rainwave_typeddicts.MessageId
     order_requests_result: rainwave_typeddicts.OrderRequestsResult
     pause_request_queue_result: rainwave_typeddicts.PauseRequestQueueResult
-    ping: rainwave_typeddicts.Ping
-    pong: rainwave_typeddicts.Pong
-    pongConfirm: rainwave_typeddicts.PongConfirm
     power_hours: rainwave_typeddicts.PowerHours
     playback_history: rainwave_typeddicts.PlaybackHistory
     rate_result: rainwave_typeddicts.RateResult
@@ -141,9 +138,6 @@ RainwaveResponseKey = Literal[
     "message_id",
     "order_requests_result",
     "pause_request_queue_result",
-    "ping",
-    "pong",
-    "pongConfirm",
     "playback_history",
     "power_hours",
     "rate_result",

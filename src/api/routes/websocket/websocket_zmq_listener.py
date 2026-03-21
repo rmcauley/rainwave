@@ -1,26 +1,16 @@
-import orjson as json
+import orjson
 import typing
-import types
 from time import time as timestamp
 
-from api.routes.sync_websocket.live_voting import delay_live_vote, delay_live_vote_removal
-from api.routes.sync_websocket.sync import (
-    delayed_live_vote,
-    delayed_live_vote_timers,
-    last_vote_by,
-    sessions,
-    votes_by,
+from api.routes.websocket.live_voting import (
+    delay_live_vote,
+    delay_live_vote_removal,
 )
 from common import log
-from common import playlist
-from common import schedule
-
-from libs import cache
-
-rainwave = types.SimpleNamespace(playlist=playlist, schedule=schedule)
+from common.zeromq import zeromq
 
 
-def _on_zmq(messages: list[typing.Any]) -> None:
+def websocket_on_zmq(messages: list[typing.Any]) -> None:
     global votes_by
     global last_vote_by
 
@@ -77,3 +67,7 @@ def _on_zmq(messages: list[typing.Any]) -> None:
                 "zeromq", "Error handling Zero MQ action '%s'" % message["action"], e
             )
             return
+
+
+def setup_websocket_zmq():
+    zeromq.set_sub_callback(websocket_on_zmq)

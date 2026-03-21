@@ -4,9 +4,7 @@ import { didAnActionFail } from './utils/didAnActionFail';
 
 import type { operations, components } from './rainwave-openapi';
 
-const PING_INTERVAL = 45000;
 const DEFAULT_RECONNECT_TIMEOUT = 500;
-const STATELESS_REQUESTS: Array<keyof operations> = ['ping', 'pong'];
 const MAX_QUEUED_REQUESTS = 10;
 const SINGLE_REQUEST_TIMEOUT = 4000;
 
@@ -47,7 +45,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   private _socket?: WebSocket;
   private _isOk?: boolean = false;
   private _socketTimeoutTimer: number | null = null;
-  private _pingInterval: number | null = null;
   private _socketStaysClosed: boolean = false;
   private _socketIsBusy: boolean = false;
   private _authPromiseResolve?: (authOk: boolean) => void;
@@ -70,7 +67,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
     this.addEventListener('wsok', this._onAuthenticationOK.bind(this));
     this.addEventListener('wserror', this._onAuthenticationFailure.bind(this));
-    this.addEventListener('ping', this._onPing.bind(this));
     this.addEventListener('sched_current', (current) => {
       this._currentScheduleId = current.id;
     });
@@ -143,10 +139,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       clearTimeout(this._socketTimeoutTimer);
       this._socketTimeoutTimer = null;
     }
-    if (this._pingInterval) {
-      clearInterval(this._pingInterval);
-      this._pingInterval = null;
-    }
     if (this._authPromiseReject) {
       this._authPromiseReject(event);
     }
@@ -194,10 +186,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this._debug('Rainwave connected successfully.');
     this.emit('sdk_error_clear', { tl_key: 'sync_retrying' });
     this._isOk = true;
-
-    if (!this._pingInterval) {
-      this._pingInterval = setInterval(this._ping.bind(this), PING_INTERVAL) as unknown as number;
-    }
 
     this._socketSend({
       action: 'check_sched_current_id',
@@ -255,16 +243,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       // _onSocketClose will reconnect after the close is complete
       this._socket.close();
     }
-  }
-
-  // Ping and Pong *****************************************************************************************
-
-  private _ping(): void {
-    this._socketSend('ping');
-  }
-
-  private _onPing(): void {
-    this._socketSend('pong');
   }
 
   // Data From API *****************************************************************************************
@@ -342,9 +320,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     ) => void,
     reject: (reason?: unknown) => void,
   ): void {
-    if (STATELESS_REQUESTS.indexOf(action) !== -1 || !this._isOk) {
-      this._requestQueue = this._requestQueue.filter((rq) => rq.action !== action);
-    }
     this._requestQueue.push({
       action,
       params,
@@ -368,11 +343,9 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       return;
     }
 
-    if (STATELESS_REQUESTS.indexOf(request.action) === -1) {
-      request.messageId = this._getNextRequestId();
-      if (this._sentRequests.length > MAX_QUEUED_REQUESTS) {
-        this._sentRequests.splice(0, this._sentRequests.length - MAX_QUEUED_REQUESTS);
-      }
+    request.messageId = this._getNextRequestId();
+    if (this._sentRequests.length > MAX_QUEUED_REQUESTS) {
+      this._sentRequests.splice(0, this._sentRequests.length - MAX_QUEUED_REQUESTS);
     }
 
     if (this._socketTimeoutTimer) {

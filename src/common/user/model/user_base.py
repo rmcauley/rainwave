@@ -42,6 +42,10 @@ class UserBase(ABC):
     ) -> tuple[UserPublicData, UserPrivateData, UserServerData]:
         raise NotImplementedError
 
+    @abstractmethod
+    async def refresh(self, cursor: RainwaveCursor) -> None:
+        raise NotImplementedError
+
     async def get_tuned_in_sid(self) -> int | None:
         return self.server_data["listener_sid"]
 

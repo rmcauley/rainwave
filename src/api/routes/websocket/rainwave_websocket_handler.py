@@ -11,6 +11,14 @@ class RainwaveWebsocketHandler(WebSocketHandler, ABC):
     user_id: int
     listen_key: str
 
+    @property
+    def ping_interval(self) -> float:
+        return 30
+
+    @property
+    def ping_timeout(self) -> float:
+        return 5
+
     @abstractmethod
     def keep_alive(self) -> None:
         raise NotImplementedError

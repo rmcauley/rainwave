@@ -1,7 +1,7 @@
-from api.routes.sync_websocket.sync import (
+from api.routes.websocket.websocket_tracker import (
     delayed_live_vote,
     delayed_live_vote_timers,
-    sessions,
+    websockets_by_sid,
     vote_once_every_seconds,
 )
 
@@ -30,5 +30,5 @@ def process_delayed_live_vote(sid: int) -> None:
     delayed_live_vote_timers[sid] = None
     if not delayed_live_vote[sid]:
         return
-    sessions[sid].send_to_all(None, delayed_live_vote[sid]["data"])
+    websockets_by_sid[sid].send_to_all(None, delayed_live_vote[sid]["data"])
     delayed_live_vote[sid] = None

@@ -1,37 +1,31 @@
+import orjson
 import datetime
-import orjson as json
+from typing import Any
 import numbers
 import sys
 import uuid
-import types
 from time import time as timestamp
 from urllib.parse import urlparse
+
+from tornado.websocket import WebSocketClosedError, WebSocketError
 
 from api import fieldtypes
 from api.exceptions import APIException
 from api.helpers.get_browser_locale import get_browser_locale
 from api.handle_url import api_endpoints, handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from api.routes.sync_websocket.fake_request_object import FakeRequestObject
-from api.routes.sync_websocket.sync import (
-    last_vote_by,
-    websocket_allow_from,
-    sessions,
-    vote_once_every_seconds,
-    votes_by,
-)
-from api.routes.sync_websocket.websocket_message import WSMessage
-from common import config
+from api.rainwave_return_key_to_open_api import RainwaveResponse
+from api.routes.websocket.fake_request_object import FakeRequestObject
+from api.routes.websocket.rainwave_websocket_handler import RainwaveWebsocketHandler
+from api.routes.websocket.websocket_message import RainwaveWebsocketMessage
+from api.routes.websocket.websocket_tracker import websockets_by_sid
+from common import config, stations
 from common import log
-from common import playlist
-from common import schedule
+from common.locale.rainwave_locale import RainwaveLocale
+from common.user.model.user_base import UserBase
 from common.zeromq import zeromq
-from common.user.user_model import make_user
-from libs import cache
-import routes
 import tornado
-
-rainwave = types.SimpleNamespace(playlist=playlist, schedule=schedule)
+from common.locale.locale import translations
 
 
 nonunique_actions = (
@@ -50,94 +44,70 @@ throttle_exempt = (
 
 
 @handle_api_url(r"websocket/(\d+)")
-class WSHandler(tornado.websocket.WebSocketHandler):
-    is_websocket = True
-    local_only = False
-    help_hidden = False
-    locale: common.locale.locale.RainwaveLocale
+class WebsocketEndpoint(RainwaveWebsocketHandler):
+    user: UserBase | None
+    rainwave_locale: RainwaveLocale = translations["en-CA"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self.authorized = False
-        self.msg_times = []
-        self.throttled = False
-        self.throttled_msgs = []
-        self.votes_by_key = ""
-        self.user = make_user(1)
-        self.sid = config.default_station
-        self.uuid = str(uuid.uuid4())
 
-    def check_origin(self, origin):
-        if websocket_allow_from == "*":
+        # Required for parent class
+        self.uuid = str(uuid.uuid4())
+        self.sid = config.default_station
+        self.user_id = 1
+        self.listen_key = ""
+
+        # Variables for this class
+        self.authorized = False
+        self.msg_times: list[float] = []
+        self.throttled = False
+        self.throttled_msgs: list[RainwaveWebsocketMessage] = []
+        self.votes_by_key = ""
+
+    def check_origin(self, origin: str) -> bool:
+        if config.websocket_allow_from == "*":
             return True
         parsed_origin = urlparse(origin)
-        return parsed_origin.netloc.endswith(websocket_allow_from)
+        return parsed_origin.netloc.endswith(config.websocket_allow_from)
 
-    def open(self, *args, **kwargs):
+    # This function called by Tornado after connection is establed, with
+    # args/kwargs coming from the URL.
+    def open(self, *args: Any, **kwargs: Any):
         super().open(*args, **kwargs)
 
         try:
             self.sid = int(args[0])
         except Exception:
+            # Keep self.sid at default
             pass
 
-        if not self.sid:
-            self.write_message(
-                {
-                    "wserror": {
-                        "tl_key": "missing_station_id",
-                        "text": self.locale.translate("missing_station_id"),
-                    }
-                }
-            )
-            return
-        if not self.sid in config.station_ids:
+        if not self.sid in stations.station_ids:
             self.write_message(
                 {
                     "wserror": {
                         "tl_key": "invalid_station_id",
-                        "text": self.locale.translate("invalid_station_id"),
+                        "text": self.rainwave_locale.translate("invalid_station_id"),
                     }
                 }
             )
             return
 
-        self.locale = get_browser_locale(self)
-
-        self.authorized = False
-
-        self.msg_times = []
-        self.throttled = False
-        self.throttled_msgs = []
-
-    def rw_finish(self):
-        self.close()
-
-    def keep_alive(self):
-        self.write_message({"ping": {"timestamp": timestamp()}})
+        self.rainwave_locale = get_browser_locale(self)
 
     def on_close(self):
-        global sessions
         self.throttled_msgs = []
-        if self.sid:
-            sessions[self.sid].remove(self)
-        super().on_close()
+        websockets_by_sid[self.sid].remove(self)
 
-    def write_message(self, obj, *args, **kwargs):
-        message = json.dumps(obj)
+    def write_rainwave_response(self, data: RainwaveResponse) -> None:
+        message = orjson.dumps(data)
         try:
-            super().write_message(message, *args, **kwargs)
-        except tornado.websocket.WebSocketClosedError:
+            self.write_message(message)
+        except WebSocketClosedError:
             self.on_close()
-        except tornado.websocket.WebSocketError as e:
+        except WebSocketError as e:
             log.exception("websocket", "WebSocket Error", e)
-            try:
-                self.close()
-            except Exception:
-                self.on_close()
-
-    def refresh_user(self):
-        self.user.refresh(self.sid)
+            self.on_close()
+            self.close()
 
     def process_throttle(self):
         if not self.throttled_msgs:
@@ -158,7 +128,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                         {
                             "wsthrottle": {
                                 "tl_key": "websocket_throttle",
-                                "text": self.locale.translate("websocket_throttle"),
+                                "text": self.rainwave_locale.translate(
+                                    "websocket_throttle"
+                                ),
                             },
                             "message_id": {
                                 "message_id": fieldtypes.zero_or_greater_integer(
@@ -182,7 +154,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             datetime.timedelta(seconds=0.5), self.process_throttle
         )
 
-    def should_vote_throttle(self):
+    def should_vote_throttle(self) -> int:
         if not self.votes_by_key in votes_by:
             return 0
 
@@ -195,27 +167,26 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             ) - timestamp()
         return 0
 
-    def on_message(self, message_text):
+    def on_message(self, message: str | bytes) -> None:
         try:
-            message = WSMessage()
-            message.update(json.loads(message_text))
+            parsed_json = orjson.loads(message)
         except:
             self.write_message(
                 {
                     "wserror": {
                         "tl_key": "invalid_json",
-                        "text": self.locale.translate("invalid_json"),
+                        "text": "Invalid JSON sent on websocket.",
                     }
                 }
             )
             return
 
-        if not message.get("action"):
+        if not rw_message.get("action"):
             self.write_message(
                 {
                     "wserror": {
                         "tl_key": "missing_argument",
-                        "text": self.locale.translate(
+                        "text": self.rainwave_locale.translate(
                             "missing_argument", argument="action"
                         ),
                     }
@@ -223,39 +194,39 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             )
             return
 
-        if not self.authorized and message["action"] != "auth":
+        if not self.authorized and rw_message["action"] != "auth":
             self.write_message(
                 {
                     "wserror": {
                         "tl_key": "auth_required",
-                        "text": self.locale.translate("auth_required"),
+                        "text": self.rainwave_locale.translate("auth_required"),
                     }
                 }
             )
             return
 
-        if not self.authorized and message["action"] == "auth":
-            self._do_auth(message)
+        if not self.authorized and rw_message["action"] == "auth":
+            self._do_auth(rw_message)
             return
 
-        if message["action"] == "vote":
-            if not message["entry_id"]:
+        if rw_message["action"] == "vote":
+            if not rw_message["entry_id"]:
                 self.write_message(
                     {
                         "wserror": {
                             "tl_key": "missing_argument",
-                            "text": self.locale.translate(
+                            "text": self.rainwave_locale.translate(
                                 "missing_argument", argument="entry_id"
                             ),
                         }
                     }
                 )
-            elif not fieldtypes.integer(message["entry_id"]):
+            elif not fieldtypes.integer(rw_message["entry_id"]):
                 self.write_message(
                     {
                         "wserror": {
                             "tl_key": "invalid_argument",
-                            "text": self.locale.translate(
+                            "text": self.rainwave_locale.translate(
                                 "missing_argument",
                                 argument="entry_id",
                                 reason=fieldtypes.integer_error,
@@ -263,11 +234,11 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                         }
                     }
                 )
-            message["elec_id"] = rainwave.schedule.get_elec_id_for_entry(
-                self.sid, message["entry_id"]
+            rw_message["elec_id"] = rainwave.schedule.get_elec_id_for_entry(
+                self.sid, rw_message["entry_id"]
             )
 
-        self._process_message(message)
+        self._process_message(rw_message)
 
     def _process_message(self, message, is_throttle_process=False):
         message_id = None
@@ -314,14 +285,14 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                 {
                     "wserror": {
                         "tl_key": "websocket_404",
-                        "text": self.locale.translate("websocket_404"),
+                        "text": self.rainwave_locale.translate("websocket_404"),
                     }
                 }
             )
             return
 
         endpoint = api_endpoints[message["action"]](websocket=True)
-        endpoint.locale = self.locale
+        endpoint.locale = self.rainwave_locale
         endpoint.request = FakeRequestObject(message, self.request.cookies)
         endpoint.sid = (
             message["sid"] if ("sid" in message and message["sid"]) else self.sid
@@ -408,7 +379,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     def update(self):
         handler = APIHandler(websocket=True)
-        handler.locale = self.locale
+        handler.locale = self.rainwave_locale
         handler.request = typing.cast(
             tornado.httputil.HTTPServerRequest,
             FakeRequestObject({}, self.request.cookies),
@@ -448,7 +419,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                     {
                         "wserror": {
                             "tl_key": "missing_argument",
-                            "text": self.locale.translate(
+                            "text": self.rainwave_locale.translate(
                                 "missing_argument", argument="user_id"
                             ),
                         }
@@ -459,7 +430,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                     {
                         "wserror": {
                             "tl_key": "invalid_argument",
-                            "text": self.locale.translate(
+                            "text": self.rainwave_locale.translate(
                                 "invalid_argument", argument="user_id"
                             ),
                         }
@@ -470,7 +441,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                     {
                         "wserror": {
                             "tl_key": "missing_argument",
-                            "text": self.locale.translate(
+                            "text": self.rainwave_locale.translate(
                                 "missing_argument", argument="key"
                             ),
                         }
@@ -485,7 +456,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                     {
                         "wserror": {
                             "tl_key": "auth_failed",
-                            "text": self.locale.translate("auth_failed"),
+                            "text": self.rainwave_locale.translate("auth_failed"),
                         }
                     }
                 )
@@ -494,8 +465,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             self.authorized = True
             self.uuid = str(uuid.uuid4())
 
-            global sessions
-            sessions[self.sid].append(self)
+            websockets_by_sid[self.sid].append(self)
 
             self.votes_by_key = (
                 self.request.remote_ip if self.user.is_anonymous() else self.user.id
@@ -519,7 +489,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                 {
                     "sync_result": {
                         "tl_key": "station_offline",
-                        "text": self.locale.translate("station_offline"),
+                        "text": self.rainwave_locale.translate("station_offline"),
                     }
                 }
             )
@@ -530,7 +500,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                 {
                     "wserror": {
                         "tl_key": "missing_argument",
-                        "text": self.locale.translate(
+                        "text": self.rainwave_locale.translate(
                             "missing_argument", argument="sched_id"
                         ),
                     }
@@ -542,7 +512,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                 {
                     "wserror": {
                         "tl_key": "invalid_argument",
-                        "text": self.locale.translate(
+                        "text": self.rainwave_locale.translate(
                             "invalid_argument", argument="sched_id"
                         ),
                     }
