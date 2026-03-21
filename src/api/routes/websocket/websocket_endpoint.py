@@ -6,6 +6,7 @@ import sys
 import uuid
 from time import time as timestamp
 
+from tornado import httputil
 from tornado.web import RequestHandler
 
 from api import fieldtypes
@@ -226,6 +227,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             return
 
         message["action"] = "/api4/%s" % message["action"]
+        fake_request = 
         endpoint_class = api_endpoints.get(message["action"], None)
         if endpoint_class is None or not issubclass(endpoint_class, RainwaveHandler):
             self.write_rainwave_response(
