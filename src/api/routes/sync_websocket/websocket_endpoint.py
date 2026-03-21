@@ -110,7 +110,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.throttled = False
         self.throttled_msgs = []
 
-    def rw_finish(self, *args, **kwargs):
+    def rw_finish(self):
         self.close()
 
     def keep_alive(self):
@@ -440,16 +440,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     def update_user(self):
         self.write_message({"user": self.user.to_private_dict()})
-
-    def login_mixup_warn(self):
-        self.write_message(
-            {
-                "sync_result": {
-                    "tl_key": "redownload_m3u",
-                    "text": self.locale.translate("redownload_m3u"),
-                }
-            }
-        )
 
     def _do_auth(self, message):
         try:

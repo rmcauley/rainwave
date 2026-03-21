@@ -1,4 +1,7 @@
-class WSMessage(dict):
+from typing import Any
+
+
+class WSMessage(dict[Any, Any]):
     def __lt__(self, other):
         if self["action"] == "request" and other["action"] != "request":
             return False
