@@ -53,6 +53,7 @@
   "db_error_permanent": "Server error - internal database is offline.",
   "websocket_throttle": "Slow down!",
   "404": "Page not found.",
+  "invalid_request": "Invalid request.",
 
   "fave_failed": "Fave failed.",
   "request_success": "Requested.",

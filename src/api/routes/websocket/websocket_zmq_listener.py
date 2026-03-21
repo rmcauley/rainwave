@@ -1,22 +1,18 @@
 import orjson
 import typing
-from time import time as timestamp
 
-from api.routes.websocket.live_voting import (
-    delay_live_vote,
-    delay_live_vote_removal,
+from api.routes.websocket.websocket_tracker import (
+    vote_throttle_service,
+    websockets_by_sid,
 )
 from common import log
 from common.zeromq import zeromq
 
 
 def websocket_on_zmq(messages: list[typing.Any]) -> None:
-    global votes_by
-    global last_vote_by
-
     for message in messages:
         try:
-            message = json.loads(message)
+            message = orjson.loads(message)
         except Exception as e:
             log.exception("zeromq", "Error decoding ZeroMQ message.", e)
             return
@@ -26,42 +22,33 @@ def websocket_on_zmq(messages: list[typing.Any]) -> None:
 
         try:
             if message["action"] == "result_sync":
-                sessions[message["sid"]].send_to_user(
+                websockets_by_sid[message["sid"]].send_to_user(
                     message["user_id"], message["uuid_exclusion"], message["data"]
                 )
             elif message["action"] == "live_voting":
-                sessions[message["sid"]].send_to_all(
-                    message["uuid_exclusion"], message["data"]
-                )
-                delay_live_vote_removal(message["sid"])
+                vote_throttle_service.handle_live_voting_message(message)
             elif message["action"] == "delayed_live_voting":
-                if not delayed_live_vote_timers[message["sid"]]:
-                    delay_live_vote(message)
-                delayed_live_vote[message["sid"]] = message
+                vote_throttle_service.handle_delayed_live_voting_message(message)
             elif message["action"] == "update_all":
-                delay_live_vote_removal(message["sid"])
+                vote_throttle_service.clear_delayed_live_vote(message["sid"])
                 rainwave.playlist.update_num_songs()
                 rainwave.playlist.prepare_cooldown_algorithm(message["sid"])
                 cache.update_local_cache_for_sid(message["sid"])
-                sessions[message["sid"]].update_all(message["sid"])
-                votes_by = {}
-                last_vote_by = {}
+                websockets_by_sid[message["sid"]].update_all(message["sid"])
+                vote_throttle_service.reset_vote_counters()
             elif message["action"] == "update_ip":
-                for sid in sessions:
-                    sessions[sid].update_ip_address(message["ip"])
+                for sid in websockets_by_sid:
+                    websockets_by_sid[sid].update_ip_address(message["ip"])
             elif message["action"] == "update_listen_key":
-                for sid in sessions:
-                    sessions[sid].update_listen_key(message["listen_key"])
+                for sid in websockets_by_sid:
+                    websockets_by_sid[sid].update_listen_key(message["listen_key"])
             elif message["action"] == "update_user":
-                for sid in sessions:
-                    sessions[sid].update_user(message["user_id"])
+                for sid in websockets_by_sid:
+                    websockets_by_sid[sid].update_user(message["user_id"])
             elif message["action"] == "ping":
                 log.debug("zeromq", "Pong")
             elif message["action"] == "vote_by":
-                votes_by[message["by"]] = (
-                    votes_by[message["by"]] + 1 if message["by"] in votes_by else 1
-                )
-                last_vote_by[message["by"]] = timestamp()
+                vote_throttle_service.record_vote(message["by"])
         except Exception as e:
             log.exception(
                 "zeromq", "Error handling Zero MQ action '%s'" % message["action"], e

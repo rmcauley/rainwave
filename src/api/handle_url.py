@@ -2,6 +2,7 @@ import os
 from typing import Any
 from tornado.web import StaticFileHandler, RequestHandler
 
+from api.handler_classes.rainwave_handler import RainwaveHandler
 from common import config
 
 static_dir = os.path.join(
@@ -9,8 +10,10 @@ static_dir = os.path.join(
 )
 
 request_classes: list[
-    tuple[str, type[StaticFileHandler] | type[RequestHandler], Any]
-    | tuple[str, type[StaticFileHandler] | type[RequestHandler]]
+    tuple[
+        str, type[StaticFileHandler] | type[RequestHandler] | type[RainwaveHandler], Any
+    ]
+    | tuple[str, type[StaticFileHandler] | type[RequestHandler] | type[RainwaveHandler]]
 ] = [
     (
         r"/static/(.*)",
@@ -23,7 +26,7 @@ request_classes: list[
         {"path": os.path.join(static_dir, "favicon.ico")},
     ),
 ]
-api_endpoints: dict[str, type[RequestHandler]] = {}
+api_endpoints: dict[str, type[RequestHandler] | type[RainwaveHandler]] = {}
 
 
 class handle_url:

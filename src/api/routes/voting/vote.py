@@ -11,12 +11,14 @@ from common.schedule.election.election import Election
 from common.schedule.election.submit_vote import submit_vote
 from common.schedule.timeline_types import TimelineOnStation
 
+
 @handle_api_url("vote")
 class SubmitVote(AuthRequiredAPIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "vote_result"
+
     sid_required = True
     tunein_required = True
     description = "Vote for a candidate in an election.  Cannot cancel/delete a vote.  If user has already voted, the vote will be changed to the submitted song."

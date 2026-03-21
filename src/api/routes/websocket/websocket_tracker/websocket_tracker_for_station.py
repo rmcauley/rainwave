@@ -139,7 +139,7 @@ class WebsocketTrackerForStation:
             if not websocket.uuid == uuid_exclusion:
                 websocket.write_rainwave_response(data)
 
-    def send_to_all(self, uuid_exclusion: str, data: RainwaveResponse):
+    def send_to_all(self, uuid_exclusion: str | None, data: RainwaveResponse):
         for websocket in tuple(self):
             if not uuid_exclusion == websocket.uuid:
                 websocket.write_rainwave_response(data)

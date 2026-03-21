@@ -1,34 +1,14 @@
-from api.routes.websocket.websocket_tracker import (
-    delayed_live_vote,
-    delayed_live_vote_timers,
-    websockets_by_sid,
-    vote_once_every_seconds,
-)
-
-import datetime
 import typing
-import tornado
+from api.routes.websocket.websocket_tracker import vote_throttle_service
 
 
 def delay_live_vote_removal(sid: int) -> None:
-    if delayed_live_vote_timers[sid]:
-        tornado.ioloop.IOLoop.instance().remove_timeout(delayed_live_vote_timers[sid])
-        delayed_live_vote[sid] = None
-        delayed_live_vote_timers[sid] = None
+    vote_throttle_service.clear_delayed_live_vote(sid)
 
 
 def delay_live_vote(message: dict[str, typing.Any]) -> None:
-    delayed_live_vote_timers[
-        message["sid"]
-    ] = tornado.ioloop.IOLoop.instance().add_timeout(
-        datetime.timedelta(seconds=vote_once_every_seconds),
-        lambda: process_delayed_live_vote(message["sid"]),
-    )
+    vote_throttle_service.handle_delayed_live_voting_message(message)
 
 
 def process_delayed_live_vote(sid: int) -> None:
-    delayed_live_vote_timers[sid] = None
-    if not delayed_live_vote[sid]:
-        return
-    websockets_by_sid[sid].send_to_all(None, delayed_live_vote[sid]["data"])
-    delayed_live_vote[sid] = None
+    vote_throttle_service.flush_delayed_live_vote(sid)

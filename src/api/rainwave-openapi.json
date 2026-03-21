@@ -4491,13 +4491,20 @@
         "type": "object"
       },
       "message_id": {
-        "properties": {
-          "message_id": {
-            "type": "integer"
+        "allOf": [
+          {
+            "properties": {
+              "message_id": {
+                "type": "integer"
+              }
+            },
+            "required": ["message_id"],
+            "type": "object"
+          },
+          {
+            "$ref": "#/components/schemas/_boolean_result"
           }
-        },
-        "required": ["integer"],
-        "type": "object"
+        ]
       },
       "order_requests_result": {
         "$ref": "#/components/schemas/_boolean_result"
@@ -5701,6 +5708,7 @@
           "invalid_argument",
           "invalid_hotkey",
           "invalid_hotkey_vote",
+          "invalid_request",
           "invalid_station_id",
           "language_name",
           "language_name_short",
