@@ -7,7 +7,7 @@ import orjson
 from api.handler_classes.rainwave_handler import RainwaveHandler
 from api.helpers.public_relays import public_relays
 from api.helpers.station_list import station_list
-from api.helpers.attach_info_to_request import attach_info_to_request
+from api.helpers.get_station_info import get_station_info
 from common.db.cursor import get_cursor
 import common.locale.locale
 from api.handle_url import handle_api_url
@@ -75,8 +75,14 @@ class Bootstrap(RainwaveHandler):
 
     async def _make_payload(self):
         async with get_cursor() as cursor:
-            await attach_info_to_request(
-                cursor, self, include_request_line=True, include_live_voting=True
+            self.response.update(
+                await get_station_info(
+                    cursor,
+                    self.optional_user,
+                    self.sid,
+                    include_request_line=True,
+                    include_live_voting=True,
+                )
             )
         self.response["build_version"] = 1000
         self.response["locale"] = self.locale.code

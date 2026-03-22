@@ -153,7 +153,7 @@ def string_list(input: Any) -> list[str] | None:
     return l
 
 
-def ip_address(addr: Any) -> Any:
+def ip_address(addr: Any) -> str | None:
     try:
         # This works for both IPv4 and IPv6.
         return str(ipaddress.ip_address(addr))

@@ -8,7 +8,8 @@ from urllib.parse import urlencode
 
 import orjson
 import pydantic
-from tornado.web import HTTPError, RequestHandler
+from tornado import httputil
+from tornado.web import Application, HTTPError, RequestHandler
 
 from api import fieldtypes
 from api import rainwave_typeddicts
@@ -17,6 +18,7 @@ from api.helpers.paginated_requests import get_pagination_params
 from api.rainwave_typeddicts import Error as RainwaveErrorObject
 from api.rainwave_return_key_to_open_api import RainwaveResponse, RainwaveResponseKey
 from api.routes.auth.errors import OAuthRejectedError
+from api.routes.websocket.websocket_message import RainwaveWebsocketMessage
 from common import config, log, stations
 from common.db.cursor import RainwaveCursor, get_cursor
 from common.locale.rainwave_locale import RainwaveLocale
@@ -65,17 +67,59 @@ class RainwaveHandler(RequestHandler, ABC):
     response: RainwaveResponse = {}
     error_response: dict[RainwaveResponseKey, RainwaveErrorObject] = {}
 
-    _startclock: float
+    startclock: float
     sid: int
+
+    websocket_handling: bool
+    websocket_message: RainwaveWebsocketMessage | None
+    websocket_uuid: str
 
     @property
     @abstractmethod
     def return_name(cls) -> RainwaveResponseKey:
         raise NotImplementedError
 
+    def __init__(
+        self,
+        application: Application,
+        request: httputil.HTTPServerRequest,
+        *args: Any,
+        websocket_handling: bool = False,
+        websocket_message: RainwaveWebsocketMessage | None = None,
+        websocket_user: UserBase | None = None,
+        websocket_sid: int | None = None,
+        websocket_locale: RainwaveLocale | None = None,
+        websocket_uuid: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        self.websocket_handling = websocket_handling
+        self.websocket_message = websocket_message
+        if websocket_user:
+            self.user = websocket_user
+        if websocket_sid:
+            self.sid = websocket_sid
+        if websocket_locale:
+            self.rainwave_locale = websocket_locale
+        if websocket_uuid:
+            self.websocket_uuid = websocket_uuid
+        super().__init__(application, request, *args, **kwargs)
+
     # Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
     async def prepare(self) -> None:
-        self._startclock = time.monotonic()
+        self.startclock = time.monotonic()
+
+        user: UserBase | None = self.user
+        if not self.websocket_handling:
+            user = await self._prepare_http()
+
+        if not user and self.auth_required:
+            raise APIException("auth_required", http_code=403)
+
+        self.permission_checks(user, self.sid)
+
+        self.optional_user = user
+
+    async def _prepare_http(self) -> UserBase | None:
         self.response = {}
         self.error_response = {}
 
@@ -113,20 +157,10 @@ class RainwaveHandler(RequestHandler, ABC):
         user: UserBase | None = None
         async with get_cursor() as cursor:
             user = await self.rainwave_auth(cursor, self.sid)
-
-        if not user and self.auth_required:
-            raise APIException("auth_required", http_code=403)
-
-        self.permission_checks(user, self.sid)
-
-        self.optional_user = user
+        return user
 
     def set_default_headers(self) -> None:
         self.set_header("Content-Type", self.content_type)
-
-    @abstractmethod
-    def get_request_args(self) -> None:
-        raise NotImplementedError()
 
     def set_cookie(self, name: str, value: Any, *args: Any, **kwargs: Any) -> None:
         if isinstance(value, int):
@@ -234,7 +268,7 @@ class RainwaveHandler(RequestHandler, ABC):
             self._write_rainwave_output_json()
 
     def _write_rainwave_output_json(self) -> None:
-        exectime = time.monotonic() - self._startclock
+        exectime = time.monotonic() - self.startclock
         if exectime > 0.5:
             log.warn(
                 "long_request",
@@ -463,7 +497,7 @@ class RainwaveHandler(RequestHandler, ABC):
     ) -> T:
         try:
             if data is None:
-                data = self.request.arguments
+                data = self.websocket_message or self.request.arguments
             return dto.model_validate(data)
         except pydantic.ValidationError as exc:
             for err in exc.errors():

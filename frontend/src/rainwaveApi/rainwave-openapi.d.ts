@@ -1549,7 +1549,7 @@ export interface components {
         };
         message_id: {
             message_id: number;
-        } & components["schemas"]["_boolean_result"];
+        };
         order_requests_result: components["schemas"]["_boolean_result"];
         pause_request_queue_result: components["schemas"]["_boolean_result"];
         playback_history: components["schemas"]["_playback_history_entry"][];

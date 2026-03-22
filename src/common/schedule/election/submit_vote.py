@@ -7,9 +7,7 @@ from common import log, stations
 from common.db.cursor import get_tx_cursor
 from common.schedule.election.election import Election
 from common.schedule.election.insert_vote_into_history import insert_vote_into_history
-from common.schedule.update_live_voting import update_live_voting_cache
 from common.user.model.user_base import UserBase
-from common.zeromq import zeromq
 
 
 class PreviousVoteRow(TypedDict):
@@ -136,16 +134,6 @@ async def submit_vote(
         await cursor.update(
             "UPDATE r4_election_entries SET entry_votes = entry_votes + %s WHERE entry_id = %s",
             (entry_id,),
-        )
-
-        live_voting = await update_live_voting_cache(cursor, election.sid, election.id)
-        zeromq.publish(
-            {
-                "action": "live_voting",
-                "sid": election.sid,
-                "uuid_exclusion": None,
-                "data": {"live_voting": live_voting},
-            }
         )
 
         return True

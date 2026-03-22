@@ -4491,20 +4491,13 @@
         "type": "object"
       },
       "message_id": {
-        "allOf": [
-          {
-            "properties": {
-              "message_id": {
-                "type": "integer"
-              }
-            },
-            "required": ["message_id"],
-            "type": "object"
-          },
-          {
-            "$ref": "#/components/schemas/_boolean_result"
+        "properties": {
+          "message_id": {
+            "type": "integer"
           }
-        ]
+        },
+        "required": ["message_id"],
+        "type": "object"
       },
       "order_requests_result": {
         "$ref": "#/components/schemas/_boolean_result"

@@ -1,6 +1,6 @@
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from api.helpers.attach_info_to_request import attach_info_to_request
+from api.helpers.get_station_info import get_station_info
 from common.db.cursor import get_cursor
 
 
@@ -12,4 +12,8 @@ class InfoRequest(APIHandler):
 
     async def post(self):
         async with get_cursor() as cursor:
-            await attach_info_to_request(cursor, self, False, False)
+            self.response.update(
+                await get_station_info(
+                    cursor, self.optional_user, self.sid, False, False
+                )
+            )

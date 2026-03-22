@@ -1,3 +1,5 @@
+import time
+
 import orjson
 import datetime
 from typing import Any
@@ -7,24 +9,29 @@ import uuid
 from time import time as timestamp
 
 from tornado import httputil
-from tornado.web import RequestHandler
 
 from api import fieldtypes
 from api.exceptions import APIException
-from api.handler_classes.rainwave_handler import RainwaveHandler
+from api.helpers.get_station_info import get_station_info
 from api.helpers.get_browser_locale import get_browser_locale
 from api.handle_url import api_endpoints, handle_api_url
 from api.handler_classes.api_handler import APIHandler
+from api.helpers.get_remote_ip_or_throw import get_remote_ip_or_throw
+from api.helpers.user_to_api_private import user_to_api_private
 from api.routes.websocket.vote_throttle_service.vote_throttle_service import (
     vote_throttle_service,
 )
-from api.routes.websocket.fake_request_object import FakeRequestObject
 from api.routes.websocket.rainwave_websocket_handler import RainwaveWebsocketHandler
 from api.routes.websocket.websocket_message import RainwaveWebsocketMessage
 from api.routes.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
 from common import config, stations
 from common import log
+from common.cache.station_cache import cache_get_station
+from common.cache.timeline_cache import get_timeline_api_cache
+from common.db.cursor import get_cursor
 from common.locale.rainwave_locale import RainwaveLocale
+from common.user.get_anonymous_user import get_authorized_anonymous_user
+from common.user.get_registered_user import get_authorized_registered_user
 from common.user.model.user_base import UserBase
 from common.zeromq import zeromq
 import tornado
@@ -61,7 +68,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
         self.listen_key = ""
 
         # Variables for this class
-        self.authorized = False
+        self.remote_ip = get_remote_ip_or_throw(self.request.remote_ip)
         self.msg_times: list[float] = []
         self.throttled = False
         self.throttled_msgs: list[RainwaveWebsocketMessage] = []
@@ -95,8 +102,8 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
         self.throttled_msgs = []
         websockets_by_sid[self.sid].remove(self)
 
-    def process_throttle(self):
-        if not self.throttled_msgs:
+    async def process_throttle(self):
+        if not self.throttled_msgs or not self.user:
             self.throttled = False
             return
 
@@ -120,11 +127,6 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                             },
                             "message_id": {
                                 "message_id": message_id,
-                                "success": False,
-                                "tl_key": "websocket_throttle",
-                                "text": self.rainwave_locale.translate(
-                                    "websocket_throttle"
-                                ),
                             },
                         }
                     )
@@ -136,7 +138,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             msg = self.throttled_msgs.pop(0)
             # log.debug("throttle", "Handling last throttled %s message." % action)
         if msg:
-            self._process_message(msg, is_throttle_process=True)
+            await self._process_message(msg, self.user, is_throttle_process=True)
         tornado.ioloop.IOLoop.instance().add_timeout(
             datetime.timedelta(seconds=0.5), self.process_throttle
         )
@@ -146,7 +148,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             self.votes_by_key
         )
 
-    def on_message(self, message: str | bytes) -> None:
+    async def on_message(self, message: str | bytes) -> None:
         try:
             parsed_json = orjson.loads(message)
         except:
@@ -176,7 +178,11 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             )
             return
 
-        if not self.authorized and rw_message["action"] != "auth":
+        user = self.user
+        if rw_message["action"] == "auth":
+            await self._do_auth(rw_message)
+            return
+        elif user is None:
             self.write_rainwave_response(
                 {
                     "wserror": {
@@ -187,18 +193,16 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             )
             return
 
-        if not self.authorized and rw_message["action"] == "auth":
-            self._do_auth(rw_message)
-            return
+        await self._process_message(rw_message, user)
 
-        self._process_message(rw_message)
-
-    def _process_message(
-        self, message: RainwaveWebsocketMessage, is_throttle_process: bool = False
+    async def _process_message(
+        self,
+        message: RainwaveWebsocketMessage,
+        user: UserBase,
+        is_throttle_process: bool = False,
     ) -> None:
-        message_id = None
-        if "message_id" in message:
-            message_id = fieldtypes.zero_or_greater_integer(message["message_id"])
+        # TODO: what did we used to do with message_id?
+        message_id = fieldtypes.zero_or_greater_integer(message.get("message_id", None))
 
         throt_t = timestamp() - 3
         self.msg_times = [t for t in self.msg_times if t > throt_t]
@@ -220,16 +224,16 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                 return
 
         if message["action"] == "vote":
+            # TODO: how does this interface with the vote throttle service
             zeromq.publish({"action": "vote_by", "by": self.votes_by_key})
 
         if message["action"] == "check_sched_current_id":
-            self._do_sched_check(message)
+            await self._do_sched_check(message)
             return
 
         message["action"] = "/api4/%s" % message["action"]
-        fake_request = 
         endpoint_class = api_endpoints.get(message["action"], None)
-        if endpoint_class is None or not issubclass(endpoint_class, RainwaveHandler):
+        if endpoint_class is None or not issubclass(endpoint_class, APIHandler):
             self.write_rainwave_response(
                 {
                     "wserror": {
@@ -240,127 +244,122 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             )
             return
 
-        endpoint = endpoint_class(self.application, self.request)
-        endpoint.rainwave_locale = self.rainwave_locale
-        endpoint.sid = (
-            message["sid"] if ("sid" in message and message["sid"]) else self.sid
+        # it's required to see if another person on the same IP address has overriden the vote
+        # for the in-memory user here, so it requires a DB fetch.
+        if message["action"] == "/api4/vote" and user.is_anonymous():
+            async with get_cursor() as cursor:
+                await user.refresh(cursor)
+
+        endpoint = endpoint_class(
+            self.application,
+            httputil.HTTPServerRequest(
+                method="POST", connection=httputil.HTTPConnection()
+            ),
+            websocket_handling=True,
+            websocket_message=message,
+            websocket_user=self.user,
+            websocket_sid=(
+                message["sid"] if ("sid" in message and message["sid"]) else self.sid
+            ),
+            websocket_locale=self.rainwave_locale,
+            websocket_uuid=self.uuid,
         )
-        endpoint.user = self.user
-        endpoint._startclock = timestamp()
+        api_return_success = False
+
         try:
-            # it's required to see if another person on the same IP address has overriden the vote
-            # for the in-memory user here, so it requires a DB fetch.
-            if message["action"] == "/api4/vote" and self.user.is_anonymous():
-                self.user.refresh(self.sid)
-            if "message_id" in message:
-                if message_id == None:
-                    endpoint.prepare_standalone()
-                    raise APIException(
-                        "invalid_argument",
-                        argument="message_id",
-                        reason=fieldtypes.zero_or_greater_integer_error,
-                        http_code=400,
-                    )
-                endpoint.prepare_standalone(message_id)
-            else:
-                endpoint.prepare_standalone()
-            endpoint.post()
-            endpoint.append(
-                "api_info",
-                {
-                    "exectime": timestamp() - endpoint._startclock,
-                    "time": round(timestamp()),
-                },
-            )
-            if endpoint.sync_across_sessions:
+            await endpoint.prepare()
+            await endpoint.post()
+
+            endpoint.response["api_info"] = {
+                "exectime": time.monotonic() - endpoint.startclock,
+                "time": int(timestamp()),
+            }
+
+            api_return = endpoint.response.get(endpoint.return_name, None)
+            api_return_success = (
+                True
                 if (
-                    endpoint.return_name in endpoint._output
-                    and isinstance(endpoint._output[endpoint.return_name], dict)
-                    and not endpoint._output[endpoint.return_name]["success"]
-                ):
-                    pass
-                else:
-                    zeromq.publish(
-                        {
-                            "action": "result_sync",
-                            "sid": self.sid,
-                            "user_id": self.user.id,
-                            "data": endpoint._output,
-                            "uuid_exclusion": self.uuid,
-                        }
-                    )
-            if (
-                message["action"] == "/api4/vote"
-                and endpoint.return_name in endpoint._output
-                and isinstance(endpoint._output[endpoint.return_name], dict)
-                and endpoint._output[endpoint.return_name]["success"]
-            ):
-                live_voting = rainwave.schedule.update_live_voting(self.sid)
-                endpoint.append("live_voting", live_voting)
-                if self.should_vote_throttle():
-                    zeromq.publish(
-                        {
-                            "action": "delayed_live_voting",
-                            "sid": self.sid,
-                            "uuid_exclusion": self.uuid,
-                            "data": {"live_voting": live_voting},
-                        }
-                    )
-                else:
-                    zeromq.publish(
-                        {
-                            "action": "live_voting",
-                            "sid": self.sid,
-                            "uuid_exclusion": self.uuid,
-                            "data": {"live_voting": live_voting},
-                        }
-                    )
+                    api_return
+                    and isinstance(api_return, dict)
+                    and api_return.get("success", False) == True
+                )
+                else False
+            )
+            if endpoint.sync_across_sessions and api_return_success:
+                zeromq.publish(
+                    {
+                        "action": "result_sync",
+                        "sid": self.sid,
+                        "user_id": user.id,
+                        "data": endpoint.response,
+                        "uuid_exclusion": self.uuid,
+                    }
+                )
+
         except APIException as e:
-            endpoint.write_error(e.code, exc_info=sys.exc_info(), no_finish=True)
-            if e.code != 200:
+            endpoint.write_error(e.status_code, exc_info=sys.exc_info(), no_finish=True)
+            if e.status_code == 500:
                 log.exception("websocket", "API Exception during operation.", e)
         except Exception as e:
             endpoint.write_error(500, exc_info=sys.exc_info(), no_finish=True)
             log.exception("websocket", "API Exception during operation.", e)
         finally:
-            self.write_rainwave_response(endpoint._output)
+            if message_id:
+                endpoint.response["message_id"] = {"message_id": message_id}
+            self.write_rainwave_response(endpoint.response)
 
-    def update(self):
-        handler = APIHandler(websocket=True)
-        handler.locale = self.rainwave_locale
-        handler.request = typing.cast(
-            tornado.httputil.HTTPServerRequest,
-            FakeRequestObject({}, self.request.cookies),
-        )
-        handler.sid = self.sid
-        handler.user = self.user
-        handler.return_name = "sync_result"
-        try:
-            startclock = timestamp()
-            handler.prepare_standalone()
-
-            if not cache.get_station(self.sid, "backend_ok"):
-                raise APIException("station_offline")
-
-            self.refresh_user()
-            routes.info.attach_info_to_request(handler, live_voting=True)
-            handler.append("user", self.user.to_private_dict())
-            handler.append(
-                "api_info",
-                {"exectime": timestamp() - startclock, "time": round(timestamp(), 0)},
+    async def update(self):
+        if not await cache_get_station(self.sid, "backend_ok"):
+            self.write_rainwave_response(
+                {
+                    "sync_result": {
+                        "code": 403,
+                        "success": False,
+                        "text": self.rainwave_locale.translate("station_offline"),
+                        "tl_key": "station_offline",
+                    }
+                }
             )
+            return
+
+        try:
+            async with get_cursor() as cursor:
+                startclock = time.monotonic()
+                response = await get_station_info(
+                    cursor,
+                    self.user,
+                    self.sid,
+                    include_request_line=True,
+                    include_live_voting=True,
+                )
+                if self.user:
+                    response["user"] = user_to_api_private(self.user)
+                response["api_info"] = {
+                    "exectime": time.monotonic() - startclock,
+                    "time": int(timestamp()),
+                }
+                self.write_rainwave_response(response)
         except Exception as e:
-            if handler:
-                handler.write_error(500, exc_info=sys.exc_info(), no_finish=True)
+            try:
+                self.write_rainwave_response(
+                    {
+                        "sync_result": {
+                            "code": 500,
+                            "success": False,
+                            "text": self.rainwave_locale.translate("internal_error"),
+                            "tl_key": "internal_error",
+                        }
+                    }
+                )
+            except Exception:
+                pass
             log.exception("websocket", "Exception during update.", e)
-        finally:
-            if handler:
-                self.write_rainwave_response(handler._output)
 
     def update_user(self):
-        self.write_rainwave_response({"user": self.user.to_private_dict()})
+        if self.user:
+            self.write_rainwave_response({"user": user_to_api_private(self.user)})
 
-    def _do_auth(self, message):
+    async def _do_auth(self, message: RainwaveWebsocketMessage) -> None:
         try:
             if not "user_id" in message or not message["user_id"]:
                 self.write_rainwave_response(
@@ -368,7 +367,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                         "wserror": {
                             "tl_key": "missing_argument",
                             "text": self.rainwave_locale.translate(
-                                "missing_argument", argument="user_id"
+                                "missing_argument", {"argument": "user_id"}
                             ),
                         }
                     }
@@ -379,7 +378,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                         "wserror": {
                             "tl_key": "invalid_argument",
                             "text": self.rainwave_locale.translate(
-                                "invalid_argument", argument="user_id"
+                                "invalid_argument", {"argument": "user_id"}
                             ),
                         }
                     }
@@ -390,48 +389,53 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                         "wserror": {
                             "tl_key": "missing_argument",
                             "text": self.rainwave_locale.translate(
-                                "missing_argument", argument="key"
+                                "missing_argument", {"argument": "key"}
                             ),
                         }
                     }
                 )
 
-            self.user = make_user(message["user_id"])
-            self.user.ip_address = self.request.remote_ip
-            self.user.authorize(None, message["key"])
-            if not self.user.authorized:
-                self.write_rainwave_response(
-                    {
-                        "wserror": {
-                            "tl_key": "auth_failed",
-                            "text": self.rainwave_locale.translate("auth_failed"),
+            try:
+                async with get_cursor() as cursor:
+                    if message["user_id"] == 1:
+                        self.user = await get_authorized_registered_user(
+                            cursor,
+                            self.sid,
+                            message["user_id"],
+                            message["key"],
+                            self.remote_ip,
+                        )
+                    else:
+                        self.user = await get_authorized_anonymous_user(
+                            cursor, self.sid, 1, message["key"], self.remote_ip
+                        )
+            except APIException as auth_error:
+                if auth_error.tl_key == "auth_failed":
+                    self.write_rainwave_response(
+                        {
+                            "wserror": {
+                                "tl_key": "auth_failed",
+                                "text": self.rainwave_locale.translate("auth_failed"),
+                            }
                         }
-                    }
-                )
-                self.close()
-                return
+                    )
+                    self.close()
+                    return
             self.authorized = True
             self.uuid = str(uuid.uuid4())
 
             websockets_by_sid[self.sid].append(self)
 
-            self.votes_by_key = vote_throttle_service.build_key(
-                self.user, self.request.remote_ip
-            )
-
-            self.refresh_user()
-            # no need to send the user's data to the user as that would have come with bootstrap
-            # and will come with each synchronization of the schedule anyway
             self.write_rainwave_response({"wsok": True})
             # since this will be the first action in any websocket interaction though,
             # it'd be a good time to send a station offline message.
-            self._station_offline_check()
+            await self._station_offline_check()
         except Exception as e:
             log.exception("websocket", "Exception during authentication.", e)
             self.close()
 
-    def _station_offline_check(self):
-        if not cache.get_station(self.sid, "backend_ok"):
+    async def _station_offline_check(self):
+        if not await cache_get_station(self.sid, "backend_ok"):
             # shamelessly fake an error.
             self.write_rainwave_response(
                 {
@@ -442,14 +446,14 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                 }
             )
 
-    def _do_sched_check(self, message):
+    async def _do_sched_check(self, message: RainwaveWebsocketMessage) -> None:
         if not "sched_id" in message or not message["sched_id"]:
             self.write_rainwave_response(
                 {
                     "wserror": {
                         "tl_key": "missing_argument",
                         "text": self.rainwave_locale.translate(
-                            "missing_argument", argument="sched_id"
+                            "missing_argument", {"argument": "sched_id"}
                         ),
                     }
                 }
@@ -461,15 +465,14 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                     "wserror": {
                         "tl_key": "invalid_argument",
                         "text": self.rainwave_locale.translate(
-                            "invalid_argument", argument="sched_id"
+                            "invalid_argument", {"argument": "sched_id"}
                         ),
                     }
                 }
             )
 
-        self._station_offline_check()
+        await self._station_offline_check()
 
-        sched_current_dict = cache.get_station(self.sid, "sched_current_dict")
-        if sched_current_dict and (sched_current_dict["id"] != message["sched_id"]):
-            self.update()
-            self.write_rainwave_response({"outdated_data_warning": {"outdated": True}})
+        timeline = await get_timeline_api_cache(self.sid)
+        if timeline[0] and timeline[0]["sched_current"]["id"] != message["sched_id"]:
+            await self.update()

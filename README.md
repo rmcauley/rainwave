@@ -3,19 +3,18 @@
 This is the git project for the Rainwave website, https://rainwave.cc.
 
 Rainwave is a system to control an external player such as MPD,
-or a streaming source such as Ices or LiquidSoap. It cannot play
+or a streaming source such as Ices or Liquidsoap. Rainwave.cc uses its own
+custom player which is available on Github. Rainwave cannot play
 or stream audio by itself.
 
 The software stack and data flow for broadcasting:
 
-- LiquidSoap asks Rainwave's song change API server what song/MP3 file should be played
-- Rainwave song change API server replies with a song/MP3 file
-- LiquidSoap plays the song, encodes the stream, and sends the audio to Icecast
-- Icecast distributes audio to users
-- Icecast tells Rainwave's web API when users tune in/out
-- Users interact with Rainwave through the Javascript website and the Rainwave Web API.
-
-Rainwave only supports reading tags from MP3 files.
+- The media player asks Rainwave's backend server what song/MP3 file should be played next.
+- Rainwave's backend replies with a song/MP3 file.
+- The player reads and encodes the stream to Icecast.
+- Icecast distributes audio to users.
+- Icecast tells Rainwave's web API when users tune in/out.
+- Users interact with Rainwave through the website/API.
 
 ## Prerequisites
 
@@ -24,10 +23,10 @@ Authentication for Rainwave users is dependant on Discord.
 - Enable external auth by placing your app keys in the config file
 - If you're just running Rainwave for streaming audio, you do not need Discord.
 - If you are just testing/developing locally, you do not need Discord.
+- Rainwave requires a library of ~2000 songs to function properly, and all songs must be tagged with album, artist, and title.
+- Rainwave requires the commandline `rsgain` tool to be installed on its path.
 
-If using Icecast, Icecast 2.5.0 or above is required.
-
-If using LiquidSoap, LiquidSoap 1.1 or above is required.
+If using Icecast, Icecast 2.4.x or above is required.
 
 ### Prerequisites on Debian/Ubuntu
 
@@ -47,9 +46,11 @@ sudo -u postgres createdb rainwave
 sudo -u postgres psql -d rainwave -c "CREATE EXTENSION IF NOT EXISTS pg_trgm"
 ```
 
+You then need to run the schema initialization found in `schema.py`.
+
 ## Configure Rainwave
 
-Edit your configuration file in `./etc/rainwave_config.py`, and follow the instructions
+Edit your configuration file in `./src/common/config.py`, and follow the instructions
 within to setup your install. Please read through the entire config carefully.
 Some options are very important.
 
@@ -57,7 +58,7 @@ Tips:
 
 - Until you're ready to deploy a production version, it's best to leave development mode
   on and keep Rainwave single-processed.
-- Do not create a station with ID 0 - ID 0 is reserved.
+- Station ID 0 cannot be used, station IDs must start at 1.
 
 ## Adding Music to your Rainwave Library
 
@@ -135,13 +136,12 @@ to its own home directory.
 During installation, Rainwave has no safety mechanisms or rolling restarts.
 Rainwave will appear to be shutdown for a few seconds to the outside
 world while installing/updating. If the restart fails, Rainwave will be
-offline. ([GitHub Issue](https://github.com/rmcauley/rainwave/issues/95))
+offline.
 
 ### Icecast and Listener Tune In/Out Recognition
 
 For user tune in recognition to work, you have to use Icecast's
-user authentication system. Sample Icecast configurations are
-included in Rainwave's `etc/` directory.
+user authentication system.
 
 ## Contact
 

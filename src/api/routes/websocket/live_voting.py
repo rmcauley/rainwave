@@ -1,5 +1,7 @@
 import typing
-from api.routes.websocket.websocket_tracker import vote_throttle_service
+from api.routes.websocket.vote_throttle_service.vote_throttle_service import (
+    vote_throttle_service,
+)
 
 
 def delay_live_vote_removal(sid: int) -> None:
