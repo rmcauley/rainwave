@@ -18,7 +18,7 @@ from api.helpers.paginated_requests import get_pagination_params
 from api.rainwave_typeddicts import Error as RainwaveErrorObject
 from api.rainwave_return_key_to_open_api import RainwaveResponse, RainwaveResponseKey
 from api.routes.auth.errors import OAuthRejectedError
-from api.routes.websocket.websocket_message import RainwaveWebsocketMessage
+from api.websocket.websocket_message import RainwaveWebsocketMessage
 from common import config, log, stations
 from common.db.cursor import RainwaveCursor, get_cursor
 from common.locale.rainwave_locale import RainwaveLocale

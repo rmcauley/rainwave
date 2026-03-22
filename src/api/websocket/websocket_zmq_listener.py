@@ -1,10 +1,10 @@
 import orjson
 import typing
 
-from api.routes.websocket.live_voting.live_voting import (
+from api.websocket.live_voting.live_voting import (
     live_voting_broadcast_service,
 )
-from api.routes.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
+from api.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
 from common import log
 from common.zeromq import zeromq
 

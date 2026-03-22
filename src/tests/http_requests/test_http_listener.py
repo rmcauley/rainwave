@@ -5,10 +5,10 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.handle_url import request_classes
-from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
+from tests.http_requests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
-class TestSearch(AsyncHTTPTestCase):
+class TestListener(AsyncHTTPTestCase):
     def get_app(self):
         return tornado.web.Application(request_classes, debug=True)
 
@@ -31,14 +31,24 @@ class TestSearch(AsyncHTTPTestCase):
         data.update(extra)
         return data
 
-    def test_search_too_short(self):
+    def test_listener_detail(self):
         response = self._post(
-            "/api4/search", self._auth_data(search="so"), raise_error=False
+            "/api4/listener",
+            self._auth_data(id=SITE_ADMIN_USER_ID),
         )
         payload = self._payload(response)
-        assert payload["search_results"]["tl_key"] == "search_string_too_short"
+        listener = payload["listener"]
+        assert listener["user_id"] == SITE_ADMIN_USER_ID
+        assert "top_albums" in listener
+        assert "rating_spread" in listener
 
-    def test_search_finds_songs(self):
-        response = self._post("/api4/search", self._auth_data(search="Song"))
+    def test_current_listeners(self):
+        response = self._post("/api4/current_listeners", self._auth_data())
         payload = self._payload(response)
-        assert payload["songs"]
+        listeners = payload.get("current_listeners")
+        assert listeners is None or isinstance(listeners, list)
+
+    def test_user_info(self):
+        response = self._post("/api4/user_info", self._auth_data())
+        payload = self._payload(response)
+        assert payload["user_info"]["id"] == SITE_ADMIN_USER_ID

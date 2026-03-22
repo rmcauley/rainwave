@@ -4,21 +4,27 @@ from pathlib import Path
 import pytest
 from testcontainers.postgres import PostgresContainer
 
+from api.helpers.cached_all_artists import update_all_artists_cache
+from api.helpers.cached_all_groups import update_all_groups_cache
+from api.routes import load_all_routes
 from common import log
+from common.db.connection import db_connect
+from common.db.cursor import get_cursor
+from common.db.schema import create_tables
+from common.playlist.cooldown_config import prepare_cooldown_algorithm
+from common.playlist.object_counts import update_playlist_object_counts
+from common.schedule.advance_timeline import (
+    advance_timeline,
+    advance_timeline_post_process,
+)
+from common.schedule.timeline import load_timeline
+from tests.http_requests.seed_data import populate_test_data
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from common.cache import cache
-from common.libs.db.connection import db_connect
-from common.libs.db.schema import create_tables
-from common.locale import locale as api_locale
-from common import zeromq
-from common.playlist import playlist
-from common.schedule import get_schedule_at_time
-from .seed_data import populate_test_data
-from common.playlist import get_age_cooldown_multiplier
 
 
 @pytest.fixture(scope="session")
@@ -27,49 +33,20 @@ def postgres_container():
         yield postgres
 
 
-def _load_api_requests():
-    # This needs to come after cache and DB are connected.
-    # You cannot have a conditional import * which is what
-    # the API request loader needs, so it needs to be in a separate module here.
-    import tests.load_all_api_requests  # pyright: ignore[reportUnusedImport]
-
-    pass
-
-
 @pytest.fixture(scope="session", autouse=True)
 async def rainwave_db():
     log.init(loglevel="critical")
-    _load_api_requests()
-    cache.cache_connect()
-    async with db_connect(auto_retry=False):
+    load_all_routes()
+    async with db_connect(auto_retry=False), cache.cache_connect():
         await create_tables()
-        populate_test_data(db.c, sid=1)
-        zeromq.init_pub()
-        get_age_cooldown_multiplier.prepare_cooldown_algorithm(1)
-        get_schedule_at_time.load()
-        get_schedule_at_time.advance_station(1)
-        get_schedule_at_time.post_process(1)
-        playlist.update_num_songs()
-        cache.set_station(1, "all_albums", playlist.get_all_albums_list(1), True)
-        cache.set_station(1, "all_artists", playlist.get_all_artists_list(1), True)
-        cache.set_station(1, "all_groups", playlist.get_all_groups_list(1), True)
-        cache.set_station(
-            1, "all_groups_power", playlist.get_all_groups_for_power(1), True
-        )
-        cache.set_global(
-            "all_stations_info",
-            {
-                1: {
-                    "title": None,
-                    "album": None,
-                    "art": None,
-                    "artists": None,
-                    "event_name": None,
-                    "event_type": None,
-                }
-            },
-            save_local=True,
-        )
-        yield
-    db.close()
-    log.close()
+        async with get_cursor() as cursor:
+            await populate_test_data(cursor, sid=1)
+            await update_playlist_object_counts()
+            await prepare_cooldown_algorithm(cursor, 1)
+            await load_timeline(cursor, 1)
+            await advance_timeline(1, trigger_post_process=False)
+            await advance_timeline_post_process(1)
+            await update_all_artists_cache()
+            await update_all_artists_cache()
+            await update_all_groups_cache()
+            yield

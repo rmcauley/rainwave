@@ -5,7 +5,7 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.handle_url import request_classes
-from tests.seed_data import (
+from tests.http_requests.seed_data import (
     ANONYMOUS_API_KEY,
     ANONYMOUS_USER_ID,
     SITE_ADMIN_API_KEY,

@@ -3,7 +3,7 @@ from typing import Any
 
 import tornado
 
-from api.routes.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
+from api.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
 from common.cache.station_cache import cache_get_station
 from common.zeromq import zeromq
 

@@ -1,6 +1,6 @@
 from typing import Final
 
-from api.routes.websocket.websocket_tracker.websocket_tracker_for_station import (
+from api.websocket.websocket_tracker.websocket_tracker_for_station import (
     WebsocketTrackerForStation,
 )
 from common import stations

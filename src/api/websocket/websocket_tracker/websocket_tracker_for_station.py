@@ -1,7 +1,7 @@
 import asyncio
 
 from api.rainwave_return_key_to_open_api import RainwaveResponse
-from api.routes.websocket.rainwave_websocket_handler import (
+from api.websocket.rainwave_websocket_handler import (
     RainwaveWebsocketHandler,
 )
 from common import log

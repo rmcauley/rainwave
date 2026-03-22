@@ -5,7 +5,7 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from api.handle_url import request_classes
-from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
+from tests.http_requests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
 class TestErrorReport(AsyncHTTPTestCase):

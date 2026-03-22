@@ -6,7 +6,7 @@ from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
-from api.routes.websocket.live_voting.live_voting import live_voting_broadcast_service
+from api.websocket.live_voting.live_voting import live_voting_broadcast_service
 from common.cache.station_cache import cache_get_station
 from common.db.cursor import get_cursor
 from common.schedule.election.election import Election

@@ -7,7 +7,7 @@ from tornado.testing import AsyncHTTPTestCase
 from api.handle_url import request_classes
 from common.libs import db
 import pytest
-from tests.seed_data import (
+from tests.http_requests.seed_data import (
     SITE_ADMIN_API_KEY,
     SITE_ADMIN_USER_ID,
     TUNED_IN_LOGGED_IN_API_KEY,

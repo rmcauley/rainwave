@@ -18,9 +18,9 @@ from api.handle_url import api_endpoints, handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.helpers.get_remote_ip_or_throw import get_remote_ip_or_throw
 from api.helpers.user_to_api_private import user_to_api_private
-from api.routes.websocket.rainwave_websocket_handler import RainwaveWebsocketHandler
-from api.routes.websocket.websocket_message import RainwaveWebsocketMessage
-from api.routes.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
+from api.websocket.rainwave_websocket_handler import RainwaveWebsocketHandler
+from api.websocket.websocket_message import RainwaveWebsocketMessage
+from api.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
 from common import config, stations
 from common import log
 from common.cache.station_cache import cache_get_station
