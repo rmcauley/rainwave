@@ -1,30 +1,13 @@
-import json
-from urllib.parse import urlencode
+from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 
-import tornado.web
-from tornado.testing import AsyncHTTPTestCase
-
-from api.handle_url import request_classes
-from tests.http_requests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
+from tests.http_requests.base import AuthData, RequestClassesTestCase
+from tests.seed_data import SITE_ADMIN_API_KEY, SITE_ADMIN_USER_ID
 
 
-class TestErrorReport(AsyncHTTPTestCase):
-    def get_app(self):
-        return tornado.web.Application(request_classes, debug=True)
-
-    def _post(self, path, data, headers=None):
-        body = urlencode(data)
-        response = self.fetch(
-            path,
-            method="POST",
-            body=body,
-            headers=headers or {"Content-Type": "application/x-www-form-urlencoded"},
-        )
-        assert response.code == 200
-        return response
-
-    def test_error_report_accepts_localhost_referer(self):
-        data = {
+class TestErrorReport(RequestClassesTestCase):
+    @gen_test
+    async def test_error_report_accepts_localhost_referer(self) -> None:
+        data: AuthData = {
             "user_id": SITE_ADMIN_USER_ID,
             "key": SITE_ADMIN_API_KEY,
             "name": "TestError",
@@ -34,13 +17,10 @@ class TestErrorReport(AsyncHTTPTestCase):
             "user_agent": "pytest",
             "browser_language": "en-US",
         }
-        response = self._post(
+        response = await self.post_form(
             "/api4/error_report",
             data,
-            headers={
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Referer": "http://localhost/",
-            },
+            headers={"Referer": "http://localhost/"},
         )
-        payload = json.loads(response.body.decode("utf-8"))
+        payload = self.payload(response)
         assert payload["error_report_result"]["success"] is True

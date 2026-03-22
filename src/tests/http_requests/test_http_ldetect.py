@@ -1,28 +1,12 @@
-from urllib.parse import urlencode
+from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 
-import tornado.web
-from tornado.testing import AsyncHTTPTestCase
-
-from api.handle_url import request_classes
+from tests.http_requests.base import RequestClassesTestCase
 
 
-class TestListenerDetect(AsyncHTTPTestCase):
-    def get_app(self):
-        return tornado.web.Application(request_classes, debug=True)
-
-    def _post(self, path, data):
-        body = urlencode(data)
-        response = self.fetch(
-            path,
-            method="POST",
-            body=body,
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            raise_error=False,
-        )
-        return response
-
-    def test_listener_add_anonymous_no_listen_key(self):
-        response = self._post(
+class TestListenerDetect(RequestClassesTestCase):
+    @gen_test
+    async def test_listener_add_anonymous_no_listen_key(self) -> None:
+        response = await self.post_form(
             "/api4/listener_add/1",
             {
                 "client": 1,
@@ -30,12 +14,14 @@ class TestListenerDetect(AsyncHTTPTestCase):
                 "ip": "127.0.0.1",
                 "agent": "VLC",
             },
+            raise_error=False,
         )
         assert response.code == 200
         assert response.headers.get("icecast-auth-user") == "1"
 
-    def test_listener_add_and_remove_with_listen_key(self):
-        response = self._post(
+    @gen_test
+    async def test_listener_add_and_remove_with_listen_key(self) -> None:
+        response = await self.post_form(
             "/api4/listener_add/1",
             {
                 "client": 2,
@@ -43,15 +29,15 @@ class TestListenerDetect(AsyncHTTPTestCase):
                 "ip": "127.0.0.1",
                 "agent": "VLC",
             },
+            raise_error=False,
         )
         assert response.code == 200
         assert response.headers.get("icecast-auth-user") == "1"
 
-        response = self._post(
+        response = await self.post_form(
             "/api4/listener_remove",
-            {
-                "client": 2,
-            },
+            {"client": 2},
+            raise_error=False,
         )
         assert response.code == 200
         assert response.headers.get("icecast-auth-user") == "1"

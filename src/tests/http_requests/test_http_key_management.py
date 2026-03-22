@@ -1,23 +1,23 @@
-import tornado.web
-from tornado.testing import AsyncHTTPTestCase
+from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 
-from api.handle_url import request_classes
+from tests.http_requests.base import RequestClassesTestCase
 
 
-class TestKeyManagement(AsyncHTTPTestCase):
-    def get_app(self):
-        return tornado.web.Application(request_classes, debug=True)
-
-    def test_keys_requires_login(self):
-        response = self.fetch("/keys/", method="GET", raise_error=False)
+class TestKeyManagement(RequestClassesTestCase):
+    @gen_test
+    async def test_keys_requires_login(self) -> None:
+        response = await self.get_path("/keys/", raise_error=False)
         assert response.code == 403
 
-    def test_keys_create_requires_login(self):
-        response = self.fetch("/keys/create", method="GET", raise_error=False)
+    @gen_test
+    async def test_keys_create_requires_login(self) -> None:
+        response = await self.get_path("/keys/create", raise_error=False)
         assert response.code == 403
 
-    def test_keys_delete_requires_login(self):
-        response = self.fetch(
-            "/keys/delete?delete_key=1", method="GET", raise_error=False
+    @gen_test
+    async def test_keys_delete_requires_login(self) -> None:
+        response = await self.get_path(
+            "/keys/delete?delete_key=1",
+            raise_error=False,
         )
         assert response.code == 403

@@ -18,7 +18,7 @@ from common.schedule.advance_timeline import (
     advance_timeline_post_process,
 )
 from common.schedule.timeline import load_timeline
-from tests.http_requests.seed_data import populate_test_data
+from tests.seed_data import populate_test_data
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:

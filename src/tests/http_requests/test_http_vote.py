@@ -1,12 +1,11 @@
-import json
-from urllib.parse import urlencode
+from typing import Any, cast
 
-import tornado.web
-from tornado.testing import AsyncHTTPTestCase
+from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 
-from api.handle_url import request_classes
+from common.db.cursor import get_cursor
 import pytest
-from tests.http_requests.seed_data import (
+from tests.http_requests.base import AuthData, FormValue, RequestClassesTestCase
+from tests.seed_data import (
     ANONYMOUS_API_KEY,
     ANONYMOUS_USER_ID,
     SITE_ADMIN_API_KEY,
@@ -19,82 +18,72 @@ from tests.http_requests.seed_data import (
     TUNED_OUT_LOGGED_IN_API_KEY,
     TUNED_OUT_LOGGED_IN_USER_ID,
 )
-from common.libs import db
 
 
-class TestVote(AsyncHTTPTestCase):
-    def get_app(self):
-        return tornado.web.Application(request_classes, debug=True)
-
-    def _post(self, path, data, raise_error=True):
-        body = urlencode(data)
-        response = self.fetch(
-            path,
-            method="POST",
-            body=body,
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            raise_error=raise_error,
-        )
-        return response
-
-    def _payload(self, response):
-        return json.loads(response.body.decode("utf-8"))
-
-    def _auth_data(self, **extra):
-        data = {"user_id": SITE_ADMIN_USER_ID, "key": SITE_ADMIN_API_KEY, "sid": 1}
+class TestVote(RequestClassesTestCase):
+    def _auth_data(self, **extra: FormValue) -> AuthData:
+        data: AuthData = {
+            "user_id": SITE_ADMIN_USER_ID,
+            "key": SITE_ADMIN_API_KEY,
+            "sid": 1,
+        }
         data.update(extra)
         return data
 
-    def _anon_auth_data(self, **extra):
+    def _anon_auth_data(self, **extra: FormValue) -> AuthData:
         return self._auth_data(
             user_id=ANONYMOUS_USER_ID, key=ANONYMOUS_API_KEY, **extra
         )
 
-    def _first_election_entry(self):
-        response = self._post("/api4/info", self._auth_data())
-        payload = self._payload(response)
-        for event in payload.get("sched_next") or []:
-            songs = event.get("songs") or []
+    async def _first_election_entry(self) -> int:
+        response = await self.post_form("/api4/info", self._auth_data())
+        payload: Any = self.payload(response)
+        for event in cast(list[Any], payload.get("sched_next") or []):
+            songs: list[Any] = event.get("songs") or []
             if len(songs) > 1:
                 entry_id = songs[0].get("entry_id")
                 if entry_id:
-                    return entry_id
+                    return int(entry_id)
         pytest.skip("No upcoming election with voteable entries.")
 
-    def _set_anonymous_listener_purged(self, purged):
-        await cursor.update(
-            "UPDATE r4_listeners SET listener_purge = %s WHERE user_id = %s AND listener_ip = %s",
-            (purged, ANONYMOUS_USER_ID, TUNED_IN_ANONYMOUS_IP),
-        )
+    async def _set_anonymous_listener_purged(self, purged: bool) -> None:
+        async with get_cursor() as cursor:
+            await cursor.update(
+                "UPDATE r4_listeners SET listener_purge = %s WHERE user_id = %s AND listener_ip = %s",
+                (purged, ANONYMOUS_USER_ID, TUNED_IN_ANONYMOUS_IP),
+            )
 
-    def test_vote_allows_tuned_in_anonymous(self):
-        entry_id = self._first_election_entry()
-        self._set_anonymous_listener_purged(False)
-        response = self._post(
+    @gen_test
+    async def test_vote_allows_tuned_in_anonymous(self) -> None:
+        entry_id = await self._first_election_entry()
+        await self._set_anonymous_listener_purged(False)
+        response = await self.post_form(
             "/api4/vote",
             self._anon_auth_data(entry_id=entry_id),
         )
-        payload = self._payload(response)
+        payload = self.payload(response)
         assert payload["vote_result"]["success"] is True
 
-    def test_vote_rejects_tuned_out_anonymous(self):
-        entry_id = self._first_election_entry()
-        self._set_anonymous_listener_purged(True)
+    @gen_test
+    async def test_vote_rejects_tuned_out_anonymous(self) -> None:
+        entry_id = await self._first_election_entry()
+        await self._set_anonymous_listener_purged(True)
         try:
-            response = self._post(
+            response = await self.post_form(
                 "/api4/vote",
                 self._anon_auth_data(entry_id=entry_id),
                 raise_error=False,
             )
             assert response.code == 403
-            payload = self._payload(response)
+            payload = self.payload(response)
             assert payload["vote_result"]["tl_key"] == "tunein_required"
         finally:
-            self._set_anonymous_listener_purged(False)
+            await self._set_anonymous_listener_purged(False)
 
-    def test_vote_allows_tuned_in_logged_in_user(self):
-        entry_id = self._first_election_entry()
-        response = self._post(
+    @gen_test
+    async def test_vote_allows_tuned_in_logged_in_user(self) -> None:
+        entry_id = await self._first_election_entry()
+        response = await self.post_form(
             "/api4/vote",
             self._auth_data(
                 user_id=TUNED_IN_LOGGED_IN_USER_ID,
@@ -102,12 +91,13 @@ class TestVote(AsyncHTTPTestCase):
                 entry_id=entry_id,
             ),
         )
-        payload = self._payload(response)
+        payload = self.payload(response)
         assert payload["vote_result"]["success"] is True
 
-    def test_vote_rejects_tuned_out_logged_in_user(self):
-        entry_id = self._first_election_entry()
-        response = self._post(
+    @gen_test
+    async def test_vote_rejects_tuned_out_logged_in_user(self) -> None:
+        entry_id = await self._first_election_entry()
+        response = await self.post_form(
             "/api4/vote",
             self._auth_data(
                 user_id=TUNED_OUT_LOGGED_IN_USER_ID,
@@ -117,12 +107,13 @@ class TestVote(AsyncHTTPTestCase):
             raise_error=False,
         )
         assert response.code == 403
-        payload = self._payload(response)
+        payload = self.payload(response)
         assert payload["vote_result"]["tl_key"] == "tunein_required"
 
-    def test_vote_rejects_locked_user(self):
-        entry_id = self._first_election_entry()
-        response = self._post(
+    @gen_test
+    async def test_vote_rejects_locked_user(self) -> None:
+        entry_id = await self._first_election_entry()
+        response = await self.post_form(
             "/api4/vote",
             self._auth_data(
                 user_id=TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID,
@@ -131,5 +122,5 @@ class TestVote(AsyncHTTPTestCase):
             ),
             raise_error=False,
         )
-        payload = self._payload(response)
+        payload = self.payload(response)
         assert payload["vote_result"]["tl_key"] == "user_locked"

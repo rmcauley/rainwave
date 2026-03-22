@@ -1,25 +1,27 @@
-import tornado.web
-from tornado.testing import AsyncHTTPTestCase
+from typing import Any
 
-from api.handle_url import request_classes
+from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
+
+from tests.http_requests.base import RequestClassesTestCase
 
 
-class TestLocale(AsyncHTTPTestCase):
-    def get_app(self):
-        return tornado.web.Application(
-            request_classes, debug=True, template_path="templates"
-        )
+class TestLocale(RequestClassesTestCase):
+    def app_settings(self) -> dict[str, Any]:
+        return {"template_path": "templates"}
 
-    def test_locale_index(self):
-        response = self.fetch("/locale/", method="GET", raise_error=False)
+    @gen_test
+    async def test_locale_index(self) -> None:
+        response = await self.get_path("/locale/", raise_error=False)
         assert response.code == 200
         assert b"Locale/Translation Information" in response.body
 
-    def test_locale_missing_lines_exists(self):
-        response = self.fetch("/locale/en_CA", method="GET", raise_error=False)
+    @gen_test
+    async def test_locale_missing_lines_exists(self) -> None:
+        response = await self.get_path("/locale/en_CA", raise_error=False)
         assert response.code == 200
         assert b"Missing Lines" in response.body
 
-    def test_locale_missing_lines_unknown(self):
-        response = self.fetch("/locale/zz_ZZ", method="GET", raise_error=False)
+    @gen_test
+    async def test_locale_missing_lines_unknown(self) -> None:
+        response = await self.get_path("/locale/zz_ZZ", raise_error=False)
         assert response.code == 404

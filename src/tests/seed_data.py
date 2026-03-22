@@ -31,7 +31,7 @@ TUNED_OUT_DONOR_API_KEY = "DONOR"
 TUNED_OUT_DONOR_USER_NAME = "Donor"
 
 
-async def populate_test_data(cursor: RainwaveCursor, sid: int = 1):
+async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
     rng = random.Random()
 
     await cursor.update(

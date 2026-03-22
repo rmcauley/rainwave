@@ -1,5 +1,7 @@
 {
   "stubPath": "src/typestubs",
+  "venvPath": ".",
+  "venv": ".venv",
   "include": ["src/**/*.py"],
   "exclude": [
     "**/__pycache__",
