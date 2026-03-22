@@ -1,8 +1,8 @@
 import orjson
 import typing
 
-from api.routes.websocket.vote_throttle_service.vote_throttle_service import (
-    vote_throttle_service,
+from api.routes.websocket.live_voting.live_voting import (
+    live_voting_broadcast_service,
 )
 from api.routes.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
 from common import log
@@ -25,14 +25,13 @@ async def websocket_on_zmq(messages: list[typing.Any]) -> None:
                 websockets_by_sid[message["sid"]].send_to_user(
                     message["user_id"], message["uuid_exclusion"], message["data"]
                 )
-            elif message["action"] == "live_voting":
-                vote_throttle_service.handle_live_voting_message(message)
-            elif message["action"] == "delayed_live_voting":
-                vote_throttle_service.handle_delayed_live_voting_message(message)
+            elif message["action"] == "live_voting_updated":
+                await live_voting_broadcast_service.handle_live_voting_updated_message(
+                    message
+                )
             elif message["action"] == "update_all":
-                vote_throttle_service.clear_delayed_live_vote(message["sid"])
+                live_voting_broadcast_service.clear_pending_live_vote(message["sid"])
                 await websockets_by_sid[message["sid"]].update_all(message["sid"])
-                vote_throttle_service.reset_vote_counters()
             elif message["action"] == "update_listen_key":
                 for sid in websockets_by_sid:
                     websockets_by_sid[sid].update_anonymous_user_by_listen_key(
@@ -43,8 +42,6 @@ async def websocket_on_zmq(messages: list[typing.Any]) -> None:
                     websockets_by_sid[sid].update_registered_user(message["user_id"])
             elif message["action"] == "ping":
                 log.debug("zeromq", "Pong")
-            elif message["action"] == "vote_by":
-                vote_throttle_service.record_vote(message["by"])
         except Exception as e:
             log.exception(
                 "zeromq", "Error handling Zero MQ action '%s'" % message["action"], e

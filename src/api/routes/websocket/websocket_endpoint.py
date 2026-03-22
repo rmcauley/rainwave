@@ -18,9 +18,6 @@ from api.handle_url import api_endpoints, handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.helpers.get_remote_ip_or_throw import get_remote_ip_or_throw
 from api.helpers.user_to_api_private import user_to_api_private
-from api.routes.websocket.vote_throttle_service.vote_throttle_service import (
-    vote_throttle_service,
-)
 from api.routes.websocket.rainwave_websocket_handler import RainwaveWebsocketHandler
 from api.routes.websocket.websocket_message import RainwaveWebsocketMessage
 from api.routes.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
@@ -72,7 +69,6 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
         self.msg_times: list[float] = []
         self.throttled = False
         self.throttled_msgs: list[RainwaveWebsocketMessage] = []
-        self.votes_by_key = ""
 
     # This function called by Tornado after connection is establed, with
     # args/kwargs coming from the URL.
@@ -143,11 +139,6 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             datetime.timedelta(seconds=0.5), self.process_throttle
         )
 
-    def should_vote_throttle(self) -> float:
-        return vote_throttle_service.seconds_until_live_broadcast_allowed(
-            self.votes_by_key
-        )
-
     async def on_message(self, message: str | bytes) -> None:
         try:
             parsed_json = orjson.loads(message)
@@ -201,7 +192,6 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
         user: UserBase,
         is_throttle_process: bool = False,
     ) -> None:
-        # TODO: what did we used to do with message_id?
         message_id = fieldtypes.zero_or_greater_integer(message.get("message_id", None))
 
         throt_t = timestamp() - 3
@@ -223,10 +213,6 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                 )
                 return
 
-        if message["action"] == "vote":
-            # TODO: how does this interface with the vote throttle service
-            zeromq.publish({"action": "vote_by", "by": self.votes_by_key})
-
         if message["action"] == "check_sched_current_id":
             await self._do_sched_check(message)
             return
@@ -243,12 +229,6 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                 }
             )
             return
-
-        # it's required to see if another person on the same IP address has overriden the vote
-        # for the in-memory user here, so it requires a DB fetch.
-        if message["action"] == "/api4/vote" and user.is_anonymous():
-            async with get_cursor() as cursor:
-                await user.refresh(cursor)
 
         endpoint = endpoint_class(
             self.application,

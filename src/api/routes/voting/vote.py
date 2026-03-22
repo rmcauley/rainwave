@@ -3,20 +3,16 @@ import typing
 from api import fieldtypes, rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
-from api.helpers.get_remote_ip_or_throw import get_remote_ip_or_throw
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
-from api.routes.websocket.vote_throttle_service.vote_throttle_service import (
-    vote_throttle_service,
-)
+from api.routes.websocket.live_voting.live_voting import live_voting_broadcast_service
 from common.cache.station_cache import cache_get_station
 from common.db.cursor import get_cursor
 from common.schedule.election.election import Election
 from common.schedule.election.submit_vote import submit_vote
 from common.schedule.timeline_types import TimelineOnStation
 from common.schedule.update_live_voting import update_live_voting_cache
-from common.zeromq import zeromq
 
 
 @handle_api_url("vote")
@@ -33,7 +29,6 @@ class SubmitVote(AuthRequiredAPIHandler):
 
     async def post(self):
         input = self.get_validated_input(rainwave_dto.Api4VotePostRequest)
-        remote_ip = get_remote_ip_or_throw(self.request.remote_ip)
         lock_count = 0
         voted = False
         elec_id = None
@@ -72,32 +67,14 @@ class SubmitVote(AuthRequiredAPIHandler):
                 "tl_key": "vote_submitted",
             }
 
-            if self.websocket_handling:
-                async with get_cursor() as cursor:
-                    live_voting = await update_live_voting_cache(
-                        cursor, self.sid, elec_id
-                    )
+            async with get_cursor() as cursor:
+                live_voting = await update_live_voting_cache(cursor, self.sid, elec_id)
+                if self.websocket_handling:
                     self.response["live_voting"] = live_voting
-                    if vote_throttle_service.seconds_until_live_broadcast_allowed(
-                        vote_throttle_service.build_key(self.user, remote_ip)
-                    ):
-                        zeromq.publish(
-                            {
-                                "action": "delayed_live_voting",
-                                "sid": self.sid,
-                                "uuid_exclusion": self.websocket_uuid,
-                                "data": {"live_voting": live_voting},
-                            }
-                        )
-                    else:
-                        zeromq.publish(
-                            {
-                                "action": "live_voting",
-                                "sid": self.sid,
-                                "uuid_exclusion": self.websocket_uuid,
-                                "data": {"live_voting": live_voting},
-                            }
-                        )
+                live_voting_broadcast_service.publish_live_voting_updated(
+                    self.sid,
+                    self.websocket_uuid if self.websocket_handling else None,
+                )
         else:
             self.response["vote_result"] = {
                 "tl_key": "cannot_vote_for_this_now",
