@@ -25,6 +25,9 @@ async def get_schedule_entry_at_time(
         ORDER BY sched_id DESC
         LIMIT 1
         """,
+        # Deliberate + 20 seconds since Rainwave's scheduling is never super precise
+        # due to the audio stream having conditional crossfading on the audio as well as
+        # automatic clipping of silence.
         (sid, at_time + 20, at_time),
         row_type=ScheduleEntryRow,
     )

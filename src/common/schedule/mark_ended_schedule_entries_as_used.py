@@ -5,7 +5,7 @@ from common.schedule.schedule_entry_types import ScheduleEntryRow
 
 
 async def mark_ended_schedule_entries_as_used(cursor: RainwaveCursor, sid: int) -> None:
-    for schedule_entry_row in await cursor.fetch_list(
+    for schedule_entry_row in await cursor.fetch_all(
         "SELECT * FROM r4_schedule WHERE sched_end < %s AND sid = %s AND sched_used = FALSE",
         (int(timestamp()), sid),
         row_type=ScheduleEntryRow,

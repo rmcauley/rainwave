@@ -131,8 +131,7 @@ class Election(TimelineEntryBase):
             "sid": data["sid"],
         }
         election_row = await cursor.fetch_row(
-            build_insert("r4_elections", list(to_create.keys()))
-            + sql.SQL(" RETURNING *"),
+            build_insert("r4_elections", to_create) + sql.SQL(" RETURNING *"),
             to_create,
             row_type=ElectionRow,
         )

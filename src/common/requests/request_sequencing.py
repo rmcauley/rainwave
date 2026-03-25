@@ -3,7 +3,6 @@ from common.requests.get_user_top_request import TopRequestSongRow
 from common.requests.request_line_types import RequestLineEntry
 from common import config, log
 from common.cache.station_cache import cache_get_station, cache_set_station
-from common import log
 from common.requests.request_line_types import RequestLineEntry
 
 # These variables keep track of request sequencing.
@@ -74,7 +73,7 @@ async def _is_request_needed(sid: int) -> bool:
             "requests",
             "Waiting on interval.  Remainder: %s" % _elections_since_last_request[sid],
         )
-        return True
+        return False
 
 
 async def _set_elections_since_last_request(sid: int, value: int) -> None:

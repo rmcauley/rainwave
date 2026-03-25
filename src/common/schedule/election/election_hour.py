@@ -12,7 +12,7 @@ class ElectionHour(ScheduleEntry):
         return (
             await cursor.fetch_guaranteed(
                 "SELECT COUNT(elec_id) FROM r4_elections WHERE sched_id = %s AND sid = %s AND elec_used = FALSE",
-                (self.sid, self.id),
+                (self.id, self.sid),
                 default=0,
                 var_type=int,
             )
@@ -70,7 +70,7 @@ class ElectionHour(ScheduleEntry):
         self, cursor: RainwaveCursor
     ) -> Election | None:
         elec_id = await cursor.fetch_var(
-            "SELECT elec_id FROM r4_elections WHERE elec_in_progress = TRUE sched_id = %s ORDER BY elec_id DESC LIMIT 1",
+            "SELECT elec_id FROM r4_elections WHERE elec_in_progress = TRUE AND sched_id = %s ORDER BY elec_id DESC LIMIT 1",
             (self.id,),
             var_type=int,
         )

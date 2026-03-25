@@ -19,8 +19,6 @@ class RainwaveCursor:
         var_type: type[T],
     ) -> T | None:
         await self._cursor.execute(query, params)
-        if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
-            return None
         r = await self._cursor.fetchone()
         if not r:
             return None
@@ -35,8 +33,6 @@ class RainwaveCursor:
         var_type: type[T],
     ) -> T:
         await self._cursor.execute(query, params)
-        if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
-            return default
         r = await self._cursor.fetchone()
         if not r:
             return default
@@ -50,9 +46,10 @@ class RainwaveCursor:
         row_type: type[T],
     ) -> T | None:
         await self._cursor.execute(query, params)
-        if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
+        r = await self._cursor.fetchone()
+        if not r:
             return None
-        return cast(T, await self._cursor.fetchone())
+        return cast(T, r)
 
     async def fetch_all[T](
         self,
@@ -62,8 +59,6 @@ class RainwaveCursor:
         row_type: type[T],
     ) -> list[T]:
         await self._cursor.execute(query, params)
-        if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
-            return []
         return cast(list[T], await self._cursor.fetchall())
 
     async def fetch_list[T](
@@ -74,17 +69,11 @@ class RainwaveCursor:
         row_type: type[T],
     ) -> list[T]:
         await self._cursor.execute(query, params)
-        if self._cursor.rowcount <= 0 or not self._cursor.rowcount:
+        rows = await self._cursor.fetchall()
+        if not rows:
             return []
-        arr: list[T] = []
-        row = await self._cursor.fetchone()
-        if not row:
-            return []
-        col = next(iter(row.keys()))
-        arr.append(row[col])
-        for row in await self._cursor.fetchall():
-            arr.append(row[col])
-        return arr
+        col = next(iter(rows[0].keys()))
+        return [row[col] for row in rows]
 
     async def update(
         self,
@@ -119,8 +108,8 @@ class RainwaveCursor:
 
     async def get_nextval(self, sequence_name: str) -> int:
         return await self.fetch_guaranteed(
-            sql.SQL("SELECT nextval(%s::regclass)").format(
-                sql.Identifier(sequence_name)
+            sql.SQL("SELECT nextval({seq}::regclass)").format(
+                seq=sql.Identifier(sequence_name)
             ),
             params=None,
             default=0,

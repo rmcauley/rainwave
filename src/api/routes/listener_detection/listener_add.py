@@ -85,7 +85,7 @@ class AddListener(IcecastHandler):
             await cursor.update(
                 build_insert_on_conflict_do_update(
                     "r4_listeners",
-                    list(to_upsert.keys()),
+                    to_upsert,
                     sql.SQL("(user_id)"),
                 ),
                 to_upsert,
@@ -119,9 +119,7 @@ class AddListener(IcecastHandler):
                     "listener_icecast_id": icecast_client_id,
                     "listener_relay": self.relay,
                 }
-                await cursor.update(
-                    build_insert("r4_listeners", list(to_insert.keys())), to_insert
-                )
+                await cursor.update(build_insert("r4_listeners", to_insert), to_insert)
                 self.failed = False
             else:
                 # Keep one valid entry on file for the listener by popping once

@@ -111,7 +111,7 @@ class SongFile:
         song_row = await cursor.fetch_row(
             build_insert_on_conflict_do_update(
                 "r4_songs",
-                list(to_upsert.keys()),
+                to_upsert,
                 sql.SQL("(song_filename)"),
             )
             + sql.SQL(" RETURNING *"),

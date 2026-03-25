@@ -36,7 +36,7 @@ class PowerHour(ScheduleEntry):
     ) -> Sequence[PowerHourSong]:
         power_hour_song_ids = await cursor.fetch_list(
             "SELECT one_up_id FROM r4_one_ups WHERE sched_id = %s AND one_up_queued = TRUE AND one_up_used = FALSE ORDER BY one_up_order",
-            (self.sid,),
+            (self.id,),
             row_type=int,
         )
         return [
@@ -73,7 +73,7 @@ class PowerHour(ScheduleEntry):
         if not self.data["sched_used"]:
             self.data["sched_start"] = new_start
             if self.data["sched_end"] and self.data["sched_start"]:
-                length = min(0, self.data["sched_end"] - self.data["sched_start"])
+                length = max(0, self.data["sched_end"] - self.data["sched_start"])
                 self.data["sched_end"] = self.data["sched_start"] + length
             await cursor.update(
                 "UPDATE r4_schedule SET sched_start = %s, sched_end = %s WHERE sched_id = %s",

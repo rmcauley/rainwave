@@ -50,8 +50,7 @@ async def create_election_entry(
         "song_id": song_on_station.id,
     }
     entry = await cursor.fetch_row(
-        build_insert("r4_election_entries", list(to_create.keys()))
-        + sql.SQL(" RETURNING *"),
+        build_insert("r4_election_entries", to_create) + sql.SQL(" RETURNING *"),
         to_create,
         row_type=ElectionEntryRow,
     )

@@ -25,7 +25,7 @@ async def submit_vote(
 ) -> bool:
     async with get_tx_cursor() as cursor:
         # Subtract a previous vote from the song's total if there was one
-        already_voted = False
+        already_voted: int | None = None
         if user.is_anonymous():
             if (
                 user.private_data["voted_entry"]
@@ -34,7 +34,7 @@ async def submit_vote(
                 # immediately return and a success will be registered
                 return True
             if user.private_data["voted_entry"]:
-                already_voted = True if user.private_data["voted_entry"] else False
+                already_voted = user.private_data["voted_entry"]
         else:
             previous_vote = await cursor.fetch_row(
                 "SELECT entry_id, vote_id, song_id FROM r4_vote_history WHERE user_id = %s AND elec_id = %s",
@@ -46,12 +46,6 @@ async def submit_vote(
                 return True
             elif previous_vote:
                 already_voted = previous_vote["entry_id"]
-
-        if already_voted:
-            await cursor.update(
-                "UPDATE r4_election_entries SET entry_votes = entry_votes + %s WHERE entry_id = %s",
-                (-1, entry_id),
-            )
 
         # If this is a new vote, we need to check to make sure the listener is not locked.
         if (
@@ -67,6 +61,12 @@ async def submit_vote(
                     stations.station_id_friendly[user.private_data["lock_sid"]],
                     user.private_data["lock_counter"],
                 ),
+            )
+
+        if already_voted:
+            await cursor.update(
+                "UPDATE r4_election_entries SET entry_votes = entry_votes - 1 WHERE entry_id = %s",
+                (already_voted,),
             )
 
         # Issue the listener lock (will extend a lock if necessary)
@@ -132,7 +132,7 @@ async def submit_vote(
         await set_user_vote_cache(user.id, user_vote_cache)
 
         await cursor.update(
-            "UPDATE r4_election_entries SET entry_votes = entry_votes + %s WHERE entry_id = %s",
+            "UPDATE r4_election_entries SET entry_votes = entry_votes + 1 WHERE entry_id = %s",
             (entry_id,),
         )
 

@@ -11,13 +11,7 @@ async def create_schedule_entry(
     cursor: RainwaveCursor, data: ScheduleEntryInsertRow
 ) -> ScheduleEntryRow:
     inserted = await cursor.fetch_row(
-        build_insert(
-            "r4_schedule",
-            list(
-                data.keys(),
-            ),
-        )
-        + sql.SQL(" RETURNING *"),
+        build_insert("r4_schedule", data) + sql.SQL(" RETURNING *"),
         data,
         row_type=ScheduleEntryRow,
     )

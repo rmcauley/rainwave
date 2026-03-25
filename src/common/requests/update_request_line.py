@@ -2,6 +2,7 @@ from time import time as timestamp
 
 from common import log
 from common.cache.station_cache import cache_set_station
+from common.db.build_insert import build_insert
 from common.db.cursor import RainwaveCursor
 from common.requests.get_user_top_request import TopRequestSongRow
 from common.requests.put_user_in_request_line import put_user_in_request_line
@@ -36,23 +37,13 @@ async def _mark_request_filled(
         (entry["user_id"], song["id"]),
     )
 
-    await cursor.update(
-        """
-        INSERT INTO r4_request_history (
-            user_id,
-            song_id,
-            request_wait_time,
-            sid
-        )
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """,
-        (
-            entry["user_id"],
-            song["id"],
-            int(timestamp() - entry["line_wait_start"]),
-            sid,
-        ),
-    )
+    to_insert = {
+        "user_id": entry["user_id"],
+        "song_id": song["id"],
+        "request_wait_time": int(timestamp() - entry["line_wait_start"]),
+        "sid": sid,
+    }
+    await cursor.update(build_insert("r4_request_history", to_insert), to_insert)
 
 
 async def write_updated_request_line_to_db(
