@@ -66,27 +66,26 @@ class BackendServer:
             server = tornado.httpserver.HTTPServer(app)
             server.listen(port, address="127.0.0.1")
 
-            async with db_connect(auto_retry=True), cache_connect():
-                async with get_cursor() as cursor:
-                    await prepare_cooldown_algorithm(cursor, sid)
+            async with get_cursor() as cursor:
+                await prepare_cooldown_algorithm(cursor, sid)
 
-                cooldown_algo_updating = tornado.ioloop.PeriodicCallback(
-                    get_periodic_cooldown_algo_updating_function(sid),
-                    timedelta(hours=1),
-                )
-                cooldown_algo_updating.start()
+            cooldown_algo_updating = tornado.ioloop.PeriodicCallback(
+                get_periodic_cooldown_algo_updating_function(sid),
+                timedelta(hours=1),
+            )
+            cooldown_algo_updating.start()
 
-                log.debug(
-                    "start",
-                    "Backend server started, station %s port %s, ready to go."
-                    % (stations.station_id_friendly[sid], port),
-                )
+            log.debug(
+                "start",
+                "Backend server started, station %s port %s, ready to go."
+                % (stations.station_id_friendly[sid], port),
+            )
 
-                ioloop = tornado.ioloop.IOLoop.instance()
+            ioloop = tornado.ioloop.IOLoop.instance()
 
-                try:
-                    await asyncio.Event().wait()
-                finally:
-                    ioloop.stop()
-                    server.stop()
-                    log.info("stop", "Server has been shutdown.")
+            try:
+                await asyncio.Event().wait()
+            finally:
+                ioloop.stop()
+                server.stop()
+                log.info("stop", "Server has been shutdown.")

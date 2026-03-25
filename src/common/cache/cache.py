@@ -39,15 +39,10 @@ async def cache_connect():
     finally:
         if client:
             await client.close()
+            client = None
 
 
-async def cache_close() -> None:
-    global client
-    if client:
-        await client.close()
-
-
-async def cache_set(key: str, value: Any, *, save_in_memory: bool = False) -> None:
+async def cache_set(key: str, value: Any) -> None:
     global client
 
     if not client:

@@ -66,3 +66,4 @@ async def db_connect(auto_retry: bool = True):
         finally:
             if db_pool:
                 await db_pool.close()
+                db_pool = None

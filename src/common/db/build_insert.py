@@ -9,10 +9,15 @@ def build_insert(table: str, columns: list[str]) -> sql.Composed:
     )
 
 
-def build_insert_on_conflict_do_update(table: str, columns: list[str]) -> sql.Composed:
-    return sql.SQL("{insert} ON CONFLICT DO UPDATE SET {updates}").format(
+def build_insert_on_conflict_do_update(
+    table: str, columns: list[str], conflict_clause: sql.SQL
+) -> sql.Composed:
+    return sql.SQL(
+        "{insert} ON CONFLICT {conflict_clause} DO UPDATE SET {updates}"
+    ).format(
         insert=build_insert(table, columns),
-        updates=sql.SQL(" ").join(
+        conflict_clause=conflict_clause,
+        updates=sql.SQL(", ").join(
             sql.SQL("{column} = {placeholder}").format(
                 column=sql.Identifier(column), placeholder=sql.Placeholder(name=column)
             )

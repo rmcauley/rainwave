@@ -30,10 +30,8 @@ async def update_user_rating_acl(
         user_rating_acl[song_id][user_id] = True
 
     await asyncio.gather(
-        cache_set_station(sid, "user_rating_acl", user_rating_acl, save_in_memory=True),
-        cache_set_station(
-            sid, "user_rating_acl_song_index", songs, save_in_memory=True
-        ),
+        cache_set_station(sid, "user_rating_acl", user_rating_acl),
+        cache_set_station(sid, "user_rating_acl_song_index", songs),
     )
 
 

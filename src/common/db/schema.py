@@ -4,7 +4,13 @@ from .cursor import RainwaveCursor, get_cursor
 
 async def create_index(cursor: RainwaveCursor, table: str, columns: list[str]) -> None:
     name = "%s_%s_idx" % (table, "_".join(columns))
-    await cursor.update("CREATE INDEX %s ON %s (%s)", (name, table, ",".join(columns)))
+    await cursor.update(
+        sql.SQL("CREATE INDEX {name} ON {table} ({columns})").format(
+            name=sql.Identifier(name),
+            table=sql.Identifier(table),
+            columns=sql.SQL(", ").join(map(sql.Identifier, columns)),
+        )
+    )
 
 
 async def create_delete_fk(
@@ -23,11 +29,11 @@ async def create_delete_fk(
     query = sql.SQL(
         "ALTER TABLE {linking_table} ADD CONSTRAINT {constraint_name} FOREIGN KEY ({key}) REFERENCES {foreign_table} ({foreign_key}) ON DELETE CASCADE"
     ).format(
-        linking_table=linking_table,
+        linking_table=sql.Identifier(linking_table),
         constraint_name=constraint_name,
-        key=key,
-        foreign_table=foreign_table,
-        foreign_key=foreign_key,
+        key=sql.Identifier(key),
+        foreign_table=sql.Identifier(foreign_table),
+        foreign_key=sql.Identifier(foreign_key),
     )
     await cursor.update(query)
 
@@ -48,11 +54,11 @@ async def create_null_fk(
     query = sql.SQL(
         "ALTER TABLE {linking_table} ADD CONSTRAINT {constraint_name} FOREIGN KEY ({key}) REFERENCES {foreign_table} ({foreign_key}) ON DELETE SET NULL"
     ).format(
-        linking_table=linking_table,
+        linking_table=sql.Identifier(linking_table),
         constraint_name=constraint_name,
-        key=key,
-        foreign_table=foreign_table,
-        foreign_key=foreign_key,
+        key=sql.Identifier(key),
+        foreign_table=sql.Identifier(foreign_table),
+        foreign_key=sql.Identifier(foreign_key),
     )
     await cursor.update(query)
 

@@ -1,5 +1,6 @@
 from typing import TypedDict
 
+from psycopg import sql
 from pydantic import BaseModel, IPvAnyAddress
 import pydantic
 
@@ -83,7 +84,9 @@ class AddListener(IcecastHandler):
             }
             await cursor.update(
                 build_insert_on_conflict_do_update(
-                    "r4_listeners", list(to_upsert.keys())
+                    "r4_listeners",
+                    list(to_upsert.keys()),
+                    sql.SQL("(user_id)"),
                 ),
                 to_upsert,
             )
