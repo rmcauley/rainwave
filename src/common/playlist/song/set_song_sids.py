@@ -1,4 +1,7 @@
+from psycopg import sql
+
 from common import log
+from common.db.build_insert import build_insert_on_conflict_do_update
 from common.db.cursor import RainwaveCursor
 from common.playlist.album.model.album_on_station import AlbumOnStation
 from common.playlist.song.get_album_for_song import get_album_for_song
@@ -32,14 +35,12 @@ async def set_song_sids(
                     cursor, existing_album.id, sid
                 )
     for sid in new_sids:
+        to_insert = {"song_id": song_id, "sid": sid, "song_exists": True}
         await cursor.update(
-            """
-            INSERT INTO r4_song_sid 
-                (song_id, sid, song_exists) 
-            VALUES (%s, %s, TRUE) 
-            ON CONFLICT DO UPDATE SET song_exists = TRUE
-            """,
-            (song_id, sid),
+            build_insert_on_conflict_do_update(
+                "r4_song_sid", to_insert, sql.SQL("(song_id, sid)")
+            ),
+            to_insert,
         )
         if existing_album:
             await AlbumOnStation.update_newest_song_time(cursor, existing_album.id, sid)

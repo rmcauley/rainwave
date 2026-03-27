@@ -4,6 +4,7 @@ from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 from common.db.cursor import get_cursor
 
+
 @handle_api_url("top_100")
 class Top100Songs(APIHandler):
     description = "Get the 100 highest-rated songs on the entirety of Rainwave, or by station if a station ID is specified in the arguments."
@@ -11,6 +12,7 @@ class Top100Songs(APIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "top_100"
+
     login_required = False
     sid_required = False
 
@@ -40,7 +42,7 @@ class Top100Songs(APIHandler):
                         song_rating_count DESC,
                         song_id
                     LIMIT 100
-""",
+                    """,
                     (self.sid,),
                     row_type=rainwave_typeddicts.Top100Item,
                 )
@@ -65,9 +67,10 @@ class Top100Songs(APIHandler):
                         song_rating DESC,
                         song_id
                     LIMIT 100
-""",
+                    """,
                     row_type=rainwave_typeddicts.Top100Item,
                 )
+
 
 @handle_api_html_url("top_100")
 class Top100SongsHTML(Top100Songs):

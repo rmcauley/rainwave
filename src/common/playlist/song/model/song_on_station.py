@@ -104,7 +104,7 @@ class SongOnStation:
     async def load(cursor: RainwaveCursor, song_id: int, sid: int) -> SongOnStation:
         song_on_station_data = await cursor.fetch_row(
             """
-            SELECT r4_songs.*, r4_albums.name AS album_name, r4_song_sid.*
+            SELECT r4_songs.*, r4_albums.album_name AS album_name, r4_song_sid.*
             FROM r4_songs
                 JOIN r4_albums USING (album_id)
                 JOIN r4_song_sid ON (r4_songs.song_id = r4_song_sid.song_id AND r4_song_sid.sid = %s)

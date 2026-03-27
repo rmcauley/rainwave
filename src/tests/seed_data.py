@@ -255,7 +255,7 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
                 album_name_searchable,
             )
             VALUES (%s, %s) RETURNING album_id
-""",
+            """,
             (name, name.lower(), year),
             var_type=int,
         )
@@ -288,7 +288,7 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
                     song_year)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING song_id
-""",
+                """,
                 (album_id, sid, filename, title, title.lower(), 180, track, 1, year),
                 var_type=int,
             )
@@ -304,7 +304,7 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
                     artist_order,
                 )
                 VALUES (%s, %s, %s)
-""",
+                """,
                 (song_id, artist_id, 0),
             )
             await cursor.update(

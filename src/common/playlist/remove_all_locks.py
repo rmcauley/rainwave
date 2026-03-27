@@ -7,6 +7,6 @@ async def remove_all_locks(cursor: RainwaveCursor, sid: int) -> None:
         (sid,),
     )
     await cursor.update(
-        "UPDATE r4_album_sid SET album_cool = FALSE AND album_cool_lowest = 0 WHERE sid = %s",
+        "UPDATE r4_album_sid SET album_cool = FALSE, album_cool_lowest = 0 WHERE sid = %s",
         (sid,),
     )

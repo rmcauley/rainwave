@@ -19,6 +19,6 @@ async def start_album_election_block(
                 AND album_id = %s
                 AND sid = %s
                 AND song_elec_blocked_num <= %s
-""",
+        """,
         ("album", num_elections, album_id, sid, num_elections),
     )

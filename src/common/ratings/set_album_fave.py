@@ -8,6 +8,6 @@ async def set_album_fave(
         """
         INSERT INTO r4_album_faves (album_id, user_id, album_fave) VALUES (%s, %s, %s)
         ON CONFLICT DO UPDATE SET album_fave = %s
-""",
+        """,
         (album_id, user_id, fave, fave),
     )

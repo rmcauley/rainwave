@@ -28,3 +28,20 @@ def build_insert_on_conflict_do_update(
             for column in columns
         ),
     )
+
+
+def build_update(
+    table: str, to_update: Mapping[str, object], where: sql.SQL | sql.Composed
+) -> sql.Composed:
+    columns = list(to_update.keys())
+    return sql.SQL("UPDATE {table} SET {updates} WHERE {where}").format(
+        table=sql.Identifier(table),
+        updates=sql.SQL(", ").join(
+            sql.SQL("{column} = {placeholder}").format(
+                column=sql.Identifier(column),
+                placeholder=sql.Placeholder(name=column),
+            )
+            for column in columns
+        ),
+        where=where,
+    )

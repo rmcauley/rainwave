@@ -6,9 +6,9 @@ async def get_groups_for_song(cursor: RainwaveCursor, song_id: int) -> list[Song
     group_rows = await cursor.fetch_all(
         """
         SELECT r4_groups.* 
-        FROM r4_song_group USING (song_id) 
+        FROM r4_song_group
             JOIN r4_groups USING (group_id) 
-        WHERE r4_songs.song_id = %s
+        WHERE r4_song_group.song_id = %s
         """,
         (song_id,),
         row_type=SongGroupRow,

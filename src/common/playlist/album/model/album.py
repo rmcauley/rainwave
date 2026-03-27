@@ -1,11 +1,17 @@
 from typing import TypedDict
 
+from psycopg import sql
+
+from common.db.build_insert import build_insert
 from common.db.cursor import RainwaveCursor
 
 from common.playlist.remove_diacritics import remove_diacritics
-from api.exceptions import APIException
 
 num_albums: dict[int, int] = {}
+
+
+class CouldNotUpsertAlbumError(Exception):
+    pass
 
 
 class AlbumRow(TypedDict):
@@ -26,21 +32,34 @@ class Album:
 
     @staticmethod
     async def upsert(cursor: RainwaveCursor, name: str) -> Album:
-        data = await cursor.fetch_row(
-            """
-            INSERT INTO 
-                r4_albums (album_name, album_name_searchable) 
-                VALUES (%(name)s, %(name_searchable)s)
-            ON CONFLICT DO UPDATE SET album_name = %(name)s, album_name_searchable = %(name_searchable)s
-            RETURNING *""",
-            ({"name": name, "name_searchable": remove_diacritics(name)}),
+        existing = await cursor.fetch_row(
+            "SELECT album_id, album_name, album_name_searchable, album_added_on FROM r4_albums WHERE album_name = %s",
+            (name,),
             row_type=AlbumRow,
         )
 
-        if data is None:
-            raise APIException("internal_error")
+        if not existing:
+            to_insert = {
+                "album_name": name,
+                "album_name_searchable": remove_diacritics(name),
+            }
 
-        return Album(data)
+            inserted = await cursor.fetch_row(
+                build_insert(
+                    "r4_albums",
+                    to_insert,
+                )
+                + sql.SQL(" RETURNING *"),
+                to_insert,
+                row_type=AlbumRow,
+            )
+
+            if inserted is None:
+                raise CouldNotUpsertAlbumError()
+
+            return Album(inserted)
+
+        return Album(existing)
 
     async def get_num_songs_for_station(self, cursor: RainwaveCursor, sid: int) -> int:
         return await cursor.fetch_guaranteed(
@@ -70,7 +89,7 @@ class Album:
         for sid in current_sids:
             if not sid in new_sids:
                 await cursor.update(
-                    "UPDATE r4_album_sid SET album_exists = FALSE AND album_song_count = 0 WHERE album_id = %s AND sid = %s",
+                    "UPDATE r4_album_sid SET album_exists = FALSE, album_song_count = 0 WHERE album_id = %s AND sid = %s",
                     (self.id, sid),
                 )
 
@@ -138,7 +157,7 @@ class Album:
                 GROUP BY album_id, sid, user_id 
                 HAVING NULLIF(ROUND(CAST(AVG(song_rating_user) AS NUMERIC), 1), 0) IS NOT NULL 
                 ON CONFLICT DO NOTHING
-""",
+                """,
                 (num_songs, self.id, sid),
             )
 

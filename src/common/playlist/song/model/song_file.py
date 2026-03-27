@@ -4,7 +4,10 @@ from psycopg import sql
 from typing import TypedDict
 
 
-from common.db.build_insert import build_insert_on_conflict_do_update
+from common.db.build_insert import (
+    build_insert,
+    build_update,
+)
 from common.db.cursor import RainwaveCursor
 from common.playlist.remove_diacritics import remove_diacritics
 from common.playlist.album.model.album import Album
@@ -109,15 +112,35 @@ class SongFile:
         }
 
         song_row = await cursor.fetch_row(
-            build_insert_on_conflict_do_update(
-                "r4_songs",
-                to_upsert,
-                sql.SQL("(song_filename)"),
-            )
-            + sql.SQL(" RETURNING *"),
-            to_upsert,
+            "SELECT * FROM r4_songs WHERE song_filename = %s",
+            (self.filename,),
             row_type=SongFileRow,
         )
+
+        if not song_row:
+            song_row = await cursor.fetch_row(
+                build_insert(
+                    "r4_songs",
+                    to_upsert,
+                )
+                + sql.SQL(" RETURNING *"),
+                to_upsert,
+                row_type=SongFileRow,
+            )
+        else:
+            song_row = await cursor.fetch_row(
+                build_update(
+                    "r4_songs",
+                    to_upsert,
+                    sql.SQL("song_id = {song_id}").format(
+                        {"song_id": sql.Placeholder(name="song_id")}
+                    ),
+                )
+                + sql.SQL(" RETURNING *"),
+                to_upsert,
+                row_type=SongFileRow,
+            )
+
         if song_row is None:
             raise Exception(f"{self.filename} failed to insert into database.")
 

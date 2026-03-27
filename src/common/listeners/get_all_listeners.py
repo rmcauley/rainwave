@@ -19,7 +19,7 @@ async def get_listeners_dict(cursor: RainwaveCursor, sid: int) -> list[AllListen
             WHERE r4_listeners.sid = %s
                 AND r4_listeners.user_id > 1
             ORDER BY COALESCE(radio_username, username)
-""",
+        """,
         (sid,),
         row_type=AllListenersRow,
     )

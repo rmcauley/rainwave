@@ -1,5 +1,8 @@
 from typing import TypedDict
 
+from psycopg import sql
+
+from common.db.build_insert import build_insert
 from common.db.cursor import RainwaveCursor
 from common.playlist.remove_diacritics import remove_diacritics
 
@@ -25,15 +28,24 @@ class Artist:
 
     @staticmethod
     async def upsert(cursor: RainwaveCursor, name: str) -> Artist:
-        upserted = await cursor.fetch_row(
-            """
-            INSERT INTO r4_artists (artist_name, artist_name_searchable) VALUES (%s, %s)
-            ON CONFLICT DO NOTHING
-            RETURNING *
-            """,
-            (name, remove_diacritics(name)),
+        existing = await cursor.fetch_row(
+            "SELECT artist_id, artist_name, artist_name_searchable FROM r4_artists WHERE artist_name = %s",
+            (name,),
             row_type=ArtistRow,
         )
-        if upserted is None:
-            raise CouldNotUpsertArtistError(f"Could not upsert artist with name {name}")
-        return Artist(upserted)
+        if not existing:
+            to_insert = {
+                "artist_name": name,
+                "artist_name_searchable": remove_diacritics(name),
+            }
+            inserted = await cursor.fetch_row(
+                build_insert("r4_artists", to_insert) + sql.SQL(" RETURNING *"),
+                to_insert,
+                row_type=ArtistRow,
+            )
+            if inserted is None:
+                raise CouldNotUpsertArtistError(
+                    f"Could not upsert artist with name {name}"
+                )
+            return Artist(inserted)
+        return Artist(existing)

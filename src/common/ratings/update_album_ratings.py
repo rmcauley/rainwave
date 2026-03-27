@@ -41,7 +41,7 @@ async def update_album_ratings(
                 AND sid = %s
                 AND song_exists = TRUE
                 AND user_id = %s
-""",
+            """,
             (album_id, sid, user_id),
             row_type=GetUpdatedAlbumRatingRow,
         )
@@ -58,7 +58,7 @@ async def update_album_ratings(
                 (album_rating_user, album_rating_complete, user_id, album_id, sid) 
             VALUES (%(album_rating)s, %(rating_complete)s, %(user_id)s, %(album_id)s, %(sid)s)
             ON CONFLICT DO UPDATE SET album_rating_user = %(album_rating)s, album_rating_complete = %(rating_complete)s
-""",
+            """,
             {
                 "album_rating": album_rating,
                 "rating_complete": rating_complete,

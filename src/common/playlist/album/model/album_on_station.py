@@ -231,7 +231,7 @@ class AlbumOnStation:
             JOIN r4_groups ON (r4_group_sid.group_id = r4_groups.group_id) 
             WHERE song_verified = TRUE AND r4_songs.album_id = %s 
             ORDER BY group_name
-""",
+            """,
             (self.sid, self.sid, self.album_id),
             row_type=AlbumOnStationExtraDetailsGenreRow,
         )
@@ -256,7 +256,7 @@ class AlbumOnStation:
                 )
                 WHERE album_id = %s
                 GROUP BY song_rating_user
-""",
+            """,
             (self.sid, self.album_id),
             row_type=RatingMapReadyDict,
         )
@@ -286,7 +286,7 @@ class AlbumOnStation:
                 JOIN phpbb_users ON (r4_song_ratings.user_id = phpbb_users.user_id AND phpbb_users.radio_inactive = FALSE) 
                 WHERE r4_songs.album_id = %s 
                 GROUP BY rating
-""",
+                """,
                 (sid, self.album_id),
                 row_type=RatingMapReadyDict,
             )
@@ -327,13 +327,13 @@ class AlbumOnStation:
     async def update_newest_song_time(
         cursor: RainwaveCursor, album_id: int, sid: int
     ) -> None:
-        newest_song = cursor.fetch_guaranteed(
+        newest_song = await cursor.fetch_guaranteed(
             """
-            SELECT MIN(song_added_on) 
+            SELECT MAX(song_added_on) 
             FROM r4_songs 
                 JOIN r4_song_sid USING (song_id) 
             WHERE album_id = %s AND sid = %s
-        """,
+            """,
             (album_id, sid),
             default=0,
             var_type=int,

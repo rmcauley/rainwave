@@ -23,15 +23,16 @@ async def update_song_rating(cursor: RainwaveCursor, song_id: int) -> tuple[floa
     rating, rating_count = rating_calculator(ratings)
 
     log.debug("song_rating", "%s ratings for %s" % (rating_count, song_id))
-    if rating > 0 and rating_count > config.rating_threshold_for_calc:
-        log.debug(
-            "song_rating",
-            "rating update: %s for %s" % (rating, song_id),
-        )
-        await cursor.update(
-            "UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s",
-            (rating, rating_count, song_id),
-        )
-        return (rating, rating_count)
-    else:
-        return (0, 0)
+
+    if rating_count < config.rating_threshold_for_calc:
+        rating = 0
+
+    log.debug(
+        "song_rating",
+        "rating update: %s for %s" % (rating, song_id),
+    )
+    await cursor.update(
+        "UPDATE r4_songs SET song_rating = %s, song_rating_count = %s WHERE song_id = %s",
+        (rating, rating_count, song_id),
+    )
+    return (rating, rating_count)

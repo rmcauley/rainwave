@@ -41,7 +41,7 @@ async def get_all_groups_for_power_hour(
         WHERE r4_song_sid.sid = %s AND song_exists = TRUE 
         GROUP BY group_id, group_name 
         ORDER BY group_name
-""",
+        """,
         (
             sid,
             sid,

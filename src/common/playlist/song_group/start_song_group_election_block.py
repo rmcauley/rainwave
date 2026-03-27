@@ -18,6 +18,6 @@ async def start_song_group_election_block(
             AND r4_song_group.group_id = %s
             AND r4_song_sid.sid = %s
             AND song_elec_blocked_num < %s
-""",
+        """,
         ("group", num_elections, group_id, sid, num_elections),
     )
