@@ -2,6 +2,7 @@ from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
 from api.rainwave_dto import Api4UserSearchPostRequest
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common import config
 from common.db.cursor import get_cursor
 
@@ -11,6 +12,10 @@ class UserSearchRequest(APIHandler):
     description = "Returns a user ID and station they're currently tuned to based on the username provided."
     auth_required = False
     sid_required = False
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "admin_user_search_result"
 
     async def post(self):
         input = self.get_validated_input(Api4UserSearchPostRequest)

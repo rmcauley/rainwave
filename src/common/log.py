@@ -73,6 +73,18 @@ def init(logfile: str | None = None, loglevel: LOG_LEVELS = "warning") -> None:
     critical("test", "Critical test.")
 
 
+def shutdown() -> None:
+    global log
+
+    for logger_name in ("tornado.general", "tornado.application"):
+        logger = logging.getLogger(logger_name)
+        for handler in list(logger.handlers):
+            logger.removeHandler(handler)
+            handler.close()
+
+    log = None
+
+
 def _massage_line(key: str, message: str, user_id: int | None) -> str:
     return " %-15s [%-15s] %s" % (f"u{user_id}", key, message)
 

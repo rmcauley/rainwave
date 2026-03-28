@@ -52,7 +52,7 @@ class ListenerDetailRequest(APIHandler):
             )
 
             if not user:
-                raise APIException("404", None, 404)
+                raise APIException("404", None, status_code=404)
 
             top_albums = await cursor.fetch_all(
                 """

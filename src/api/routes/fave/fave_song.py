@@ -4,6 +4,7 @@ from api import rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common.db.build_insert import build_insert_on_conflict_do_update
 from common.db.cursor import get_cursor
 
@@ -15,6 +16,10 @@ class SubmitSongFave(RegisteredUserAPIHandler):
     sid_required = False
     description = "Fave or un-fave a song."
     sync_across_sessions = True
+
+    @property
+    def return_name(cls) -> RainwaveResponseKey:
+        return "fave_song_result"
 
     async def post(self) -> None:
         input = self.get_validated_input(rainwave_dto.Api4FaveSongPostRequest)

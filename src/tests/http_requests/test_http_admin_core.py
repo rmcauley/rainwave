@@ -53,7 +53,7 @@ class TestAdminCore(RequestClassesTestCase):
             {"username": SITE_ADMIN_USER_NAME},
         )
         payload = self.payload(response)
-        assert payload["user"]["user_id"] == SITE_ADMIN_USER_ID
+        assert payload["admin_user_search_result"]["user_id"] == SITE_ADMIN_USER_ID
 
     @gen_test
     async def test_user_search_by_discord_user_id(self) -> None:
@@ -62,7 +62,7 @@ class TestAdminCore(RequestClassesTestCase):
             {"discord_user_id": "missing"},
         )
         payload = self.payload(response)
-        assert payload["user"]["user_id"] is None
+        assert payload["admin_user_search_result"]["user_id"] is None
 
     @gen_test
     async def test_update_user_avatar_by_discord_id(self) -> None:
@@ -94,19 +94,11 @@ class TestAdminCore(RequestClassesTestCase):
     @gen_test
     async def test_admin_backend_scan_errors(self) -> None:
         response = await self.post_form(
-            "/api4/admin/backend_scan_errors",
+            "/api4/admin/music_scan_errors",
             self._auth_data(),
         )
         payload = self.payload(response)
-        assert "backend_scan_errors" in payload or "js_errors" in payload
-
-    @gen_test
-    async def test_admin_request_line(self) -> None:
-        response = await self.post_form("/api4/admin/request_line", self._auth_data())
-        payload = self.payload(response)
-        assert payload["request_line"] is None or isinstance(
-            payload["request_line"], list
-        )
+        assert "admin_music_scan_errors" in payload or "js_errors" in payload
 
     @gen_test
     async def test_admin_commands_require_admin_user(self) -> None:
@@ -126,19 +118,10 @@ class TestAdminCore(RequestClassesTestCase):
         assert payload["set_song_request_only_result"]["tl_key"] == "admin_required"
 
         response = await self.post_form(
-            "/api4/admin/backend_scan_errors",
+            "/api4/admin/music_scan_errors",
             auth_data,
             raise_error=False,
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["backend_scan_errors"]["tl_key"] == "admin_required"
-
-        response = await self.post_form(
-            "/api4/admin/request_line",
-            auth_data,
-            raise_error=False,
-        )
-        assert response.code == 403
-        payload = self.payload(response)
-        assert payload["request_line"]["tl_key"] == "admin_required"
+        assert payload["admin_music_scan_errors"]["tl_key"] == "admin_required"

@@ -1,3 +1,4 @@
+import os
 from typing import Literal, TypedDict, TypeAlias
 
 
@@ -69,7 +70,7 @@ api_url = "127.0.0.1"
 api_base_port = 20000
 
 # How many web processes (not threads) to start
-api_num_processes = 4
+api_num_processes = 1
 
 # What IPs do connections from the backend (music) come from as the API (web) sees it?
 # If everything is on the same machine, leave it at this!
@@ -100,11 +101,11 @@ enforce_ssl = False
 backend_port = 21000
 
 # Database configuration
-db_name = "rainwave"
-db_host: str | None = None
-db_port: str | None = None
-db_user: str | None = "user"
-db_password: str | None = "password"
+db_host = os.getenv("RW_TEST_DB_HOST", None)
+db_port = os.getenv("RW_TEST_DB_PORT", None)
+db_user = os.getenv("RW_TEST_DB_USER", None)
+db_password = os.getenv("RW_TEST_DB_PASSWORD", None)
+db_name = os.getenv("RW_TEST_DB_NAME", "rainwave_test")
 
 # What ports to use internally for messaging.
 # You don't need to install anything or setup a server
@@ -114,9 +115,6 @@ db_password: str | None = "password"
 zeromq_pub = "tcp://127.0.0.1:19998"
 zeromq_sub = "tcp://127.0.0.1:19999"
 
-# memcache_fake = True is for unit testing, set to False to use a real memcache server.
-# Using True in production will cause a whole ton of problems for you. :)
-memcache_fake = True
 memcache_host = "127.0.0.1"
 memcache_port = 11211
 memcache_connect_timeout = 1.0

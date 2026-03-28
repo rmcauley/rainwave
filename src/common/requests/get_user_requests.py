@@ -66,7 +66,7 @@ async def get_user_requests(
             r4_album_sid.album_rating AS album_rating,
             album_rating_complete,
             album_art_url,
-            artist_parseable,
+            song_artist_parseable AS artist_parseable,
             song_link_text,
             song_url
         FROM r4_request_store

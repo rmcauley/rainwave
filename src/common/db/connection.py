@@ -15,7 +15,7 @@ db_connection_errors = (OperationalError, InterfaceError)
 
 def get_pool() -> AsyncConnectionPool:
     if not db_pool:
-        raise APIException("internal_error", "No database connection.", http_code=500)
+        raise APIException("internal_error", "No database connection.", status_code=500)
     return db_pool
 
 
@@ -24,7 +24,7 @@ async def db_connect(auto_retry: bool = True):
     global db_pool
     if db_pool:
         raise APIException(
-            "internal_error", "db_connect was called twice.", http_code=500
+            "internal_error", "db_connect was called twice.", status_code=500
         )
 
     name = config.db_name

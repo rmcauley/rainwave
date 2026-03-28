@@ -82,7 +82,7 @@ async def advance_timeline_post_process(sid: int) -> None:
         update_tunein(sid, timeline)
 
 
-async def advance_timeline(sid: int, trigger_post_process: bool = True) -> str:
+async def advance_timeline(sid: int, trigger_post_process: bool) -> str:
     async def _advance_timeline_post_process_with_sid() -> None:
         await advance_timeline_post_process(sid)
 

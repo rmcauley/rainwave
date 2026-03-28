@@ -7,21 +7,19 @@ from common.locale.rainwave_locale import RainwaveLocale
 
 
 class APIException(HTTPError):
-    http_status: int
     tl_key: rainwave_typeddicts.TranslationKey
 
     def __init__(
         self,
         translation_key: rainwave_typeddicts.TranslationKey,
         text: str | None = None,
-        http_status: int = 200,
+        status_code: int = 200,
         **kwargs: Any
     ) -> None:
-        super().__init__(http_status, text, **kwargs)
+        super().__init__(status_code, text, **kwargs)
         self.tl_key = translation_key
         self.reason = text
         self.extra = kwargs
-        self.http_status = http_status
 
     def to_api(self, request_locale: RainwaveLocale) -> RainwaveErrorObject:
         rw_error_obj: RainwaveErrorObject = {

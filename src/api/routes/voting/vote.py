@@ -39,7 +39,7 @@ class SubmitVote(AuthRequiredAPIHandler):
             raise APIException(
                 "server_just_started",
                 "Rainwave is Rebooting, Please Try Again in a Few Minutes",
-                http_code=500,
+                status_code=500,
             )
 
         for timeline_entry in timeline.upnext:

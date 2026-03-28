@@ -13,6 +13,9 @@ class APIHandler(RainwaveHandler):
     async def post(self) -> None:
         raise NotImplementedError()
 
+    def write_error(self, status_code: int, **kwargs: Any) -> None:
+        self.response = self.get_json_error_response(status_code, **kwargs)
+
     def finish(self, chunk: Any = None) -> Future[None]:
         if not self.websocket_handling:
             self._write_rainwave_output()

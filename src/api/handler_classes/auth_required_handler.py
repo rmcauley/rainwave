@@ -11,6 +11,6 @@ class AuthRequiredAPIHandler(APIHandler):
         await super().prepare()
 
         if not self.optional_user:
-            raise APIException("auth_required", http_code=403)
+            raise APIException("auth_required", status_code=403)
 
         self.user = self.optional_user

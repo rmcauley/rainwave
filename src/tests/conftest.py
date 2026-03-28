@@ -135,7 +135,7 @@ def _start_test_api_server() -> None:
     _progress(f"starting API server on port {_get_test_api_port()}")
     _api_server_log = api_server_log_path.open("w", encoding="utf-8")
     _api_server_process = subprocess.Popen(
-        ["uv", "run", "python", "src/tests/run_test_api_server.py"],
+        ["uv", "run", "python", "src/rw_api.py", "--testmode"],
         cwd=PROJECT_ROOT.parent,
         env=env,
         stdout=_api_server_log,

@@ -18,13 +18,13 @@ _sub_stream = ZMQStream(sub)
 
 def set_sub_callback(methd: Callable[..., Any]) -> None:
     if not _sub_stream:
-        raise APIException("internal_error", http_code=500)
+        raise APIException("internal_error", status_code=500)
     _sub_stream.on_recv(methd)
 
 
 def publish(dct: dict[str, Any]) -> None:
     if not _pub:
-        raise APIException("internal_error", http_code=500)
+        raise APIException("internal_error", status_code=500)
     _pub.send_string(orjson.dumps(dct).decode("utf-8"))
 
 

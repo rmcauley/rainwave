@@ -10,6 +10,6 @@ def get_remote_ip_or_throw(ip_address: Any) -> str:
         raise APIException(
             "auth_failed",
             "Anonymous users need their IP address visible to Rainwave.",
-            http_code=400,
+            status_code=400,
         )
     return ip_address_str

@@ -11,4 +11,4 @@ class RegisteredUserAPIHandler(AuthRequiredAPIHandler):
         await super().prepare()
 
         if self.user.id == 1:
-            raise APIException("login_required", http_code=403)
+            raise APIException("login_required", status_code=403)

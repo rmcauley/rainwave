@@ -3,6 +3,7 @@ from typing import Any
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common import config
 from common.db.cursor import get_cursor
 from pydantic import BaseModel, field_validator
@@ -27,6 +28,10 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
     sid_required = False
     description = "Accessible only to localhost connections, for wormgas."
 
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "enable_perks_by_discord_ids_result"
+
     async def post(self):
         input = self.get_validated_input(EnablePerksByDiscordIdsPostRequest)
         async with get_cursor() as cursor:
@@ -36,9 +41,19 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
                     f"{self.request.remote_ip} is not allowed to access this endpoint.",
                 )
 
-            list_as_tuple = tuple(input.discord_user_ids)
-
             await cursor.update(
-                "UPDATE phpbb_users SET group_id = 8 WHERE discord_user_id IN %s AND group_id NOT IN %s AND group_id != 8",
-                (list_as_tuple, PRIVILEGED_GROUP_IDS),
+                """
+                UPDATE phpbb_users
+                SET group_id = 8
+                WHERE
+                    discord_user_id = ANY(%s)
+                    AND group_id != 8
+                    AND NOT (group_id = ANY(%s))
+                """,
+                (input.discord_user_ids, list(PRIVILEGED_GROUP_IDS)),
             )
+            self.response["enable_perks_by_discord_ids_result"] = {
+                "success": True,
+                "text": "Processed Discord user IDs.",
+                "tl_key": "yes",
+            }

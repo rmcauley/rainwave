@@ -4,15 +4,20 @@ from api.exceptions import APIException
 from api.handle_url import handle_api_url
 
 
-from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
+from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common.db.cursor import get_cursor
 
 
 @handle_api_url("fave_all_songs")
-class SubmitFaveAllSongs(AuthRequiredAPIHandler):
+class SubmitFaveAllSongs(RegisteredUserAPIHandler):
     sid_required = True
     perks_required = True
     description = "Faves or un-faves all songs in an album.  Only songs on station ID provided will be faved."
+
+    @property
+    def return_name(cls) -> RainwaveResponseKey:
+        return "fave_all_songs_result"
 
     async def post(self):
         input = self.get_validated_input(rainwave_dto.Api4FaveAllSongsPostRequest)

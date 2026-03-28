@@ -80,7 +80,7 @@ async def get_station_info(
         raise APIException(
             "server_just_started",
             "Rainwave is Rebooting, Please Try Again in a Few Minutes",
-            http_code=500,
+            status_code=500,
         )
 
     sched_current = timeline_api["sched_current"]

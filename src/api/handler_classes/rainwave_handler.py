@@ -16,7 +16,6 @@ from api import fieldtypes
 from api import rainwave_typeddicts
 from api.exceptions import APIException
 from api.helpers.paginated_requests import get_pagination_params
-from api.rainwave_typeddicts import Error as RainwaveErrorObject
 from api.rainwave_return_key_to_open_api import RainwaveResponse, RainwaveResponseKey
 from api.routes.auth.errors import OAuthRejectedError
 from api.websocket.websocket_message import RainwaveWebsocketMessage
@@ -66,14 +65,14 @@ class RainwaveHandler(RequestHandler, ABC):
     optional_user: UserBase | None = None
     locale: RainwaveLocale = translations["en-CA"]  # type: ignore
     response: RainwaveResponse = {}
-    error_response: dict[RainwaveResponseKey, RainwaveErrorObject] = {}
-
     startclock: float
     sid: int
 
     websocket_handling: bool
     websocket_message: RainwaveWebsocketMessage | None
-    websocket_uuid: str
+    websocket_uuid: str | None
+    websocket_sid: int | None
+    _rainwave_output_written: bool
 
     @property
     @abstractmethod
@@ -93,31 +92,36 @@ class RainwaveHandler(RequestHandler, ABC):
         websocket_uuid: str | None = None,
         **kwargs: Any,
     ) -> None:
+        # Properties that are websocket-explicit and should be defined per-class-instance
         self.websocket_handling = websocket_handling
         self.websocket_message = websocket_message
-        if websocket_user:
+        self.websocket_sid = websocket_sid
+        self.websocket_uuid = websocket_uuid
+        self._rainwave_output_written = False
+
+        # Properties where websocket arguments override HTTP processing
+        if websocket_user is not None:
             self.optional_user = websocket_user
-        if websocket_sid:
-            self.sid = websocket_sid
-        if websocket_locale:
+        if websocket_locale is not None:
             self.rainwave_locale = websocket_locale
-        if websocket_uuid:
-            self.websocket_uuid = websocket_uuid
+
         super().__init__(application, request, *args, **kwargs)
 
     # Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
     async def prepare(self) -> None:
         self.startclock = time.monotonic()
+        self._rainwave_output_written = False
 
         user: UserBase | None = self.optional_user
         if not self.websocket_handling:
             user = await self._prepare_http()
-
-        if not self.sid:
-            raise APIException("missing_station_id", http_code=400)
+        else:
+            if self.websocket_sid is None:
+                raise APIException("missing_station_id", status_code=400)
+            self.sid = self.websocket_sid
 
         if not user and self.auth_required:
-            raise APIException("auth_required", http_code=403)
+            raise APIException("auth_required", status_code=403)
 
         self.permission_checks(user, self.sid)
 
@@ -125,7 +129,6 @@ class RainwaveHandler(RequestHandler, ABC):
 
     async def _prepare_http(self) -> UserBase | None:
         self.response = {}
-        self.error_response = {}
 
         if (
             self.local_only
@@ -140,19 +143,19 @@ class RainwaveHandler(RequestHandler, ABC):
 
         self.rainwave_locale = get_browser_locale(self)
 
-        sid = self.sid or fieldtypes.integer(self.get_cookie("r4_sid", None))
+        sid = fieldtypes.integer(self.get_cookie("r4_sid", None))
 
         request_sid_argument = fieldtypes.integer(self.get_argument("sid", None))
         if request_sid_argument is not None:
             sid = request_sid_argument
 
         if sid is None and self.sid_required:
-            raise APIException("missing_station_id", http_code=400)
+            raise APIException("missing_station_id", status_code=400)
 
         if sid is None:
             sid = config.default_station
         elif not sid in stations.station_ids:
-            raise APIException("invalid_station_id", http_code=400)
+            raise APIException("invalid_station_id", status_code=400)
 
         self.sid = sid
 
@@ -173,21 +176,21 @@ class RainwaveHandler(RequestHandler, ABC):
 
     def permission_checks(self, user: UserBase | None, sid: int) -> None:
         if self.auth_required and not user:
-            raise APIException("missing_argument", argument="user_id", http_code=400)
+            raise APIException("missing_argument", argument="user_id", status_code=400)
         if (self.login_required or self.admin_required) and (
             not user or user.is_anonymous()
         ):
-            raise APIException("login_required", http_code=403)
+            raise APIException("login_required", status_code=403)
         if self.tunein_required and (not user or not user.is_tunedin()):
-            raise APIException("tunein_required", http_code=403)
+            raise APIException("tunein_required", status_code=403)
         if self.admin_required and (not user or not user.is_admin()):
-            raise APIException("admin_required", http_code=403)
+            raise APIException("admin_required", status_code=403)
         if self.perks_required and (not user or not user.has_perks()):
-            raise APIException("perks_required", http_code=403)
+            raise APIException("perks_required", status_code=403)
 
         if self.unlocked_listener_only:
             if user is None:
-                raise APIException("auth_required", http_code=403)
+                raise APIException("auth_required", status_code=403)
             user_lock_sid = (
                 user.private_data["lock_sid"] if user.private_data["lock"] else None
             )
@@ -196,7 +199,7 @@ class RainwaveHandler(RequestHandler, ABC):
                     "unlocked_only",
                     station=config.stations[user_lock_sid]["name"],
                     lock_counter=user.private_data["lock_counter"],
-                    http_code=403,
+                    status_code=403,
                 )
 
     async def rainwave_auth(self, cursor: RainwaveCursor, sid: int) -> UserBase | None:
@@ -224,22 +227,25 @@ class RainwaveHandler(RequestHandler, ABC):
                     "invalid_argument",
                     argument="user_id",
                     reason="missing or not numeric.",
-                    http_code=400,
+                    status_code=400,
                 )
 
             if not "key" in self.request.arguments:
-                raise APIException("missing_argument", argument="key", http_code=400)
+                raise APIException("missing_argument", argument="key", status_code=400)
 
             api_key = self.get_argument("key")
             if not is_valid_api_key(api_key):
-                raise APIException("auth_failed", "Invalid API key.", http_code=400)
+                raise APIException("auth_failed", "Invalid API key.", status_code=400)
+
+        if user_id is None and api_key is None:
+            return None
 
         if user_id is None:
             raise APIException(
                 "invalid_argument",
                 argument="user_id",
                 reason="missing or not numeric.",
-                http_code=400,
+                status_code=400,
             )
 
         if api_key is None:
@@ -247,7 +253,7 @@ class RainwaveHandler(RequestHandler, ABC):
                 "invalid_argument",
                 argument="api_key",
                 reason="missing or invalid.",
-                http_code=400,
+                status_code=400,
             )
 
         if user_id == 1:
@@ -266,10 +272,15 @@ class RainwaveHandler(RequestHandler, ABC):
         )
 
     def _write_rainwave_output(self) -> None:
+        if self._rainwave_output_written:
+            raise RuntimeError(
+                f"{self.__class__.__name__} attempted to write Rainwave output twice."
+            )
         if self.pretty_print_html:
             self._write_rainwave_output_json_pretty_print_html()
         else:
             self._write_rainwave_output_json()
+        self._rainwave_output_written = True
 
     def _write_rainwave_output_json(self) -> None:
         exectime = time.monotonic() - self.startclock
@@ -282,31 +293,27 @@ class RainwaveHandler(RequestHandler, ABC):
             "exectime": int(exectime),
             "time": int(timestamp()),
         }
-        if self.error_response:
-            self.write(
-                orjson.dumps(
-                    cast(dict[str, object], self.response) | self.error_response
-                )
-            )
-        else:
-            self.write(orjson.dumps(self.response))
+        self.write(orjson.dumps(self.response))
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         if (
             self.content_type == "application/json"
             or self.content_type == "text/javascript"
         ):
-            self._write_error_json(status_code, **kwargs)
+            self.write(
+                orjson.dumps(self.get_json_error_response(status_code, **kwargs))
+            )
         else:
             self._write_error_html(status_code, **kwargs)
 
-    def _write_error_json(self, status_code: int, **kwargs: Any) -> None:
-        self.response = {}
+    def get_json_error_response(
+        self, status_code: int, **kwargs: Any
+    ) -> RainwaveResponse:
+        response: RainwaveResponse = {}
         if "message_id" in self.response:
-            self.response = {
-                "message_id": self.response["message_id"],
-            }
-        self.error_response[self.return_name] = {
+            response["message_id"] = self.response["message_id"]
+
+        response["error"] = {
             "tl_key": "internal_error",
             "text": self.locale.translate("internal_error"),
             "code": 500,
@@ -317,15 +324,15 @@ class RainwaveHandler(RequestHandler, ABC):
             exc = kwargs["exc_info"][1]
 
             if isinstance(exc, db_connection_errors):
-                self.error_response["error"] = {
+                response["error"] = {
                     "code": 500,
                     "tl_key": "db_error_retry",
                     "text": self.locale.translate("db_error_retry"),
                 }
             elif isinstance(exc, APIException):
-                self.error_response[self.return_name] = exc.to_api(self.locale)
+                response["error"] = exc.to_api(self.locale)
             else:
-                self.error_response["error"] = {
+                response["error"] = {
                     "code": status_code,
                     "tl_key": "internal_error",
                     "text": repr(exc),
@@ -338,13 +345,13 @@ class RainwaveHandler(RequestHandler, ABC):
                     ),
                 }
         else:
-            self.error_response["error"] = {
+            response["error"] = {
                 "code": 500,
                 "tl_key": "internal_error",
                 "text": self.locale.translate("internal_error"),
             }
 
-        self._write_rainwave_output()
+        return response
 
     def _write_error_html(self, status_code: int, **kwargs: Any) -> None:
         title = "HTTP %s - %s" % (
@@ -518,7 +525,7 @@ class RainwaveHandler(RequestHandler, ABC):
                     raise APIException(
                         "missing_argument",
                         argument=field,
-                        http_code=400,
+                        status_code=400,
                     )
 
                 # everything else -> invalid argument
@@ -531,12 +538,12 @@ class RainwaveHandler(RequestHandler, ABC):
                 raise APIException(
                     "invalid_argument",
                     argument=field,
-                    http_code=400,
+                    status_code=400,
                     reason=reason,
                 )
 
             # fallback (normally unreachable because loop handles all errors)
-            raise APIException("invalid_argument", argument="request", http_code=400)
+            raise APIException("invalid_argument", argument="request", status_code=400)
 
     def _get_request_validation_data(self) -> Any:
         content_type = self.request.headers.get("Content-Type", "")

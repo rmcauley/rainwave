@@ -12,4 +12,4 @@ class AdvanceScheduleRequest(tornado.web.RequestHandler):
                 status_code=400, log_message="Invalid station ID."
             )
 
-        self.write(await advance_timeline(sid))
+        self.write(await advance_timeline(sid, trigger_post_process=True))

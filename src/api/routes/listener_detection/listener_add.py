@@ -48,9 +48,9 @@ class AddListener(IcecastHandler):
             try:
                 sid = int(sid)
             except ValueError:
-                raise APIException("invalid_station_id", http_code=400)
+                raise APIException("invalid_station_id", status_code=400)
         else:
-            raise APIException("invalid_station_id", http_code=400)
+            raise APIException("invalid_station_id", status_code=400)
         if user_id > 1 and listen_key:
             await self.add_registered(
                 sid, user_id, listen_key, listener_ip, input.client
