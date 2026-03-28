@@ -57,8 +57,8 @@ class PhpbbAuth(OAuthHandler):
                 raise APIException("login_limit")
             if not phpbb_passwd_compare(password, db_password):
                 await cursor.update(
-                    "UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE username = %s",
-                    (username,),
+                    "UPDATE phpbb_users SET user_login_attempts = user_login_attempts + 1 WHERE LOWER(username) = %s",
+                    (username.lower(),),
                 )
                 raise APIException("login_failed")
 

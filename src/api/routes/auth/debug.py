@@ -9,7 +9,6 @@ from common.db.cursor import get_cursor
 @handle_url("/oauth/debug")
 class DebugAuth(HtmlHandler):
     auth_required = False
-    auth_required = False
     sid_required = False
 
     async def get(self) -> None:

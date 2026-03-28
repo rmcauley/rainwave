@@ -30,7 +30,7 @@ class APIServer:
         port_no = int(config.api_base_port) + task_id
 
         # Log according to configured directory and port # we're operating on
-        log_file = f"logs/rw_api_%{port_no}.log"
+        log_file = f"logs/rw_api{port_no}.log"
         log.init(log_file, config.log_level)
         log.debug("start", "Server booting, port %s." % port_no)
         async with db_connect(auto_retry=True), cache_connect():

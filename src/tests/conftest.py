@@ -47,6 +47,5 @@ async def rainwave_db():
             await advance_timeline(1, trigger_post_process=False)
             await advance_timeline_post_process(1)
             await update_all_artists_cache()
-            await update_all_artists_cache()
             await update_all_groups_cache()
             yield

@@ -17,7 +17,7 @@ def get_pagination_params(
     offset = 0
     offset_argument = fieldtypes.integer(request.get_argument("page_start"))
     if offset_argument:
-        offset = min(limit, offset_argument)
+        offset = max(0, offset_argument)
 
     return (limit, offset)
 

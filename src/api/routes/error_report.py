@@ -54,7 +54,7 @@ class ErrorReport(AuthRequiredAPIHandler):
             "columnNumber": error_report.columnNumber,
             "lineNumber": error_report.lineNumber,
             "location": error_report.location,
-            "message": error_report.location,
+            "message": error_report.message,
             "name": error_report.name[:2048],
             "stack": error_report.stack[:2048],
             "time": int(timestamp()),

@@ -27,7 +27,7 @@ async def main() -> None:
         page_start_id = 0
         while True:
             albums = await cursor.fetch_all(
-                "SELECT album_id, album_name, album_name_searchable, album_added_on FROM r4_albums WHERE album_id > %s ORDER BY id LIMIT 100",
+                "SELECT album_id, album_name, album_name_searchable, album_added_on FROM r4_albums WHERE album_id > %s ORDER BY album_id LIMIT 100",
                 params=(page_start_id,),
                 row_type=AllAlbumRow,
             )
