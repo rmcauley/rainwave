@@ -67,7 +67,7 @@ log_level: Literal["critical"] = "critical"
 api_url = "127.0.0.1"
 
 # Start the web API at this port, increase by 1 for each process spawned.
-api_base_port = 20000
+api_base_port = int(os.getenv("RW_TEST_API_PORT", "20000"))
 
 # How many web processes (not threads) to start
 api_num_processes = 1
@@ -77,7 +77,7 @@ api_num_processes = 1
 api_trusted_ip_addresses = ["127.0.0.1", ":1"]
 
 # What does the API address look like for end-user browsers?
-api_external_url_prefix = "//localhost:20000/api4/"
+api_external_url_prefix = f"//localhost:{api_base_port}/api4/"
 
 # If you need to run WebSockets on a different host because of
 # any sort of CDN (e.g. CloudFlare) , enter a host here.

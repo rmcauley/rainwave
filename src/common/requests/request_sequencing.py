@@ -20,8 +20,8 @@ from common.requests.request_line_types import RequestLineEntry
 # for safety sake they are programmed to keep track of each station independently.
 # The memcache copy of these variables are independent of each station and not stored as a dict,
 # so multi-process/threading is safe.
-_elections_since_last_request: dict[int, int] = {}
-_number_of_elections_to_fulfill_requests: dict[int, int] = {}
+elections_since_last_request: dict[int, int] = {}
+number_of_elections_to_fulfill_requests: dict[int, int] = {}
 
 ELECTIONS_SINCE_LAST_REQUEST_CACHE_KEY = "elections_since_last_request"
 NUMBER_OF_ELECTIONS_TO_FULFILL_REQUESTS_CACHE_KEY = (
@@ -30,15 +30,15 @@ NUMBER_OF_ELECTIONS_TO_FULFILL_REQUESTS_CACHE_KEY = (
 
 
 async def _check_for_preparedness(sid: int) -> None:
-    global _elections_since_last_request
-    global _number_of_elections_to_fulfill_requests
+    global elections_since_last_request
+    global number_of_elections_to_fulfill_requests
 
-    if not sid in _elections_since_last_request:
-        _elections_since_last_request[sid] = (
+    if not sid in elections_since_last_request:
+        elections_since_last_request[sid] = (
             await cache_get_station(sid, ELECTIONS_SINCE_LAST_REQUEST_CACHE_KEY)
         ) or 0
-    if not sid in _number_of_elections_to_fulfill_requests:
-        _number_of_elections_to_fulfill_requests[sid] = (
+    if not sid in number_of_elections_to_fulfill_requests:
+        number_of_elections_to_fulfill_requests[sid] = (
             await cache_get_station(
                 sid, NUMBER_OF_ELECTIONS_TO_FULFILL_REQUESTS_CACHE_KEY
             )
@@ -51,56 +51,56 @@ async def _is_request_needed(sid: int) -> bool:
     log.debug(
         "requests",
         "Interval %s // Sequence %s"
-        % (_elections_since_last_request, _number_of_elections_to_fulfill_requests),
+        % (elections_since_last_request, number_of_elections_to_fulfill_requests),
     )
 
     # If we're ready for a request sequence, start one
     if (
-        _elections_since_last_request[sid] > 0
-        and _number_of_elections_to_fulfill_requests[sid] <= 0
+        elections_since_last_request[sid] > 0
+        and number_of_elections_to_fulfill_requests[sid] <= 0
     ):
         return True
     # If we are in a request sequence, do one
-    elif _number_of_elections_to_fulfill_requests[sid] > 0:
+    elif number_of_elections_to_fulfill_requests[sid] > 0:
         log.debug(
             "requests",
             "Still in sequence.  Remainder: %s"
-            % _number_of_elections_to_fulfill_requests[sid],
+            % number_of_elections_to_fulfill_requests[sid],
         )
         return True
     else:
         log.debug(
             "requests",
-            "Waiting on interval.  Remainder: %s" % _elections_since_last_request[sid],
+            "Waiting on interval.  Remainder: %s" % elections_since_last_request[sid],
         )
         return False
 
 
 async def _set_elections_since_last_request(sid: int, value: int) -> None:
-    global _elections_since_last_request
-    _elections_since_last_request[sid] = value
+    global elections_since_last_request
+    elections_since_last_request[sid] = value
     await cache_set_station(
-        sid, ELECTIONS_SINCE_LAST_REQUEST_CACHE_KEY, _elections_since_last_request[sid]
+        sid, ELECTIONS_SINCE_LAST_REQUEST_CACHE_KEY, elections_since_last_request[sid]
     )
 
 
 async def increment_elections_since_last_request(sid: int) -> None:
-    await _set_elections_since_last_request(sid, _elections_since_last_request[sid] + 1)
+    await _set_elections_since_last_request(sid, elections_since_last_request[sid] + 1)
 
 
 async def _set_number_of_elections_to_fulfill_requests(sid: int, value: int) -> None:
-    global _number_of_elections_to_fulfill_requests
-    _number_of_elections_to_fulfill_requests[sid] = value
+    global number_of_elections_to_fulfill_requests
+    number_of_elections_to_fulfill_requests[sid] = value
     await cache_set_station(
         sid,
         NUMBER_OF_ELECTIONS_TO_FULFILL_REQUESTS_CACHE_KEY,
-        _number_of_elections_to_fulfill_requests[sid],
+        number_of_elections_to_fulfill_requests[sid],
     )
 
 
 async def _decrement_number_of_elections_to_fulfill_requests(sid: int) -> None:
     await _set_number_of_elections_to_fulfill_requests(
-        sid, _number_of_elections_to_fulfill_requests[sid] - 1
+        sid, number_of_elections_to_fulfill_requests[sid] - 1
     )
 
 
@@ -138,7 +138,7 @@ async def get_next_request_ignoring_sequencing(
 
     if fulfilled_request:
         # If this variable is <= 0 we are starting a new sequence
-        if _number_of_elections_to_fulfill_requests[sid] <= 0:
+        if number_of_elections_to_fulfill_requests[sid] <= 0:
             sequence_length = math.floor(
                 users_with_valid_requests
                 / config.stations[sid]["request_sequence_scale"]
@@ -162,7 +162,7 @@ async def get_next_request_and_mark_as_fulfilled_if_needed(
     sid: int,
     request_line: list[RequestLineEntry],
 ) -> tuple[RequestLineEntry, TopRequestSongRow] | None:
-    global _number_of_elections_to_fulfill_requests
+    global number_of_elections_to_fulfill_requests
 
     if not await _is_request_needed(sid):
         await increment_elections_since_last_request(sid)

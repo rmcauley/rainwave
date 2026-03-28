@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import cast
 
 import tornado
+from common.cache.station_cache import cache_set_station
 from common.cache.station_cache import cache_get_station
 from common.cache.timeline_cache import update_timeline_api_cache
 from common.cache.update_user_rating_acl import update_user_rating_acl
@@ -92,6 +93,7 @@ async def advance_timeline(sid: int, trigger_post_process: bool) -> str:
         ) or await load_timeline(cursor, sid)
         timeline_entry_starting = timeline.upnext[0]
         await timeline_entry_starting.start(cursor)
+        await cache_set_station(sid, "timeline", timeline)
         next_song = timeline_entry_starting.get_song_on_station_to_play()
 
         if trigger_post_process:

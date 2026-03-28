@@ -1,0 +1,21 @@
+Testing rules for `src/tests`
+
+- Do not use mocks, fakes, or monkeypatching to replace Rainwave application components in tests unless explicitly requested by the user for a specific case.
+- Execute the real stack in tests:
+  - real PostgreSQL test database
+  - real memcache
+  - real SQL, cache, scheduling, and API code paths
+- Treat HTTP tests as real-stack tests, not isolated handler mocks.
+  - Use them for API contract coverage and handler-specific behavior.
+- Treat non-HTTP unit/module tests as deep behavioral tests against the real stack.
+  - Use the seeded database and real cache.
+  - It is acceptable to manipulate database rows and memcache contents directly to create narrow scenarios.
+- Prefer deterministic setup through test helpers in `src/tests` rather than broad fixture magic.
+  - Add reusable helpers/builders for creating songs, albums, power hours, PVP hours, schedules, and similar entities on demand.
+  - Keep helpers close to the test domain and make them explicit about what they create.
+- Because tests run in-band/serially, it is acceptable for a test to mutate shared test-state intentionally as part of arranging a scenario, as long as the setup is explicit and understandable.
+- When adding new tests:
+  - prefer real seeded data first
+  - add focused helper functions when seeded data is too broad or indirect
+  - avoid hidden mocking layers that diverge from production behavior
+- If a test seems to require mocking to be practical, stop and reconsider the test shape first.

@@ -50,3 +50,14 @@ async def cache_get(key: str) -> Any:
     if isinstance(result, bytes):
         return pickle.loads(result)
     return pickle.loads(result.value)
+
+
+async def cache_flush_all() -> None:
+    global client
+
+    if not client:
+        raise APIException("internal_error", "No memcache connection.", status_code=500)
+
+    await client.flush_all(
+        emcache.MemcachedHostAddress(config.memcache_host, config.memcache_port)
+    )

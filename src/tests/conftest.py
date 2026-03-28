@@ -106,6 +106,8 @@ async def _setup_rainwave_state() -> None:
     _progress("opening database and cache connections")
     await _exit_stack.enter_async_context(db_connect(auto_retry=False))
     await _exit_stack.enter_async_context(cache.cache_connect())
+    _progress("clearing memcache state")
+    await cache.cache_flush_all()
     _progress("creating database schema")
     await create_tables()
     async with get_cursor() as cursor:

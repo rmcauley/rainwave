@@ -4,10 +4,6 @@ from pathlib import Path
 import tempfile
 from dotenv import load_dotenv
 
-from api.routes import load_all_routes
-from api.server import APIServer
-from common import config, log
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Rainwave API server.")
@@ -17,6 +13,11 @@ def main() -> None:
     if args.testmode:
         repo_root = Path(__file__).resolve().parents[1]
         load_dotenv(repo_root / ".env.test")
+
+    # Importing here ensures that dotenv has had a chance to do its work first.
+    from api.routes import load_all_routes
+    from api.server import APIServer
+    from common import config, log
 
     startup_log = "logs/rw_api_startup.log"
     per_port_logging = True
@@ -35,7 +36,8 @@ def main() -> None:
     server = APIServer()
     asyncio.run(server.warmup())
 
-    log.shutdown()
+    if per_port_logging:
+        log.shutdown()
 
     server.start(
         per_port_logging=per_port_logging,
