@@ -1,10 +1,10 @@
 from api.handle_url import handle_api_html_url, handle_api_url
-from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from api.handler_classes.api_handler import APIHandler
 from common.requests.get_request_line_api import get_request_line_api
 
 
 @handle_api_url("request_line")
-class ListRequestLine(RegisteredUserAPIHandler):
+class ListRequestLine(APIHandler):
     description = "Gives a list of who is waiting in line to make a request on the given station, plus their current top-requested song. (or no song, if they have not decided)"
     sid_required = True
 

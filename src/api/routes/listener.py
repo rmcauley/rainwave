@@ -235,8 +235,6 @@ class ListenerDetailRequest(APIHandler):
             self.response["listener"] = {
                 "avatar": solve_avatar(user["avatar_type"], user["avatar"]),
                 "colour": user["colour"],
-                "losing_votes": 0,
-                "mind_changes": 0,
                 "name": user["name"],
                 "rank": user["rank"],
                 "rating_spread": rating_spread,
@@ -247,10 +245,13 @@ class ListenerDetailRequest(APIHandler):
                 "requests_by_station": requests_by_station,
                 "top_albums": top_albums,
                 "top_request_albums": top_request_albums,
+                "user_id": user["user_id"],
+                "votes_by_station": votes_by_station,
+                # The fields below are deprecated and intentionally return 0 as to not break existing clients.
+                "losing_votes": 0,
+                "mind_changes": 0,
                 "total_ratings": 0,
                 "total_requests": 0,
                 "total_votes": 0,
-                "user_id": user["user_id"],
-                "votes_by_station": votes_by_station,
                 "winning_votes": 0,
             }

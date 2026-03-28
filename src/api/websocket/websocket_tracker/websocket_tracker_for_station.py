@@ -74,7 +74,7 @@ class WebsocketTrackerForStation:
         except Exception as e:
             log.exception("sync_update_all", "Failed to update session.", e)
             try:
-                websocket.rw_finish()
+                websocket.close()
             except Exception as deep_error:
                 log.exception(
                     "sync_update_all",
@@ -109,7 +109,7 @@ class WebsocketTrackerForStation:
         except Exception as e:
             log.exception("sync", "Session failed to be updated during update_user.", e)
             try:
-                websocket.rw_finish()
+                websocket.close()
             except Exception:
                 log.exception("sync", "Session failed finish() during update_user.", e)
             self.remove(websocket)

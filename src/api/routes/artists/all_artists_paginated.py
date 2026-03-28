@@ -7,6 +7,7 @@ from api.handler_classes.api_handler import APIHandler
 from api.helpers import cached_all_artists
 from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT as PAGE_LIMIT
 
+
 @handle_api_url("all_artists_paginated")
 class AllArtistsPaginatedHandler(APIHandler):
     description = "Returns chunks of a list of all artists on the station playlist."
@@ -22,11 +23,14 @@ class AllArtistsPaginatedHandler(APIHandler):
         all_artists = cached_all_artists.cached_all_artists[self.sid]
         offset = input.after or 0
         page = all_artists[offset : offset + PAGE_LIMIT]
+        total_artists = len(all_artists)
         self.response["all_artists_paginated"] = {
             "data": page,
-            "has_more": page[-1] != all_artists[-1],
-            "progress": min(
-                math.ceil((offset + len(page)) / len(all_artists) * 100), 100
+            "has_more": offset + len(page) < total_artists,
+            "progress": (
+                min(math.ceil((offset + len(page)) / total_artists * 100), 100)
+                if total_artists > 0
+                else 100
             ),
             "next": offset + PAGE_LIMIT,
         }

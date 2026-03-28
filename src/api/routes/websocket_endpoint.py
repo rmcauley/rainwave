@@ -335,13 +335,16 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                 pass
             log.exception("websocket", "Exception during update.", e)
 
-    def update_user(self):
+    async def update_user_data_only(self):
         if self.user:
+            async with get_cursor() as cursor:
+                await self.user.refresh(cursor)
             self.write_rainwave_response({"user": user_to_api_private(self.user)})
 
     async def _do_auth(self, message: RainwaveWebsocketMessage) -> None:
         try:
-            if not "user_id" in message or not message["user_id"]:
+            user_id = message.get("user_id", None)
+            if not user_id:
                 self.write_rainwave_response(
                     {
                         "wserror": {
@@ -352,7 +355,9 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                         }
                     }
                 )
-            if not isinstance(message["user_id"], numbers.Number):
+                return
+
+            if not isinstance(user_id, int):
                 self.write_rainwave_response(
                     {
                         "wserror": {
@@ -363,7 +368,10 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                         }
                     }
                 )
-            if not "key" in message or not message["key"]:
+                return
+
+            api_key = message.get("key", None)
+            if not api_key or not isinstance(api_key, str):
                 self.write_rainwave_response(
                     {
                         "wserror": {
@@ -374,20 +382,21 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                         }
                     }
                 )
+                return
 
             try:
                 async with get_cursor() as cursor:
-                    if message["user_id"] == 1:
+                    if user_id > 1:
                         self.user = await get_authorized_registered_user(
                             cursor,
                             self.sid,
-                            message["user_id"],
-                            message["key"],
+                            user_id,
+                            api_key,
                             self.remote_ip,
                         )
                     else:
                         self.user = await get_authorized_anonymous_user(
-                            cursor, self.sid, 1, message["key"], self.remote_ip
+                            cursor, self.sid, 1, api_key, self.remote_ip
                         )
             except APIException as auth_error:
                 if auth_error.tl_key == "auth_failed":
@@ -401,18 +410,23 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                     )
                     self.close()
                     return
+
+        except Exception as e:
+            log.exception("websocket", "Exception during authentication.", e)
+            self.close()
+
+        if self.user:
+            self.user_id = self.user.id
+            self.listen_key = self.user.private_data["listen_key"]
             self.authorized = True
             self.uuid = str(uuid.uuid4())
 
             websockets_by_sid[self.sid].append(self)
 
             self.write_rainwave_response({"wsok": True})
-            # since this will be the first action in any websocket interaction though,
+            # since this will be the first action in any websocket interaction,
             # it'd be a good time to send a station offline message.
             await self._station_offline_check()
-        except Exception as e:
-            log.exception("websocket", "Exception during authentication.", e)
-            self.close()
 
     async def _station_offline_check(self):
         if not await cache_get_station(self.sid, "backend_ok"):
@@ -450,6 +464,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                     }
                 }
             )
+            return
 
         await self._station_offline_check()
 
