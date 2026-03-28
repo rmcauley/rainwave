@@ -1,8 +1,12 @@
 import asyncio
 import os
+import socket
+import subprocess
 import sys
+import time
 from contextlib import AsyncExitStack
 from pathlib import Path
+from typing import TextIO
 
 import pytest
 from psycopg import connect, sql
@@ -35,10 +39,16 @@ load_dotenv(PROJECT_ROOT.parent / ".env.test")
 
 _postgres_container: PostgresContainer | None = None
 _exit_stack: AsyncExitStack | None = None
+_api_server_process: subprocess.Popen[str] | None = None
+_api_server_log: TextIO | None = None
 
 
 def _progress(message: str) -> None:
     print(f"[pytest setup] {message}", flush=True)
+
+
+def _get_test_api_port() -> int:
+    return int(os.getenv("RW_TEST_API_PORT", "24000"))
 
 
 def _configure_local_postgres() -> None:
@@ -113,6 +123,49 @@ async def _setup_rainwave_state() -> None:
         await update_all_groups_cache()
 
 
+def _start_test_api_server() -> None:
+    global _api_server_process
+    global _api_server_log
+
+    env = os.environ.copy()
+    env["RW_TEST_API_PORT"] = str(_get_test_api_port())
+    env["RW_TEST_API_BASE_URL"] = f"http://127.0.0.1:{_get_test_api_port()}"
+    api_server_log_path = Path("/tmp") / "rainwave-test-api-server.log"
+
+    _progress(f"starting API server on port {_get_test_api_port()}")
+    _api_server_log = api_server_log_path.open("w", encoding="utf-8")
+    _api_server_process = subprocess.Popen(
+        ["uv", "run", "python", "src/tests/run_test_api_server.py"],
+        cwd=PROJECT_ROOT.parent,
+        env=env,
+        stdout=_api_server_log,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    os.environ["RW_TEST_API_BASE_URL"] = env["RW_TEST_API_BASE_URL"]
+
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        if _api_server_process.poll() is not None:
+            break
+        try:
+            with socket.create_connection(
+                ("127.0.0.1", _get_test_api_port()), timeout=1
+            ):
+                _progress("API server ready")
+                return
+        except OSError:
+            time.sleep(0.2)
+
+    if _api_server_log is not None:  # pyright: ignore[reportUnnecessaryComparison]
+        _api_server_log.flush()
+    log_output = api_server_log_path.read_text(encoding="utf-8")
+    raise RuntimeError(
+        "Test API server failed to become ready.\n"
+        + f"Log output from {api_server_log_path}:\n{log_output}"
+    )
+
+
 def pytest_sessionstart(session: pytest.Session) -> None:
     global _postgres_container
     global _exit_stack
@@ -142,10 +195,17 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
     _exit_stack = AsyncExitStack()
     asyncio.run(_setup_rainwave_state())
+    if _exit_stack is not None:  # pyright: ignore[reportUnnecessaryComparison]
+        _progress("closing bootstrap database and cache connections")
+        asyncio.run(_exit_stack.aclose())
+        _exit_stack = None
+    _start_test_api_server()
     _progress("global test setup complete")
 
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    global _api_server_process
+    global _api_server_log
     global _postgres_container
     global _exit_stack
 
@@ -153,6 +213,19 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         _progress("closing database and cache connections")
         asyncio.run(_exit_stack.aclose())
         _exit_stack = None
+
+    if _api_server_process is not None:
+        _progress("stopping API server")
+        _api_server_process.terminate()
+        try:
+            _api_server_process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            _api_server_process.kill()
+            _api_server_process.wait(timeout=5)
+        _api_server_process = None
+    if _api_server_log is not None:
+        _api_server_log.close()
+        _api_server_log = None
 
     if _postgres_container is not None:
         _progress("stopping postgres test container")

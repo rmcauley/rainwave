@@ -1,3 +1,5 @@
+from typing import Any
+
 from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 
 from tests.http_requests.base import AuthData, FormValue, RequestClassesTestCase
@@ -28,34 +30,47 @@ class TestAllAlbums(RequestClassesTestCase):
         data.update(extra)
         return data
 
-    @gen_test
-    async def test_all_albums_returns_list(self) -> None:
-        response = await self.post_form("/api4/all_albums", self._auth_data())
-        payload = self.payload(response)
-        assert "all_albums" in payload
-        assert isinstance(payload["all_albums"], list)
-        assert len(payload["all_albums"]) == 100
+    async def _all_albums_paginated(self, anonymous: bool = False) -> Any:
+        auth = self._anon_auth_data if anonymous else self._auth_data
+        response = await self.post_form("/api4/all_albums_paginated", auth(after=0))
+        return self.payload(response)["all_albums_paginated"]
+
+    async def _all_artists_paginated(self, anonymous: bool = False) -> Any:
+        auth = self._anon_auth_data if anonymous else self._auth_data
+        response = await self.post_form("/api4/all_artists_paginated", auth(after=0))
+        return self.payload(response)["all_artists_paginated"]
+
+    async def _all_groups_paginated(self, anonymous: bool = False) -> Any:
+        auth = self._anon_auth_data if anonymous else self._auth_data
+        response = await self.post_form("/api4/all_groups_paginated", auth(after=0))
+        return self.payload(response)["all_groups_paginated"]
 
     @gen_test
-    async def test_all_albums_returns_list_anonymous(self) -> None:
-        response = await self.post_form("/api4/all_albums", self._anon_auth_data())
-        payload = self.payload(response)
-        assert "all_albums" in payload
-        assert isinstance(payload["all_albums"], list)
-        assert len(payload["all_albums"]) == 100
+    async def test_all_albums_paginated(self) -> None:
+        result = await self._all_albums_paginated()
+        assert len(result["data"]) == 100
+        assert result["has_more"] is False
+        assert result["progress"] == 100
+        assert result["next"] == 1000
 
     @gen_test
-    async def test_all_albums_sorted_by_name(self) -> None:
-        response = await self.post_form("/api4/all_albums", self._auth_data())
-        payload = self.payload(response)
-        names = [album["name"] for album in payload["all_albums"]]
-        assert names == sorted(names)
+    async def test_all_albums_paginated_anonymous(self) -> None:
+        result = await self._all_albums_paginated(anonymous=True)
+        assert len(result["data"]) == 100
+        assert result["has_more"] is False
+        assert result["progress"] == 100
+        assert result["next"] == 1000
 
     @gen_test
-    async def test_all_albums_schema_fields(self) -> None:
-        response = await self.post_form("/api4/all_albums", self._auth_data())
-        payload = self.payload(response)
-        album = payload["all_albums"][0]
+    async def test_all_albums_paginated_sorted_by_id(self) -> None:
+        result = await self._all_albums_paginated()
+        ids = [album["id"] for album in result["data"]]
+        assert ids == sorted(ids)
+
+    @gen_test
+    async def test_all_albums_paginated_schema_fields(self) -> None:
+        result = await self._all_albums_paginated()
+        album = result["data"][0]
         expected_keys = {
             "id",
             "name",
@@ -70,125 +85,56 @@ class TestAllAlbums(RequestClassesTestCase):
         assert expected_keys.issubset(album.keys())
 
     @gen_test
-    async def test_all_albums_paginated(self) -> None:
-        response = await self.post_form(
-            "/api4/all_albums_paginated",
-            self._auth_data(after=0),
-        )
-        payload = self.payload(response)
-        result = payload["all_albums_paginated"]
-        assert len(result["data"]) == 100
-        assert result["has_more"] is False
-        assert result["progress"] == 100
-        assert result["next"] == 1000
-
-    @gen_test
-    async def test_all_albums_paginated_anonymous(self) -> None:
-        response = await self.post_form(
-            "/api4/all_albums_paginated",
-            self._anon_auth_data(after=0),
-        )
-        payload = self.payload(response)
-        result = payload["all_albums_paginated"]
-        assert len(result["data"]) == 100
-        assert result["has_more"] is False
-        assert result["progress"] == 100
-        assert result["next"] == 1000
-
-    @gen_test
-    async def test_all_artists_returns_list(self) -> None:
-        response = await self.post_form("/api4/all_artists", self._auth_data())
-        payload = self.payload(response)
-        assert "all_artists" in payload
-        assert isinstance(payload["all_artists"], list)
-        assert len(payload["all_artists"]) == 100
-        assert {"id", "name", "song_count"}.issubset(payload["all_artists"][0].keys())
-
-    @gen_test
-    async def test_all_artists_returns_list_anonymous(self) -> None:
-        response = await self.post_form("/api4/all_artists", self._anon_auth_data())
-        payload = self.payload(response)
-        assert "all_artists" in payload
-        assert isinstance(payload["all_artists"], list)
-        assert len(payload["all_artists"]) == 100
-        assert {"id", "name", "song_count"}.issubset(payload["all_artists"][0].keys())
-
-    @gen_test
     async def test_all_artists_paginated(self) -> None:
-        response = await self.post_form(
-            "/api4/all_artists_paginated",
-            self._auth_data(after=0),
-        )
-        payload = self.payload(response)
-        result = payload["all_artists_paginated"]
+        result = await self._all_artists_paginated()
         assert len(result["data"]) == 100
         assert result["has_more"] is False
         assert result["progress"] == 100
         assert result["next"] == 1000
+        assert {"id", "name", "song_count"}.issubset(result["data"][0].keys())
 
     @gen_test
     async def test_all_artists_paginated_anonymous(self) -> None:
-        response = await self.post_form(
-            "/api4/all_artists_paginated",
-            self._anon_auth_data(after=0),
-        )
-        payload = self.payload(response)
-        result = payload["all_artists_paginated"]
+        result = await self._all_artists_paginated(anonymous=True)
         assert len(result["data"]) == 100
         assert result["has_more"] is False
         assert result["progress"] == 100
         assert result["next"] == 1000
+        assert {"id", "name", "song_count"}.issubset(result["data"][0].keys())
 
     @gen_test
-    async def test_all_groups_returns_list(self) -> None:
-        response = await self.post_form("/api4/all_groups", self._auth_data())
-        payload = self.payload(response)
-        assert "all_groups" in payload
-        assert isinstance(payload["all_groups"], list)
-        assert len(payload["all_groups"]) == 10
-        assert {"id", "name"}.issubset(payload["all_groups"][0].keys())
-
-    @gen_test
-    async def test_all_groups_returns_list_anonymous(self) -> None:
-        response = await self.post_form("/api4/all_groups", self._anon_auth_data())
-        payload = self.payload(response)
-        assert "all_groups" in payload
-        assert isinstance(payload["all_groups"], list)
-        assert len(payload["all_groups"]) == 10
-        assert {"id", "name"}.issubset(payload["all_groups"][0].keys())
+    async def test_all_artists_paginated_sorted_by_id(self) -> None:
+        result = await self._all_artists_paginated()
+        ids = [artist["id"] for artist in result["data"]]
+        assert ids == sorted(ids)
 
     @gen_test
     async def test_all_groups_paginated(self) -> None:
-        response = await self.post_form(
-            "/api4/all_groups_paginated",
-            self._auth_data(after=0),
-        )
-        payload = self.payload(response)
-        result = payload["all_groups_paginated"]
+        result = await self._all_groups_paginated()
         assert len(result["data"]) == 10
         assert result["has_more"] is False
         assert result["progress"] == 100
         assert result["next"] == 1000
+        assert {"id", "name"}.issubset(result["data"][0].keys())
 
     @gen_test
     async def test_all_groups_paginated_anonymous(self) -> None:
-        response = await self.post_form(
-            "/api4/all_groups_paginated",
-            self._anon_auth_data(after=0),
-        )
-        payload = self.payload(response)
-        result = payload["all_groups_paginated"]
+        result = await self._all_groups_paginated(anonymous=True)
         assert len(result["data"]) == 10
         assert result["has_more"] is False
         assert result["progress"] == 100
         assert result["next"] == 1000
+        assert {"id", "name"}.issubset(result["data"][0].keys())
+
+    @gen_test
+    async def test_all_groups_paginated_sorted_by_id(self) -> None:
+        result = await self._all_groups_paginated()
+        ids = [group["id"] for group in result["data"]]
+        assert ids == sorted(ids)
 
     @gen_test
     async def test_artist_details(self) -> None:
-        artists = self.payload(
-            await self.post_form("/api4/all_artists", self._auth_data())
-        )["all_artists"]
-        artist_id = artists[0]["id"]
+        artist_id = (await self._all_artists_paginated())["data"][0]["id"]
         response = await self.post_form("/api4/artist", self._auth_data(id=artist_id))
         payload = self.payload(response)
         assert payload["artist"]["id"] == artist_id
@@ -196,10 +142,7 @@ class TestAllAlbums(RequestClassesTestCase):
 
     @gen_test
     async def test_artist_details_anonymous(self) -> None:
-        artists = self.payload(
-            await self.post_form("/api4/all_artists", self._anon_auth_data())
-        )["all_artists"]
-        artist_id = artists[0]["id"]
+        artist_id = (await self._all_artists_paginated(anonymous=True))["data"][0]["id"]
         response = await self.post_form(
             "/api4/artist",
             self._anon_auth_data(id=artist_id),
@@ -210,10 +153,7 @@ class TestAllAlbums(RequestClassesTestCase):
 
     @gen_test
     async def test_group_details(self) -> None:
-        groups = self.payload(
-            await self.post_form("/api4/all_groups", self._auth_data())
-        )["all_groups"]
-        group_id = groups[0]["id"]
+        group_id = (await self._all_groups_paginated())["data"][0]["id"]
         response = await self.post_form("/api4/group", self._auth_data(id=group_id))
         payload = self.payload(response)
         assert payload["group"]["id"] == group_id
@@ -221,10 +161,7 @@ class TestAllAlbums(RequestClassesTestCase):
 
     @gen_test
     async def test_group_details_anonymous(self) -> None:
-        groups = self.payload(
-            await self.post_form("/api4/all_groups", self._anon_auth_data())
-        )["all_groups"]
-        group_id = groups[0]["id"]
+        group_id = (await self._all_groups_paginated(anonymous=True))["data"][0]["id"]
         response = await self.post_form(
             "/api4/group",
             self._anon_auth_data(id=group_id),
@@ -235,10 +172,7 @@ class TestAllAlbums(RequestClassesTestCase):
 
     @gen_test
     async def test_album_details(self) -> None:
-        albums = self.payload(
-            await self.post_form("/api4/all_albums", self._auth_data())
-        )["all_albums"]
-        album_id = albums[0]["id"]
+        album_id = (await self._all_albums_paginated())["data"][0]["id"]
         response = await self.post_form("/api4/album", self._auth_data(id=album_id))
         payload = self.payload(response)
         assert payload["album"]["id"] == album_id
@@ -246,10 +180,7 @@ class TestAllAlbums(RequestClassesTestCase):
 
     @gen_test
     async def test_album_details_anonymous(self) -> None:
-        albums = self.payload(
-            await self.post_form("/api4/all_albums", self._anon_auth_data())
-        )["all_albums"]
-        album_id = albums[0]["id"]
+        album_id = (await self._all_albums_paginated(anonymous=True))["data"][0]["id"]
         response = await self.post_form(
             "/api4/album",
             self._anon_auth_data(id=album_id),
@@ -260,10 +191,7 @@ class TestAllAlbums(RequestClassesTestCase):
 
     @gen_test
     async def test_song_details(self) -> None:
-        albums = self.payload(
-            await self.post_form("/api4/all_albums", self._auth_data())
-        )["all_albums"]
-        album_id = albums[0]["id"]
+        album_id = (await self._all_albums_paginated())["data"][0]["id"]
         album = self.payload(
             await self.post_form("/api4/album", self._auth_data(id=album_id))
         )["album"]
@@ -271,17 +199,14 @@ class TestAllAlbums(RequestClassesTestCase):
         response = await self.post_form("/api4/song", self._auth_data(id=song_id))
         payload = self.payload(response)
         song = payload["song"]
-        assert song["id"] == song_id
-        assert song["albums"]
+        assert song["album"]
         assert song["artists"]
         assert song["groups"]
+        assert song["album"][0]["id"] == album_id
 
     @gen_test
     async def test_song_details_anonymous(self) -> None:
-        albums = self.payload(
-            await self.post_form("/api4/all_albums", self._anon_auth_data())
-        )["all_albums"]
-        album_id = albums[0]["id"]
+        album_id = (await self._all_albums_paginated(anonymous=True))["data"][0]["id"]
         album = self.payload(
             await self.post_form("/api4/album", self._anon_auth_data(id=album_id))
         )["album"]
@@ -289,10 +214,10 @@ class TestAllAlbums(RequestClassesTestCase):
         response = await self.post_form("/api4/song", self._anon_auth_data(id=song_id))
         payload = self.payload(response)
         song = payload["song"]
-        assert song["id"] == song_id
-        assert song["albums"]
+        assert song["album"]
         assert song["artists"]
         assert song["groups"]
+        assert song["album"][0]["id"] == album_id
 
     @gen_test
     async def test_all_songs_default_limit(self) -> None:
