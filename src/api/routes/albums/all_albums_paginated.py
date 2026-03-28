@@ -4,7 +4,7 @@ import math
 from api import rainwave_dto
 from api import rainwave_typeddicts
 from psycopg import sql
-from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT
+from api.helpers.paginated_requests import DEFAULT_COLLECTION_PAGE_LIMIT
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
@@ -81,10 +81,10 @@ class AllAlbumsPaginatedHandler(APIHandler):
             offset = input.after or 0
             albums = await cursor.fetch_all(
                 sql.SQL(
-                    "{query} ORDER BY album_name LIMIT {page_limit} OFFSET {offset}"
+                    "{query} ORDER BY id LIMIT {page_limit} OFFSET {offset}"
                 ).format(
                     query=base_sql,
-                    page_limit=sql.Literal(DEFAULT_PAGE_LIMIT),
+                    page_limit=sql.Literal(DEFAULT_COLLECTION_PAGE_LIMIT),
                     offset=sql.Placeholder(name="offset"),
                 ),
                 {"sid": self.sid, "user_id": user_id, "offset": offset},
@@ -93,7 +93,9 @@ class AllAlbumsPaginatedHandler(APIHandler):
             self.response["all_albums_paginated"] = {
                 "data": albums,
                 "has_more": (
-                    True if albums and len(albums) == DEFAULT_PAGE_LIMIT else False
+                    True
+                    if albums and len(albums) == DEFAULT_COLLECTION_PAGE_LIMIT
+                    else False
                 ),
                 "progress": min(
                     math.ceil(
@@ -103,5 +105,5 @@ class AllAlbumsPaginatedHandler(APIHandler):
                     ),
                     100,
                 ),
-                "next": offset + DEFAULT_PAGE_LIMIT,
+                "next": offset + DEFAULT_COLLECTION_PAGE_LIMIT,
             }

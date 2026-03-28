@@ -44,7 +44,7 @@ LINE_SQL = sql.SQL(
     SELECT 
         COALESCE(radio_username, username) AS username, 
         r4_request_line.sid AS line_sid,
-        user_id,
+        r4_request_line.user_id AS user_id,
         radio_requests_paused AS user_requests_paused,
         line_expiry_tune_in, 
         line_expiry_election, 
@@ -69,7 +69,7 @@ LINE_ENTRY_SQL_FOR_USER_ID = sql.SQL(
     SELECT 
         COALESCE(radio_username, username) AS username, 
         r4_request_line.sid AS line_sid,
-        user_id,
+        r4_request_line.user_id AS user_id,
         radio_requests_paused AS user_requests_paused,
         line_expiry_tune_in, 
         line_expiry_election, 

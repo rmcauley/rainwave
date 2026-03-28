@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from http.client import responses
+import json
 import time
 from time import time as timestamp
 import traceback
@@ -111,6 +112,9 @@ class RainwaveHandler(RequestHandler, ABC):
         user: UserBase | None = self.optional_user
         if not self.websocket_handling:
             user = await self._prepare_http()
+
+        if not self.sid:
+            raise APIException("missing_station_id", http_code=400)
 
         if not user and self.auth_required:
             raise APIException("auth_required", http_code=403)
@@ -497,7 +501,10 @@ class RainwaveHandler(RequestHandler, ABC):
     ) -> T:
         try:
             if data is None:
-                data = self.websocket_message or self.request.arguments
+                if self.websocket_message is not None:
+                    data = self.websocket_message
+                else:
+                    data = self._get_request_validation_data()
             return dto.model_validate(data)
         except pydantic.ValidationError as exc:
             for err in exc.errors():
@@ -530,3 +537,16 @@ class RainwaveHandler(RequestHandler, ABC):
 
             # fallback (normally unreachable because loop handles all errors)
             raise APIException("invalid_argument", argument="request", http_code=400)
+
+    def _get_request_validation_data(self) -> Any:
+        content_type = self.request.headers.get("Content-Type", "")
+        if "application/json" in content_type and self.request.body:
+            return json.loads(self.request.body)
+
+        normalized: dict[str, str | list[str]] = {}
+        for key, values in self.request.arguments.items():
+            decoded_values = [value.decode("utf-8") for value in values]
+            normalized[key] = (
+                decoded_values[0] if len(decoded_values) == 1 else decoded_values
+            )
+        return normalized

@@ -34,8 +34,11 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
         return data
 
     async def _first_album_id(self) -> int:
-        response = await self.post_form("/api4/all_albums", self._auth_data())
-        return int(self.payload(response)["all_albums"][0]["id"])
+        response = await self.post_form(
+            "/api4/all_albums_paginated",
+            self._auth_data(after=0),
+        )
+        return int(self.payload(response)["all_albums_paginated"]["data"][0]["id"])
 
     async def _first_song_id(self) -> int:
         album_id = await self._first_album_id()

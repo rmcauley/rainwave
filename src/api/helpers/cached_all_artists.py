@@ -19,7 +19,7 @@ async def update_all_artists_cache() -> None:
                     JOIN r4_song_sid using (song_id) 
                 WHERE r4_song_sid.sid = %s AND song_exists = TRUE 
                 GROUP BY artist_id, artist_name 
-                ORDER BY artist_name
+                ORDER BY artist_id
                 """,
                 (sid,),
                 row_type=ArtistInList,

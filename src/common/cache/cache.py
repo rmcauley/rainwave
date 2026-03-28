@@ -58,4 +58,6 @@ async def cache_get(key: str) -> Any:
     result = await client.get(key.encode("utf-8"))
     if result is None:
         return None
+    if isinstance(result, bytes):
+        return pickle.loads(result)
     return pickle.loads(result.value)

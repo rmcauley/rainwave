@@ -43,8 +43,11 @@ class TestRating(RequestClassesTestCase):
         return int(songs[0]["id"])
 
     async def _first_song_id(self) -> int:
-        response = await self.post_form("/api4/all_albums", self._auth_data())
-        album_id = int(self.payload(response)["all_albums"][0]["id"])
+        response = await self.post_form(
+            "/api4/all_albums_paginated",
+            self._auth_data(after=0),
+        )
+        album_id = int(self.payload(response)["all_albums_paginated"]["data"][0]["id"])
         response = await self.post_form("/api4/album", self._auth_data(id=album_id))
         return int(self.payload(response)["album"]["songs"][0]["id"])
 

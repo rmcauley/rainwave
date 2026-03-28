@@ -47,7 +47,7 @@ def get_select_sql_for_songs_for_artist_or_group_display() -> sql.SQL:
     return sql.SQL(
         """
         SELECT 
-            r4_song_artist.song_id AS id, 
+            r4_songs.song_id AS id, 
             r4_songs.song_origin_sid AS sid, 
             song_title AS title, 
             CAST(ROUND(CAST(song_rating AS NUMERIC), 1) AS REAL) AS rating, 

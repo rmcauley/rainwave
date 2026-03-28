@@ -92,7 +92,7 @@ async def get_many_album_on_station(
     rows = await cursor.fetch_all(
         select_sql
         + sql.SQL(
-            "WHERE r4_album_sid.album_id = ANY (%s)::integer[] AND r4_album_sid.sid = %s"
+            "WHERE r4_album_sid.album_id = ANY (%s::integer[]) AND r4_album_sid.sid = %s"
         ),
         (album_ids, sid),
         row_type=AlbumOnStationFullRow,

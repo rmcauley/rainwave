@@ -5,7 +5,7 @@ from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 from api.helpers import cached_all_artists
-from api.helpers.paginated_requests import DEFAULT_PAGE_LIMIT as PAGE_LIMIT
+from api.helpers.paginated_requests import DEFAULT_COLLECTION_PAGE_LIMIT
 
 
 @handle_api_url("all_artists_paginated")
@@ -22,7 +22,7 @@ class AllArtistsPaginatedHandler(APIHandler):
         )
         all_artists = cached_all_artists.cached_all_artists[self.sid]
         offset = input.after or 0
-        page = all_artists[offset : offset + PAGE_LIMIT]
+        page = all_artists[offset : offset + DEFAULT_COLLECTION_PAGE_LIMIT]
         total_artists = len(all_artists)
         self.response["all_artists_paginated"] = {
             "data": page,
@@ -32,5 +32,5 @@ class AllArtistsPaginatedHandler(APIHandler):
                 if total_artists > 0
                 else 100
             ),
-            "next": offset + PAGE_LIMIT,
+            "next": offset + DEFAULT_COLLECTION_PAGE_LIMIT,
         }

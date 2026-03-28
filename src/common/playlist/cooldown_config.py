@@ -66,6 +66,7 @@ async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
         default=cooldown_config_defaults["sum_aasl"],
         var_type=float,
     )
+    sum_aasl = float(sum_aasl)
     log.debug("cooldown", "SID %s: sumAASL: %s" % (sid, sum_aasl))
 
     avg_album_rating = await cursor.fetch_guaranteed(
@@ -74,6 +75,7 @@ async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
         default=cooldown_config_defaults["avg_album_rating"],
         var_type=float,
     )
+    avg_album_rating = float(avg_album_rating)
     avg_album_rating = min(max(1, avg_album_rating), 5)
     log.debug("cooldown", "SID %s: avg_album_rating: %s" % (sid, avg_album_rating))
 
@@ -91,6 +93,7 @@ async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
         default=cooldown_config_defaults["multiplier_adjustment"],
         var_type=float,
     )
+    multiplier_adjustment = float(multiplier_adjustment)
     multiplier_adjustment = multiplier_adjustment / sum_aasl
     multiplier_adjustment = min(max(0.5, multiplier_adjustment), 4)
     log.debug("cooldown", "SID %s: multi: %s" % (sid, multiplier_adjustment))
@@ -116,6 +119,7 @@ async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
         default=cooldown_config_defaults["base_rating"],
         var_type=float,
     )
+    base_rating = float(base_rating)
     base_rating = min(max(1, base_rating / sum_aasl), 5)
     log.debug("cooldown", "SID %s: base rating: %s" % (sid, base_rating))
 
@@ -144,6 +148,7 @@ async def prepare_cooldown_algorithm(cursor: RainwaveCursor, sid: int) -> None:
         default=cooldown_config_defaults["average_song_length"],
         var_type=float,
     )
+    average_song_length = float(average_song_length)
     log.debug(
         "cooldown", "SID %s: average_song_length: %s" % (sid, average_song_length)
     )

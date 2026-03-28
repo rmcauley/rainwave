@@ -17,7 +17,7 @@ async def update_all_groups_cache() -> None:
                     JOIN r4_groups USING (group_id)
                     WHERE sid = %s
                         AND group_display = TRUE
-                    ORDER BY group_name
+                    ORDER BY r4_groups.group_id
                 """,
                 (sid,),
                 row_type=rainwave_typeddicts.SongGroup,

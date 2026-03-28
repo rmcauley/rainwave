@@ -27,7 +27,7 @@ class APIException(HTTPError):
         rw_error_obj: RainwaveErrorObject = {
             "code": self.status_code,
             "tl_key": self.tl_key,
-            "text": request_locale.translate(self.tl_key, **self.extra),
+            "text": request_locale.translate(self.tl_key, self.extra),
         }
 
         return rw_error_obj

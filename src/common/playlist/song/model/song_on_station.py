@@ -25,7 +25,7 @@ from common.playlist.song_group.start_song_group_election_block import (
     start_song_group_election_block,
 )
 from common.ratings.rating_calculator import RatingMapReadyDict
-from common.playlist.object_counts import num_songs_total
+from common.playlist import object_counts
 
 
 class SongOnStationNotFoundError(Exception):
@@ -118,7 +118,8 @@ class SongOnStation:
         return SongOnStation(song_on_station_data)
 
     def get_artists_from_parseable(self) -> list[ArtistParseable]:
-        return orjson.loads(self.data["song_artist_parseable"])
+        artist_parseable = self.data["song_artist_parseable"] or "[]"
+        return orjson.loads(artist_parseable)
 
     async def start_cooldown(self, cursor: RainwaveCursor) -> None:
         cool_time = cooldown_config[self.sid]["max_song_cool"]
@@ -196,22 +197,30 @@ class SongOnStation:
             default=0,
             var_type=int,
         )
-        song_rating_rank_percentile = (
-            float(num_songs_total - song_rating_rank) / float(num_songs_total)
-        ) * 100
-        song_rating_rank_percentile = max(5, min(99, int(song_rating_rank_percentile)))
+        total_song_count = object_counts.num_songs_total
+        if total_song_count > 0:
+            song_rating_rank_percentile = (
+                float(total_song_count - song_rating_rank) / float(total_song_count)
+            ) * 100
+            song_rating_rank_percentile = max(
+                5, min(99, int(song_rating_rank_percentile))
+            )
+        else:
+            song_rating_rank_percentile = 0
 
         histogram_rows = await cursor.fetch_all(
             """
                 SELECT
-                    ROUND(((song_rating_user * 10) - (CAST(song_rating_user * 10 AS SMALLINT) %% 5))) / 10 AS rating,
+                    song_rating_user AS rating,
                     COUNT(song_rating_user) AS count
                 FROM r4_song_ratings
-                    JOIN phpbb_users USING (user_id)
-                WHERE radio_inactive = FALSE
-                    AND song_id = %s
-                GROUP BY rating_user_rnd
-                ORDER BY rating_user_rnd
+                    JOIN phpbb_users ON (
+                        r4_song_ratings.user_id = phpbb_users.user_id
+                        AND phpbb_users.radio_inactive = FALSE
+                    )
+                WHERE song_id = %s
+                GROUP BY song_rating_user
+                ORDER BY song_rating_user
             """,
             (self.id,),
             row_type=RatingMapReadyDict,

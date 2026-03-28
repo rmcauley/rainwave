@@ -45,25 +45,26 @@ async def db_connect(auto_retry: bool = True):
     conninfo += f"dbname={name}"
 
     connected = False
-    while not connected:
-        try:
-            db_pool = AsyncConnectionPool(
-                conninfo,
-                min_size=1,
-                max_size=20,
-                open=False,
-                kwargs={"autocommit": True},
-            )
-            await db_pool.open(True)
-            connected = True
-            yield db_pool
-        except db_connection_errors as e:
-            log.exception("psycopg", "Psycopg connection error", e)
-            if auto_retry:
-                await asyncio.sleep(1)
-            else:
-                raise
-        finally:
-            if db_pool:
-                await db_pool.close()
-                db_pool = None
+    try:
+        while not connected:
+            try:
+                db_pool = AsyncConnectionPool(
+                    conninfo,
+                    min_size=1,
+                    max_size=20,
+                    open=False,
+                    kwargs={"autocommit": True},
+                )
+                await db_pool.open(True)
+                connected = True
+                yield db_pool
+            except db_connection_errors as e:
+                log.exception("psycopg", "Psycopg connection error", e)
+                if auto_retry:
+                    await asyncio.sleep(1)
+                else:
+                    raise
+    finally:
+        if db_pool:
+            await db_pool.close()
+            db_pool = None

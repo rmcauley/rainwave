@@ -1,17 +1,16 @@
 from typing import cast
 
-import orjson
-
 from api import rainwave_dto
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 from api.rainwave_typeddicts import ElecBlockedBy
 from common.db.cursor import get_cursor
-from common.playlist.song.model.song_on_station import ArtistParseable, SongOnStation
+from common.playlist.song.model.song_on_station import SongOnStation
 from common.playlist.song_group.load_groups_from_song_id import (
     load_groups_for_song_on_station,
 )
+
 
 @handle_api_url("song")
 class SongHandler(APIHandler):
@@ -26,10 +25,7 @@ class SongHandler(APIHandler):
         async with get_cursor() as cursor:
             song_on_station = await SongOnStation.load(cursor, input.id, self.sid)
             extra_detail = await song_on_station.load_extra_detail(cursor)
-            artists = cast(
-                list[ArtistParseable],
-                orjson.loads(song_on_station.data["song_artist_parseable"]),
-            )
+            artists = song_on_station.get_artists_from_parseable()
             groups = await load_groups_for_song_on_station(cursor, input.id, self.sid)
 
             self.response["song"] = {
