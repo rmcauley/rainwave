@@ -37,7 +37,8 @@ class SubmitFaveAllSongs(AuthRequiredAPIHandler):
                 sql.SQL(
                     """
                 INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES {values}
-                ON CONFLICT DO UPDATE SET song_fave = %s
+                ON CONFLICT (user_id, song_id) DO UPDATE
+                SET song_fave = EXCLUDED.song_fave
                 """
                 ).format(
                     values=sql.SQL(", ").join(sql.SQL("(%s, %s, %s)") for _ in song_ids)

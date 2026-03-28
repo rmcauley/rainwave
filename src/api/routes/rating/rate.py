@@ -8,6 +8,7 @@ from common.cache.update_user_rating_acl import get_user_rating_acl
 from common.db.cursor import get_cursor
 from common.ratings.set_song_rating import set_song_rating
 
+
 @handle_api_url("rate")
 class SubmitRatingRequest(RegisteredUserAPIHandler):
     sid_required = True
@@ -15,6 +16,7 @@ class SubmitRatingRequest(RegisteredUserAPIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "rate_result"
+
     tunein_required = False
     unlocked_listener_only = False
     description = "Rate a song.  The user must have been tuned in for this song to rate it, or they must be tuned in if it's the currently playing song."
@@ -57,7 +59,7 @@ class SubmitRatingRequest(RegisteredUserAPIHandler):
                 "rating_user": None,
                 "song_id": song_id,
                 "success": True,
-                "text": self.rainwave_locale.translate("rating_cleared"),
-                "tl_key": "rating_cleared",
+                "text": self.rainwave_locale.translate("rating_submitted"),
+                "tl_key": "rating_submitted",
                 "updated_album_ratings": updated_albums,
             }

@@ -370,7 +370,7 @@ async def create_tables() -> None:
                 album_id				INTEGER		NOT NULL, \
                 user_id					INTEGER		NOT NULL, \
                 album_fave				BOOLEAN \
-            ) PRIMARY KEY (user_id, album_id, sid) "
+            ) PRIMARY KEY (user_id, album_id) "
         )
         await create_index(cursor, "r4_album_faves", ["album_fave"])
         await create_delete_fk(

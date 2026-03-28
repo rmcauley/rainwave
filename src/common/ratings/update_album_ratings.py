@@ -1,5 +1,9 @@
 from typing import TypedDict
+
+from psycopg import sql
+
 from api.rainwave_typeddicts import UpdatedAlbumRating
+from common.db.build_insert import build_insert_on_conflict_do_update
 from common.db.cursor import RainwaveCursor
 
 
@@ -52,20 +56,20 @@ async def update_album_ratings(
         if user_data and user_data["rating_user"]:
             album_rating = float(user_data["rating_user"])
 
+        to_upsert = {
+            "album_rating_user": album_rating,
+            "album_rating_complete": rating_complete,
+            "user_id": user_id,
+            "album_id": album_id,
+            "sid": sid,
+        }
         await cursor.update(
-            """
-            INSERT INTO r4_album_ratings 
-                (album_rating_user, album_rating_complete, user_id, album_id, sid) 
-            VALUES (%(album_rating)s, %(rating_complete)s, %(user_id)s, %(album_id)s, %(sid)s)
-            ON CONFLICT DO UPDATE SET album_rating_user = %(album_rating)s, album_rating_complete = %(rating_complete)s
-            """,
-            {
-                "album_rating": album_rating,
-                "rating_complete": rating_complete,
-                "user_id": user_id,
-                "album_id": album_id,
-                "sid": sid,
-            },
+            build_insert_on_conflict_do_update(
+                "r4_album_ratings",
+                to_upsert,
+                sql.SQL("(user_id, album_id, sid)"),
+            ),
+            to_upsert,
         )
 
         if target_sid == sid:

@@ -1,7 +1,10 @@
+from psycopg import sql
+
 from api import rainwave_dto
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from common.db.build_insert import build_insert_on_conflict_do_update
 from common.db.cursor import get_cursor
 
 
@@ -23,12 +26,18 @@ class SubmitSongFave(RegisteredUserAPIHandler):
             )
             if not song_id:
                 raise APIException("song_does_not_exist")
+            to_upsert = {
+                "song_id": song_id,
+                "user_id": self.user.id,
+                "song_fave": input.fave,
+            }
             await cursor.update(
-                """
-                INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES (%s, %s, %s)
-                ON CONFLICT DO UPDATE SET song_fave = %s
-                """,
-                (song_id, self.user.id, input.fave, input.fave),
+                build_insert_on_conflict_do_update(
+                    "r4_song_ratings",
+                    to_upsert,
+                    sql.SQL("(user_id, song_id)"),
+                ),
+                to_upsert,
             )
 
             text: str | None = None

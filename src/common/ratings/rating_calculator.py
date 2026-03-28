@@ -30,6 +30,9 @@ class RatingMapReadyDict(TypedDict):
 def rating_calculator(
     ratings: list[RatingMapReadyDict],
 ) -> tuple[float, int]:
+    if len(ratings) == 0:
+        return (0, 0)
+
     points = 0.0
     rating_count = 0
     for row in ratings:

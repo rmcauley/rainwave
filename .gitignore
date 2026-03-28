@@ -55,3 +55,6 @@ rainwave/pyvenv.cfg
 
 src/rainwave.egg-info
 logs
+
+.codex
+.claude
