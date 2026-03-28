@@ -86,7 +86,10 @@ def shutdown() -> None:
 
 
 def _massage_line(key: str, message: str, user_id: int | None) -> str:
-    return " %-15s [%-15s] %s" % (f"u{user_id}", key, message)
+    user_string = ""
+    if user_id:
+        user_string = f"u{user_id}"
+    return "%-6s [%-15s] %s" % (user_string, key, message)
 
 
 def debug(key: str, message: str, user_id: int | None = None) -> None:

@@ -9,7 +9,7 @@ from api.server import APIServer
 from common import config, log
 
 
-async def main() -> None:
+def main() -> None:
     parser = argparse.ArgumentParser(description="Rainwave API server.")
     parser.add_argument("--testmode", action="store_true", default=False)
     args = parser.parse_args()
@@ -33,7 +33,7 @@ async def main() -> None:
 
     load_all_routes()
     server = APIServer()
-    await server.warmup()
+    asyncio.run(server.warmup())
 
     log.shutdown()
 
@@ -45,4 +45,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
