@@ -53,15 +53,17 @@ class AlbumHandler(AuthRequiredAPIHandler):
                         LEFT JOIN r4_album_ratings ON (
                             r4_album_sid.album_id = r4_album_ratings.album_id
                             AND r4_album_sid.sid = r4_album_ratings.sid
+                            AND r4_album_ratings.user_id = %s
                         )
                         LEFT JOIN r4_album_faves ON (
                             r4_album_sid.album_id = r4_album_faves.album_id
+                            AND r4_album_faves.user_id = %s
                         )
                     WHERE
                         r4_album_sid.album_id = %s
                         AND r4_album_sid.sid = %s
                     """,
-                    (input.id, self.sid),
+                    (self.user.id, self.user.id, input.id, self.sid),
                     row_type=AlbumDetailRatingRow,
                 )
                 if album_rating_row:

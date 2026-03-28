@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel, field_validator
 
@@ -14,10 +14,21 @@ class OrderRequestsDto(BaseModel):
     @field_validator("order", mode="before")
     @classmethod
     def validate_order(cls, value: Any) -> list[int]:
+        if isinstance(value, list):
+            if all(
+                isinstance(entry, int)
+                for entry in value  # pyright: ignore[reportUnknownVariableType]
+            ):
+                return cast(list[int], value)
+            if len(value) == 1:  # pyright: ignore[reportUnknownArgumentType]
+                value = value[0]  # pyright: ignore[reportUnknownVariableType]
+            else:
+                raise ValueError("order must be a comma-separated list of integers")
+
         if isinstance(value, bytes):
             value = value.decode().strip()
         if not isinstance(value, str):
-            raise TypeError("order must be a comma-separated list of integers")
+            raise ValueError("order must be a comma-separated list of integers")
 
         if not value:
             raise ValueError("order must be a comma-separated list of integers")

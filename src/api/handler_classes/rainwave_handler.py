@@ -95,7 +95,7 @@ class RainwaveHandler(RequestHandler, ABC):
         self.websocket_handling = websocket_handling
         self.websocket_message = websocket_message
         if websocket_user:
-            self.user = websocket_user
+            self.optional_user = websocket_user
         if websocket_sid:
             self.sid = websocket_sid
         if websocket_locale:
@@ -108,7 +108,7 @@ class RainwaveHandler(RequestHandler, ABC):
     async def prepare(self) -> None:
         self.startclock = time.monotonic()
 
-        user: UserBase | None = self.user
+        user: UserBase | None = self.optional_user
         if not self.websocket_handling:
             user = await self._prepare_http()
 
@@ -146,11 +146,11 @@ class RainwaveHandler(RequestHandler, ABC):
             raise APIException("missing_station_id", http_code=400)
 
         if sid is None:
-            self.sid = config.default_station
-        elif sid:
-            self.sid = sid
-        elif not self.sid in stations.station_ids:
+            sid = config.default_station
+        elif not sid in stations.station_ids:
             raise APIException("invalid_station_id", http_code=400)
+
+        self.sid = sid
 
         self.set_cookie("r4_sid", str(self.sid), expires_days=365)
 
@@ -204,7 +204,7 @@ class RainwaveHandler(RequestHandler, ABC):
             # an API key here to simplify our "refresh user data" function later
             # which joins to the API keys table.  Cuts down on branches.
             session_api_key_row = await cursor.fetch_row(
-                "SELECT user_id, api_key FROM r4_sessions JOIN r4_api_key USING (user_id) WHERE session_id = %s LIMIT 1",
+                "SELECT user_id, api_key FROM r4_sessions JOIN r4_api_keys USING (user_id) WHERE session_id = %s LIMIT 1",
                 (session_from_cookie,),
                 row_type=SessionApiKeyRow,
             )

@@ -6,11 +6,12 @@ from api.handler_classes.html_handler import HtmlHandler
 from api.helpers import public_relays
 
 from common import config, stations
-from typing import Any
+
+from common.user.model.user_base import UserBase
 
 
 def get_round_robin_url(
-    sid: int, filetype: str = "mp3", user: Any | None = None
+    sid: int, filetype: str = "mp3", user: UserBase | None = None
 ) -> str:
     stream_url = config.round_robin_relay_protocol + config.round_robin_relay_host
     if config.round_robin_relay_port:
@@ -20,14 +21,19 @@ def get_round_robin_url(
 
 
 def get_stream_filename(
-    sid: int, filetype: str = "mp3", user: Any | None = None
+    sid: int, filetype: str = "mp3", user: UserBase | None = None
 ) -> str:
     filename = config.stations[sid]["stream_filename"]
 
     if user is None or user.is_anonymous():
         return "%s.%s" % (filename, filetype)
     else:
-        return "%s.%s?%s:%s" % (filename, filetype, user.id, user.data["listen_key"])
+        return "%s.%s?%s:%s" % (
+            filename,
+            filetype,
+            user.id,
+            user.private_data["listen_key"],
+        )
 
 
 @handle_url(r"/tune_in/(\w+|\d)\.(ogg|mp3)(.m3u)?")

@@ -129,15 +129,17 @@ async def get_station_info(
                 LEFT JOIN r4_album_ratings ON (
                     r4_album_sid.album_id = r4_album_ratings.album_id
                     AND r4_album_sid.sid = r4_album_ratings.sid
+                    AND r4_album_ratings.user_id = %s
                 )
                 LEFT JOIN r4_album_faves ON (
                     r4_album_sid.album_id = r4_album_faves.album_id
+                    AND r4_album_faves.user_id = %s
                 )
             WHERE
                 r4_album_sid.album_id = ANY (%s)
                 AND r4_album_sid.sid = %s
             """,
-            (album_ids, sid),
+            (optional_user.id, optional_user.id, album_ids, sid),
             row_type=AlbumRatingRow,
         )
 

@@ -48,7 +48,7 @@ def get_all_albums_list_sql(user_id: int | None) -> sql.Composed:
                 album_newest_song_time AS newest_song_time 
             FROM r4_albums 
                 JOIN r4_album_sid USING (album_id) 
-                LEFT JOIN r4_album_ratings ON 
+                LEFT JOIN r4_album_ratings ON (
                     r4_album_sid.album_id = r4_album_ratings.album_id 
                     AND r4_album_ratings.user_id = {user_id} 
                     AND r4_album_ratings.sid = {sid}

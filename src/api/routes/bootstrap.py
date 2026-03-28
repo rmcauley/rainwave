@@ -56,10 +56,12 @@ class Bootstrap(RainwaveHandler):
 
         await super().prepare()
 
-        if not self.user:
+        if not self.optional_user:
             async with get_cursor() as cursor:
-                self.user = await AnonymousUser.create_anonymous_user_with_api_key(
-                    cursor, self.sid, cast(str, self.request.remote_ip)
+                self.optional_user = (
+                    await AnonymousUser.create_anonymous_user_with_api_key(
+                        cursor, self.sid, cast(str, self.request.remote_ip)
+                    )
                 )
 
     async def get(self):

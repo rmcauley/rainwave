@@ -73,43 +73,38 @@ def init(logfile: str | None = None, loglevel: LOG_LEVELS = "warning") -> None:
     critical("test", "Critical test.")
 
 
-def _massage_line(key: str, message: str, user: Any | None) -> str:
-    user_info = ""
-    if user and user.user_id > 1:
-        user_info = "u%s" % user.user_id
-    elif user:
-        user_info = "a%s" % user.ip_address
-    return " %-15s [%-15s] %s" % (user_info, key, message)
+def _massage_line(key: str, message: str, user_id: int | None) -> str:
+    return " %-15s [%-15s] %s" % (f"u{user_id}", key, message)
 
 
-def debug(key: str, message: str, user: Any | None = None) -> None:
+def debug(key: str, message: str, user_id: int | None = None) -> None:
     if not log:
         raise LogNotInitializedError
-    log.debug(_massage_line(key, message, user))
+    log.debug(_massage_line(key, message, user_id))
 
 
-def warn(key: str, message: str, user: Any | None = None) -> None:
+def warn(key: str, message: str, user_id: int | None = None) -> None:
     if not log:
         raise LogNotInitializedError
-    log.warning(_massage_line(key, message, user))
+    log.warning(_massage_line(key, message, user_id))
 
 
-def info(key: str, message: str, user: Any | None = None) -> None:
+def info(key: str, message: str, user_id: int | None = None) -> None:
     if not log:
         raise LogNotInitializedError
-    log.info(_massage_line(key, message, user))
+    log.info(_massage_line(key, message, user_id))
 
 
-def error(key: str, message: str, user: Any | None = None) -> None:
+def error(key: str, message: str, user_id: int | None = None) -> None:
     if not log:
         raise LogNotInitializedError
-    log.error(_massage_line(key, message, user))
+    log.error(_massage_line(key, message, user_id))
 
 
-def critical(key: str, message: str, user: Any | None = None) -> None:
+def critical(key: str, message: str, user_id: int | None = None) -> None:
     if not log:
         raise LogNotInitializedError
-    log.critical(_massage_line(key, message, user))
+    log.critical(_massage_line(key, message, user_id))
 
 
 def exception(key: str, message: str, e: Any) -> None:
