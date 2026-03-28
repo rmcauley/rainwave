@@ -25,7 +25,7 @@ class LocaleIndex(HtmlHandler):
         self.write("</p><hr>")
 
         self.write(
-            "<p>Translating a new language?  Start with the <a href='https://github.com/rmcauley/rainwave/blob/master/lang/en_MASTER.json'>Github Translation File Template</a>.</p>"
+            "<p>Translating a new language?  Start with the <a href='https://github.com/rmcauley/rainwave/blob/master/lang/en_MAIN.json'>Github Translation File Template</a>.</p>"
         )
 
         self.write(

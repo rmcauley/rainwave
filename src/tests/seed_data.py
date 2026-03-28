@@ -1,7 +1,9 @@
 import random
+import time
 
 from psycopg import sql
 
+from common.db.build_insert import build_insert
 from common.db.cursor import RainwaveCursor
 
 ANONYMOUS_USER_ID = 1
@@ -31,239 +33,210 @@ TUNED_OUT_DONOR_API_KEY = "DONOR"
 TUNED_OUT_DONOR_USER_NAME = "Donor"
 
 
+async def _insert(
+    cursor: RainwaveCursor, table: str, values: dict[str, object]
+) -> None:
+    await cursor.update(build_insert(table, values), values)
+
+
+async def _insert_returning_id(
+    cursor: RainwaveCursor, table: str, values: dict[str, object], id_column: str
+) -> int:
+    inserted_id = await cursor.fetch_var(
+        build_insert(table, values)
+        + sql.SQL(" RETURNING {id_column}").format(id_column=sql.Identifier(id_column)),
+        values,
+        var_type=int,
+    )
+    if inserted_id is None:
+        raise RuntimeError(f"Insert into {table} did not return {id_column}")
+    return inserted_id
+
+
 async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
     rng = random.Random()
 
-    await cursor.update(
-        sql.SQL("INSERT INTO phpbb_ranks (rank_title) VALUES ({rank_title})").format(
-            rank_title=sql.Literal("Test")
-        )
-    )
+    await _insert(cursor, "phpbb_ranks", {"rank_title": "Test"})
 
-    await cursor.update(
-        sql.SQL(
-            "INSERT INTO phpbb_users (user_id, username) VALUES ({user_id}, {username})"
-        ).format(
-            user_id=sql.Literal(ANONYMOUS_USER_ID),
-            username=sql.Literal(ANONYMOUS_USER_NAME),
-        )
+    await _insert(
+        cursor,
+        "phpbb_users",
+        {"user_id": ANONYMOUS_USER_ID, "username": ANONYMOUS_USER_NAME},
     )
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO r4_api_keys (user_id, api_key, api_key_listen_key)
-            VALUES ({user_id}, {api_key}, {listen_key})
-            """
-        ).format(
-            user_id=sql.Literal(ANONYMOUS_USER_ID),
-            api_key=sql.Literal(ANONYMOUS_API_KEY),
-            listen_key=sql.Literal("ANONLSTN"),
-        )
+    await _insert(
+        cursor,
+        "r4_api_keys",
+        {
+            "user_id": ANONYMOUS_USER_ID,
+            "api_key": ANONYMOUS_API_KEY,
+            "api_key_listen_key": "ANONLSTN",
+        },
     )
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO r4_listeners (user_id, sid, listener_icecast_id, listener_ip)
-            VALUES ({user_id}, {sid}, {listener_icecast_id}, {listener_ip})
-            """
-        ).format(
-            user_id=sql.Literal(ANONYMOUS_USER_ID),
-            sid=sql.Literal(1),
-            listener_icecast_id=sql.Literal(3),
-            listener_ip=sql.Literal(TUNED_IN_ANONYMOUS_IP),
-        )
+    await _insert(
+        cursor,
+        "r4_listeners",
+        {
+            "user_id": ANONYMOUS_USER_ID,
+            "sid": sid,
+            "listener_icecast_id": 3,
+            "listener_ip": TUNED_IN_ANONYMOUS_IP,
+        },
     )
 
     # Group ID 5 for this user is the old phpBB "global administrator" group
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO phpbb_users (user_id, username, group_id)
-            VALUES ({user_id}, {username}, {group_id})
-            """
-        ).format(
-            user_id=sql.Literal(SITE_ADMIN_USER_ID),
-            username=sql.Literal(SITE_ADMIN_USER_NAME),
-            group_id=sql.Literal(5),
-        )
+    await _insert(
+        cursor,
+        "phpbb_users",
+        {
+            "user_id": SITE_ADMIN_USER_ID,
+            "username": SITE_ADMIN_USER_NAME,
+            "group_id": 5,
+        },
     )
-    await cursor.update(
-        sql.SQL(
-            "INSERT INTO r4_api_keys (user_id, api_key) VALUES ({user_id}, {api_key})"
-        ).format(
-            user_id=sql.Literal(SITE_ADMIN_USER_ID),
-            api_key=sql.Literal(SITE_ADMIN_API_KEY),
-        )
+    await _insert(
+        cursor,
+        "r4_api_keys",
+        {"user_id": SITE_ADMIN_USER_ID, "api_key": SITE_ADMIN_API_KEY},
     )
 
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO phpbb_users (user_id, username, group_id)
-            VALUES ({user_id}, {username}, {group_id})
-            """
-        ).format(
-            user_id=sql.Literal(TUNED_IN_LOGGED_IN_USER_ID),
-            username=sql.Literal(TUNED_IN_LOGGED_IN_USER_NAME),
-            group_id=sql.Literal(2),
-        )
+    await _insert(
+        cursor,
+        "phpbb_users",
+        {
+            "user_id": TUNED_IN_LOGGED_IN_USER_ID,
+            "username": TUNED_IN_LOGGED_IN_USER_NAME,
+            "group_id": 2,
+        },
     )
-    await cursor.update(
-        sql.SQL(
-            "INSERT INTO r4_api_keys (user_id, api_key) VALUES ({user_id}, {api_key})"
-        ).format(
-            user_id=sql.Literal(TUNED_IN_LOGGED_IN_USER_ID),
-            api_key=sql.Literal(TUNED_IN_LOGGED_IN_API_KEY),
-        )
+    await _insert(
+        cursor,
+        "r4_api_keys",
+        {
+            "user_id": TUNED_IN_LOGGED_IN_USER_ID,
+            "api_key": TUNED_IN_LOGGED_IN_API_KEY,
+        },
     )
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO r4_listeners (user_id, sid, listener_icecast_id)
-            VALUES ({user_id}, {sid}, {listener_icecast_id})
-            """
-        ).format(
-            user_id=sql.Literal(TUNED_IN_LOGGED_IN_USER_ID),
-            sid=sql.Literal(1),
-            listener_icecast_id=sql.Literal(1),
-        )
+    await _insert(
+        cursor,
+        "r4_listeners",
+        {
+            "user_id": TUNED_IN_LOGGED_IN_USER_ID,
+            "sid": sid,
+            "listener_icecast_id": 1,
+        },
     )
 
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO phpbb_users (user_id, username, group_id)
-            VALUES ({user_id}, {username}, {group_id})
-            """
-        ).format(
-            user_id=sql.Literal(TUNED_OUT_LOGGED_IN_USER_ID),
-            username=sql.Literal(TUNED_OUT_LOGGED_IN_USER_NAME),
-            group_id=sql.Literal(2),
-        )
+    await _insert(
+        cursor,
+        "phpbb_users",
+        {
+            "user_id": TUNED_OUT_LOGGED_IN_USER_ID,
+            "username": TUNED_OUT_LOGGED_IN_USER_NAME,
+            "group_id": 2,
+        },
     )
-    await cursor.update(
-        sql.SQL(
-            "INSERT INTO r4_api_keys (user_id, api_key) VALUES ({user_id}, {api_key})"
-        ).format(
-            user_id=sql.Literal(TUNED_OUT_LOGGED_IN_USER_ID),
-            api_key=sql.Literal(TUNED_OUT_LOGGED_IN_API_KEY),
-        )
+    await _insert(
+        cursor,
+        "r4_api_keys",
+        {
+            "user_id": TUNED_OUT_LOGGED_IN_USER_ID,
+            "api_key": TUNED_OUT_LOGGED_IN_API_KEY,
+        },
     )
 
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO phpbb_users (user_id, username, group_id)
-            VALUES ({user_id}, {username}, {group_id})
-            """
-        ).format(
-            user_id=sql.Literal(TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID),
-            username=sql.Literal(TUNED_IN_LOCKED_TO_OTHER_STATION_USER_NAME),
-            group_id=sql.Literal(2),
-        )
+    await _insert(
+        cursor,
+        "phpbb_users",
+        {
+            "user_id": TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID,
+            "username": TUNED_IN_LOCKED_TO_OTHER_STATION_USER_NAME,
+            "group_id": 2,
+        },
     )
-    await cursor.update(
-        sql.SQL(
-            "INSERT INTO r4_api_keys (user_id, api_key) VALUES ({user_id}, {api_key})"
-        ).format(
-            user_id=sql.Literal(TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID),
-            api_key=sql.Literal(TUNED_IN_LOCKED_TO_OTHER_STATION_API_KEY),
-        )
+    await _insert(
+        cursor,
+        "r4_api_keys",
+        {
+            "user_id": TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID,
+            "api_key": TUNED_IN_LOCKED_TO_OTHER_STATION_API_KEY,
+        },
     )
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO r4_listeners
-                (user_id, sid, listener_icecast_id, listener_lock, listener_lock_sid, listener_lock_counter)
-            VALUES
-                ({user_id}, {sid}, {listener_icecast_id}, {listener_lock}, {listener_lock_sid}, {listener_lock_counter})
-            """
-        ).format(
-            user_id=sql.Literal(TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID),
-            sid=sql.Literal(1),
-            listener_icecast_id=sql.Literal(2),
-            listener_lock=sql.Literal(True),
-            listener_lock_sid=sql.Literal(2),
-            listener_lock_counter=sql.Literal(5),
-        )
+    await _insert(
+        cursor,
+        "r4_listeners",
+        {
+            "user_id": TUNED_IN_LOCKED_TO_OTHER_STATION_USER_ID,
+            "sid": sid,
+            "listener_icecast_id": 2,
+            "listener_lock": True,
+            "listener_lock_sid": 2,
+            "listener_lock_counter": 5,
+        },
     )
 
     # Group ID 8 for this user is the old phpBB "donor" group.
-    await cursor.update(
-        sql.SQL(
-            """
-            INSERT INTO phpbb_users (user_id, username, group_id)
-            VALUES ({user_id}, {username}, {group_id})
-            """
-        ).format(
-            user_id=sql.Literal(TUNED_OUT_DONOR_USER_ID),
-            username=sql.Literal(TUNED_OUT_DONOR_USER_NAME),
-            group_id=sql.Literal(8),
-        )
+    await _insert(
+        cursor,
+        "phpbb_users",
+        {
+            "user_id": TUNED_OUT_DONOR_USER_ID,
+            "username": TUNED_OUT_DONOR_USER_NAME,
+            "group_id": 8,
+        },
     )
-    await cursor.update(
-        sql.SQL(
-            "INSERT INTO r4_api_keys (user_id, api_key) VALUES ({user_id}, {api_key})"
-        ).format(
-            user_id=sql.Literal(TUNED_OUT_DONOR_USER_ID),
-            api_key=sql.Literal(TUNED_OUT_DONOR_API_KEY),
-        )
+    await _insert(
+        cursor,
+        "r4_api_keys",
+        {"user_id": TUNED_OUT_DONOR_USER_ID, "api_key": TUNED_OUT_DONOR_API_KEY},
     )
 
     group_ids: list[int] = []
     for idx in range(1, 11):
         name = f"Group {idx}"
-        group_id = await cursor.fetch_var(
-            """
-            INSERT INTO r4_groups (
-                group_name,
-                group_name_searchable,
-                group_elec_block,
-                group_cool_time
-            )
-            VALUES (%s, %s, %s, %s) RETURNING group_id
-            """,
-            (name, name.lower(), 0, 900),
-            var_type=int,
+        group_id = await _insert_returning_id(
+            cursor,
+            "r4_groups",
+            {
+                "group_name": name,
+                "group_name_searchable": name.lower(),
+                "group_elec_block": 0,
+                "group_cool_time": 900,
+            },
+            "group_id",
         )
-        if group_id is not None:
-            group_ids.append(group_id)
-        await cursor.update(
-            "INSERT INTO r4_group_sid (group_id, sid, group_display) VALUES (%s, %s, %s)",
-            (group_id, sid, True),
+        group_ids.append(group_id)
+        await _insert(
+            cursor,
+            "r4_group_sid",
+            {"group_id": group_id, "sid": sid, "group_display": True},
         )
 
     artist_ids: list[int] = []
     for idx in range(1, 101):
         name = f"Artist {idx}"
-        artist_id = await cursor.fetch_var(
-            "INSERT INTO r4_artists (artist_name, artist_name_searchable) VALUES (%s, %s) RETURNING artist_id",
-            (name, name.lower()),
-            var_type=int,
+        artist_id = await _insert_returning_id(
+            cursor,
+            "r4_artists",
+            {"artist_name": name, "artist_name_searchable": name.lower()},
+            "artist_id",
         )
-        if artist_id:
-            artist_ids.append(artist_id)
+        artist_ids.append(artist_id)
 
     album_ids: list[tuple[int, int]] = []
     for idx in range(1, 101):
         name = f"Album {idx}"
         year = 2000 + (idx % 20)
-        album_id = await cursor.fetch_var(
-            """
-            INSERT INTO r4_albums (
-                album_name,
-                album_name_searchable,
-            )
-            VALUES (%s, %s) RETURNING album_id
-            """,
-            (name, name.lower(), year),
-            var_type=int,
+        album_id = await _insert_returning_id(
+            cursor,
+            "r4_albums",
+            {"album_name": name, "album_name_searchable": name.lower()},
+            "album_id",
         )
-        if album_id:
-            album_ids.append((album_id, year))
-        await cursor.update(
-            "INSERT INTO r4_album_sid (album_id, sid, album_song_count) VALUES (%s, %s, %s)",
-            (album_id, sid, 20),
+        album_ids.append((album_id, year))
+        await _insert(
+            cursor,
+            "r4_album_sid",
+            {"album_id": album_id, "sid": sid, "album_song_count": 20},
         )
 
     for album_id, year in album_ids:
@@ -274,40 +247,35 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
             filename = (
                 f"/tmp/rainwave_test/music/album_{album_id}/track_{track:02d}.mp3"
             )
-            song_id = await cursor.fetch_var(
-                """
-                INSERT INTO r4_songs (
-                    album_id,
-                    song_origin_sid,
-                    song_filename,
-                    song_title,
-                    song_title_searchable,
-                    song_length,
-                    song_track_number,
-                    song_disc_number,
-                    song_year)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING song_id
-                """,
-                (album_id, sid, filename, title, title.lower(), 180, track, 1, year),
-                var_type=int,
+            song_id = await _insert_returning_id(
+                cursor,
+                "r4_songs",
+                {
+                    "album_id": album_id,
+                    "song_origin_sid": sid,
+                    "song_filename": filename,
+                    "song_title": title,
+                    "song_title_searchable": title.lower(),
+                    "song_length": 180,
+                    "song_track_number": track,
+                    "song_disc_number": 1,
+                    "song_year": year,
+                    "song_file_mtime": int(time.time()),
+                },
+                "song_id",
             )
-            await cursor.update(
-                "INSERT INTO r4_song_sid (song_id, sid) VALUES (%s, %s)",
-                (song_id, sid),
+            await _insert(
+                cursor,
+                "r4_song_sid",
+                {"song_id": song_id, "sid": sid},
             )
-            await cursor.update(
-                """
-                INSERT INTO r4_song_artist (
-                    song_id,
-                    artist_id,
-                    artist_order,
-                )
-                VALUES (%s, %s, %s)
-                """,
-                (song_id, artist_id, 0),
+            await _insert(
+                cursor,
+                "r4_song_artist",
+                {"song_id": song_id, "artist_id": artist_id, "artist_order": 0},
             )
-            await cursor.update(
-                "INSERT INTO r4_song_group (song_id, group_id) VALUES (%s, %s)",
-                (song_id, group_id, True),
+            await _insert(
+                cursor,
+                "r4_song_group",
+                {"song_id": song_id, "group_id": group_id},
             )

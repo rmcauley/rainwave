@@ -62,7 +62,7 @@ LINE_SQL = sql.SQL(
         AND radio_requests_paused = FALSE 
     ORDER BY line_wait_start
 """
-).format({"sid": sql.Placeholder(name="sid")})
+).format(sid=sql.Placeholder(name="sid"))
 
 LINE_ENTRY_SQL_FOR_USER_ID = sql.SQL(
     """
@@ -86,4 +86,4 @@ LINE_ENTRY_SQL_FOR_USER_ID = sql.SQL(
         r4_request_line.user_id = {user_id}
     ORDER BY line_wait_start
 """
-).format({"user_id": sql.Placeholder(name="user_id")})
+).format(user_id=sql.Placeholder(name="user_id"))

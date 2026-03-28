@@ -824,6 +824,12 @@ wheels = [
 ]
 
 [[package]]
+name = "pyicu"
+version = "2.16.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b7/d5/354eb1bf84dcf4ab0bfa46f0620ecf68fe313bb082c26872ceb7a5021f94/pyicu-2.16.2.tar.gz", hash = "sha256:006d51e24b5ec76df6ec2130f3dde269c51db8b8cfebb7d45a427dde0d10aa52", size = 268223, upload-time = "2026-03-20T21:58:30.794Z" }
+
+[[package]]
 name = "pyinotify"
 version = "0.9.6"
 source = { registry = "https://pypi.org/simple" }
@@ -989,8 +995,10 @@ dependencies = [
     { name = "psycopg", extra = ["binary"] },
     { name = "psycopg-pool" },
     { name = "pydantic" },
+    { name = "pyicu" },
     { name = "pyinotify" },
     { name = "pyright" },
+    { name = "python-dotenv" },
     { name = "pytz" },
     { name = "pyzmq" },
     { name = "qrcode" },
@@ -1020,8 +1028,10 @@ requires-dist = [
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.2" },
     { name = "psycopg-pool", specifier = "==3.3.0" },
     { name = "pydantic", specifier = "==2.12.5" },
+    { name = "pyicu", specifier = "==2.16.2" },
     { name = "pyinotify", specifier = "==0.9.6" },
     { name = "pyright", specifier = "==1.1.408" },
+    { name = "python-dotenv", specifier = "==1.2.1" },
     { name = "pytz", specifier = ">=2025.2" },
     { name = "pyzmq", specifier = "==27.1.0" },
     { name = "qrcode", specifier = "==8.2" },

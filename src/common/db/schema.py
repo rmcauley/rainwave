@@ -353,8 +353,9 @@ async def create_tables() -> None:
                 sid 					SMALLINT	NOT NULL, \
                 user_id					INTEGER		NOT NULL, \
                 album_rating_user		REAL		, \
-                album_rating_complete	BOOLEAN		DEFAULT FALSE \
-                ) PRIMARY KEY (user_id, album_id, sid) "
+                album_rating_complete	BOOLEAN		DEFAULT FALSE, \
+                PRIMARY KEY (user_id, album_id, sid) \
+            )"
         )
         await create_index(cursor, "r4_album_ratings", ["album_id", "sid"])
         await create_delete_fk(
@@ -369,8 +370,9 @@ async def create_tables() -> None:
             CREATE TABLE r4_album_faves ( \
                 album_id				INTEGER		NOT NULL, \
                 user_id					INTEGER		NOT NULL, \
-                album_fave				BOOLEAN \
-            ) PRIMARY KEY (user_id, album_id) "
+                album_fave				BOOLEAN, \
+                PRIMARY KEY (user_id, album_id) \
+            )"
         )
         await create_index(cursor, "r4_album_faves", ["album_fave"])
         await create_delete_fk(

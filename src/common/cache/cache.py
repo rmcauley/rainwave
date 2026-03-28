@@ -4,9 +4,9 @@ import emcache
 from common import config
 from api.exceptions import APIException
 from typing import Any
-from .test_mode_cache import TestModeCache
+from .in_memory_cache import InMemoryCache
 
-client: emcache.Client | TestModeCache | None = None
+client: emcache.Client | InMemoryCache | None = None
 
 
 async def _build_emcache_client(host: str, port: int) -> emcache.Client:
@@ -30,7 +30,7 @@ async def cache_connect():
 
     try:
         if config.memcache_fake:
-            client = TestModeCache()
+            client = InMemoryCache()
         else:
             client = await _build_emcache_client(
                 config.memcache_host, config.memcache_port

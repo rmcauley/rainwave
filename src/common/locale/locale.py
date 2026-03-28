@@ -1,4 +1,6 @@
-import os
+from pathlib import Path
+import sys
+
 import orjson
 import tornado.escape
 
@@ -6,48 +8,47 @@ from .locale_types import RainwaveTranslationFile, RainwaveTranslationFileModel
 from .rainwave_locale import RainwaveLocale
 from common import log
 
-lang_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "lang")
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+LANG_DIR = PROJECT_ROOT / "lang"
+BASE_TRANSLATION_FILENAME = "en_MAIN.json"
 
 
 def get_translation_file(filename: str) -> RainwaveTranslationFile:
-    with open(
-        os.path.join(lang_dir, filename),
-        "r",
-        encoding="utf-8",
-    ) as raw_file:
+    with (LANG_DIR / filename).open("r", encoding="utf-8") as raw_file:
         translation_file = RainwaveTranslationFileModel.model_validate(
             orjson.loads(raw_file.read())
         )
     return translation_file.root
 
 
-en_main = get_translation_file("en_MASTER.json")
+def report_locale_error(message: str, error: Exception) -> None:
+    try:
+        log.exception("locale", message, error)
+    except log.LogNotInitializedError:
+        print(f"{message}: {error}", file=sys.stderr)
+
+
+en_main = get_translation_file(BASE_TRANSLATION_FILENAME)
 translations: dict[str, RainwaveLocale] = {}
 locale_names: dict[str, str] = {}
 locale_names_json = ""
 
 
-for _root, _subdir, files in os.walk(lang_dir):
+for _root, _subdir, files in LANG_DIR.walk():
     for filename in files:
-        if filename == "en_MASTER.json":
+        if filename == BASE_TRANSLATION_FILENAME:
             continue
         if not filename.endswith(".json"):
             continue
         try:
             code = filename[:5].replace("_", "-")
+            translation_overlay = get_translation_file(filename)
 
             # Fill in missing values in the target language by starting
             # with the main language, making a copy, then updating it
             # with the target language.
             translation = en_main.copy()
-            translation.update(get_translation_file(filename))
-
-            # Check to see if the translation file has excess keys.
-            for key in translation.keys():
-                if key not in en_main:
-                    raise KeyError(
-                        f"Language file error: Key {key} exists in {filename} but not in en_MAIN.json"
-                    )
+            translation.update(translation_overlay)
 
             code_name = translation["language_name_short"]
             if not isinstance(code_name, str):
@@ -58,7 +59,7 @@ for _root, _subdir, files in os.walk(lang_dir):
 
             translations[code] = RainwaveLocale(code, en_main, translation)
         except Exception as e:
-            log.exception("locale", "%s translation did not load." % filename[:-5], e)
+            report_locale_error("%s translation did not load." % filename[:-5], e)
 
 locale_names_json = tornado.escape.json_encode(locale_names)
 

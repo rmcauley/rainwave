@@ -103,8 +103,8 @@ backend_port = 21000
 db_name = "rainwave"
 db_host: str | None = None
 db_port: str | None = None
-db_user = "user"
-db_password = "password"
+db_user: str | None = "user"
+db_password: str | None = "password"
 
 # What ports to use internally for messaging.
 # You don't need to install anything or setup a server

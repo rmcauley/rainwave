@@ -16,6 +16,24 @@ class RainwaveLocale:
     _ordinal_suffixes: dict[str, str]
     missing: dict[str, RainwaveTranslationValue]
 
+    @staticmethod
+    def _load_plural_rules(
+        icu_locale: Locale,
+    ) -> tuple[PluralRules, PluralRules]:
+        # PyICU API shape differs across versions. Some builds expose only a
+        # single `forLocale(locale)` overload with no ordinal/cardinal constants.
+        default_rules = PluralRules.forLocale(icu_locale)
+        ordinal_type = getattr(PluralRules, "ORDINAL", None)
+        cardinal_type = getattr(PluralRules, "CARDINAL", None)
+
+        if ordinal_type is None or cardinal_type is None:
+            return default_rules, default_rules
+
+        return (
+            PluralRules.forLocale(icu_locale, ordinal_type),
+            PluralRules.forLocale(icu_locale, cardinal_type),
+        )
+
     def __init__(
         self,
         code: str,
@@ -28,8 +46,7 @@ class RainwaveLocale:
         self._ordinal_suffixes = ORDINAL_SUFFIXES.get(code, {})
         self._ordinal_suffixes_other = ORDINAL_SUFFIXES_OTHER.get(code, "")
         icu_locale = Locale(code)
-        self._ordinal = PluralRules.forLocale(icu_locale, PluralRules.ORDINAL)
-        self._cardinal = PluralRules.forLocale(icu_locale, PluralRules.CARDINAL)
+        self._ordinal, self._cardinal = self._load_plural_rules(icu_locale)
 
         # document lines missing
         self.missing = {}

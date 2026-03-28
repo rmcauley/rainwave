@@ -1,7 +1,7 @@
 from typing import Any
 
 
-class TestModeCache:
+class InMemoryCache:
     def __init__(self) -> None:
         super().__init__()
         self.vars: dict[bytes, Any] = {}

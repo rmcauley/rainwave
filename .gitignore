@@ -42,6 +42,7 @@ Thumbs.db
 .mypy_cache
 **/node_modules
 .pytest_cache
+.env.test
 
 .idea
 .vagrant
