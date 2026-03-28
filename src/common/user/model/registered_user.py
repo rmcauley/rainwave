@@ -135,9 +135,11 @@ class RegisteredUser(UserBase):
         return 24 if self.private_data["perks"] else 12
 
     async def get_remaining_request_slots(self, cursor: RainwaveCursor) -> int:
-        return (
-            await get_request_count_for_any_station(cursor, self.id)
-        ) - self.get_max_request_slots()
+        return max(
+            0,
+            self.get_max_request_slots()
+            - (await get_request_count_for_any_station(cursor, self.id)),
+        )
 
     async def add_request(
         self, cursor: RainwaveCursor, song_on_station: SongOnStation

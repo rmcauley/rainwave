@@ -35,7 +35,12 @@ for _root, _subdir, files in os.walk(lang_dir):
             continue
         try:
             code = filename[:5].replace("_", "-")
-            translation = get_translation_file(filename)
+
+            # Fill in missing values in the target language by starting
+            # with the main language, making a copy, then updating it
+            # with the target language.
+            translation = en_main.copy()
+            translation.update(get_translation_file(filename))
 
             # Check to see if the translation file has excess keys.
             for key in translation.keys():
@@ -50,9 +55,6 @@ for _root, _subdir, files in os.walk(lang_dir):
                     f"Language file error: language_name_short is not a string."
                 )
             locale_names[code] = code_name
-
-            # Fill in missing keys
-            translation.update(en_main)
 
             translations[code] = RainwaveLocale(code, en_main, translation)
         except Exception as e:

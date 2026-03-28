@@ -22,10 +22,10 @@ def which(program: str) -> str | None:
 
 # http://stackoverflow.com/questions/3812849/how-to-check-whether-a-directory-is-a-sub-directory-of-another-directory
 def check_file_is_in_directory(filename: str, directory: str) -> bool:
-    # make both absolute
-    directory = os.path.join(os.path.realpath(directory), "")
+    directory = os.path.realpath(directory)
     filename = os.path.realpath(filename)
 
-    # return true, if the common prefix of both is equal to directory
-    # e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
-    return os.path.commonprefix([filename, directory]) == directory
+    try:
+        return os.path.commonpath([filename, directory]) == directory
+    except ValueError:
+        return False

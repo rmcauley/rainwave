@@ -30,7 +30,7 @@ class AnonymousUser(UserBase):
                 '' AS avatar_type, 
                 api_key_listen_key AS listen_key, 
                 0 AS group_id, 
-                radio_totalratings AS total_ratings, 
+                0 AS total_ratings, 
                 listener_id, 
                 r4_listeners.sid AS listener_sid, 
                 listener_lock, 

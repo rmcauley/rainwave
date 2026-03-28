@@ -94,7 +94,7 @@ async def get_unrated_songs_on_cooldown_for_requesting(
             JOIN r4_songs USING (song_id) LEFT OUTER
             JOIN r4_song_ratings
                 ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = {user_id}) LEFT OUTER
-            JOIN requested_albums
+            LEFT OUTER JOIN requested_albums
                 ON (requested_albums.album_id = r4_songs.album_id)
             WHERE r4_song_sid.sid = {sid}
                 AND song_exists = TRUE

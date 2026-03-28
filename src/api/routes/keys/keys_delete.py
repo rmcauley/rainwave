@@ -27,6 +27,6 @@ class KeyDelete(HtmlRegisteredUserHandler):
         async with get_cursor() as cursor:
             await cursor.update(
                 "DELETE FROM r4_api_keys WHERE user_id = %s AND api_id = %s",
-                (self.user.id, delete_key),
+                (self.user.id, delete_key.delete_key),
             )
         await write_key_index(self, self.user)

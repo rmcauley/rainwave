@@ -58,7 +58,7 @@ class RainwaveLocale:
     ) -> str:
         entry = self._translation[key]
         if not entry:
-            return f"[[{entry}]]"
+            return f"[[{key}]]"
 
         if isinstance(entry, str):
             return entry
