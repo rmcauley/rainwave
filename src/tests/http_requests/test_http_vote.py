@@ -2,11 +2,12 @@ from typing import Any, cast
 
 from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 
-from common.db.cursor import get_cursor
 import pytest
 from tests.http_requests.base import AuthData, FormValue, RequestClassesTestCase
+from tests.db import get_test_cursor
 from tests.seed_data import (
     ANONYMOUS_API_KEY,
+    ANONYMOUS_LISTEN_KEY,
     ANONYMOUS_USER_ID,
     SITE_ADMIN_API_KEY,
     SITE_ADMIN_USER_ID,
@@ -46,17 +47,27 @@ class TestVote(RequestClassesTestCase):
                     return int(entry_id)
         pytest.skip("No upcoming election with voteable entries.")
 
-    async def _set_anonymous_listener_purged(self, purged: bool) -> None:
-        async with get_cursor() as cursor:
+    async def _set_anonymous_listener_state(self, *, purged: bool) -> None:
+        async with get_test_cursor() as cursor:
             await cursor.update(
-                "UPDATE r4_listeners SET listener_purge = %s WHERE user_id = %s AND listener_ip = %s",
-                (purged, ANONYMOUS_USER_ID, TUNED_IN_ANONYMOUS_IP),
+                """
+                UPDATE r4_listeners
+                SET sid = %s,
+                    listener_key = %s,
+                    listener_purge = %s,
+                    listener_lock = FALSE,
+                    listener_lock_sid = NULL,
+                    listener_lock_counter = 0,
+                    listener_voted_entry = NULL
+                WHERE user_id = %s AND listener_ip = %s
+                """,
+                (1, ANONYMOUS_LISTEN_KEY, purged, ANONYMOUS_USER_ID, TUNED_IN_ANONYMOUS_IP),
             )
 
     @gen_test
     async def test_vote_allows_tuned_in_anonymous(self) -> None:
         entry_id = await self._first_election_entry()
-        await self._set_anonymous_listener_purged(False)
+        await self._set_anonymous_listener_state(purged=False)
         response = await self.post_form(
             "/api4/vote",
             self._anon_auth_data(entry_id=entry_id),
@@ -67,7 +78,7 @@ class TestVote(RequestClassesTestCase):
     @gen_test
     async def test_vote_rejects_tuned_out_anonymous(self) -> None:
         entry_id = await self._first_election_entry()
-        await self._set_anonymous_listener_purged(True)
+        await self._set_anonymous_listener_state(purged=True)
         try:
             response = await self.post_form(
                 "/api4/vote",
@@ -76,9 +87,9 @@ class TestVote(RequestClassesTestCase):
             )
             assert response.code == 403
             payload = self.payload(response)
-            assert payload["vote_result"]["tl_key"] == "tunein_required"
+            assert payload["error"]["tl_key"] == "tunein_required"
         finally:
-            await self._set_anonymous_listener_purged(False)
+            await self._set_anonymous_listener_state(purged=False)
 
     @gen_test
     async def test_vote_allows_tuned_in_logged_in_user(self) -> None:
@@ -108,7 +119,7 @@ class TestVote(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["vote_result"]["tl_key"] == "tunein_required"
+        assert payload["error"]["tl_key"] == "tunein_required"
 
     @gen_test
     async def test_vote_rejects_locked_user(self) -> None:
@@ -123,4 +134,4 @@ class TestVote(RequestClassesTestCase):
             raise_error=False,
         )
         payload = self.payload(response)
-        assert payload["vote_result"]["tl_key"] == "user_locked"
+        assert payload["error"]["tl_key"] == "user_locked"

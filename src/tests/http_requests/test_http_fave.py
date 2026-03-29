@@ -107,7 +107,7 @@ class TestFave(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["fave_song_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_fave_song_toggle(self) -> None:
@@ -141,7 +141,7 @@ class TestFave(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["fave_song_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_fave_album_toggle(self) -> None:
@@ -173,7 +173,7 @@ class TestFave(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["fave_album_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_info_album_fave_toggle(self) -> None:
@@ -219,7 +219,7 @@ class TestFave(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["fave_album_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_fave_all_songs_unfave(self) -> None:
@@ -243,7 +243,7 @@ class TestFave(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["fave_all_songs_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_info_fave_all_songs_toggle(self) -> None:
@@ -289,4 +289,4 @@ class TestFave(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["fave_all_songs_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"

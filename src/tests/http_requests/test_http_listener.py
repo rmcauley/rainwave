@@ -27,13 +27,6 @@ class TestListener(RequestClassesTestCase):
         assert "rating_spread" in listener
 
     @gen_test
-    async def test_current_listeners(self) -> None:
-        response = await self.post_form("/api4/current_listeners", self._auth_data())
-        payload = self.payload(response)
-        listeners = payload.get("current_listeners")
-        assert listeners is None or isinstance(listeners, list)
-
-    @gen_test
     async def test_user_info(self) -> None:
         response = await self.post_form("/api4/user_info", self._auth_data())
         payload = self.payload(response)

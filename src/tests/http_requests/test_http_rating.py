@@ -61,7 +61,7 @@ class TestRating(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["rate_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_rate_allows_donor_when_tuned_out(self) -> None:
@@ -111,4 +111,4 @@ class TestRating(RequestClassesTestCase):
             raise_error=False,
         )
         payload = self.payload(response)
-        assert payload["rate_result"]["tl_key"] == "tunein_to_rate_current_song"
+        assert payload["error"]["tl_key"] == "tunein_to_rate_current_song"

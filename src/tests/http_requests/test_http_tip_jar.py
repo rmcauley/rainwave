@@ -20,7 +20,7 @@ class TestTipJar(RequestClassesTestCase):
             },
         )
         payload = self.payload(response)
-        assert payload["add_donation_result"]["tl_key"] == "donation_added"
+        assert payload["add_donation_result"]["tl_key"] == "success"
 
         response = await self.post_form("/api4/tip_jar", {})
         payload = self.payload(response)

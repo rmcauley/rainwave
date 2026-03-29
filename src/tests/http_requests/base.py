@@ -6,6 +6,8 @@ from urllib.parse import urlencode
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest, HTTPResponse
 from tornado.testing import AsyncTestCase
 
+from common import config
+
 FormValue: TypeAlias = str | int | float | bool
 FormData: TypeAlias = Mapping[str, FormValue]
 AuthData: TypeAlias = dict[str, FormValue]
@@ -21,14 +23,26 @@ class RequestClassesTestCase(AsyncTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.http_client = AsyncHTTPClient()
-        self.base_url = os.environ["RW_TEST_API_BASE_URL"]
+        self.base_url = os.getenv(
+            "RW_TEST_API_BASE_URL", f"http://127.0.0.1:{config.api_base_port}"
+        )
 
     def get_url(self, path: str) -> str:
         return f"{self.base_url}{path}"
 
-    async def get_path(self, path: str, *, raise_error: bool = True) -> HTTPResponse:
+    async def get_path(
+        self,
+        path: str,
+        *,
+        raise_error: bool = True,
+        follow_redirects: bool = True,
+    ) -> HTTPResponse:
         assert self.http_client is not None
-        request = HTTPRequest(url=self.get_url(path), method="GET")
+        request = HTTPRequest(
+            url=self.get_url(path),
+            method="GET",
+            follow_redirects=follow_redirects,
+        )
         return await self.http_client.fetch(request, raise_error=raise_error)
 
     async def post_form(

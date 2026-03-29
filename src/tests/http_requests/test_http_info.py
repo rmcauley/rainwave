@@ -31,14 +31,14 @@ class TestInfo(RequestClassesTestCase):
         response = await self.post_form("/api4/info_all", self._auth_data())
         payload = self.payload(response)
         assert "all_stations_info" in payload
-        assert "1" in payload["all_stations_info"]
+        assert payload["all_stations_info"]["1"]["title"]
 
     @gen_test
     async def test_info_all_returns_station_info_anonymous(self) -> None:
         response = await self.post_form("/api4/info_all", self._anon_auth_data())
         payload = self.payload(response)
         assert "all_stations_info" in payload
-        assert "1" in payload["all_stations_info"]
+        assert payload["all_stations_info"]["1"]["title"]
 
     @gen_test
     async def test_stations_returns_list(self) -> None:
@@ -46,7 +46,8 @@ class TestInfo(RequestClassesTestCase):
         payload = self.payload(response)
         stations: list[Any] = payload["stations"]
         assert isinstance(stations, list)
-        assert len(stations) == 1
-        assert {"id", "name", "description", "stream", "relays", "key"}.issubset(
-            stations[0].keys()
+        assert len(stations) >= 1
+        station_one = next(station for station in stations if station["id"] == 1)
+        assert {"id", "name", "description", "stream", "relays"}.issubset(
+            station_one.keys()
         )

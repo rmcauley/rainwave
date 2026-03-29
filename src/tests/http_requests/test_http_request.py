@@ -33,7 +33,7 @@ class TestRequest(RequestClassesTestCase):
         )
         payload = self.payload(response)
         assert response.code == 200
-        assert payload["delete_request_result"]["tl_key"] == "song_not_requested"
+        assert payload["error"]["tl_key"] == "song_not_requested"
 
         response = await self.post_form(
             "/api4/delete_request",
@@ -42,7 +42,7 @@ class TestRequest(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["delete_request_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_request_favorited_fails(self) -> None:
@@ -53,10 +53,7 @@ class TestRequest(RequestClassesTestCase):
         )
         assert response.code == 200
         payload = self.payload(response)
-        assert (
-            payload["request_favorited_songs_result"]["tl_key"]
-            == "request_favorited_failed"
-        )
+        assert payload["error"]["tl_key"] == "request_favorited_failed"
 
         response = await self.post_form(
             "/api4/request_favorited_songs",
@@ -65,7 +62,7 @@ class TestRequest(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["request_favorited_songs_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_clear_requests(self) -> None:
@@ -80,7 +77,7 @@ class TestRequest(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["clear_requests_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_clear_requests_on_cooldown(self) -> None:
@@ -98,9 +95,7 @@ class TestRequest(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert (
-            payload["clear_requests_on_cooldown_result"]["tl_key"] == "login_required"
-        )
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_pause_unpause_request_queue(self) -> None:
@@ -122,7 +117,7 @@ class TestRequest(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["pause_request_queue_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
         response = await self.post_form(
             "/api4/unpause_request_queue",
@@ -131,7 +126,7 @@ class TestRequest(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["unpause_request_queue_result"]["tl_key"] == "login_required"
+        assert payload["error"]["tl_key"] == "login_required"
 
     @gen_test
     async def test_request_line(self) -> None:

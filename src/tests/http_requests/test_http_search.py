@@ -22,7 +22,7 @@ class TestSearch(RequestClassesTestCase):
             raise_error=False,
         )
         payload = self.payload(response)
-        assert payload["search_results"]["tl_key"] == "search_string_too_short"
+        assert payload["error"]["tl_key"] == "search_string_too_short"
 
     @gen_test
     async def test_search_finds_songs(self) -> None:

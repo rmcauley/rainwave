@@ -1,6 +1,7 @@
 import random
 import time
 
+import orjson
 from psycopg import sql
 
 from common.db.build_insert import build_insert
@@ -262,6 +263,14 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
                     "song_track_number": track,
                     "song_disc_number": 1,
                     "song_year": year,
+                    "song_artist_parseable": orjson.dumps(
+                        [
+                            {
+                                "id": artist_id,
+                                "name": f"Artist {artist_id}",
+                            }
+                        ]
+                    ).decode("utf-8"),
                     "song_file_mtime": int(time.time()),
                 },
                 "song_id",

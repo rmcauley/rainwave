@@ -115,7 +115,7 @@ class TestAdminCore(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["set_song_request_only_result"]["tl_key"] == "admin_required"
+        assert payload["error"]["tl_key"] == "admin_required"
 
         response = await self.post_form(
             "/api4/admin/music_scan_errors",
@@ -124,4 +124,4 @@ class TestAdminCore(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["admin_music_scan_errors"]["tl_key"] == "admin_required"
+        assert payload["error"]["tl_key"] == "admin_required"

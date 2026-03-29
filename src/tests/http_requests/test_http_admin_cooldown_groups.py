@@ -2,9 +2,9 @@ from typing import TypedDict
 
 from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 
-from common.db.cursor import get_cursor
 import pytest
 from tests.http_requests.base import AuthData, FormValue, RequestClassesTestCase
+from tests.db import get_test_cursor
 from tests.seed_data import (
     SITE_ADMIN_API_KEY,
     SITE_ADMIN_USER_ID,
@@ -56,7 +56,7 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
         payload = self.payload(response)
         assert payload["set_song_cooldown_result"]["success"] is True
 
-        async with get_cursor() as cursor:
+        async with get_test_cursor() as cursor:
             row = await cursor.fetch_row(
                 "SELECT song_cool_multiply, song_cool_override FROM r4_songs WHERE song_id = %s",
                 (song_id,),
@@ -71,9 +71,9 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
             self._auth_data(song_id=song_id),
         )
         payload = self.payload(response)
-        assert payload["reset_song_cooldown_result"]["success"] is True
+        assert payload["set_song_cooldown_result"]["success"] is True
 
-        async with get_cursor() as cursor:
+        async with get_test_cursor() as cursor:
             row = await cursor.fetch_row(
                 "SELECT song_cool_multiply, song_cool_override FROM r4_songs WHERE song_id = %s",
                 (song_id,),
@@ -94,7 +94,7 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
         payload = self.payload(response)
         assert payload["set_album_cooldown_result"]["success"] is True
 
-        async with get_cursor() as cursor:
+        async with get_test_cursor() as cursor:
             row = await cursor.fetch_row(
                 "SELECT album_cool_multiply, album_cool_override FROM r4_album_sid WHERE album_id = %s AND sid = %s",
                 (album_id, 1),
@@ -109,9 +109,9 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
             self._auth_data(album_id=album_id),
         )
         payload = self.payload(response)
-        assert payload["reset_album_cooldown_result"]["success"] is True
+        assert payload["set_album_cooldown_result"]["success"] is True
 
-        async with get_cursor() as cursor:
+        async with get_test_cursor() as cursor:
             row = await cursor.fetch_row(
                 "SELECT album_cool_multiply, album_cool_override FROM r4_album_sid WHERE album_id = %s AND sid = %s",
                 (album_id, 1),
@@ -137,7 +137,7 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["set_song_cooldown_result"]["tl_key"] == "admin_required"
+        assert payload["error"]["tl_key"] == "admin_required"
 
         response = await self.post_form(
             "/api4/admin/reset_song_cooldown",
@@ -146,7 +146,7 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["reset_song_cooldown_result"]["tl_key"] == "admin_required"
+        assert payload["error"]["tl_key"] == "admin_required"
 
         response = await self.post_form(
             "/api4/admin/set_album_cooldown",
@@ -155,7 +155,7 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["set_album_cooldown_result"]["tl_key"] == "admin_required"
+        assert payload["error"]["tl_key"] == "admin_required"
 
         response = await self.post_form(
             "/api4/admin/reset_album_cooldown",
@@ -164,4 +164,4 @@ class TestAdminCooldownGroups(RequestClassesTestCase):
         )
         assert response.code == 403
         payload = self.payload(response)
-        assert payload["reset_album_cooldown_result"]["tl_key"] == "admin_required"
+        assert payload["error"]["tl_key"] == "admin_required"
