@@ -164,28 +164,32 @@ class Album:
     async def reset_user_completed_flags(self, cursor: RainwaveCursor) -> None:
         await cursor.update(
             """
-            WITH status AS ( 
-                SELECT 
-                    CASE WHEN COUNT(song_rating) >= album_song_count THEN TRUE ELSE FALSE END AS rating_complete, 
-                    r4_songs.album_id, 
-                    r4_song_sid.sid, 
-                    user_id 
-                FROM r4_songs 
-                    JOIN r4_song_sid USING (song_id) 
-                    JOIN r4_song_ratings USING (song_id) 
-                    JOIN r4_album_sid ON (r4_songs.album_id = r4_album_sid.album_id AND r4_song_sid.sid = r4_album_sid.sid) 
-                WHERE 
-                    r4_songs.album_id = %s 
-                    AND r4_song_sid.song_rating_user IS NOT NULL 
-                GROUP BY r4_songs.album_id, album_song_count, r4_song_sid.sid, user_id  
-            ) 
-            UPDATE r4_album_ratings 
-            SET album_rating_complete = status.rating_complete 
-            FROM status 
-            WHERE 
-                r4_album_ratings.album_id = status.album_id 
-                AND r4_album_ratings.sid = status.sid 
-                AND r4_album_ratings.user_id = status.user_id
+            UPDATE r4_album_ratings
+            SET album_rating_complete = COALESCE(
+                (
+                    SELECT
+                        COUNT(DISTINCT r4_song_ratings.song_id) >= r4_album_sid.album_song_count
+                    FROM r4_album_sid
+                        LEFT JOIN r4_songs ON r4_songs.album_id = r4_album_sid.album_id
+                        LEFT JOIN r4_song_sid ON (
+                            r4_song_sid.song_id = r4_songs.song_id
+                            AND r4_song_sid.sid = r4_album_sid.sid
+                        )
+                        LEFT JOIN r4_song_ratings ON (
+                            r4_song_ratings.song_id = r4_songs.song_id
+                            AND r4_song_ratings.user_id = r4_album_ratings.user_id
+                        )
+                    WHERE r4_album_sid.album_id = r4_album_ratings.album_id
+                        AND r4_album_sid.sid = r4_album_ratings.sid
+                        AND r4_album_sid.album_exists = TRUE
+                        AND r4_songs.song_verified = TRUE
+                        AND r4_song_sid.song_exists = TRUE
+                        AND r4_song_ratings.song_rating_user IS NOT NULL
+                    GROUP BY r4_album_sid.album_song_count
+                ),
+                FALSE
+            )
+            WHERE r4_album_ratings.album_id = %s
             """,
             (self.id,),
         )

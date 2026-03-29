@@ -96,7 +96,7 @@ class SongFile:
 
         to_upsert: SongInsertDict = {
             "album_id": album.id,
-            "song_artist_parseable": str(orjson.dumps(artist_parseable)),
+            "song_artist_parseable": orjson.dumps(artist_parseable).decode("utf-8"),
             "song_artist_tag": tags.artist,
             "song_file_mtime": int(os.stat(self.filename)[8]),
             "song_filename": self.filename,
@@ -128,24 +128,27 @@ class SongFile:
                 row_type=SongFileRow,
             )
         else:
+            to_update = {**to_upsert, "song_id": song_row["song_id"]}
             song_row = await cursor.fetch_row(
                 build_update(
                     "r4_songs",
                     to_upsert,
                     sql.SQL("song_id = {song_id}").format(
-                        {"song_id": sql.Placeholder(name="song_id")}
+                        song_id=sql.Placeholder(name="song_id")
                     ),
                 )
                 + sql.SQL(" RETURNING *"),
-                to_upsert,
+                to_update,
                 row_type=SongFileRow,
             )
 
         if song_row is None:
             raise Exception(f"{self.filename} failed to insert into database.")
 
+        self.existing_song_id = song_row["song_id"]
+
         await cursor.update(
-            "DELETE FROM r4_song_artist WHERE song_id = %s AND artist_id NOT IN (%s)",
+            "DELETE FROM r4_song_artist WHERE song_id = %s AND NOT (artist_id = ANY(%s))",
             (song_row["song_id"], [artist.id for artist in artists]),
         )
         artist_insert_rows = [
@@ -153,12 +156,13 @@ class SongFile:
             for artist_order, artist in enumerate(artists)
         ]
         await cursor.update(
-            sql.SQL(
-                """
-                INSERT INTO r4_song_artist (song_id, artist_id, artist_order) VALUES {values}
-                ON CONFLICT DO UPDATE SET artist_order = EXCLUDED.artist_order
-                """
-            ).format(
+                sql.SQL(
+                    """
+                    INSERT INTO r4_song_artist (song_id, artist_id, artist_order) VALUES {values}
+                    ON CONFLICT (artist_id, song_id)
+                    DO UPDATE SET artist_order = EXCLUDED.artist_order
+                    """
+                ).format(
                 values=sql.SQL(", ").join(
                     sql.SQL("(%s, %s, %s)") for _ in artist_insert_rows
                 )
@@ -167,22 +171,23 @@ class SongFile:
         )
 
         await cursor.update(
-            "DELETE FROM r4_song_group WHERE song_id = %s AND group_id NOT IN (%s)",
+            "DELETE FROM r4_song_group WHERE song_id = %s AND NOT (group_id = ANY(%s))",
             (song_row["song_id"], [group.id for group in groups]),
         )
         group_insert_rows = [(song_row["song_id"], group.id) for group in groups]
-        await cursor.update(
-            sql.SQL(
-                """
-                INSERT INTO r4_song_group (song_id, group_id) VALUES {values}
-                ON CONFLICT DO NOTHING
-                """
-            ).format(
-                values=sql.SQL(", ").join(
-                    sql.SQL("(%s, %s)") for _ in group_insert_rows
-                )
-            ),
-            [v for row in group_insert_rows for v in row],
-        )
+        if group_insert_rows:
+            await cursor.update(
+                sql.SQL(
+                    """
+                    INSERT INTO r4_song_group (song_id, group_id) VALUES {values}
+                    ON CONFLICT DO NOTHING
+                    """
+                ).format(
+                    values=sql.SQL(", ").join(
+                        sql.SQL("(%s, %s)") for _ in group_insert_rows
+                    )
+                ),
+                [v for row in group_insert_rows for v in row],
+            )
 
         await self.set_sids(cursor, new_sids)

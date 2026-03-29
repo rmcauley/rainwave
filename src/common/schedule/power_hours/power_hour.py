@@ -161,7 +161,7 @@ class PowerHour(ScheduleEntry):
         order: int | None = None,
     ) -> None:
         order = await cursor.fetch_guaranteed(
-            "SELECT MAX(one_up_order) + 1 FROM r4_one_ups WHERE sched_id = %s",
+            "SELECT COALESCE(MAX(one_up_order) + 1, 0) FROM r4_one_ups WHERE sched_id = %s",
             (self.id,),
             default=0,
             var_type=int,
@@ -169,7 +169,7 @@ class PowerHour(ScheduleEntry):
         for song in await get_songs_for_album_display(
             cursor, album_id, self.sid, 1, None
         ):
-            await self.add_song_id(cursor, song["id"], order=None)
+            await self.add_song_id(cursor, song["id"], order=order)
             order += 1
         await self._update_length(cursor)
 
