@@ -13,6 +13,7 @@ from api.handler_classes.html404 import HTMLError404Handler
 from api.handler_classes.json404 import Error404Handler
 from api.helpers.cached_all_artists import update_all_artists_cache
 from api.helpers.cached_all_groups import update_all_groups_cache
+from api.websocket.websocket_zmq_listener import setup_websocket_zmq
 from common import config, log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
@@ -75,6 +76,7 @@ class APIServer:
             log.debug("start", "Server booting, port %s." % port_no)
 
         async with db_connect(auto_retry=True), cache_connect():
+            setup_websocket_zmq()
             app = self._build_application()
             http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
             http_server.listen(port_no)

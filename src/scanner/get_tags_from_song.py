@@ -1,10 +1,11 @@
+from typing import Any
+
 from dataclasses import dataclass
-from mutagen.mp3 import MP3, _Tags as Tags  # pyright: ignore[reportPrivateUsage]
+from mutagen.mp3 import MP3
 
 from scanner.exceptions import (
     NonFatalScannerError,
 )
-
 
 class MissingID3TagError(NonFatalScannerError):
     pass
@@ -21,7 +22,7 @@ class TagsFromFile:
     length: int
 
 
-def get_tag(tags: Tags, tag: str) -> str | None:
+def get_tag(tags: Any, tag: str) -> str | None:
     frame = tags.getall(tag)
     if len(frame) > 0 and len(str(frame[-1]).strip()) > 0:
         return str(frame[-1]).strip()

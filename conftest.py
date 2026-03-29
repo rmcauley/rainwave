@@ -42,7 +42,10 @@ _postgres_container: PostgresContainer | None = None
 _exit_stack: AsyncExitStack | None = None
 _api_server_process: subprocess.Popen[str] | None = None
 _api_server_log: TextIO | None = None
+_backend_server_process: subprocess.Popen[str] | None = None
+_backend_server_log: TextIO | None = None
 _test_api_port: int | None = None
+_test_backend_port: int | None = None
 
 
 def _progress(message: str) -> None:
@@ -63,6 +66,22 @@ def _get_test_api_port() -> int:
 
     assert _test_api_port is not None
     return _test_api_port
+
+
+def _get_test_backend_port() -> int:
+    global _test_backend_port
+
+    configured_port = os.getenv("RW_TEST_BACKEND_PORT")
+    if configured_port is not None:
+        return int(configured_port)
+
+    if _test_backend_port is None:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.bind(("127.0.0.1", 0))
+            _test_backend_port = sock.getsockname()[1] - 1
+
+    assert _test_backend_port is not None
+    return _test_backend_port
 
 
 def _configure_local_postgres() -> None:
@@ -190,6 +209,58 @@ def _start_test_api_server() -> None:
     )
 
 
+def _start_test_backend_server() -> None:
+    global _backend_server_process
+    global _backend_server_log
+
+    env = os.environ.copy()
+    env["RW_TEST_BACKEND_PORT"] = str(_get_test_backend_port())
+    env["RW_TEST_BACKEND_BASE_URL"] = (
+        f"http://127.0.0.1:{_get_test_backend_port() + 1}"
+    )
+    backend_server_log_path = Path("/tmp") / "rainwave-test-backend-server.log"
+
+    _progress(f"starting backend server on port {_get_test_backend_port() + 1}")
+    _backend_server_log = backend_server_log_path.open("w", encoding="utf-8")
+    _backend_server_process = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "run",
+            "--parallel-mode",
+            "src/rw_backend.py",
+            "--testmode",
+        ],
+        cwd=PROJECT_ROOT,
+        env=env,
+        stdout=_backend_server_log,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    os.environ["RW_TEST_BACKEND_BASE_URL"] = env["RW_TEST_BACKEND_BASE_URL"]
+
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        if _backend_server_process.poll() is not None:
+            break
+        try:
+            with socket.create_connection(
+                ("127.0.0.1", _get_test_backend_port() + 1), timeout=1
+            ):
+                _progress("backend server ready")
+                return
+        except OSError:
+            time.sleep(0.2)
+
+    _backend_server_log.flush()
+    log_output = backend_server_log_path.read_text(encoding="utf-8")
+    raise RuntimeError(
+        "Test backend server failed to become ready.\n"
+        + f"Log output from {backend_server_log_path}:\n{log_output}"
+    )
+
+
 def pytest_sessionstart(session: pytest.Session) -> None:
     global _postgres_container
     global _exit_stack
@@ -219,6 +290,7 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
     _exit_stack = AsyncExitStack()
     asyncio.run(_setup_rainwave_state())
+    _start_test_backend_server()
     _start_test_api_server()
     _progress("global test setup complete")
 
@@ -226,6 +298,8 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     global _api_server_process
     global _api_server_log
+    global _backend_server_process
+    global _backend_server_log
     global _postgres_container
     global _exit_stack
 
@@ -246,6 +320,19 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     if _api_server_log is not None:
         _api_server_log.close()
         _api_server_log = None
+
+    if _backend_server_process is not None:
+        _progress("stopping backend server")
+        _backend_server_process.terminate()
+        try:
+            _backend_server_process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            _backend_server_process.kill()
+            _backend_server_process.wait(timeout=5)
+        _backend_server_process = None
+    if _backend_server_log is not None:
+        _backend_server_log.close()
+        _backend_server_log = None
 
     if _postgres_container is not None:
         _progress("stopping postgres test container")

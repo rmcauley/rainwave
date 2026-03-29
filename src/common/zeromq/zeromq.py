@@ -13,12 +13,13 @@ _pub.connect(config.zeromq_pub)
 sub = context.socket(zmq.SUB)
 sub.connect(config.zeromq_sub)
 sub.setsockopt(zmq.SUBSCRIBE, b"")
-_sub_stream = ZMQStream(sub)
+_sub_stream: ZMQStream | None = None
 
 
 def set_sub_callback(methd: Callable[..., Any]) -> None:
-    if not _sub_stream:
-        raise APIException("internal_error", status_code=500)
+    global _sub_stream
+    if _sub_stream is None:
+        _sub_stream = ZMQStream(sub)
     _sub_stream.on_recv(methd)
 
 

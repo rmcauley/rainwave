@@ -23,6 +23,7 @@ from common.schedule.generate_next_timeline_entries import (
 from common.schedule.timeline import TimelineOnStation, load_timeline
 from common.schedule.trim_schedule import trim_schedule
 from common.schedule.update_tunein import update_tunein
+from common.zeromq.sync_to_front import sync_frontend_all
 
 
 async def get_next_timeline_song(
@@ -81,6 +82,7 @@ async def advance_timeline_post_process(sid: int) -> None:
         await update_timeline_api_cache(cursor, sid, timeline, modified_albums)
 
         update_tunein(sid, timeline)
+        sync_frontend_all(sid)
 
 
 async def advance_timeline(sid: int, trigger_post_process: bool) -> str:

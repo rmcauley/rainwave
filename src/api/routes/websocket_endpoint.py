@@ -52,7 +52,7 @@ throttle_exempt = (
 
 @handle_api_url(r"websocket/(\d+)")
 class WebsocketEndpoint(RainwaveWebsocketHandler):
-    user: UserBase | None
+    user: UserBase | None = None
     rainwave_locale: RainwaveLocale = translations["en-CA"]
 
     def __init__(self, *args: Any, **kwargs: Any):

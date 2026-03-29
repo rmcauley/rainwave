@@ -98,7 +98,7 @@ cookie_domain = ""
 enforce_ssl = False
 
 # Base port of the song changing API listener
-backend_port = 21000
+backend_port = int(os.getenv("RW_TEST_BACKEND_PORT", "21000"))
 
 # Database configuration
 db_host = os.getenv("RW_TEST_DB_HOST", None)
