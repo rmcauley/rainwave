@@ -11,7 +11,10 @@ def string(input: Any) -> str | None:
     if not input:
         return None
     if isinstance(input, bytes):
-        input = input.decode().strip()
+        try:
+            input = input.decode().strip()
+        except UnicodeDecodeError:
+            return None
     if isinstance(input, str):
         return input.strip()
     try:
