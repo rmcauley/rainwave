@@ -1651,12 +1651,6 @@ export interface components {
         }[];
         stream_filename: string;
         sync_result: components["schemas"]["_error"];
-        tip_jar: {
-            amount: number;
-            id: number;
-            message: string | null;
-            name: string | null;
-        }[];
         top_100: {
             album_name: string;
             id: number;

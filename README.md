@@ -121,6 +121,25 @@ Open the beta URL at `/?sid=1` to see your Rainwave.
 If you are not running against an installed phpBB and want
 to emulate being logged in, open `/api4/test/login_tuned_in/1`.
 
+## Coverage
+
+For this project, HTML coverage should be generated with `run_coverage.sh` directly,
+not `pytest --cov`, because the test suite starts the API in a separate process.
+
+Use:
+
+```bash
+./scripts/run_coverage.sh
+```
+
+To run a subset:
+
+```bash
+./scripts/run_coverage.sh src/tests/http_requests
+```
+
+This writes the HTML report to `htmlcov/index.html`.
+
 ## Deploying to Production
 
 ### Installing a Production Rainwave
@@ -165,3 +184,4 @@ On modernize deployment:
 - ALTER TABLE r4_listeners SET user_id NOT NULL;
 - CREATE UNIQUE INDEX r4_listeners_listener_key_unique_idx ON r4_listeners (listener_ip) WHERE user_id = 1 AND listener_ip IS NOT NULL
 - CREATE UNIQUE INDEX r4_listeners_listener_key_unique_idx ON r4_listeners (listener_key) WHERE user_id = 1 AND listener_key IS NOT NULL
+- Update the CSP header based on the debug output

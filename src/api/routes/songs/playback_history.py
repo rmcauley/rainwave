@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 import orjson
 
 from api.handler_classes.api_handler import APIHandler
@@ -85,20 +87,21 @@ class PlaybackHistoryHTML(PlaybackHistory):
 
     columns = ["title", "album_name"]
 
-    def header_special(self):
+    def pretty_print_header_special(self) -> None:
         self.write("<th>Artist(s)</th>")
         self.write("<th>Site Rating</th>")
         self.write("<th>Your Rating</th>")
         self.write("<th>Time Played</th>")
 
-    def row_special(self, row: rainwave_typeddicts.PlaybackHistoryEntry):
+    def pretty_print_row_special(self, row: dict[str, Any]) -> None:
         self.write("<td>")
-        artists = orjson.loads(row["artist_parseable"])
+        typed_row = cast(rainwave_typeddicts.PlaybackHistoryEntry, row)
+        artists = orjson.loads(typed_row["artist_parseable"])
         for artist in artists:
             self.write("%s" % artist["name"])
             if artist != artists[-1]:
                 self.write(", ")
         self.write("</td>")
-        self.write("<td>%s</td>" % row["rating"])
-        self.write("<td>%s</td>" % (row["rating_user"] or ""))
-        self.write("<td>%s</td>" % pretty_date(row["song_played_at"]))
+        self.write("<td>%s</td>" % typed_row["rating"])
+        self.write("<td>%s</td>" % (typed_row.get("rating_user") or ""))
+        self.write("<td>%s</td>" % pretty_date(typed_row["song_played_at"]))

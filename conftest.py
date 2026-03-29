@@ -59,8 +59,9 @@ def _get_test_api_port() -> int:
     if _test_api_port is None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.bind(("127.0.0.1", 0))
-            return sock.getsockname()[1]
+            _test_api_port = sock.getsockname()[1]
 
+    assert _test_api_port is not None
     return _test_api_port
 
 
@@ -150,7 +151,15 @@ def _start_test_api_server() -> None:
     _progress(f"starting API server on port {_get_test_api_port()}")
     _api_server_log = api_server_log_path.open("w", encoding="utf-8")
     _api_server_process = subprocess.Popen(
-        ["uv", "run", "python", "src/rw_api.py", "--testmode"],
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "run",
+            "--parallel-mode",
+            "src/rw_api.py",
+            "--testmode",
+        ],
         cwd=PROJECT_ROOT,
         env=env,
         stdout=_api_server_log,

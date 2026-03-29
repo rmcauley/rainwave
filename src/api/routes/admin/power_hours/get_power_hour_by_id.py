@@ -18,7 +18,7 @@ async def get_api_power_hour(
         row_type=rainwave_typeddicts.AdminPowerHour,
     )
     if not power_hour or power_hour["sched_type"] != "OneUpProducer":
-        raise APIException("404")
+        raise APIException("404", status_code=404)
     power_hour["songs"] = await cursor.fetch_all(
         """
         SELECT
@@ -31,6 +31,7 @@ async def get_api_power_hour(
             JOIN r4_songs USING (song_id)
             JOIN r4_albums USING (album_id)
         WHERE r4_one_ups.sched_id = %s
+        ORDER BY r4_one_ups.one_up_order
         """,
         (sched_id,),
         row_type=rainwave_typeddicts.AdminPowerHourSong,
@@ -40,10 +41,10 @@ async def get_api_power_hour(
 
 async def get_power_hour_by_id(cursor: RainwaveCursor, sched_id: int) -> PowerHour:
     schedule_entry_row = await cursor.fetch_row(
-        "SELECT * FROM r4_schedule WHERE sched_end < %s AND sid = %s AND sched_used = FALSE",
+        "SELECT * FROM r4_schedule WHERE sched_id = %s AND sched_used = FALSE",
         (sched_id,),
         row_type=ScheduleEntryRow,
     )
     if not schedule_entry_row or schedule_entry_row["sched_type"] != "OneUpProducer":
-        raise APIException("404")
+        raise APIException("404", status_code=404)
     return PowerHour(schedule_entry_row["sched_type"], schedule_entry_row)

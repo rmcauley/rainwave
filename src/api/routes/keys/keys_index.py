@@ -30,7 +30,9 @@ async def write_key_index(request: RequestHandler, user: RegisteredUser):
     async with get_cursor() as cursor:
         ua = request.request.headers.get("User-Agent") or ""
 
-        if ua.lower().find("android") != -1 and not request.get_argument("noredirect"):
+        if ua.lower().find("android") != -1 and not request.get_argument(
+            "noredirect", None
+        ):
             request.redirect("/keys/app")
             return
 

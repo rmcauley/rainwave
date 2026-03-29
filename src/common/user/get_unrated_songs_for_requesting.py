@@ -91,10 +91,13 @@ async def get_unrated_songs_on_cooldown_for_requesting(
                 MIN(song_cool_end) AS min_song_cool_end,
                 BOOL_OR(song_elec_blocked = TRUE) AS is_blocked
             FROM r4_song_sid
-            JOIN r4_songs USING (song_id) LEFT OUTER
-            JOIN r4_song_ratings
-                ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = {user_id}) LEFT OUTER
-            LEFT OUTER JOIN requested_albums
+                JOIN r4_songs USING (song_id)
+                LEFT OUTER JOIN r4_song_ratings
+                    ON (
+                        r4_song_sid.song_id = r4_song_ratings.song_id
+                        AND user_id = {user_id}
+                    )
+                LEFT OUTER JOIN requested_albums
                 ON (requested_albums.album_id = r4_songs.album_id)
             WHERE r4_song_sid.sid = {sid}
                 AND song_exists = TRUE
@@ -119,9 +122,12 @@ async def get_unrated_songs_on_cooldown_for_requesting(
             SELECT
                 r4_song_sid.song_id
             FROM r4_songs
-            JOIN r4_song_sid USING (song_id) LEFT OUTER
-            JOIN r4_song_ratings
-                ON (r4_song_sid.song_id = r4_song_ratings.song_id AND user_id = %s)
+                JOIN r4_song_sid USING (song_id)
+                LEFT OUTER JOIN r4_song_ratings
+                    ON (
+                        r4_song_sid.song_id = r4_song_ratings.song_id
+                        AND user_id = %s
+                    )
             WHERE r4_songs.album_id = %s
                 AND r4_song_sid.sid = %s
                 AND song_exists = TRUE

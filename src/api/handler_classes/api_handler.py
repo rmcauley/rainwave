@@ -2,12 +2,19 @@ from abc import abstractmethod
 from typing import Any
 
 from tornado.concurrent import Future
+from tornado.web import HTTPError
 from api.handler_classes.rainwave_handler import RainwaveHandler
 
 
 class APIHandler(RainwaveHandler):
     content_type = "application/json"
     sync_across_sessions: bool = False
+
+    async def get(self) -> None:
+        if self.pretty_print_html:
+            await self.post()
+            return
+        raise HTTPError(405)
 
     @abstractmethod
     async def post(self) -> None:

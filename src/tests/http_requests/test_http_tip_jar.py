@@ -22,7 +22,6 @@ class TestTipJar(RequestClassesTestCase):
         payload = self.payload(response)
         assert payload["add_donation_result"]["tl_key"] == "success"
 
-        response = await self.post_form("/api4/tip_jar", {})
-        payload = self.payload(response)
-        assert len(payload["tip_jar"]) == 1
-        assert payload["tip_jar"][0]["message"] == "Thanks"
+        response = await self.get_path("/pages/tip_jar")
+        page = response.body.decode("utf-8")
+        assert "Thanks" in page

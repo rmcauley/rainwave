@@ -388,12 +388,16 @@ class RainwaveHandler(RequestHandler, ABC):
         self.write(self.render_string("basic_footer.html"))
 
     def _write_rainwave_output_json_pretty_print_html(self) -> None:
+        title_key = cast(rainwave_typeddicts.TranslationKey, self.return_name)
+        try:
+            title = self.locale.translate(title_key)
+        except KeyError:
+            title = self.return_name
+
         self.write(
             self.render_string(
                 "basic_header.html",
-                title=self.locale.translate(
-                    cast(rainwave_typeddicts.TranslationKey, self.return_name)
-                ),
+                title=title,
             )
         )
 
@@ -403,8 +407,8 @@ class RainwaveHandler(RequestHandler, ABC):
         previous_page_start = None
         next_page_start = None
         if self.pagination:
-            if fieldtypes.integer(self.get_argument("page_start")):
-                previous_page_start = min(page_start - per_page, 0)
+            if fieldtypes.integer(self.get_argument("page_start", None)):
+                previous_page_start = max(page_start - per_page, 0)
                 next_page_start = page_start + per_page
             else:
                 next_page_start = per_page

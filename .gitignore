@@ -60,3 +60,7 @@ logs
 
 .codex
 .claude
+.coverage
+.coverage.*
+coverage.xml
+htmlcov

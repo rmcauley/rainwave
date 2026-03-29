@@ -36,12 +36,16 @@ class RequestClassesTestCase(AsyncTestCase):
         *,
         raise_error: bool = True,
         follow_redirects: bool = True,
+        headers: dict[str, str] | None = None,
+        request_timeout: float | None = None,
     ) -> HTTPResponse:
         assert self.http_client is not None
         request = HTTPRequest(
             url=self.get_url(path),
             method="GET",
             follow_redirects=follow_redirects,
+            headers=headers,
+            request_timeout=request_timeout,
         )
         return await self.http_client.fetch(request, raise_error=raise_error)
 
@@ -52,6 +56,7 @@ class RequestClassesTestCase(AsyncTestCase):
         *,
         raise_error: bool = True,
         headers: dict[str, str] | None = None,
+        request_timeout: float | None = None,
     ) -> HTTPResponse:
         assert self.http_client is not None
         request_headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -63,6 +68,7 @@ class RequestClassesTestCase(AsyncTestCase):
             method="POST",
             body=urlencode(data),
             headers=request_headers,
+            request_timeout=request_timeout,
         )
         return await self.http_client.fetch(request, raise_error=raise_error)
 

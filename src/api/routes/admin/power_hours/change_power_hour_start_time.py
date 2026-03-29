@@ -21,6 +21,6 @@ class ChangeProducerStartTime(APIHandler):
         async with get_cursor() as cursor:
             power_hour = await get_power_hour_by_id(cursor, input.sched_id)
             await power_hour.change_start(cursor, input.utc_time)
-        self.response["admin_power_hour"] = await get_api_power_hour(
-            cursor, input.sched_id
-        )
+            self.response["admin_power_hour"] = await get_api_power_hour(
+                cursor, input.sched_id
+            )

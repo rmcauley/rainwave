@@ -683,6 +683,15 @@ async def create_tables() -> None:
 
         await cursor.update(
             " \
+            CREATE TABLE r4_sessions ( \
+                session_id              TEXT        PRIMARY KEY, \
+                user_id                 INTEGER     NOT NULL \
+            )"
+        )
+        await create_delete_fk(cursor, "r4_sessions", "phpbb_users", "user_id")
+
+        await cursor.update(
+            " \
             CREATE TABLE r4_song_history ( \
                 songhist_id				SERIAL		PRIMARY KEY, \
                 songhist_time			INTEGER		DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP), \

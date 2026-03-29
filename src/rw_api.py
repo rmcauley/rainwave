@@ -4,6 +4,8 @@ from pathlib import Path
 import tempfile
 from dotenv import load_dotenv
 
+from api.helpers import csp_header
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Rainwave API server.")
@@ -31,6 +33,9 @@ def main() -> None:
         enable_periodic_jobs = False
 
     log.init(startup_log, config.log_level)
+
+    if not args.testmode:
+        log.info("csp", csp_header.csp_header)
 
     load_all_routes()
     server = APIServer()

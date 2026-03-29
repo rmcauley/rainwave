@@ -14,7 +14,7 @@ class CreateTestUserInput(BaseModel):
     registered: bool
     perks: bool
 
-@handle_url(r"test/create_user")
+@handle_url(r"/test/create_user")
 class CreateTestUser(RainwaveHandler):
     local_only = True
     sid_required = False
@@ -24,7 +24,7 @@ class CreateTestUser(RainwaveHandler):
     def return_name(self) -> RainwaveResponseKey:
         return "user"
 
-    async def get(self, url_sid: str):
+    async def get(self):
         input = self.get_validated_input(CreateTestUserInput)
         user_id = 1
         group_id = 1
@@ -35,10 +35,10 @@ class CreateTestUser(RainwaveHandler):
 
         async with get_cursor() as cursor:
             if input.admin or input.registered:
-                user_id = min(
+                user_id = max(
                     2,
                     await cursor.fetch_guaranteed(
-                        "SELECT MAX(user_id) FROM phpbb_users",
+                        "SELECT MAX(user_id) + 1 FROM phpbb_users",
                         params=None,
                         default=2,
                         var_type=int,

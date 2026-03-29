@@ -55,6 +55,9 @@ explicit_package_bases = true
 
 [tool.coverage.run]
 branch = true
+parallel = true
+patch = ["subprocess"]
+sigterm = true
 source = ["src"]
 omit = [
     "src/tests/*",

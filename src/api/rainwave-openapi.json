@@ -4919,41 +4919,6 @@
       "sync_result": {
         "$ref": "#/components/schemas/_error"
       },
-      "tip_jar": {
-        "items": {
-          "properties": {
-            "amount": {
-              "type": "number"
-            },
-            "id": {
-              "type": "integer"
-            },
-            "message": {
-              "oneOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "name": {
-              "oneOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            }
-          },
-          "required": ["id", "amount", "message", "name"],
-          "type": "object"
-        },
-        "type": "array"
-      },
       "top_100": {
         "items": {
           "properties": {
