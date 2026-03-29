@@ -4,7 +4,7 @@ from psycopg import sql
 
 from common.db.build_insert import build_insert
 from common.db.cursor import RainwaveCursor
-from common.playlist.remove_diacritics import remove_diacritics
+from common.playlist.get_searchable_string import get_searchable_string
 
 
 class CouldNotUpsertArtistError(Exception):
@@ -36,7 +36,7 @@ class Artist:
         if not existing:
             to_insert = {
                 "artist_name": name,
-                "artist_name_searchable": remove_diacritics(name),
+                "artist_name_searchable": get_searchable_string(name),
             }
             inserted = await cursor.fetch_row(
                 build_insert("r4_artists", to_insert) + sql.SQL(" RETURNING *"),

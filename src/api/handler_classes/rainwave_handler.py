@@ -77,6 +77,8 @@ class RainwaveHandler(RequestHandler, ABC):
     @property
     @abstractmethod
     def return_name(cls) -> RainwaveResponseKey:
+        # Every request must provide this for pretty-print HTML
+        # abstractions to work.
         raise NotImplementedError
 
     def __init__(

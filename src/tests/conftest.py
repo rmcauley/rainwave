@@ -197,10 +197,6 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
     _exit_stack = AsyncExitStack()
     asyncio.run(_setup_rainwave_state())
-    if _exit_stack is not None:  # pyright: ignore[reportUnnecessaryComparison]
-        _progress("closing bootstrap database and cache connections")
-        asyncio.run(_exit_stack.aclose())
-        _exit_stack = None
     _start_test_api_server()
     _progress("global test setup complete")
 

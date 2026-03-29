@@ -5,12 +5,14 @@ from api.exceptions import APIException
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
 from api.rainwave_dto import Api4SearchPostRequest
 from common.db.cursor import get_cursor
-from common.playlist.remove_diacritics import remove_diacritics
+from common.playlist.get_searchable_string import get_searchable_string
 from typing import TypedDict
+
 
 class SearchArtistRow(TypedDict):
     id: int
     name: str
+
 
 class SearchAlbumRow(TypedDict):
     id: int
@@ -20,6 +22,7 @@ class SearchAlbumRow(TypedDict):
     fave: bool
     rating_user: float
     rating_complete: bool
+
 
 class SearchSongRow(TypedDict):
     id: int
@@ -39,6 +42,7 @@ class SearchSongRow(TypedDict):
     album_name: str
     album_id: int
 
+
 @handle_api_url("search")
 class SearchHandler(AuthRequiredAPIHandler):
     description = "Search artists, albums, and songs for a matching string.  Case insensitive.  Submitted string will be stripped of accents and punctuation."
@@ -46,13 +50,14 @@ class SearchHandler(AuthRequiredAPIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "albums"
+
     sid_required = True
     fields = {"search": (fieldtypes.string, True)}
 
     async def post(self):
         input = self.get_validated_input(Api4SearchPostRequest)
         async with get_cursor() as cursor:
-            search_term = remove_diacritics(input.search)
+            search_term = get_searchable_string(input.search)
             if len(search_term) < 3:
                 raise APIException("search_string_too_short")
 

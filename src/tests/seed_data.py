@@ -10,6 +10,7 @@ ANONYMOUS_USER_ID = 1
 TUNED_IN_ANONYMOUS_IP = "127.0.0.1"
 TUNED_OUT_ANONYMOUS_IP = "127.0.0.2"
 ANONYMOUS_API_KEY = "ANON"
+ANONYMOUS_LISTEN_KEY = "ANONLSTN"
 ANONYMOUS_USER_NAME = "Anonymous"
 
 SITE_ADMIN_USER_ID = 2
@@ -69,7 +70,7 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
         {
             "user_id": ANONYMOUS_USER_ID,
             "api_key": ANONYMOUS_API_KEY,
-            "api_key_listen_key": "ANONLSTN",
+            "api_key_listen_key": ANONYMOUS_LISTEN_KEY,
         },
     )
     await _insert(
@@ -80,6 +81,7 @@ async def populate_test_data(cursor: RainwaveCursor, sid: int = 1) -> None:
             "sid": sid,
             "listener_icecast_id": 3,
             "listener_ip": TUNED_IN_ANONYMOUS_IP,
+            "listener_key": ANONYMOUS_LISTEN_KEY,
         },
     )
 

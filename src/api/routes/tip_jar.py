@@ -4,12 +4,13 @@ from psycopg import sql
 
 from api import rainwave_typeddicts
 from api.handler_classes.api_handler import APIHandler
-from api.handle_url import handle_api_html_url
+from api.handle_url import handle_api_html_url, handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 
+@handle_api_url("tip_jar")
 class TipJarContents(APIHandler):
     description = "Returns a list of donations Rainwave has had."
 

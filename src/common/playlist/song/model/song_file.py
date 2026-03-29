@@ -9,7 +9,7 @@ from common.db.build_insert import (
     build_update,
 )
 from common.db.cursor import RainwaveCursor
-from common.playlist.remove_diacritics import remove_diacritics
+from common.playlist.get_searchable_string import get_searchable_string
 from common.playlist.album.model.album import Album
 from common.playlist.artist.artist import Artist
 from common.playlist.song.set_song_sids import set_song_sids
@@ -106,7 +106,7 @@ class SongFile:
             "song_replay_gain": get_gain_for_song(self.filename),
             "song_scanned": True,
             "song_title": tags.title,
-            "song_title_searchable": remove_diacritics(tags.title),
+            "song_title_searchable": get_searchable_string(tags.title),
             "song_url": tags.url,
             "song_verified": True,
         }

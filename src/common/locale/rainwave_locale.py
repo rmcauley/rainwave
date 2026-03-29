@@ -1,3 +1,5 @@
+from typing import cast
+
 from api import rainwave_typeddicts
 
 from .ordinal_suffixes import ORDINAL_SUFFIXES, ORDINAL_SUFFIXES_OTHER
@@ -103,3 +105,13 @@ class RainwaveLocale:
                 text += tokenText
 
         return text
+
+    # These functions provide thin compatibility for HTML rendering through Tornado
+    def gettext(self, message: str) -> str:
+        return self.translate(cast(rainwave_typeddicts.TranslationKey, message))
+
+    def pgettext(self, context: str, message: str) -> str:
+        return self.translate(cast(rainwave_typeddicts.TranslationKey, message))
+
+    def ngettext(self, singular: str, plural: str, count: int) -> str:
+        return singular if count == 1 else plural

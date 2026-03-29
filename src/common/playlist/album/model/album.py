@@ -5,7 +5,7 @@ from psycopg import sql
 from common.db.build_insert import build_insert
 from common.db.cursor import RainwaveCursor
 
-from common.playlist.remove_diacritics import remove_diacritics
+from common.playlist.get_searchable_string import get_searchable_string
 
 num_albums: dict[int, int] = {}
 
@@ -41,7 +41,7 @@ class Album:
         if not existing:
             to_insert = {
                 "album_name": name,
-                "album_name_searchable": remove_diacritics(name),
+                "album_name_searchable": get_searchable_string(name),
             }
 
             inserted = await cursor.fetch_row(

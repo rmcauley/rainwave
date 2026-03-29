@@ -41,13 +41,14 @@ class LocaleIndex(HtmlHandler):
         self.write(self.render_string("basic_footer.html"))
 
 
-@handle_url(r"/locale/(\w+)")
+@handle_url(r"/locale/([\w-]+)")
 class LocaleMissingLines(HtmlHandler):
     description = "Lists all the missing lines in a locale/translation file."
     auth_required = False
     sid_required = False
 
     def get(self, request_locale: str):
+        request_locale = request_locale.replace("_", "-")
         if not request_locale in translations:
             raise tornado.web.HTTPError(404)
 

@@ -33,7 +33,9 @@ class RemoveListener(IcecastHandler):
 
     async def post(self):
         try:
-            input = RemoveListenerDTO.model_validate(self.request.arguments)
+            input = RemoveListenerDTO.model_validate(
+                {"client": self.get_argument("client")}
+            )
         except pydantic.ValidationError:
             self.write("Invalid Icecast request")
             return

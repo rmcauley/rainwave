@@ -25,6 +25,9 @@ class SongHandler(APIHandler):
         async with get_cursor() as cursor:
             song_on_station = await SongOnStation.load(cursor, input.id, self.sid)
             extra_detail = await song_on_station.load_extra_detail(cursor)
+            # Artists must always be gotten from the stored parseable here.
+            # If parseable is not available, this is a bug in either test setup
+            # or in the SongFile class when songs are written to the database.
             artists = song_on_station.get_artists_from_parseable()
             groups = await load_groups_for_song_on_station(cursor, input.id, self.sid)
 

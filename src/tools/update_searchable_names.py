@@ -6,7 +6,7 @@ from typing import TypedDict
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
-from common.playlist.remove_diacritics import remove_diacritics
+from common.playlist.get_searchable_string import get_searchable_string
 
 
 class UpdateSearchableNameRow(TypedDict):
@@ -22,7 +22,7 @@ async def main() -> None:
         ):
             await cursor.update(
                 "UPDATE r4_songs SET song_title_searchable = %s WHERE song_id = %s",
-                (remove_diacritics(row["name"]), row["id"]),
+                (get_searchable_string(row["name"]), row["id"]),
             )
 
         for row in await cursor.fetch_all(
@@ -31,7 +31,7 @@ async def main() -> None:
         ):
             await cursor.update(
                 "UPDATE r4_albums SET album_name_searchable = %s WHERE album_id = %s",
-                (remove_diacritics(row["name"]), row["id"]),
+                (get_searchable_string(row["name"]), row["id"]),
             )
 
         for row in await cursor.fetch_all(
@@ -40,7 +40,7 @@ async def main() -> None:
         ):
             await cursor.update(
                 "UPDATE r4_groups SET group_name_searchable = %s WHERE group_id = %s",
-                (remove_diacritics(row["name"]), row["id"]),
+                (get_searchable_string(row["name"]), row["id"]),
             )
 
         for row in await cursor.fetch_all(
@@ -49,7 +49,7 @@ async def main() -> None:
         ):
             await cursor.update(
                 "UPDATE r4_artists SET artist_name_searchable = %s WHERE artist_id = %s",
-                (remove_diacritics(row["name"]), row["id"]),
+                (get_searchable_string(row["name"]), row["id"]),
             )
 
     print()

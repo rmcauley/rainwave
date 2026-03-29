@@ -33,7 +33,13 @@ class ListenKeyApiKeyUserLookup(TypedDict):
 class AddListener(IcecastHandler):
     async def post(self, sid: str | int):
         try:
-            input = AddListenerDTO.model_validate(self.request.arguments)
+            input = AddListenerDTO.model_validate(
+                {
+                    "client": self.get_argument("client"),
+                    "mount": self.get_argument("mount"),
+                    "ip": self.get_argument("ip"),
+                }
+            )
             (_mount, user_id, listen_key, listener_ip) = parse_icecast_mount(
                 input.mount
             )
@@ -53,10 +59,10 @@ class AddListener(IcecastHandler):
             raise APIException("invalid_station_id", status_code=400)
         if user_id > 1 and listen_key:
             await self.add_registered(
-                sid, user_id, listen_key, listener_ip, input.client
+                user_id, sid, listen_key, listener_ip, input.client
             )
-        elif listen_key:
-            await self.add_anonymous(sid, listen_key, listener_ip, input.client)
+        else:
+            await self.add_anonymous(sid, listen_key or "", listener_ip, input.client)
 
     async def add_registered(
         self,
