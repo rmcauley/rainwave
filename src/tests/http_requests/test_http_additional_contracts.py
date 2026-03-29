@@ -72,6 +72,19 @@ class TestAdditionalContracts(RequestClassesTestCase):
         assert response.code == 200
         assert "destination" in response.body.decode("utf-8")
 
+        response = await self.get_path(
+            "/oauth/discord?destination=web",
+            raise_error=False,
+            follow_redirects=False,
+        )
+        assert response.code == 400
+
+        response = await self.get_path(
+            "/oauth/discord?id=1&state_argument=web$badstate&token=badtoken",
+            raise_error=False,
+        )
+        assert response.code == 500
+
         response = await self.get_path("/oauth/debug")
         assert response.code == 200
         assert "User ID:" in response.body.decode("utf-8")
@@ -89,7 +102,13 @@ class TestAdditionalContracts(RequestClassesTestCase):
         response = await self.get_path("/widget/")
         assert response.code == 200
 
+        response = await self.get_path("/twitch/")
+        assert response.code == 200
+
         response = await self.get_path("/widget/widget?sid=1")
+        assert response.code == 200
+
+        response = await self.get_path("/twitch/widget?sid=1")
         assert response.code == 200
 
         response = await self.get_path("/tune_in/1.mp3")
@@ -99,6 +118,11 @@ class TestAdditionalContracts(RequestClassesTestCase):
 
         response = await self.get_path("/tune_in/station.mp3")
         assert response.code == 200
+
+        response = await self.get_path("/tune_in/1.ogg.m3u")
+        tune_in_ogg_body = response.body.decode("utf-8")
+        assert "#EXTINF:0,Rainwave Station:" in tune_in_ogg_body
+        assert "station.ogg" in tune_in_ogg_body
 
         response = await self.get_path("/tune_in/999.mp3", raise_error=False)
         assert response.code == 404

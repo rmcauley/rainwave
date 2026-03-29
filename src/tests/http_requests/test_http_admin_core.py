@@ -101,6 +101,16 @@ class TestAdminCore(RequestClassesTestCase):
         assert "admin_music_scan_errors" in payload or "js_errors" in payload
 
     @gen_test
+    async def test_admin_js_errors(self) -> None:
+        response = await self.post_form(
+            "/api4/admin/js_errors",
+            self._auth_data(),
+        )
+        payload = self.payload(response)
+        assert "admin_js_errors" in payload
+        assert isinstance(payload["admin_js_errors"], list)
+
+    @gen_test
     async def test_admin_commands_require_admin_user(self) -> None:
         song_id = await self._first_song_id()
         auth_data = self._auth_data(
@@ -119,6 +129,15 @@ class TestAdminCore(RequestClassesTestCase):
 
         response = await self.post_form(
             "/api4/admin/music_scan_errors",
+            auth_data,
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self.payload(response)
+        assert payload["error"]["tl_key"] == "admin_required"
+
+        response = await self.post_form(
+            "/api4/admin/js_errors",
             auth_data,
             raise_error=False,
         )

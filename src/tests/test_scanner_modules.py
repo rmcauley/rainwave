@@ -1,0 +1,670 @@
+# pyright: reportAttributeAccessIssue=false, reportPrivateUsage=false, reportUnknownLambdaType=false, reportMissingSuperCall=false, reportUninitializedInstanceVariable=false
+
+import asyncio
+import sys
+from contextlib import asynccontextmanager
+from types import ModuleType
+from types import SimpleNamespace
+from typing import Any
+from unittest.mock import AsyncMock, Mock, mock_open, patch
+
+
+def _install_pyinotify_stub() -> None:
+    pyinotify: Any = ModuleType("pyinotify")
+
+    class ProcessEvent:
+        def __init__(self, pevent: object = None, **kwargs: object) -> None:
+            super().__init__()
+
+    class WatchManager:
+        def add_watch(self, *args: object, **kwargs: object) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class Notifier:
+        def __init__(self, wm: object, handler: object) -> None:
+            super().__init__()
+            self.wm = wm
+            self.handler = handler
+
+        def loop(self) -> None:
+            pass
+
+    pyinotify.ProcessEvent = ProcessEvent
+    pyinotify.WatchManager = WatchManager
+    pyinotify.Notifier = Notifier
+    pyinotify.IN_DELETE = 1
+    pyinotify.IN_MOVED_FROM = 2
+    pyinotify.IN_ATTRIB = 4
+    pyinotify.IN_CREATE = 8
+    pyinotify.IN_CLOSE_WRITE = 16
+    pyinotify.IN_MOVED_TO = 32
+    pyinotify.IN_MOVE_SELF = 64
+    pyinotify.IN_EXCL_UNLINK = 128
+    sys.modules["pyinotify"] = pyinotify
+
+
+_install_pyinotify_stub()
+
+from scanner.exceptions import DeletedDirectoryException, NewDirectoryException
+from scanner.exceptions import NonFatalScannerError
+from scanner.file_monitor.file_event_handler import DELETE_OPERATION, FileEventHandler
+from scanner.file_monitor.file_monitor import file_monitor
+from scanner.full_art_scan import full_art_update
+from scanner.full_scan import full_scan
+from scanner.get_tags_from_song import MissingID3TagError, TagsFromFile, get_tag, load_tag_from_file
+from scanner.album_art import AlbumArt, get_album_art_path, process_album_art, process_unmatched_art, reconcile_album_art, unmatched_art, write_unmatched_art_log
+from scanner.scan_errors import add_scan_error, get_music_scan_errors
+from scanner.scan_directory import scan_directory
+from scanner.scan_file import scan_file
+
+
+@asynccontextmanager
+async def _cursor_context(cursor: object):
+    yield cursor
+
+
+class _FakeTags:
+    def __init__(self, values: dict[str, list[str]]) -> None:
+        super().__init__()
+        self._values = values
+
+    def getall(self, tag: str) -> list[str]:
+        return self._values.get(tag, [])
+
+
+class _BrokenSongDirs:
+    def items(self) -> object:
+        raise RuntimeError("boom")
+
+
+def test_get_tag_returns_last_non_empty_value() -> None:
+    tags = _FakeTags({"TIT2": ["  ", "Song Title "]})
+    assert get_tag(tags, "TIT2") == "Song Title"
+    assert get_tag(tags, "TPE1") is None
+
+
+def test_load_tag_from_file_success() -> None:
+    fake_mp3 = SimpleNamespace(
+        tags=_FakeTags(
+            {
+                "TIT2": ["Song"],
+                "TPE1": ["Artist"],
+                "TALB": ["Album"],
+                "TCON": ["Genre"],
+                "COMM": ["Comment"],
+                "WXXX": ["https://example.com"],
+            }
+        ),
+        info=SimpleNamespace(length=123.4),
+    )
+    with (
+        patch("scanner.get_tags_from_song.open", mock_open(read_data=b"mp3-bytes")),
+        patch("scanner.get_tags_from_song.MP3", return_value=fake_mp3),
+    ):
+        tags = load_tag_from_file("song.mp3")
+
+    assert tags == TagsFromFile(
+        title="Song",
+        album="Album",
+        artist="Artist",
+        genre="Genre",
+        comment="Comment",
+        url="https://example.com",
+        length=123,
+    )
+
+
+def test_load_tag_from_file_missing_title_raises() -> None:
+    fake_mp3 = SimpleNamespace(
+        tags=_FakeTags({"TPE1": ["Artist"], "TALB": ["Album"]}),
+        info=SimpleNamespace(length=123.4),
+    )
+    with (
+        patch("scanner.get_tags_from_song.open", mock_open(read_data=b"mp3-bytes")),
+        patch("scanner.get_tags_from_song.MP3", return_value=fake_mp3),
+    ):
+        try:
+            load_tag_from_file("song.mp3")
+        except MissingID3TagError as exc:
+            assert "no title tag" in str(exc)
+        else:
+            raise AssertionError("MissingID3TagError was not raised")
+
+
+def test_file_monitor_restarts_and_closes_watch_managers() -> None:
+    wm1 = Mock()
+    wm2 = Mock()
+    wm3 = Mock()
+    notifier = Mock()
+    notifier.loop.side_effect = [
+        NewDirectoryException(),
+        DeletedDirectoryException(),
+        None,
+    ]
+
+    with (
+        patch("scanner.file_monitor.file_monitor.pyinotify.WatchManager", side_effect=[wm1, wm2, wm3]),
+        patch("scanner.file_monitor.file_monitor.pyinotify.Notifier", return_value=notifier),
+        patch("scanner.file_monitor.file_monitor.FileEventHandler"),
+        patch("scanner.file_monitor.file_monitor.asyncio.get_running_loop", return_value=Mock()),
+    ):
+        asyncio.run(file_monitor())
+
+    assert wm1.add_watch.called
+    assert wm2.add_watch.called
+    assert wm3.add_watch.called
+    assert wm1.close.called
+    assert wm2.close.called
+    assert wm3.close.called
+
+
+def test_file_event_handler_sync_event_branches() -> None:
+    handler = FileEventHandler(asyncio.new_event_loop())
+    file_event = SimpleNamespace(pathname="/music/station/song.mp3", dir=False)
+    dir_event = SimpleNamespace(pathname="/music/station/newdir", dir=True)
+    filepart_event = SimpleNamespace(pathname="/music/station/song.filepart", dir=False)
+    text_event = SimpleNamespace(pathname="/music/station/readme.txt", dir=False)
+
+    with patch.object(handler, "_process") as process_mock:
+        handler.process_IN_ATTRIB(dir_event)
+        process_mock.assert_not_called()
+        handler.process_IN_ATTRIB(file_event)
+        process_mock.assert_called_once_with(file_event)
+
+    with patch.object(handler, "_process") as process_mock:
+        handler.process_IN_CREATE(file_event)
+        process_mock.assert_not_called()
+        handler.process_IN_CREATE(dir_event)
+        process_mock.assert_called_once_with(dir_event)
+
+    with patch.object(handler, "_process") as process_mock:
+        handler.process_IN_CLOSE_WRITE(dir_event)
+        process_mock.assert_not_called()
+        handler.process_IN_CLOSE_WRITE(file_event)
+        process_mock.assert_called_once_with(file_event)
+
+    with patch.object(handler, "_process") as process_mock:
+        handler.process_IN_DELETE(filepart_event)
+        process_mock.assert_not_called()
+
+    with patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=False):
+        with patch.object(handler, "_process") as process_mock:
+            handler.process_IN_DELETE(text_event)
+            process_mock.assert_not_called()
+
+    with patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=True):
+        with patch.object(handler, "_process") as process_mock:
+            handler.process_IN_DELETE(file_event)
+            process_mock.assert_called_once_with(file_event)
+
+    try:
+        handler.process_IN_DELETE(dir_event)
+    except DeletedDirectoryException:
+        pass
+    else:
+        raise AssertionError("DeletedDirectoryException was not raised")
+
+    with patch.object(handler, "_process") as process_mock:
+        handler.process_IN_MOVED_TO(file_event)
+        process_mock.assert_called_once_with(file_event)
+
+    with patch.object(handler, "_process") as process_mock:
+        try:
+            handler.process_IN_MOVED_TO(dir_event)
+        except NewDirectoryException:
+            pass
+        else:
+            raise AssertionError("NewDirectoryException was not raised")
+        process_mock.assert_called_once_with(dir_event)
+
+    with patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=False):
+        with patch.object(handler, "_process") as process_mock:
+            handler.process_IN_MOVED_FROM(text_event)
+            process_mock.assert_not_called()
+
+    with patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=True):
+        with patch.object(handler, "_process") as process_mock:
+            handler.process_IN_MOVED_FROM(file_event)
+            process_mock.assert_called_once_with(file_event)
+
+    with patch.object(handler, "_process") as process_mock:
+        handler.process_IN_MOVED_FROM(dir_event)
+        process_mock.assert_called_once_with(dir_event)
+
+    try:
+        handler.process_IN_MOVED_SELF(dir_event)
+    except DeletedDirectoryException:
+        pass
+    else:
+        raise AssertionError("DeletedDirectoryException was not raised")
+
+
+def test_file_event_handler_process_cancels_on_timeout() -> None:
+    handler = FileEventHandler(asyncio.new_event_loop())
+    event = SimpleNamespace(pathname="/music/station/song.mp3")
+    future = Mock()
+    future.result.side_effect = TimeoutError()
+
+    def _fake_run_coroutine_threadsafe(coroutine: object, loop: object) -> object:
+        cast_coroutine = coroutine
+        if hasattr(cast_coroutine, "close"):
+            cast_coroutine.close()
+        return future
+
+    with patch(
+        "scanner.file_monitor.file_event_handler.asyncio.run_coroutine_threadsafe",
+        side_effect=_fake_run_coroutine_threadsafe,
+    ):
+        try:
+            handler._process(event)
+        except TimeoutError:
+            pass
+        else:
+            raise AssertionError("TimeoutError was not raised")
+
+    future.cancel.assert_called_once()
+
+
+def test_file_event_handler_process_async_routes_delete_and_scan() -> None:
+    cursor = AsyncMock()
+    event = SimpleNamespace(
+        pathname="/music/station/song.mp3",
+        maskname="IN_DELETE",
+        mask=DELETE_OPERATION[0],
+        dir=False,
+    )
+    with (
+        patch("scanner.file_monitor.file_event_handler.should_ignore_file", return_value=False),
+        patch(
+            "scanner.file_monitor.file_event_handler.get_cursor",
+            side_effect=lambda: _cursor_context(cursor),
+        ),
+        patch("scanner.file_monitor.file_event_handler.disable_file", new=AsyncMock()) as disable_file_mock,
+        patch("scanner.file_monitor.file_event_handler.scan_file", new=AsyncMock()) as scan_file_mock,
+        patch("scanner.file_monitor.file_event_handler.scan_directory", new=AsyncMock()) as scan_directory_mock,
+        patch("scanner.file_monitor.file_event_handler.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+        patch(
+            "scanner.file_monitor.file_event_handler.config.song_dirs",
+            {"/music/station/": [1]},
+        ),
+    ):
+        asyncio.run(getattr(FileEventHandler(asyncio.new_event_loop()), "_process_async")(event))
+
+    disable_file_mock.assert_awaited_once_with(cursor, event.pathname)
+    scan_file_mock.assert_not_called()
+    scan_directory_mock.assert_not_called()
+    add_scan_error_mock.assert_not_called()
+
+
+def test_file_event_handler_process_async_scans_directory_and_ignores() -> None:
+    cursor = AsyncMock()
+    event = SimpleNamespace(
+        pathname="/music/station/newdir",
+        maskname="IN_CREATE",
+        mask=0,
+        dir=True,
+    )
+    with (
+        patch("scanner.file_monitor.file_event_handler.should_ignore_file", return_value=False),
+        patch(
+            "scanner.file_monitor.file_event_handler.get_cursor",
+            side_effect=lambda: _cursor_context(cursor),
+        ),
+        patch("scanner.file_monitor.file_event_handler.disable_file", new=AsyncMock()) as disable_file_mock,
+        patch("scanner.file_monitor.file_event_handler.scan_file", new=AsyncMock()) as scan_file_mock,
+        patch("scanner.file_monitor.file_event_handler.scan_directory", new=AsyncMock()) as scan_directory_mock,
+        patch("scanner.file_monitor.file_event_handler.add_scan_error", new=AsyncMock()),
+        patch(
+            "scanner.file_monitor.file_event_handler.config.song_dirs",
+            {"/music/station/": [1]},
+        ),
+    ):
+        asyncio.run(getattr(FileEventHandler(asyncio.new_event_loop()), "_process_async")(event))
+
+    scan_directory_mock.assert_awaited_once_with(cursor, event.pathname, [1])
+    disable_file_mock.assert_not_called()
+    scan_file_mock.assert_not_called()
+
+
+def test_file_event_handler_process_async_logs_song_dir_and_scan_errors() -> None:
+    cursor = AsyncMock()
+    event = SimpleNamespace(
+        pathname="/music/station/song.mp3",
+        maskname="IN_CLOSE_WRITE",
+        mask=0,
+        dir=False,
+    )
+    with (
+        patch("scanner.file_monitor.file_event_handler.should_ignore_file", return_value=False),
+        patch(
+            "scanner.file_monitor.file_event_handler.get_cursor",
+            side_effect=lambda: _cursor_context(cursor),
+        ),
+        patch("scanner.file_monitor.file_event_handler.disable_file", new=AsyncMock()) as disable_file_mock,
+        patch("scanner.file_monitor.file_event_handler.scan_file", new=AsyncMock(side_effect=RuntimeError("scan failed"))),
+        patch("scanner.file_monitor.file_event_handler.scan_directory", new=AsyncMock()) as scan_directory_mock,
+        patch("scanner.file_monitor.file_event_handler.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+        patch("scanner.file_monitor.file_event_handler.config.song_dirs", _BrokenSongDirs()),
+    ):
+        asyncio.run(getattr(FileEventHandler(asyncio.new_event_loop()), "_process_async")(event))
+
+    disable_file_mock.assert_awaited_once_with(cursor, event.pathname)
+    scan_directory_mock.assert_not_called()
+    assert add_scan_error_mock.await_count == 1
+
+
+def test_file_event_handler_process_async_reports_scan_failure() -> None:
+    cursor = AsyncMock()
+    event = SimpleNamespace(
+        pathname="/music/station/song.mp3",
+        maskname="IN_CLOSE_WRITE",
+        mask=0,
+        dir=False,
+    )
+    with (
+        patch("scanner.file_monitor.file_event_handler.should_ignore_file", return_value=False),
+        patch(
+            "scanner.file_monitor.file_event_handler.get_cursor",
+            side_effect=lambda: _cursor_context(cursor),
+        ),
+        patch("scanner.file_monitor.file_event_handler.disable_file", new=AsyncMock()) as disable_file_mock,
+        patch("scanner.file_monitor.file_event_handler.scan_file", new=AsyncMock(side_effect=RuntimeError("scan failed"))),
+        patch("scanner.file_monitor.file_event_handler.scan_directory", new=AsyncMock()),
+        patch("scanner.file_monitor.file_event_handler.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+        patch("scanner.file_monitor.file_event_handler.config.song_dirs", {"/music/station/": [1]}),
+    ):
+        asyncio.run(getattr(FileEventHandler(asyncio.new_event_loop()), "_process_async")(event))
+
+    disable_file_mock.assert_not_called()
+    add_scan_error_mock.assert_awaited_once()
+
+
+def test_scan_file_branches() -> None:
+    cursor = AsyncMock()
+
+    with (
+        patch("scanner.scan_file.is_image", return_value=True),
+        patch("scanner.scan_file.process_album_art", new=AsyncMock()) as process_album_art_mock,
+    ):
+        asyncio.run(scan_file(cursor, "cover.jpg", [1]))
+    process_album_art_mock.assert_awaited_once_with(cursor, "cover.jpg", 1)
+
+    with (
+        patch("scanner.scan_file.is_image", return_value=False),
+        patch("scanner.scan_file.is_mp3", return_value=False),
+    ):
+        asyncio.run(scan_file(cursor, "notes.txt", [1]))
+
+    cursor.fetch_var = AsyncMock(return_value=111)
+    with (
+        patch("scanner.scan_file.is_image", return_value=False),
+        patch("scanner.scan_file.is_mp3", return_value=True),
+        patch("scanner.scan_file.os.stat", return_value=[0, 0, 0, 0, 0, 0, 0, 0, 999]),
+        patch("scanner.scan_file.process_unmatched_art", new=AsyncMock()) as process_unmatched_art_mock,
+        patch("scanner.scan_file.SongFile.create", new=AsyncMock()) as create_song_file_mock,
+    ):
+        song_file = AsyncMock()
+        create_song_file_mock.return_value = song_file
+        asyncio.run(scan_file(cursor, "song.mp3", [1]))
+    song_file.upsert.assert_awaited_once_with(cursor, [1], 1)
+    process_unmatched_art_mock.assert_awaited_once_with(cursor)
+
+
+def test_scan_file_mtime_match_and_error_paths() -> None:
+    cursor = AsyncMock()
+    cursor.fetch_var = AsyncMock(return_value=999)
+
+    with (
+        patch("scanner.scan_file.is_image", return_value=False),
+        patch("scanner.scan_file.is_mp3", return_value=True),
+        patch("scanner.scan_file.os.stat", return_value=[0, 0, 0, 0, 0, 0, 0, 0, 999]),
+        patch("scanner.scan_file.process_unmatched_art", new=AsyncMock()) as process_unmatched_art_mock,
+        patch("scanner.scan_file.disable_file", new=AsyncMock()) as disable_file_mock,
+        patch("scanner.scan_file.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+    ):
+        asyncio.run(scan_file(cursor, "song.mp3", [1]))
+
+    cursor.update.assert_awaited_once()
+    process_unmatched_art_mock.assert_awaited_once_with(cursor)
+    disable_file_mock.assert_not_called()
+    add_scan_error_mock.assert_not_called()
+
+    cursor = AsyncMock()
+    cursor.fetch_var = AsyncMock(return_value=None)
+    with (
+        patch("scanner.scan_file.is_image", return_value=False),
+        patch("scanner.scan_file.is_mp3", return_value=True),
+        patch("scanner.scan_file.os.stat", side_effect=IOError("missing")),
+        patch("scanner.scan_file.process_unmatched_art", new=AsyncMock()) as process_unmatched_art_mock,
+        patch("scanner.scan_file.disable_file", new=AsyncMock()) as disable_file_mock,
+        patch("scanner.scan_file.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+        patch("scanner.scan_file.SongFile.create", new=AsyncMock(side_effect=IOError("bad mp3"))),
+    ):
+        asyncio.run(scan_file(cursor, "song.mp3", [1]))
+
+    assert add_scan_error_mock.await_count == 2
+    assert disable_file_mock.await_count == 2
+    process_unmatched_art_mock.assert_not_called()
+
+    cursor = AsyncMock()
+    cursor.fetch_var = AsyncMock(return_value=None)
+    with (
+        patch("scanner.scan_file.is_image", return_value=False),
+        patch("scanner.scan_file.is_mp3", return_value=True),
+        patch("scanner.scan_file.os.stat", return_value=[0, 0, 0, 0, 0, 0, 0, 0, 111]),
+        patch("scanner.scan_file.process_unmatched_art", new=AsyncMock(side_effect=RuntimeError("post-process failed"))),
+        patch("scanner.scan_file.disable_file", new=AsyncMock()) as disable_file_mock,
+        patch("scanner.scan_file.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+        patch("scanner.scan_file.SongFile.create", new=AsyncMock(return_value=AsyncMock())),
+    ):
+        asyncio.run(scan_file(cursor, "song.mp3", [1]))
+
+    add_scan_error_mock.assert_awaited_once()
+    disable_file_mock.assert_awaited_once()
+
+
+def test_scan_directory_existing_and_missing_paths() -> None:
+    cursor = AsyncMock()
+    cursor.fetch_list = AsyncMock(side_effect=[[11], [22]])
+
+    with (
+        patch("scanner.scan_directory.os.stat", return_value=object()),
+        patch("scanner.scan_directory.os.walk", return_value=[("/music", [], ["a.mp3"])]),
+        patch("scanner.scan_directory.scan_file", new=AsyncMock()) as scan_file_mock,
+        patch("scanner.scan_directory.disable_song", new=AsyncMock()) as disable_song_mock,
+    ):
+        asyncio.run(scan_directory(cursor, "/music", [1]))
+
+    scan_file_mock.assert_awaited_once_with(cursor, "/music/a.mp3", [1])
+    disable_song_mock.assert_awaited_once_with(cursor, 22)
+
+    cursor.fetch_list = AsyncMock(side_effect=[[], [33]])
+    with (
+        patch("scanner.scan_directory.os.stat", side_effect=OSError("missing")),
+        patch("scanner.scan_directory.scan_file", new=AsyncMock()) as scan_file_mock,
+        patch("scanner.scan_directory.disable_song", new=AsyncMock()) as disable_song_mock,
+    ):
+        asyncio.run(scan_directory(cursor, "/missing", [1]))
+
+    scan_file_mock.assert_not_called()
+    disable_song_mock.assert_awaited_once_with(cursor, 33)
+
+
+def test_full_scan_and_full_art_update() -> None:
+    tx_cursor = AsyncMock()
+    read_cursor = AsyncMock()
+    tx_cursor.fetch_list = AsyncMock(return_value=[7, 8])
+
+    with (
+        patch("scanner.full_scan.get_tx_cursor", side_effect=lambda: _cursor_context(tx_cursor)),
+        patch("scanner.full_scan.scan_all_directories", new=AsyncMock()) as scan_all_directories_mock,
+        patch("scanner.full_scan.disable_song", new=AsyncMock()) as disable_song_mock,
+        patch("scanner.full_scan.process_unmatched_art", new=AsyncMock()) as process_unmatched_art_mock,
+        patch("scanner.full_scan.write_unmatched_art_log") as write_unmatched_art_log,
+    ):
+        asyncio.run(full_scan(True))
+
+    tx_cursor.update.assert_any_await("UPDATE r4_songs SET song_file_mtime = 0")
+    scan_all_directories_mock.assert_awaited_once_with(tx_cursor, art_only=False)
+    assert disable_song_mock.await_count == 2
+    process_unmatched_art_mock.assert_awaited_once_with(tx_cursor)
+    write_unmatched_art_log.assert_called_once()
+
+    with (
+        patch("scanner.full_art_scan.get_cursor", side_effect=lambda: _cursor_context(read_cursor)),
+        patch("scanner.full_art_scan.scan_all_directories", new=AsyncMock()) as scan_all_directories_mock,
+        patch("scanner.full_art_scan.process_unmatched_art", new=AsyncMock()) as process_unmatched_art_mock,
+        patch("scanner.full_art_scan.write_unmatched_art_log") as write_unmatched_art_log,
+    ):
+        asyncio.run(full_art_update())
+
+    scan_all_directories_mock.assert_awaited_once_with(read_cursor, art_only=True)
+    process_unmatched_art_mock.assert_awaited_once_with(read_cursor)
+    write_unmatched_art_log.assert_called_once()
+
+
+def test_album_art_helpers_and_reconcile() -> None:
+    assert get_album_art_path(2, 5).endswith("2_5_320.jpg")
+
+    cursor = AsyncMock()
+    cursor.fetch_list = AsyncMock(return_value=[1, 2])
+    with (
+        patch("scanner.album_art.config.album_art_order", {1: [3, 1], 2: [2]}),
+        patch(
+            "scanner.album_art.os.path.exists",
+            side_effect=lambda path: path.endswith("1_7_320.jpg") or path.endswith("2_7_320.jpg"),
+        ),
+    ):
+        asyncio.run(reconcile_album_art(cursor, 7))
+
+    assert cursor.update.await_count == 2
+
+
+def test_write_unmatched_art_log_and_process_unmatched_art() -> None:
+    unmatched_art.clear()
+    unmatched_art.extend([AlbumArt("a.jpg", 1), AlbumArt("b.jpg", 2)])
+
+    with (
+        patch("scanner.album_art.config.log_dir", "/tmp"),
+        patch("scanner.album_art.open", mock_open()) as open_mock,
+    ):
+        write_unmatched_art_log()
+
+    handle = open_mock()
+    handle.write.assert_any_call("a.jpg")
+    handle.write.assert_any_call("b.jpg")
+
+    cursor = AsyncMock()
+    with patch("scanner.album_art.process_album_art", new=AsyncMock()) as process_album_art_mock:
+        asyncio.run(process_unmatched_art(cursor))
+
+    assert process_album_art_mock.await_count == 2
+    unmatched_art.clear()
+
+
+def test_process_album_art_success_and_error_paths() -> None:
+    class FakeImage:
+        def __init__(self) -> None:
+            self.mode = "RGBA"
+            self.size = (800, 300)
+
+        def convert(self, mode: str) -> "FakeImage":
+            self.mode = mode
+            return self
+
+        def thumbnail(self, size: tuple[int, int], resample: object) -> None:
+            self.size = (640, 240)
+
+        def save(self, path: str) -> None:
+            self.saved_path = path
+
+        def __enter__(self) -> "FakeImage":
+            return self
+
+        def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+            return None
+
+    cursor = AsyncMock()
+    cursor.fetch_list = AsyncMock(return_value=[9])
+    fake_image = FakeImage()
+    unmatched_art.clear()
+    with (
+        patch("scanner.album_art.Image.open", return_value=fake_image),
+        patch("scanner.album_art.reconcile_album_art", new=AsyncMock()) as reconcile_mock,
+        patch("scanner.album_art.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+    ):
+        asyncio.run(process_album_art(cursor, "/music/station/cover.png", 1))
+
+    reconcile_mock.assert_awaited_once_with(cursor, 9)
+    add_scan_error_mock.assert_awaited_once()
+    unmatched_art.clear()
+
+    cursor = AsyncMock()
+    cursor.fetch_list = AsyncMock(return_value=[])
+    with (
+        patch("scanner.album_art.Image.open", side_effect=IOError("bad art")),
+        patch("scanner.album_art.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+    ):
+        asyncio.run(process_album_art(cursor, "/music/station/bad.png", 1))
+    add_scan_error_mock.assert_awaited_once()
+    assert unmatched_art and unmatched_art[0].filename == "/music/station/bad.png"
+
+    unmatched_art.clear()
+    cursor = AsyncMock()
+    cursor.fetch_list = AsyncMock(return_value=[1])
+    with (
+        patch("scanner.album_art.Image.open", side_effect=RuntimeError("boom")),
+        patch("scanner.album_art.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+    ):
+        asyncio.run(process_album_art(cursor, "/music/station/fail.png", 1))
+    add_scan_error_mock.assert_awaited_once()
+
+
+def test_scan_errors_nonfatal_fatal_and_trim() -> None:
+    with (
+        patch("scanner.scan_errors.cache_get", new=AsyncMock(return_value=[])),
+        patch("scanner.scan_errors.cache_set", new=AsyncMock()) as cache_set_mock,
+        patch("scanner.scan_errors.log.warn") as warn_mock,
+        patch("scanner.scan_errors.log.exception") as exception_mock,
+    ):
+        asyncio.run(add_scan_error("warn.mp3", NonFatalScannerError("small"), None))
+
+    warn_mock.assert_called_once()
+    exception_mock.assert_not_called()
+    assert cache_set_mock.await_args is not None
+    stored_errors = cache_set_mock.await_args.args[1]
+    assert stored_errors[0]["file"] == "warn.mp3"
+    assert stored_errors[0]["traceback"] == ""
+
+    full_exc = (RuntimeError, RuntimeError("boom"), None)
+    with (
+        patch("scanner.scan_errors.cache_get", new=AsyncMock(return_value=[])),
+        patch("scanner.scan_errors.cache_set", new=AsyncMock()) as cache_set_mock,
+        patch("scanner.scan_errors.log.exception") as exception_mock,
+    ):
+        asyncio.run(add_scan_error("fatal.mp3", RuntimeError("boom"), full_exc))
+
+    exception_mock.assert_called_once()
+    assert cache_set_mock.await_args is not None
+    stored_errors = cache_set_mock.await_args.args[1]
+    assert stored_errors[0]["file"] == "fatal.mp3"
+    assert stored_errors[0]["traceback"] != ""
+
+    existing_errors = [{"time": 1, "file": str(i), "type": "E", "error": "x", "traceback": ""} for i in range(100)]
+    with (
+        patch("scanner.scan_errors.cache_get", new=AsyncMock(return_value=existing_errors)),
+        patch("scanner.scan_errors.cache_set", new=AsyncMock()) as cache_set_mock,
+        patch("scanner.scan_errors.log.warn"),
+    ):
+        asyncio.run(add_scan_error("new.mp3", NonFatalScannerError("warn"), None))
+
+    assert cache_set_mock.await_args is not None
+    stored_errors = cache_set_mock.await_args.args[1]
+    assert len(stored_errors) == 100
+    assert stored_errors[0]["file"] == "new.mp3"
+
+    with patch("scanner.scan_errors.cache_get", new=AsyncMock(return_value=None)):
+        assert asyncio.run(get_music_scan_errors()) == []

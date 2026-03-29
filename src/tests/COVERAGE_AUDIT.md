@@ -11,7 +11,7 @@ Initial baseline using `pytest --cov`:
 Current baseline using the working multi-process coverage flow:
 
 - Command: `./scripts/run_coverage.sh -q`
-- Result: `91 passed`
+- Result: `92 passed`
 - Total coverage: `66%`
 
 Note:
@@ -118,26 +118,18 @@ Route groups completed in the first expansion batch:
     - `tip_jar`
 
 Remaining likely HTTP surface gaps for the next pass:
-
-- OAuth/Discord callback flow:
-  - `/oauth/discord`
-- Lower-coverage admin endpoints:
-  - `admin/add_donation`
-  - `admin/set_song_cooldown`
-  - `admin/set_album_cooldown`
-  - `admin/set_song_request_only`
-  - `admin/enable_perks_by_discord_ids`
-  - `admin/update_user_avatar_by_discord_id`
-  - `admin/update_user_nickname_by_discord_id`
-  - `admin/user_search`
-  - `admin/user_search_by_discord_user_id`
-- Lower-coverage detail/list endpoints:
-  - `album`
-  - `artist`
-  - `group`
-  - `listener`
-  - `stations`
-  - `user_info`
+- Second expansion batch completed:
+  - `admin/js_errors`
+  - `/oauth/discord` test-mode entry/callback failure paths
+  - `/twitch/`
+  - `/twitch/widget`
+  - `/tune_in/*.ogg.m3u`
+- Current HTTP route-surface status:
+  - all registered HTTP route handlers now have direct test coverage
+  - exception: websocket upgrade endpoint `/api4/websocket/(sid)` is not part of the HTTP request suite and should be treated separately
+- Remaining route work is no longer route-surface discovery:
+  - deepen branch coverage inside already-tested handlers
+  - decide whether config-dependent OAuth success paths should be covered with narrower setup or left for a later integration slice
 
 ## Checkpoint Intent
 
@@ -149,8 +141,8 @@ Checkpoint 1 should be:
 
 Status:
 
-- Checkpoint 1 is ready for audit and commit.
-- The next route-driven pass should focus on the remaining low-coverage handlers above before switching to module-level tests.
+- Checkpoint 2 is ready for audit and commit.
+- The next pass should move from route-surface coverage to branch/deeper module coverage.
 
 ## Coverage Command
 
