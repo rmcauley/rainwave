@@ -23,6 +23,8 @@ class AdminAlbumSongs(APIHandler):
                 SELECT
                     r4_songs.song_id AS song_id,
                     r4_songs.song_filename AS song_filename,
+                    CAST(ROUND(CAST(r4_songs.song_rating AS NUMERIC), 1) AS REAL) AS rating,
+                    r4_songs.song_rating_count AS rating_count,
                     r4_songs.song_cool_multiply AS song_cool_multiply,
                     r4_songs.song_cool_override AS song_cool_override,
                     (

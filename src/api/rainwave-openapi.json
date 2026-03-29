@@ -210,9 +210,9 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/change_producer_start_time": {
+    "/api4/admin/change_power_hour_start_time": {
       "post": {
-        "operationId": "adminChangeProducerStartTime",
+        "operationId": "adminChangePowerHourStartTime",
         "requestBody": {
           "content": {
             "application/json": {
@@ -253,9 +253,9 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/change_producer_url": {
+    "/api4/admin/change_power_hour_url": {
       "post": {
-        "operationId": "adminChangeProducerUrl",
+        "operationId": "adminChangePowerHourUrl",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5682,6 +5682,19 @@
           "song_filename": {
             "type": "string"
           },
+          "rating": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rating_count": {
+            "type": "integer"
+          },
           "song_cool_multiply": {
             "oneOf": [
               {
@@ -5709,6 +5722,8 @@
         "required": [
           "song_id",
           "song_filename",
+          "rating",
+          "rating_count",
           "song_cool_multiply",
           "song_cool_override",
           "song_request_only"

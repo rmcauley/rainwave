@@ -81,8 +81,8 @@ Route groups completed in the first expansion batch:
   - `admin/power_hour_remove_song`
   - `admin/shuffle_power_hour`
   - `admin/change_power_hour_name`
-  - `admin/change_producer_url`
-  - `admin/change_producer_start_time`
+  - `admin/change_power_hour_url`
+  - `admin/change_power_hour_start_time`
   - `admin/duplicate_power_hour`
   - `admin/europify_power_hour`
   - `admin/delete_power_hour`

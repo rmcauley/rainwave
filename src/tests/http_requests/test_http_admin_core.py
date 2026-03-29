@@ -64,10 +64,10 @@ class TestAdminCore(RequestClassesTestCase):
             await cursor.update(
                 """
                 UPDATE r4_songs
-                SET song_cool_multiply = %s, song_cool_override = %s
+                SET song_rating = %s, song_rating_count = %s, song_cool_multiply = %s, song_cool_override = %s
                 WHERE song_id = %s
                 """,
-                (1.7, 999, song_id),
+                (4.3, 27, 1.7, 999, song_id),
             )
             await cursor.update(
                 """
@@ -91,10 +91,14 @@ class TestAdminCore(RequestClassesTestCase):
         assert set(matching_song.keys()) == {
             "song_id",
             "song_filename",
+            "rating",
+            "rating_count",
             "song_cool_multiply",
             "song_cool_override",
             "song_request_only",
         }
+        assert matching_song["rating"] == 4.3
+        assert matching_song["rating_count"] == 27
         assert matching_song["song_cool_multiply"] == 1.7
         assert matching_song["song_cool_override"] == 999
         assert matching_song["song_request_only"] is True

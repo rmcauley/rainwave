@@ -68,7 +68,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api4/admin/change_producer_start_time": {
+    "/api4/admin/change_power_hour_start_time": {
         parameters: {
             query?: never;
             header?: never;
@@ -77,14 +77,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["adminChangeProducerStartTime"];
+        post: operations["adminChangePowerHourStartTime"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api4/admin/change_producer_url": {
+    "/api4/admin/change_power_hour_url": {
         parameters: {
             query?: never;
             header?: never;
@@ -93,7 +93,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["adminChangeProducerUrl"];
+        post: operations["adminChangePowerHourUrl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1963,7 +1963,7 @@ export interface operations {
             };
         };
     };
-    adminChangeProducerStartTime: {
+    adminChangePowerHourStartTime: {
         parameters: {
             query?: never;
             header?: never;
@@ -1991,7 +1991,7 @@ export interface operations {
             };
         };
     };
-    adminChangeProducerUrl: {
+    adminChangePowerHourUrl: {
         parameters: {
             query?: never;
             header?: never;

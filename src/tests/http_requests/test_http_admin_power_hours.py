@@ -164,7 +164,7 @@ class TestAdminPowerHours(RequestClassesTestCase):
         assert payload["admin_power_hour"]["sched_name"] == "Renamed Power Hour"
 
         response = await self.post_form(
-            "/api4/admin/change_producer_url",
+            "/api4/admin/change_power_hour_url",
             self._auth_data(sched_id=sched_id, url="renamed-url"),
         )
         payload = self.payload(response)
@@ -174,7 +174,7 @@ class TestAdminPowerHours(RequestClassesTestCase):
         assert created_start is not None
         new_start = created_start + 7200
         response = await self.post_form(
-            "/api4/admin/change_producer_start_time",
+            "/api4/admin/change_power_hour_start_time",
             self._auth_data(sched_id=sched_id, utc_time=new_start),
         )
         payload = self.payload(response)
