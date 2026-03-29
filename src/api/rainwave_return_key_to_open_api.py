@@ -36,6 +36,9 @@ class RainwaveResponse(TypedDict, total=False):
     set_album_cooldown_result: rainwave_typeddicts.SetAlbumCooldownResult
     admin_js_errors: rainwave_typeddicts.AdminJsErrors
     admin_music_scan_errors: rainwave_typeddicts.AdminMusicScanErrors
+    admin_album_art: rainwave_typeddicts.AdminAlbumArt1
+    admin_album_songs: rainwave_typeddicts.AdminAlbumSongs
+    admin_albums: rainwave_typeddicts.AdminAlbums
     admin_power_hour: rainwave_typeddicts.AdminPowerHour
     admin_power_hours: rainwave_typeddicts.AdminPowerHours
     admin_user_search_result: rainwave_typeddicts.AdminUserSearchResult
@@ -105,6 +108,9 @@ class RainwaveResponse(TypedDict, total=False):
 RainwaveResponseKey = Literal[
     "admin_js_errors",
     "admin_music_scan_errors",
+    "admin_album_art",
+    "admin_album_songs",
+    "admin_albums",
     "admin_power_hour",
     "admin_power_hours",
     "admin_user_search_result",

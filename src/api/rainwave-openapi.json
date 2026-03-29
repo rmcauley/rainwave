@@ -941,6 +941,129 @@
         "tags": ["Admin"]
       }
     },
+    "/api4/admin/album_art": {
+      "post": {
+        "operationId": "adminAlbumArt",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "album_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["album_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_album_art": {
+                      "$ref": "#/components/schemas/admin_album_art"
+                    }
+                  },
+                  "required": ["admin_album_art"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/album_songs": {
+      "post": {
+        "operationId": "adminAlbumSongs",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sid": {
+                    "type": "integer"
+                  },
+                  "album_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sid", "album_id"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_album_songs": {
+                      "$ref": "#/components/schemas/admin_album_songs"
+                    }
+                  },
+                  "required": ["admin_album_songs"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
+    "/api4/admin/albums": {
+      "post": {
+        "operationId": "adminAlbums",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "sid": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["sid"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "admin_albums": {
+                      "$ref": "#/components/schemas/admin_albums"
+                    }
+                  },
+                  "required": ["admin_albums"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Admin"]
+      }
+    },
     "/api4/admin/shuffle_power_hour": {
       "post": {
         "operationId": "adminShufflePowerHour",
@@ -5490,6 +5613,129 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/admin_power_hour"
+        }
+      },
+      "_admin_album": {
+        "type": "object",
+        "properties": {
+          "album_id": {
+            "type": "integer"
+          },
+          "album_name": {
+            "type": "string"
+          },
+          "rating": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rating_count": {
+            "type": "integer"
+          },
+          "album_cool_multiply": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "album_cool_override": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "album_id",
+          "album_name",
+          "rating",
+          "rating_count",
+          "album_cool_multiply",
+          "album_cool_override"
+        ]
+      },
+      "admin_albums": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/_admin_album"
+        }
+      },
+      "_admin_album_song": {
+        "type": "object",
+        "properties": {
+          "song_id": {
+            "type": "integer"
+          },
+          "song_filename": {
+            "type": "string"
+          },
+          "song_cool_multiply": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "song_cool_override": {
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "song_request_only": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "song_id",
+          "song_filename",
+          "song_cool_multiply",
+          "song_cool_override",
+          "song_request_only"
+        ]
+      },
+      "admin_album_songs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/_admin_album_song"
+        }
+      },
+      "_admin_album_art": {
+        "type": "object",
+        "properties": {
+          "sid": {
+            "$ref": "#/components/schemas/_station_id"
+          },
+          "album_art": {
+            "$ref": "#/components/schemas/_album_art"
+          }
+        },
+        "required": ["sid", "album_art"]
+      },
+      "admin_album_art": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/_admin_album_art"
         }
       },
       "update_user_nickname_by_discord_id_result": {

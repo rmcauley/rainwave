@@ -340,6 +340,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api4/admin/album_art": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminAlbumArt"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api4/admin/album_songs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminAlbumSongs"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api4/admin/albums": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["adminAlbums"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api4/admin/shuffle_power_hour": {
         parameters: {
             query?: never;
@@ -1757,6 +1805,28 @@ export interface components {
             songs?: components["schemas"]["_admin_power_hour_song"][];
         };
         admin_power_hours: components["schemas"]["admin_power_hour"][];
+        _admin_album: {
+            album_id: number;
+            album_name: string;
+            rating: number | null;
+            rating_count: number;
+            album_cool_multiply: number | null;
+            album_cool_override: number | null;
+        };
+        admin_albums: components["schemas"]["_admin_album"][];
+        _admin_album_song: {
+            song_id: number;
+            song_filename: string;
+            song_cool_multiply: number | null;
+            song_cool_override: number | null;
+            song_request_only: boolean;
+        };
+        admin_album_songs: components["schemas"]["_admin_album_song"][];
+        _admin_album_art: {
+            sid: components["schemas"]["_station_id"];
+            album_art: components["schemas"]["_album_art"];
+        };
+        admin_album_art: components["schemas"]["_admin_album_art"][];
         update_user_nickname_by_discord_id_result: components["schemas"]["_boolean_result"];
         update_user_avatar_by_discord_id_result: components["schemas"]["_boolean_result"];
         enable_perks_by_discord_ids_result: components["schemas"]["_boolean_result"];
@@ -2344,6 +2414,88 @@ export interface operations {
                 content: {
                     "application/json": {
                         set_song_request_only_result: components["schemas"]["set_song_request_only_result"];
+                    };
+                };
+            };
+        };
+    };
+    adminAlbumArt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    album_id: number;
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        admin_album_art: components["schemas"]["admin_album_art"];
+                    };
+                };
+            };
+        };
+    };
+    adminAlbumSongs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    sid: number;
+                    album_id: number;
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        admin_album_songs: components["schemas"]["admin_album_songs"];
+                    };
+                };
+            };
+        };
+    };
+    adminAlbums: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    sid: number;
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        admin_albums: components["schemas"]["admin_albums"];
                     };
                 };
             };
