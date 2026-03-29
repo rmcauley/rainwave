@@ -547,19 +547,23 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/move_song_up_in_power_hour": {
+    "/api4/admin/order_power_hour_songs": {
       "post": {
-        "operationId": "adminMoveSongUpInPowerHour",
+        "operationId": "adminOrderPowerHourSongs",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "properties": {
-                  "one_up_id": {
+                  "sched_id": {
                     "type": "integer"
+                  },
+                  "order": {
+                    "description": "A comma-separated list of one_up_id values that represent the Power Hour song queue, in the order the admin desires.",
+                    "type": "string"
                   }
                 },
-                "required": ["one_up_id"],
+                "required": ["sched_id", "order"],
                 "type": "object"
               }
             }

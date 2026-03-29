@@ -207,6 +207,7 @@ class RainwaveHandler(RequestHandler, ABC):
     async def rainwave_auth(self, cursor: RainwaveCursor, sid: int) -> UserBase | None:
         api_key: str | None = None
         user_id: int | None = None
+        request_data: dict[str, Any] | None = None
         session_from_cookie = self.get_cookie("r4_session_id")
         if session_from_cookie:
             # If we have a session ID and it's valid for this user, we also select
@@ -221,9 +222,26 @@ class RainwaveHandler(RequestHandler, ABC):
                 user_id = session_api_key_row["user_id"]
                 api_key = session_api_key_row["api_key"]
 
-        user_id_present = "user_id" in self.request.arguments
+        if "application/json" in self.request.headers.get("Content-Type", ""):
+            request_validation_data = self._get_request_validation_data()
+            if isinstance(request_validation_data, dict):
+                request_data = cast(dict[str, Any], request_validation_data)
+
+        user_id_value: object | None = None
+        key_present = False
+        if "user_id" in self.request.arguments:
+            user_id_value = self.get_argument("user_id")
+        elif isinstance(request_data, dict) and "user_id" in request_data:
+            user_id_value = request_data["user_id"]
+
+        if "key" in self.request.arguments:
+            key_present = True
+        elif isinstance(request_data, dict) and "key" in request_data:
+            key_present = True
+
+        user_id_present = user_id_value is not None
         if user_id_present:
-            user_id = fieldtypes.positive_integer(self.get_argument("user_id"))
+            user_id = fieldtypes.positive_integer(user_id_value)
             if user_id is None:
                 raise APIException(
                     "invalid_argument",
@@ -232,10 +250,13 @@ class RainwaveHandler(RequestHandler, ABC):
                     status_code=400,
                 )
 
-            if not "key" in self.request.arguments:
+            if not key_present:
                 raise APIException("missing_argument", argument="key", status_code=400)
 
-            api_key = self.get_argument("key")
+            if "key" in self.request.arguments:
+                api_key = self.get_argument("key")
+            elif isinstance(request_data, dict):
+                api_key = fieldtypes.string(request_data.get("key"))
             if not is_valid_api_key(api_key):
                 raise APIException("auth_failed", "Invalid API key.", status_code=400)
 

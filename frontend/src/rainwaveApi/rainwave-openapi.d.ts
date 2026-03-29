@@ -196,7 +196,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api4/admin/move_song_up_in_power_hour": {
+    "/api4/admin/order_power_hour_songs": {
         parameters: {
             query?: never;
             header?: never;
@@ -205,7 +205,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["adminMoveSongUpInPowerHour"];
+        post: operations["adminOrderPowerHourSongs"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2104,7 +2104,7 @@ export interface operations {
             };
         };
     };
-    adminMoveSongUpInPowerHour: {
+    adminOrderPowerHourSongs: {
         parameters: {
             query?: never;
             header?: never;
@@ -2114,7 +2114,9 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    one_up_id: number;
+                    sched_id: number;
+                    /** @description A comma-separated list of one_up_id values that represent the Power Hour song queue, in the order the admin desires. */
+                    order: string;
                 };
             };
         };

@@ -124,12 +124,15 @@ class TestAdminPowerHours(RequestClassesTestCase):
         second_one_up_id = int(songs[1]["one_up_id"])
 
         response = await self.post_form(
-            "/api4/admin/move_song_up_in_power_hour",
-            self._auth_data(one_up_id=second_one_up_id),
+            "/api4/admin/order_power_hour_songs",
+            self._auth_data(
+                sched_id=sched_id, order=f"{second_one_up_id},{one_up_id}"
+            ),
         )
         payload = self.payload(response)
         songs = self._songs(payload["admin_power_hour"])
         assert int(songs[0]["one_up_id"]) == second_one_up_id
+        assert int(songs[1]["one_up_id"]) == one_up_id
 
         response = await self.post_form(
             "/api4/admin/shuffle_power_hour",
