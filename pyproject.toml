@@ -18,6 +18,7 @@ dependencies = [
     "pyicu==2.16.2",
     "pyinotify==0.9.6",
     "pyright==1.1.408",
+    "pytest-cov==7.1.0",
     "python-dotenv==1.2.1",
     "pytz>=2025.2",
     "pyzmq==27.1.0",
@@ -51,3 +52,21 @@ files = "src/**/*.py"
 mypy_path = ["src", "src/typestubs"]
 exclude = ["frontend", "admin_panel", "stream_widget"]
 explicit_package_bases = true
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = [
+    "src/tests/*",
+    "src/typestubs/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
