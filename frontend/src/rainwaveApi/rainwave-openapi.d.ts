@@ -52,7 +52,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api4/admin/change_producer_name": {
+    "/api4/admin/change_power_hour_name": {
         parameters: {
             query?: never;
             header?: never;
@@ -61,7 +61,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["adminChangeProducerName"];
+        post: operations["adminChangePowerHourName"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1865,7 +1865,7 @@ export interface operations {
             };
         };
     };
-    adminChangeProducerName: {
+    adminChangePowerHourName: {
         parameters: {
             query?: never;
             header?: never;

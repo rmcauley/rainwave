@@ -80,7 +80,7 @@ Route groups completed in the first expansion batch:
   - `admin/move_song_up_in_power_hour`
   - `admin/power_hour_remove_song`
   - `admin/shuffle_power_hour`
-  - `admin/change_producer_name`
+  - `admin/change_power_hour_name`
   - `admin/change_producer_url`
   - `admin/change_producer_start_time`
   - `admin/duplicate_power_hour`

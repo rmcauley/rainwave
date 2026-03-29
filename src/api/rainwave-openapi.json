@@ -167,9 +167,9 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/change_producer_name": {
+    "/api4/admin/change_power_hour_name": {
       "post": {
-        "operationId": "adminChangeProducerName",
+        "operationId": "adminChangePowerHourName",
         "requestBody": {
           "content": {
             "application/json": {

@@ -88,7 +88,6 @@ class RainwaveResponse(TypedDict, total=False):
     stations: rainwave_typeddicts.Stations
     stream_filename: rainwave_typeddicts.StreamFilename
     sync_result: rainwave_typeddicts.SyncResult
-    tip_jar: rainwave_typeddicts.TipJar
     top_100: rainwave_typeddicts.Top100
     unpause_request_queue_result: rainwave_typeddicts.UnpauseRequestQueueResult
     unrated_songs: rainwave_typeddicts.UnratedSongs

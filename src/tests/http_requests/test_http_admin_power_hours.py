@@ -154,7 +154,7 @@ class TestAdminPowerHours(RequestClassesTestCase):
         assert len(songs) >= 20
 
         response = await self.post_form(
-            "/api4/admin/change_producer_name",
+            "/api4/admin/change_power_hour_name",
             self._auth_data(sched_id=sched_id, name="Renamed Power Hour"),
         )
         payload = self.payload(response)
