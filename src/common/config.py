@@ -67,7 +67,7 @@ log_level: Literal["critical"] = "critical"
 api_url = "127.0.0.1"
 
 # Start the web API at this port, increase by 1 for each process spawned.
-api_base_port = int(os.getenv("RW_TEST_API_PORT", "20000"))
+api_base_port = int(os.getenv("RW_TEST_API_PORT", "24000"))
 
 # How many web processes (not threads) to start
 api_num_processes = 1

@@ -6,6 +6,7 @@ from api.exceptions import APIException
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.rainwave_dto import Api4ListenerPostRequest
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common.db.cursor import get_cursor
 from common.playlist import object_counts
 from common.user.solve_avatar import solve_avatar
@@ -26,6 +27,10 @@ class ListenerDetailRequest(APIHandler):
     description = "Gets detailed information, such as favourite albums and rating histogram, on a particular user."
     sid_required = False
     login_required = False
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "listener"
 
     async def post(self) -> None:
         input = self.get_validated_input(Api4ListenerPostRequest)

@@ -2,6 +2,7 @@ from api import fieldtypes
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common.db.cursor import get_cursor
 from common.requests.get_user_requests import get_user_requests, user_requests_to_api
 
@@ -14,6 +15,10 @@ class RequestFavoritedSongs(RegisteredUserAPIHandler):
     unlocked_listener_only = False
     fields = {"limit": (fieldtypes.integer, False)}
     sync_across_sessions = True
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "request_favorited_songs_result"
 
     async def post(self):
         async with get_cursor() as cursor:

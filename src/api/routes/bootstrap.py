@@ -33,6 +33,10 @@ class Bootstrap(RainwaveHandler):
     auth_required = False
     sid_required = False
 
+    @property
+    def return_name(self):
+        return "error"
+
     def set_default_headers(self) -> None:
         # This request sets the content_type based on
         # whether it is GET or POST, so we must override the

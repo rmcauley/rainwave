@@ -1,6 +1,7 @@
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.rainwave_dto import Api4AdminResetSongCooldownPostRequest
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 
 
 from common.db.cursor import get_cursor
@@ -13,6 +14,10 @@ class ResetSongCooldown(APIHandler):
     description = (
         "Sets song cooldown override to null and sets cooldown multiplier to 1."
     )
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "set_song_cooldown_result"
 
     async def post(self):
         input = self.get_validated_input(Api4AdminResetSongCooldownPostRequest)

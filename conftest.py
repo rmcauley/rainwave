@@ -29,18 +29,20 @@ from common.schedule.advance_timeline import (
 from common.schedule.timeline import load_timeline
 from tests.seed_data import populate_test_data
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+PROJECT_ROOT = Path(__file__).resolve().parent
+SRC_ROOT = PROJECT_ROOT / "src"
+if str(SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(SRC_ROOT))
 
 from common.cache import cache
 
-load_dotenv(PROJECT_ROOT.parent / ".env.test")
+load_dotenv(PROJECT_ROOT / ".env.test")
 
 _postgres_container: PostgresContainer | None = None
 _exit_stack: AsyncExitStack | None = None
 _api_server_process: subprocess.Popen[str] | None = None
 _api_server_log: TextIO | None = None
+_test_api_port: int | None = None
 
 
 def _progress(message: str) -> None:
@@ -48,7 +50,18 @@ def _progress(message: str) -> None:
 
 
 def _get_test_api_port() -> int:
-    return int(os.getenv("RW_TEST_API_PORT", "24000"))
+    global _test_api_port
+
+    configured_port = os.getenv("RW_TEST_API_PORT")
+    if configured_port is not None:
+        return int(configured_port)
+
+    if _test_api_port is None:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.bind(("127.0.0.1", 0))
+            return sock.getsockname()[1]
+
+    return _test_api_port
 
 
 def _configure_local_postgres() -> None:
@@ -138,7 +151,7 @@ def _start_test_api_server() -> None:
     _api_server_log = api_server_log_path.open("w", encoding="utf-8")
     _api_server_process = subprocess.Popen(
         ["uv", "run", "python", "src/rw_api.py", "--testmode"],
-        cwd=PROJECT_ROOT.parent,
+        cwd=PROJECT_ROOT,
         env=env,
         stdout=_api_server_log,
         stderr=subprocess.STDOUT,

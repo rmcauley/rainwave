@@ -1,8 +1,10 @@
+import inspect
 import os
 from typing import Any
 from tornado.web import StaticFileHandler, RequestHandler
 
 from api.handler_classes.api_handler import APIHandler
+from api.handler_classes.rainwave_handler import RainwaveHandler
 from common import config
 
 static_dir = os.path.join(
@@ -36,6 +38,12 @@ class handle_url:
         self, cls: type[RequestHandler], test_mode_only: bool = False
     ) -> type[RequestHandler]:
         global api_endpoints
+
+        if issubclass(cls, RainwaveHandler) and inspect.isabstract(cls):
+            raise TypeError(
+                f"{cls.__module__}.{cls.__name__} is abstract; "
+                + "missing required implementations such as return_name"
+            )
 
         if test_mode_only and not config.developer_mode:
             return cls

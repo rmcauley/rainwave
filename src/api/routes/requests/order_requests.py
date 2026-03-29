@@ -4,6 +4,7 @@ from pydantic import BaseModel, field_validator
 
 from api.handle_url import handle_api_url
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common.db.cursor import get_cursor
 from common.requests.get_user_requests import get_user_requests, user_requests_to_api
 
@@ -48,6 +49,10 @@ class OrderRequests(RegisteredUserAPIHandler):
     tunein_required = False
     unlocked_listener_only = False
     sync_across_sessions = True
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "order_requests_result"
 
     async def post(self):
         input = self.get_validated_input(OrderRequestsDto)

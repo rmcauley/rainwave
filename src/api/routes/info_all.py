@@ -3,6 +3,7 @@ from typing import cast
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
+from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common.cache.station_cache import cache_get_station
 from common import stations
 
@@ -12,6 +13,10 @@ class InfoAllRequest(APIHandler):
     auth_required = False
     description = "Returns a basic dict containing rudimentary information on what is currently playing on all stations."
     allow_cors = True
+
+    @property
+    def return_name(self) -> RainwaveResponseKey:
+        return "all_stations_info"
 
     async def post(self):
         self.response["all_stations_info"] = cast(
