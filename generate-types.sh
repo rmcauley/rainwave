@@ -32,5 +32,7 @@ uv run datamodel-codegen --input "$tmp_openapi_for_dto" --input-file-type openap
 uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_typeddicts.py --output-model-type typing.TypedDict --target-python-version 3.14 --formatters black --remove-special-field-name-prefix
 uv run ./src/tools/rw_templates.py --templatedir ./frontend/src/components --outfile ./frontend/src/templates/index
 npx openapi-typescript ./src/api/rainwave-openapi.json -o ./frontend/src/rainwaveApi/rainwave-openapi.d.ts
+npx openapi-typescript ./src/api/rainwave-openapi.json -o ./admin_panel/src/rainwave-openapi.d.ts
+npx openapi-typescript ./src/api/rainwave-openapi.json -o ./stream_widget/src/rainwave-openapi.d.ts
 
 echo "Done."

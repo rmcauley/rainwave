@@ -8,7 +8,8 @@
     "importHelpers": true,
     "incremental": true,
     "isolatedModules": true,
-    "lib": ["dom", "dom.iterable", "es2023"],
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "es2023", "esnext.disposable"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "noEmit": true,
@@ -19,11 +20,12 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2023",
+    "types": ["vite/client", "vitest/globals"],
     "useDefineForClassFields": true,
     "plugins": [
       { "name": "typescript-eslint-language-service" },
       { "name": "typescript-plugin-css-modules" }
     ]
   },
-  "include": ["src", "../lang", "../rainwave_sdk"]
+  "include": ["src"]
 }
