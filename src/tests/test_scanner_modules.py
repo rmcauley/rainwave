@@ -134,6 +134,50 @@ def test_load_tag_from_file_missing_title_raises() -> None:
             raise AssertionError("MissingID3TagError was not raised")
 
 
+def test_load_tag_from_file_missing_tags_artist_and_album_raise() -> None:
+    fake_mp3 = SimpleNamespace(tags=None, info=SimpleNamespace(length=10.0))
+    with (
+        patch("scanner.get_tags_from_song.open", mock_open(read_data=b"mp3-bytes")),
+        patch("scanner.get_tags_from_song.MP3", return_value=fake_mp3),
+    ):
+        try:
+            load_tag_from_file("song.mp3")
+        except MissingID3TagError as exc:
+            assert "has no tags" in str(exc)
+        else:
+            raise AssertionError("MissingID3TagError was not raised")
+
+    fake_mp3 = SimpleNamespace(
+        tags=_FakeTags({"TIT2": ["Song"], "TALB": ["Album"]}),
+        info=SimpleNamespace(length=10.0),
+    )
+    with (
+        patch("scanner.get_tags_from_song.open", mock_open(read_data=b"mp3-bytes")),
+        patch("scanner.get_tags_from_song.MP3", return_value=fake_mp3),
+    ):
+        try:
+            load_tag_from_file("song.mp3")
+        except MissingID3TagError as exc:
+            assert "no artist tag" in str(exc)
+        else:
+            raise AssertionError("MissingID3TagError was not raised")
+
+    fake_mp3 = SimpleNamespace(
+        tags=_FakeTags({"TIT2": ["Song"], "TPE1": ["Artist"]}),
+        info=SimpleNamespace(length=10.0),
+    )
+    with (
+        patch("scanner.get_tags_from_song.open", mock_open(read_data=b"mp3-bytes")),
+        patch("scanner.get_tags_from_song.MP3", return_value=fake_mp3),
+    ):
+        try:
+            load_tag_from_file("song.mp3")
+        except MissingID3TagError as exc:
+            assert "no album tag" in str(exc)
+        else:
+            raise AssertionError("MissingID3TagError was not raised")
+
+
 def test_file_monitor_restarts_and_closes_watch_managers() -> None:
     wm1 = Mock()
     wm2 = Mock()
@@ -159,6 +203,23 @@ def test_file_monitor_restarts_and_closes_watch_managers() -> None:
     assert wm1.close.called
     assert wm2.close.called
     assert wm3.close.called
+
+
+def test_file_monitor_ignores_watch_manager_close_errors() -> None:
+    wm = Mock()
+    wm.close.side_effect = RuntimeError("close failed")
+    notifier = Mock()
+    notifier.loop.return_value = None
+
+    with (
+        patch("scanner.file_monitor.file_monitor.pyinotify.WatchManager", return_value=wm),
+        patch("scanner.file_monitor.file_monitor.pyinotify.Notifier", return_value=notifier),
+        patch("scanner.file_monitor.file_monitor.FileEventHandler"),
+        patch("scanner.file_monitor.file_monitor.asyncio.get_running_loop", return_value=Mock()),
+    ):
+        asyncio.run(file_monitor())
+
+    wm.close.assert_called_once()
 
 
 def test_file_event_handler_sync_event_branches() -> None:
@@ -542,6 +603,15 @@ def test_album_art_helpers_and_reconcile() -> None:
 
     assert cursor.update.await_count == 2
 
+    cursor = AsyncMock()
+    cursor.fetch_list = AsyncMock(return_value=[1])
+    with (
+        patch("scanner.album_art.config.album_art_order", {1: [3, 1]}),
+        patch("scanner.album_art.os.path.exists", return_value=False),
+    ):
+        asyncio.run(reconcile_album_art(cursor, 7))
+    cursor.update.assert_not_called()
+
 
 def test_write_unmatched_art_log_and_process_unmatched_art() -> None:
     unmatched_art.clear()
@@ -563,6 +633,9 @@ def test_write_unmatched_art_log_and_process_unmatched_art() -> None:
 
     assert process_album_art_mock.await_count == 2
     unmatched_art.clear()
+
+    with patch("scanner.album_art.config.log_dir", None):
+        write_unmatched_art_log()
 
 
 def test_process_album_art_success_and_error_paths() -> None:
@@ -601,6 +674,31 @@ def test_process_album_art_success_and_error_paths() -> None:
     reconcile_mock.assert_awaited_once_with(cursor, 9)
     add_scan_error_mock.assert_awaited_once()
     unmatched_art.clear()
+
+    class SmallRgbImage:
+        def __init__(self) -> None:
+            self.mode = "RGB"
+            self.size = (320, 320)
+
+        def save(self, path: str) -> None:
+            self.saved_path = path
+
+        def __enter__(self) -> "SmallRgbImage":
+            return self
+
+        def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+            return None
+
+    cursor = AsyncMock()
+    cursor.fetch_list = AsyncMock(return_value=[5])
+    with (
+        patch("scanner.album_art.Image.open", return_value=SmallRgbImage()),
+        patch("scanner.album_art.reconcile_album_art", new=AsyncMock()) as reconcile_mock,
+        patch("scanner.album_art.add_scan_error", new=AsyncMock()) as add_scan_error_mock,
+    ):
+        asyncio.run(process_album_art(cursor, "/music/station/exact.png", 1))
+    reconcile_mock.assert_awaited_once_with(cursor, 5)
+    add_scan_error_mock.assert_not_called()
 
     cursor = AsyncMock()
     cursor.fetch_list = AsyncMock(return_value=[])
@@ -651,6 +749,22 @@ def test_scan_errors_nonfatal_fatal_and_trim() -> None:
     assert cache_set_mock.await_args is not None
     stored_errors = cache_set_mock.await_args.args[1]
     assert stored_errors[0]["file"] == "fatal.mp3"
+    assert stored_errors[0]["traceback"] != ""
+
+    with (
+        patch("scanner.scan_errors.cache_get", new=AsyncMock(return_value=[])),
+        patch("scanner.scan_errors.cache_set", new=AsyncMock()) as cache_set_mock,
+        patch("scanner.scan_errors.log.exception") as exception_mock,
+    ):
+        try:
+            raise RuntimeError("boom")
+        except RuntimeError as exc:
+            asyncio.run(add_scan_error("fatal-no-full.mp3", exc))
+
+    exception_mock.assert_called_once()
+    assert cache_set_mock.await_args is not None
+    stored_errors = cache_set_mock.await_args.args[1]
+    assert stored_errors[0]["file"] == "fatal-no-full.mp3"
     assert stored_errors[0]["traceback"] != ""
 
     existing_errors = [{"time": 1, "file": str(i), "type": "E", "error": "x", "traceback": ""} for i in range(100)]

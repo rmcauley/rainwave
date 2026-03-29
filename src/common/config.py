@@ -232,7 +232,7 @@ stations: StationsConfig = {
         "request_numsong_timeout": 2,
         # Elections first try to find songs of similar length - this defines how similar, in seconds.
         "song_lookup_length_delta": 30,
-        # Cooldown formula tweaking.  Recommended to leave this alone!
+        # Cooldown formula tweaking.  Recommended to leave this alone unless your name is jonfunk.
         "cooldown_percentage": 0.6,
         "cooldown_highest_rating_multiplier": 0.6,
         "cooldown_size_min_multiplier": 0.4,

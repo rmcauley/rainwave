@@ -156,6 +156,11 @@ def test_get_json_error_response_branches() -> None:
     assert response["error"]["tl_key"] == "internal_error"
     assert "RuntimeError" in response["error"]["traceback"]
 
+    handler = _handler()
+    handler.locale = _DummyLocale()
+    response = handler.get_json_error_response(500, exc_info=(RuntimeError, generic_exc, None))
+    assert response["error"]["code"] == 500
+
 
 def test_get_request_validation_data_and_validation_errors() -> None:
     handler = _handler()
@@ -188,6 +193,23 @@ def test_get_request_validation_data_and_validation_errors() -> None:
         handler.get_validated_input(_SimpleDTO, {"song_id": "bad", "name": "A"})
     except APIException as exc:
         assert exc.tl_key == "invalid_argument"
+    else:
+        raise AssertionError("APIException was not raised")
+
+    handler = _handler()
+    handler.websocket_message = {"song_id": 7, "name": "WS"}
+    validated = handler.get_validated_input(_SimpleDTO)
+    assert validated.song_id == 7
+
+    class _ExpectedTypeDTO(pydantic.BaseModel):
+        song_id: int
+
+    handler = _handler()
+    try:
+        handler.get_validated_input(_ExpectedTypeDTO, {"song_id": {"bad": "value"}})
+    except APIException as exc:
+        assert exc.tl_key == "invalid_argument"
+        assert "int" in str(exc.extra.get("reason", ""))
     else:
         raise AssertionError("APIException was not raised")
 
@@ -388,6 +410,10 @@ def test_permission_checks_and_rainwave_auth_branches() -> None:
 
     handler = _handler()
     handler.unlocked_listener_only = True
+    handler.permission_checks(cast(Any, _DummyUser(lock=True, lock_sid=1, lock_counter=3)), 1)
+
+    handler = _handler()
+    handler.unlocked_listener_only = True
     try:
         handler.permission_checks(
                 cast(Any, _DummyUser(lock=True, lock_sid=2, lock_counter=3)),
@@ -454,6 +480,36 @@ def test_permission_checks_and_rainwave_auth_branches() -> None:
     ):
         assert asyncio.run(handler.rainwave_auth(cursor, 1)) == "reg"
 
+    handler = _handler()
+    handler.get_cookie = Mock(side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None)
+    cursor = AsyncMock()
+    cursor.fetch_row = AsyncMock(return_value=None)
+    assert asyncio.run(handler.rainwave_auth(cursor, 1)) is None
+
+    handler = _handler()
+    handler.get_cookie = Mock(side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None)
+    cursor = AsyncMock()
+    cursor.fetch_row = AsyncMock(return_value={"user_id": None, "api_key": "abc"})
+    try:
+        asyncio.run(handler.rainwave_auth(cursor, 1))
+    except APIException as exc:
+        assert exc.tl_key == "invalid_argument"
+        assert exc.extra["argument"] == "user_id"
+    else:
+        raise AssertionError("APIException was not raised")
+
+    handler = _handler()
+    handler.get_cookie = Mock(side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None)
+    cursor = AsyncMock()
+    cursor.fetch_row = AsyncMock(return_value={"user_id": 2, "api_key": None})
+    try:
+        asyncio.run(handler.rainwave_auth(cursor, 1))
+    except APIException as exc:
+        assert exc.tl_key == "invalid_argument"
+        assert exc.extra["argument"] == "api_key"
+    else:
+        raise AssertionError("APIException was not raised")
+
 
 def test_cookie_and_error_rendering_and_pretty_print_branches() -> None:
     handler = _handler()
@@ -469,6 +525,12 @@ def test_cookie_and_error_rendering_and_pretty_print_branches() -> None:
     assert handler.response["error"]["tl_key"] == "auth_required"
 
     handler = _handler()
+    handler.content_type = "text/javascript"
+    handler.write = Mock()
+    RainwaveHandler.write_error(handler, 400, exc_info=(APIException, APIException("auth_required", status_code=403), None))
+    handler.write.assert_called_once()
+
+    handler = _handler()
     handler.content_type = "text/html"
     handler.write = Mock()
     handler.render_string = Mock(side_effect=lambda template, title=None: f"{template}:{title}")
@@ -481,6 +543,13 @@ def test_cookie_and_error_rendering_and_pretty_print_branches() -> None:
     handler.render_string = Mock(side_effect=lambda template, title=None: f"{template}:{title}")
     handler._write_error_html(400, exc_info=(HTTPError, HTTPError(400, reason="Bad"), None))
     assert any("400 - Bad" in str(call.args[0]) for call in handler.write.call_args_list)
+
+    handler = _handler()
+    handler.content_type = "text/html"
+    handler.write = Mock()
+    handler.render_string = Mock(side_effect=lambda template, title=None: f"{template}:{title}")
+    handler._write_error_html(400)
+    assert any("HTTP 400 - Bad Request" in str(call.args[0]) for call in handler.write.call_args_list)
 
     handler = _handler()
     handler.pretty_print_html = True
