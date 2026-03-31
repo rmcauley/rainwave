@@ -52,6 +52,12 @@ def _progress(message: str) -> None:
     print(f"[pytest setup] {message}", flush=True)
 
 
+def _cleanup_coverage_files() -> None:
+    for coverage_file in PROJECT_ROOT.glob(".coverage*"):
+        if coverage_file.is_file():
+            coverage_file.unlink(missing_ok=True)
+
+
 def _get_test_api_port() -> int:
     global _test_api_port
 
@@ -265,6 +271,8 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     global _postgres_container
     global _exit_stack
 
+    _cleanup_coverage_files()
+
     postgres_mode = os.getenv("RW_TEST_POSTGRES_MODE", "postgres")
     if postgres_mode == "local":
         _configure_local_postgres()
@@ -338,3 +346,5 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         _progress("stopping postgres test container")
         _postgres_container.stop()
         _postgres_container = None
+
+    _cleanup_coverage_files()
