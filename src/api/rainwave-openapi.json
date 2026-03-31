@@ -1657,6 +1657,84 @@
         "tags": ["Websocket"]
       }
     },
+    "/api4/auth": {
+      "post": {
+        "operationId": "auth",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "key": {
+                    "type": "string"
+                  }
+                },
+                "required": ["user_id", "key"],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "wsok": {
+                      "$ref": "#/components/schemas/wsok"
+                    }
+                  },
+                  "required": ["wsok"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Websocket"]
+      }
+    },
+    "/api4/ping": {
+      "post": {
+        "operationId": "ping",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {},
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "pong": {
+                      "$ref": "#/components/schemas/pong"
+                    }
+                  },
+                  "required": ["pong"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Websocket"]
+      }
+    },
     "/api4/clear_rating": {
       "post": {
         "operationId": "clearRating",
@@ -5281,6 +5359,9 @@
       },
       "websocket_host": {
         "type": "string"
+      },
+      "pong": {
+        "type": "boolean"
       },
       "wserror": {
         "$ref": "#/components/schemas/_error"

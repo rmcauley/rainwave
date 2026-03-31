@@ -1,20 +1,35 @@
 import { RainwaveError, RainwaveSDKDisconnectedError, RainwaveSDKUsageError } from './errors';
 import { RainwaveEventListener } from './eventListener';
-import { didAnActionFail } from './utils/didAnActionFail';
 
-import type { operations, components } from './rainwave-openapi';
+import type { RainwaveSDKInvalidRatingError } from './errors';
+import type { components } from './rainwave-openapi';
+import type { RainwaveAction, RainwaveParams, RainwaveResponse } from './types';
 
 const DEFAULT_RECONNECT_TIMEOUT = 500;
 const MAX_QUEUED_REQUESTS = 10;
-const SINGLE_REQUEST_TIMEOUT = 4000;
+const STALLED_SOCKET_TIMEOUT = 10_000;
 
-interface RainwaveRequest {
-  action: keyof operations;
-  params: unknown;
+type RainwaveResolveFn<T extends RainwaveAction> = (value: RainwaveResponse<T>) => void;
+
+type RainwaveRejectFn = (
+  error:
+    | RainwaveError
+    | RainwaveSDKUsageError
+    | RainwaveSDKInvalidRatingError
+    | RainwaveSDKDisconnectedError,
+) => void;
+
+type RainwaveRequest<T extends RainwaveAction> = {
+  action: T;
+  params: RainwaveParams<T>;
   messageId?: number;
-  resolve: (data: unknown) => void;
-  reject: (error: unknown) => void;
-}
+  resolve: RainwaveResolveFn<T>;
+  reject: RainwaveRejectFn;
+};
+
+type RainwaveRequestWithKey = Partial<{
+  [T in RainwaveAction]: RainwaveRequest<T>;
+}>;
 
 interface RainwaveOptions {
   userId: number;
@@ -31,10 +46,6 @@ interface RainwaveApiSdkSchemas {
   sdk_schedule_synced: boolean;
 }
 
-type PublicSchemaKeys = Exclude<Extract<keyof components['schemas'], string>, `_${string}`>;
-
-type RainwaveApiReturn<T extends PublicSchemaKeys> = components['schemas'][T];
-
 class RainwaveApi extends RainwaveEventListener<components['schemas'] & RainwaveApiSdkSchemas> {
   private _userId: number;
   private _apiKey: string;
@@ -44,7 +55,8 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   private _externalOnSocketError: NonNullable<RainwaveOptions['onSocketError']>;
   private _socket?: WebSocket;
   private _isOk?: boolean = false;
-  private _socketTimeoutTimer: number | null = null;
+  private _pingTimeoutTimer: number | null = null;
+  private _socketActivityTimeoutTimer: number | null = null;
   private _socketStaysClosed: boolean = false;
   private _socketIsBusy: boolean = false;
   private _authPromiseResolve?: (authOk: boolean) => void;
@@ -52,8 +64,8 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   private _currentScheduleId: number | undefined;
   private _requestId: number = 0;
-  private _requestQueue: RainwaveRequest[] = [];
-  private _sentRequests: RainwaveRequest[] = [];
+  private _requestQueue: RainwaveRequestWithKey[] = [];
+  private _sentRequests: RainwaveRequestWithKey[] = [];
 
   constructor(options: RainwaveOptions) {
     super();
@@ -65,8 +77,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this._debug = options?.debug || ((): void => {});
     this._externalOnSocketError = options?.onSocketError || ((): void => {});
 
-    this.addEventListener('wsok', this._onAuthenticationOK.bind(this));
-    this.addEventListener('wserror', this._onAuthenticationFailure.bind(this));
     this.addEventListener('sched_current', (current) => {
       this._currentScheduleId = current.id;
     });
@@ -90,9 +100,8 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       return Promise.resolve(true);
     }
 
-    if (this._socketTimeoutTimer) {
-      clearTimeout(this._socketTimeoutTimer);
-    }
+    this._socketStaysClosed = false;
+    this._cleanVariablesOnClose();
 
     const socket = new WebSocket(`${this._url}${this._sid}`);
     socket.onmessage = this._onMessage.bind(this);
@@ -125,9 +134,15 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this._socket.close();
     this._debug('Socket closed by SDK.');
 
+    this._cleanVariablesOnClose();
+
     return new Promise((resolve) => {
       this._authPromiseReject = (): void => resolve();
     });
+  }
+
+  private _ping(): void {
+    void this.fetch('ping', {});
   }
 
   private _cleanVariablesOnClose(event?: CloseEvent | ErrorEvent): void {
@@ -135,9 +150,13 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       this._debug(JSON.stringify(Object.keys(event)));
     }
     this._isOk = false;
-    if (this._socketTimeoutTimer) {
-      clearTimeout(this._socketTimeoutTimer);
-      this._socketTimeoutTimer = null;
+    if (this._socketActivityTimeoutTimer) {
+      clearTimeout(this._socketActivityTimeoutTimer);
+      this._socketActivityTimeoutTimer = null;
+    }
+    if (this._pingTimeoutTimer) {
+      clearTimeout(this._pingTimeoutTimer);
+      this._pingTimeoutTimer = null;
     }
     if (this._authPromiseReject) {
       this._authPromiseReject(event);
@@ -145,11 +164,15 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this._authPromiseReject = undefined;
     this._authPromiseResolve = undefined;
     this._sentRequests.forEach((rwRequest) => {
-      rwRequest.reject(new RainwaveSDKDisconnectedError('Socket closed.'));
+      Object.values(rwRequest).forEach((req) => {
+        req.reject(new RainwaveSDKDisconnectedError('Socket closed.'));
+      });
     });
     this._sentRequests = [];
     this._requestQueue.forEach((rwRequest) => {
-      rwRequest.reject(new RainwaveSDKDisconnectedError('Socket closed.'));
+      Object.values(rwRequest).forEach((req) => {
+        req.reject(new RainwaveSDKDisconnectedError('Socket closed.'));
+      });
     });
     this._requestQueue = [];
     this._socketIsBusy = false;
@@ -193,6 +216,11 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     });
 
     this._nextRequest();
+
+    this._pingTimeoutTimer = setInterval(
+      this._ping.bind(this),
+      STALLED_SOCKET_TIMEOUT - 1000,
+    ) as unknown as number;
 
     if (this._authPromiseResolve) {
       this._authPromiseResolve(true);
@@ -249,9 +277,9 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   private _onMessage(message: MessageEvent): void {
     this.emit('sdk_error_clear', { tl_key: 'sync_retrying' });
-    if (this._socketTimeoutTimer) {
-      clearTimeout(this._socketTimeoutTimer);
-      this._socketTimeoutTimer = null;
+    if (this._socketActivityTimeoutTimer) {
+      clearTimeout(this._socketActivityTimeoutTimer);
+      this._socketActivityTimeoutTimer = null;
     }
 
     let json: Partial<components['schemas']>;
@@ -274,25 +302,26 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       return;
     }
 
-    const matchingSentRequest = this._sentRequests.find(
-      (rq) => rq.messageId === json.message_id?.message_id,
+    const matchingSentRequest = this._sentRequests.find((requestWithKey) =>
+      Object.values(requestWithKey).find(
+        (request) => request.messageId === json.message_id?.message_id,
+      ),
     );
 
     if (matchingSentRequest) {
       this._sentRequests = this._sentRequests.filter(
-        (rq) => rq.messageId !== json.message_id?.message_id,
+        (requestWithKey) => requestWithKey !== matchingSentRequest,
       );
-      const successFalse = didAnActionFail(json);
-      if (successFalse) {
-        matchingSentRequest.reject(
-          new RainwaveError(successFalse.text, json, successFalse.tl_key, successFalse.text),
-        );
-      } else if (json.error) {
-        matchingSentRequest.reject(
-          new RainwaveError(json.error.text, json, json.error.tl_key, json.error.text),
-        );
+      const jsonError = json.error || json.wsthrottle || json.wserror;
+      if (jsonError) {
+        Object.values(matchingSentRequest).forEach((req) => {
+          req.reject(new RainwaveError(jsonError.text, json, jsonError.tl_key, jsonError.text));
+        });
       } else {
-        matchingSentRequest.resolve(json);
+        Object.values(matchingSentRequest).forEach((req) => {
+          // Just get Typescript to ignore this, the server has sent what we expect.
+          req.resolve(json as never);
+        });
       }
     }
 
@@ -310,21 +339,19 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   // Calls To API ******************************************************************************************
 
-  private _request<T extends keyof operations>(
+  private _request<T extends RainwaveAction>(
     action: T,
-    params: NonNullable<operations[T]['requestBody']>['content']['application/json'],
-    resolve: (
-      value:
-        | operations[T]['responses']['default']['content']['application/json']
-        | PromiseLike<operations[T]['responses']['default']['content']['application/json']>,
-    ) => void,
-    reject: (reason?: unknown) => void,
+    params: RainwaveParams<T>,
+    resolve: RainwaveResolveFn<T>,
+    reject: RainwaveRejectFn,
   ): void {
     this._requestQueue.push({
-      action,
-      params,
-      reject,
-      resolve: resolve as (data: unknown) => void,
+      [action]: {
+        action,
+        params,
+        reject,
+        resolve,
+      },
     });
     if (!this._socketIsBusy && this._isOk) {
       this._nextRequest();
@@ -332,39 +359,48 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   }
 
   private _nextRequest(): void {
-    const request = this._requestQueue.shift();
+    if (!this._isOk) {
+      return;
+    }
 
-    if (!request) {
+    const requestWithKey = this._requestQueue.shift();
+
+    if (!requestWithKey) {
       this._socketIsBusy = false;
 
       return;
     }
-    if (!this._isOk) {
-      return;
-    }
+
+    this._socketIsBusy = true;
+
+    // The way RequestWithKey is built, there'll always
+    // be 1 and only 1 value we can extract that safely.
+    const request = Object.values(requestWithKey)[0]!;
 
     request.messageId = this._getNextRequestId();
     if (this._sentRequests.length > MAX_QUEUED_REQUESTS) {
       this._sentRequests.splice(0, this._sentRequests.length - MAX_QUEUED_REQUESTS);
     }
 
-    if (this._socketTimeoutTimer) {
-      clearTimeout(this._socketTimeoutTimer);
+    if (this._socketActivityTimeoutTimer) {
+      clearTimeout(this._socketActivityTimeoutTimer);
     }
-    this._socketTimeoutTimer = setTimeout(() => {
-      this._onRequestTimeout(request);
-    }, SINGLE_REQUEST_TIMEOUT) as unknown as number;
+    this._socketActivityTimeoutTimer = setTimeout(() => {
+      this._onActivityTimeout(requestWithKey);
+    }, STALLED_SOCKET_TIMEOUT) as unknown as number;
 
     this._socketSend({
-      ...request,
+      action: request.action,
+      message_id: request.messageId,
       sid: this._sid,
+      ...request.params,
     });
-    this._sentRequests.push(request);
+    this._sentRequests.push(requestWithKey);
   }
 
-  private _onRequestTimeout(request: RainwaveRequest): void {
-    if (this._socketTimeoutTimer) {
-      this._socketTimeoutTimer = null;
+  private _onActivityTimeout(request: RainwaveRequestWithKey): void {
+    if (this._socketActivityTimeoutTimer) {
+      this._socketActivityTimeoutTimer = null;
       this._requestQueue.unshift(request);
       this._debug('Looks like the connection timed out.');
       this.emit('error', { code: 0, text: '', tl_key: 'sync_retrying' });
@@ -409,10 +445,10 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   // API calls ***********************************************************************************************
 
-  fetch<T extends keyof operations>(
+  fetch<T extends RainwaveAction>(
     action: T,
-    params: NonNullable<operations[T]['requestBody']>['content']['application/json'],
-  ): Promise<operations[T]['responses']['default']['content']['application/json']> {
+    params: RainwaveParams<T>,
+  ): Promise<RainwaveResponse<T>> {
     return new Promise((resolve, reject) => {
       this._request(action, params, resolve, reject);
     });
@@ -420,14 +456,14 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   async allAlbums(
     progressCallback?: (progress: number) => void,
-  ): Promise<RainwaveApiReturn<'all_albums_paginated'>['data']> {
-    let result = await this.fetch('getAllAlbumsPaginated', {});
+  ): Promise<RainwaveResponse<'all_albums_paginated'>['all_albums_paginated']['data']> {
+    let result = await this.fetch('all_albums_paginated', {});
     let albums = result.all_albums_paginated.data;
     if (progressCallback) {
       progressCallback(result.all_albums_paginated.progress * 100);
     }
     while (result.all_albums_paginated.has_more) {
-      result = await this.fetch('getAllAlbumsPaginated', {
+      result = await this.fetch('all_albums_paginated', {
         after: result.all_albums_paginated.next,
       });
       albums = albums.concat(result.all_albums_paginated.data);
@@ -441,14 +477,14 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   async allArtists(
     progressCallback?: (progress: number) => void,
-  ): Promise<RainwaveApiReturn<'all_artists_paginated'>['data']> {
-    let result = await this.fetch('getAllArtistsPaginated', {});
+  ): Promise<RainwaveResponse<'all_artists_paginated'>['all_artists_paginated']['data']> {
+    let result = await this.fetch('all_artists_paginated', {});
     let artists = result.all_artists_paginated.data;
     if (progressCallback) {
       progressCallback(result.all_artists_paginated.progress * 100);
     }
     while (result.all_artists_paginated.has_more) {
-      result = await this.fetch('getAllArtistsPaginated', {
+      result = await this.fetch('all_artists_paginated', {
         after: result.all_artists_paginated.next,
       });
       artists = artists.concat(result.all_artists_paginated.data);
@@ -462,14 +498,14 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   async allGroups(
     progressCallback?: (progress: number) => void,
-  ): Promise<RainwaveApiReturn<'all_groups_paginated'>['data']> {
-    let result = await this.fetch('getAllGroupsPaginated', {});
+  ): Promise<RainwaveResponse<'all_groups_paginated'>['all_groups_paginated']['data']> {
+    let result = await this.fetch('all_groups_paginated', {});
     let groups = result.all_groups_paginated.data;
     if (progressCallback) {
       progressCallback(result.all_groups_paginated.progress * 100);
     }
     while (result.all_groups_paginated.has_more) {
-      result = await this.fetch('getAllGroupsPaginated', {
+      result = await this.fetch('all_groups_paginated', {
         after: result.all_groups_paginated.next,
       });
       groups = groups.concat(result.all_groups_paginated.data);
@@ -482,5 +518,5 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   }
 }
 
-export type { RainwaveOptions, RainwaveApiReturn };
+export type { RainwaveOptions };
 export { RainwaveApi };

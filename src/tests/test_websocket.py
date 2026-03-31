@@ -115,6 +115,17 @@ class TestWebsocket(RequestClassesTestCase):
         return await self.http_client.fetch(request)
 
     @gen_test(timeout=20)
+    async def test_http_auth_endpoint_is_websocket_only(self) -> None:
+        response = await self.post_form(
+            "/api4/auth",
+            {"user_id": TUNED_IN_LOGGED_IN_USER_ID, "key": TUNED_IN_LOGGED_IN_API_KEY},
+            raise_error=False,
+        )
+        assert response.code == 403
+        payload = self.payload(response)
+        assert payload["error"]["code"] == 403
+
+    @gen_test(timeout=20)
     async def test_websocket_auth_and_user_refresh(self) -> None:
         connection = await self._connect_websocket()
         original_name = TUNED_IN_LOGGED_IN_USER_NAME
@@ -144,6 +155,48 @@ class TestWebsocket(RequestClassesTestCase):
                     "UPDATE phpbb_users SET radio_username = %s WHERE user_id = %s",
                     (original_name, TUNED_IN_LOGGED_IN_USER_ID),
                 )
+            connection.close()
+
+    @gen_test(timeout=20)
+    async def test_websocket_auth_returns_message_id(self) -> None:
+        connection = await self._connect_websocket()
+        try:
+            connection.write_message(
+                json.dumps(
+                    {
+                        "action": "auth",
+                        "user_id": TUNED_IN_LOGGED_IN_USER_ID,
+                        "key": TUNED_IN_LOGGED_IN_API_KEY,
+                        "message_id": 7,
+                    }
+                )
+            )
+            message = await self._wait_for_message(connection, lambda payload: "wsok" in payload)
+            assert message["wsok"] is True
+            assert message["message_id"]["message_id"] == 7
+        finally:
+            connection.close()
+
+    @gen_test(timeout=20)
+    async def test_websocket_ping_returns_pong(self) -> None:
+        connection = await self._connect_websocket()
+        try:
+            await self._auth_websocket(
+                connection,
+                user_id=TUNED_IN_LOGGED_IN_USER_ID,
+                key=TUNED_IN_LOGGED_IN_API_KEY,
+            )
+
+            connection.write_message(
+                json.dumps({"action": "ping", "message_id": 123})
+            )
+
+            message = await self._wait_for_message(
+                connection, lambda payload: "pong" in payload, timeout=5.0
+            )
+            assert message["pong"] is True
+            assert message["message_id"]["message_id"] == 123
+        finally:
             connection.close()
 
     @gen_test(timeout=20)

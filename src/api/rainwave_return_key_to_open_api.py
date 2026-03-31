@@ -71,6 +71,7 @@ class RainwaveResponse(TypedDict, total=False):
     message_id: rainwave_typeddicts.MessageId
     order_requests_result: rainwave_typeddicts.OrderRequestsResult
     pause_request_queue_result: rainwave_typeddicts.PauseRequestQueueResult
+    pong: rainwave_typeddicts.Pong
     power_hours: rainwave_typeddicts.PowerHours
     playback_history: rainwave_typeddicts.PlaybackHistory
     rate_result: rainwave_typeddicts.RateResult
@@ -143,6 +144,7 @@ RainwaveResponseKey = Literal[
     "message_id",
     "order_requests_result",
     "pause_request_queue_result",
+    "pong",
     "playback_history",
     "power_hours",
     "rate_result",

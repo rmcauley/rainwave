@@ -2,13 +2,14 @@ import time
 
 import orjson
 import datetime
-from typing import Any
+from typing import Any, cast
 import numbers
 import sys
 import uuid
 from time import time as timestamp
 
 from tornado import httputil
+from tornado.httputil import HTTPConnection
 
 from api import fieldtypes
 from api.exceptions import APIException
@@ -18,6 +19,7 @@ from api.handle_url import api_endpoints, handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.helpers.get_remote_ip_or_throw import get_remote_ip_or_throw
 from api.helpers.user_to_api_private import user_to_api_private
+from api.rainwave_return_key_to_open_api import RainwaveResponse
 from api.websocket.rainwave_websocket_handler import RainwaveWebsocketHandler
 from api.websocket.websocket_message import RainwaveWebsocketMessage
 from api.websocket.websocket_tracker.websocket_tracker import websockets_by_sid
@@ -27,12 +29,17 @@ from common.cache.station_cache import cache_get_station
 from common.cache.timeline_cache import get_timeline_api_cache
 from common.db.cursor import get_cursor
 from common.locale.rainwave_locale import RainwaveLocale
-from common.user.get_anonymous_user import get_authorized_anonymous_user
-from common.user.get_registered_user import get_authorized_registered_user
 from common.user.model.user_base import UserBase
 from common.zeromq import zeromq
 import tornado
 from common.locale.locale import translations
+
+
+class _WebsocketApiConnectionBridge:
+    _close_callback: Any = None
+
+    def set_close_callback(self, callback: Any) -> None:
+        self._close_callback = callback
 
 
 nonunique_actions = (
@@ -171,7 +178,9 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
 
         user = self.user
         if rw_message["action"] == "auth":
-            await self._do_auth(rw_message)
+            await self._process_message(rw_message, None)
+            if self.user:
+                await self._station_offline_check()
             return
         elif user is None:
             self.write_rainwave_response(
@@ -189,7 +198,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
     async def _process_message(
         self,
         message: RainwaveWebsocketMessage,
-        user: UserBase,
+        user: UserBase | None,
         is_throttle_process: bool = False,
     ) -> None:
         message_id = fieldtypes.zero_or_greater_integer(message.get("message_id", None))
@@ -216,9 +225,15 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
         if message["action"] == "check_sched_current_id":
             await self._do_sched_check(message)
             return
+        if message["action"] == "ping":
+            response: RainwaveResponse = {"pong": True}
+            if message_id:
+                response["message_id"] = {"message_id": message_id}
+            self.write_rainwave_response(response)
+            return
 
-        message["action"] = "/api4/%s" % message["action"]
-        endpoint_class = api_endpoints.get(message["action"], None)
+        api_endpoint = "/api4/%s" % message["action"]
+        endpoint_class = api_endpoints.get(api_endpoint, None)
         if endpoint_class is None or not issubclass(endpoint_class, APIHandler):
             self.write_rainwave_response(
                 {
@@ -230,11 +245,14 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             )
             return
 
+        # Twisting types a little to get an Tornado API handler to behave in our
+        # little dual HTTP API-or-Websocket world.
+        request = httputil.HTTPServerRequest(method="POST", uri=message["action"])
+        request.connection = cast(HTTPConnection, _WebsocketApiConnectionBridge())
+
         endpoint = endpoint_class(
             self.application,
-            httputil.HTTPServerRequest(
-                method="POST", connection=httputil.HTTPConnection()
-            ),
+            request,
             websocket_handling=True,
             websocket_message=message,
             websocket_user=self.user,
@@ -243,12 +261,21 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             ),
             websocket_locale=self.rainwave_locale,
             websocket_uuid=self.uuid,
+            websocket_remote_ip=self.remote_ip,
         )
         api_return_success = False
 
         try:
             await endpoint.prepare()
             await endpoint.post()
+
+            if message["action"] == "auth" and endpoint.optional_user:
+                self.user = endpoint.optional_user
+                self.user_id = self.user.id
+                self.listen_key = self.user.private_data["listen_key"]
+                self.authorized = True
+                self.uuid = str(uuid.uuid4())
+                websockets_by_sid[self.sid].append(self)
 
             endpoint.response["api_info"] = {
                 "exectime": time.monotonic() - endpoint.startclock,
@@ -265,7 +292,11 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                 )
                 else False
             )
-            if endpoint.sync_across_sessions and api_return_success:
+            if (
+                endpoint.sync_across_sessions
+                and api_return_success
+                and user is not None
+            ):
                 zeromq.publish(
                     {
                         "action": "result_sync",
@@ -340,93 +371,6 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             async with get_cursor() as cursor:
                 await self.user.refresh(cursor)
             self.write_rainwave_response({"user": user_to_api_private(self.user)})
-
-    async def _do_auth(self, message: RainwaveWebsocketMessage) -> None:
-        try:
-            user_id = message.get("user_id", None)
-            if not user_id:
-                self.write_rainwave_response(
-                    {
-                        "wserror": {
-                            "tl_key": "missing_argument",
-                            "text": self.rainwave_locale.translate(
-                                "missing_argument", {"argument": "user_id"}
-                            ),
-                        }
-                    }
-                )
-                return
-
-            if not isinstance(user_id, int):
-                self.write_rainwave_response(
-                    {
-                        "wserror": {
-                            "tl_key": "invalid_argument",
-                            "text": self.rainwave_locale.translate(
-                                "invalid_argument", {"argument": "user_id"}
-                            ),
-                        }
-                    }
-                )
-                return
-
-            api_key = message.get("key", None)
-            if not api_key or not isinstance(api_key, str):
-                self.write_rainwave_response(
-                    {
-                        "wserror": {
-                            "tl_key": "missing_argument",
-                            "text": self.rainwave_locale.translate(
-                                "missing_argument", {"argument": "key"}
-                            ),
-                        }
-                    }
-                )
-                return
-
-            try:
-                async with get_cursor() as cursor:
-                    if user_id > 1:
-                        self.user = await get_authorized_registered_user(
-                            cursor,
-                            self.sid,
-                            user_id,
-                            api_key,
-                            self.remote_ip,
-                        )
-                    else:
-                        self.user = await get_authorized_anonymous_user(
-                            cursor, self.sid, 1, api_key, self.remote_ip
-                        )
-            except APIException as auth_error:
-                if auth_error.tl_key == "auth_failed":
-                    self.write_rainwave_response(
-                        {
-                            "wserror": {
-                                "tl_key": "auth_failed",
-                                "text": self.rainwave_locale.translate("auth_failed"),
-                            }
-                        }
-                    )
-                    self.close()
-                    return
-
-        except Exception as e:
-            log.exception("websocket", "Exception during authentication.", e)
-            self.close()
-
-        if self.user:
-            self.user_id = self.user.id
-            self.listen_key = self.user.private_data["listen_key"]
-            self.authorized = True
-            self.uuid = str(uuid.uuid4())
-
-            websockets_by_sid[self.sid].append(self)
-
-            self.write_rainwave_response({"wsok": True})
-            # since this will be the first action in any websocket interaction,
-            # it'd be a good time to send a station offline message.
-            await self._station_offline_check()
 
     async def _station_offline_check(self):
         if not await cache_get_station(self.sid, "backend_ok"):

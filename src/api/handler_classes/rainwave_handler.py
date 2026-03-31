@@ -72,6 +72,7 @@ class RainwaveHandler(RequestHandler, ABC):
     websocket_message: RainwaveWebsocketMessage | None
     websocket_uuid: str | None
     websocket_sid: int | None
+    websocket_remote_ip: str | None
     _rainwave_output_written: bool
 
     @property
@@ -92,6 +93,7 @@ class RainwaveHandler(RequestHandler, ABC):
         websocket_sid: int | None = None,
         websocket_locale: RainwaveLocale | None = None,
         websocket_uuid: str | None = None,
+        websocket_remote_ip: str | None = None,
         **kwargs: Any,
     ) -> None:
         # Properties that are websocket-explicit and should be defined per-class-instance
@@ -99,6 +101,10 @@ class RainwaveHandler(RequestHandler, ABC):
         self.websocket_message = websocket_message
         self.websocket_sid = websocket_sid
         self.websocket_uuid = websocket_uuid
+        self.websocket_remote_ip = websocket_remote_ip
+        self.response = {}
+        self._rainwave_output_written = False
+        self.startclock = time.monotonic()
         self._rainwave_output_written = False
 
         # Properties where websocket arguments override HTTP processing
@@ -111,9 +117,6 @@ class RainwaveHandler(RequestHandler, ABC):
 
     # Called by Tornado, allows us to setup our request as we wish. User handling, form validation, etc. take place here.
     async def prepare(self) -> None:
-        self.startclock = time.monotonic()
-        self._rainwave_output_written = False
-
         user: UserBase | None = self.optional_user
         if not self.websocket_handling:
             user = await self._prepare_http()
@@ -130,8 +133,6 @@ class RainwaveHandler(RequestHandler, ABC):
         self.optional_user = user
 
     async def _prepare_http(self) -> UserBase | None:
-        self.response = {}
-
         if (
             self.local_only
             and not self.request.remote_ip in config.api_trusted_ip_addresses
@@ -279,19 +280,20 @@ class RainwaveHandler(RequestHandler, ABC):
                 status_code=400,
             )
 
+        # casted self.request_remote_ip: it comes from httputils and is guaranteed to be a str
+        remote_ip = cast(str, self.request.remote_ip)
+
         if user_id == 1:
-            # casted self.request_remote_ip: it comes from httputils and is guaranteed to be a str
             return await get_authorized_anonymous_user(
-                cursor, sid, user_id, api_key, cast(str, self.request.remote_ip)
+                cursor, sid, user_id, api_key, remote_ip
             )
 
         return await get_authorized_registered_user(
-            # casted self.request_remote_ip: it comes from httputils and is guaranteed to be a str
             cursor,
             sid,
             user_id,
             api_key,
-            cast(str, self.request.remote_ip),
+            remote_ip,
         )
 
     def _write_rainwave_output(self) -> None:
