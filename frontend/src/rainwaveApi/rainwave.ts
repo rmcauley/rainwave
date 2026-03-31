@@ -54,13 +54,11 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   private _debug: typeof console.log;
   private _externalOnSocketError: NonNullable<RainwaveOptions['onSocketError']>;
   private _socket?: WebSocket;
-  private _isOk?: boolean = false;
+  private _hasAuthorized?: boolean = false;
   private _pingTimeoutTimer: number | null = null;
   private _socketActivityTimeoutTimer: number | null = null;
   private _socketStaysClosed: boolean = false;
   private _socketIsBusy: boolean = false;
-  private _authPromiseResolve?: (authOk: boolean) => void;
-  private _authPromiseReject?: (error: unknown) => void;
 
   private _currentScheduleId: number | undefined;
   private _requestId: number = 0;
@@ -95,25 +93,40 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
    *
    * @category Connection
    */
-  public startWebSocketSync(): Promise<boolean> {
-    if (this._socket && this._socket.readyState === this._socket.OPEN) {
-      return Promise.resolve(true);
+  public async startWebSocketSync(): Promise<RainwaveResponse<'auth'>> {
+    if (this._socket && this._socket.readyState === this._socket.OPEN && this._hasAuthorized) {
+      return Promise.resolve({ wsok: true });
+    } else if (this._socket && this._socket.readyState !== this._socket.CLOSED) {
+      throw new RainwaveSDKUsageError(
+        'startWebSocketSync was called without waiting for an existing connection to complete.',
+      );
     }
 
     this._socketStaysClosed = false;
     this._cleanVariablesOnClose();
 
     const socket = new WebSocket(`${this._url}${this._sid}`);
-    socket.onmessage = this._onMessage.bind(this);
-    socket.onclose = this._onSocketClose.bind(this);
-    socket.onerror = this._onSocketError.bind(this);
-    socket.onopen = this._onSocketOpen.bind(this);
+    socket.addEventListener('message', this._onMessage.bind(this));
+    socket.addEventListener('close', this._onSocketClose.bind(this));
+    socket.addEventListener('error', this._onSocketError.bind(this));
+    socket.addEventListener('open', this._onSocketOpen.bind(this));
     this._socket = socket;
 
-    return new Promise<boolean>((resolve, reject) => {
-      this._authPromiseResolve = resolve;
-      this._authPromiseReject = reject;
-    });
+    try {
+      const authResult = await this.fetch('auth', { user_id: this._userId, key: this._apiKey });
+      if (authResult.wsok) {
+        this._onAuthenticationOK();
+      }
+
+      return authResult;
+    } catch (err) {
+      // If it's an RW error (not e.g. a network error) we treat this as an auth failure.
+      if (err instanceof RainwaveError) {
+        this._onAuthenticationFailure();
+      }
+
+      throw err;
+    }
   }
 
   /**
@@ -122,34 +135,42 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
    * @category Connection
    */
   public stopWebSocketSync(): Promise<void> {
-    if (
-      !this._socket ||
-      this._socket.readyState === this._socket.CLOSING ||
-      this._socket.readyState === this._socket.CLOSED
-    ) {
+    const socket = this._socket;
+
+    if (!socket || socket.readyState === socket.CLOSED) {
       return Promise.resolve();
     }
 
     this._socketStaysClosed = true;
-    this._socket.close();
-    this._debug('Socket closed by SDK.');
-
-    this._cleanVariablesOnClose();
 
     return new Promise((resolve) => {
-      this._authPromiseReject = (): void => resolve();
+      const onClose = (): void => {
+        socket.removeEventListener('close', onClose);
+        resolve();
+      };
+
+      socket.addEventListener('close', onClose, { once: true });
+
+      if (socket.readyState !== socket.CLOSING) {
+        socket.close();
+        this._debug('Socket closed by SDK.');
+      }
     });
   }
 
   private _ping(): void {
-    void this.fetch('ping', {});
+    this.fetch('ping', {}).catch(() => {
+      // Suppress any error, we don't really care, the rest of this class
+      // will handle connection errors for us.
+      // This is just to stop promise rejection noise from hitting the console.
+    });
   }
 
   private _cleanVariablesOnClose(event?: CloseEvent | ErrorEvent): void {
     if (event) {
       this._debug(JSON.stringify(Object.keys(event)));
     }
-    this._isOk = false;
+    this._hasAuthorized = false;
     if (this._socketActivityTimeoutTimer) {
       clearTimeout(this._socketActivityTimeoutTimer);
       this._socketActivityTimeoutTimer = null;
@@ -158,11 +179,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       clearTimeout(this._pingTimeoutTimer);
       this._pingTimeoutTimer = null;
     }
-    if (this._authPromiseReject) {
-      this._authPromiseReject(event);
-    }
-    this._authPromiseReject = undefined;
-    this._authPromiseResolve = undefined;
     this._sentRequests.forEach((rwRequest) => {
       Object.values(rwRequest).forEach((req) => {
         req.reject(new RainwaveSDKDisconnectedError('Socket closed.'));
@@ -178,16 +194,26 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this._socketIsBusy = false;
   }
 
+  private _retryStartWebSocketSync(): void {
+    this.startWebSocketSync().catch((error) => {
+      if (error instanceof RainwaveSDKUsageError) {
+        setTimeout(() => {
+          this._retryStartWebSocketSync();
+        }, DEFAULT_RECONNECT_TIMEOUT);
+      }
+    });
+  }
+
   private _onSocketClose(event: CloseEvent): void {
-    const staysClosed = this._socketStaysClosed || !!this._authPromiseReject;
+    this._socket = undefined;
     this._cleanVariablesOnClose(event);
-    if (staysClosed) {
+    if (this._socketStaysClosed) {
       return;
     }
 
     this._debug('Socket closed on event.');
     setTimeout(() => {
-      void this.startWebSocketSync();
+      this._retryStartWebSocketSync();
     }, DEFAULT_RECONNECT_TIMEOUT);
   }
 
@@ -198,17 +224,13 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   }
 
   private _onSocketOpen(): void {
-    this._socketSend({
-      action: 'auth',
-      user_id: this._userId,
-      key: this._apiKey,
-    });
+    this._nextRequest();
   }
 
   private _onAuthenticationOK(): void {
     this._debug('Rainwave connected successfully.');
     this.emit('sdk_error_clear', { tl_key: 'sync_retrying' });
-    this._isOk = true;
+    this._hasAuthorized = true;
 
     this._socketSend({
       action: 'check_sched_current_id',
@@ -221,28 +243,12 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       this._ping.bind(this),
       STALLED_SOCKET_TIMEOUT - 1000,
     ) as unknown as number;
-
-    if (this._authPromiseResolve) {
-      this._authPromiseResolve(true);
-      this._authPromiseResolve = undefined;
-      this._authPromiseReject = undefined;
-    }
   }
 
-  private _onAuthenticationFailure(error: components['schemas']['wserror']): void {
-    if (error.tl_key === 'auth_failed') {
-      this._debug('Authorization failed for Rainwave websocket.  Wrong API key/user ID combo.');
-      this.emit('error', error);
-      if (this._authPromiseReject) {
-        this._authPromiseReject(
-          new RainwaveError('Authentication failed.', { wserror: error }, error.tl_key, error.text),
-        );
-        this._authPromiseReject = undefined;
-        this._authPromiseResolve = undefined;
-      }
-      this._socketStaysClosed = true;
-      this._socket?.close();
-    }
+  private _onAuthenticationFailure(): void {
+    this._debug('Authorization failed for Rainwave websocket.');
+    this._socketStaysClosed = true;
+    this._socket?.close();
   }
 
   private _socketSend(message: unknown): void {
@@ -353,13 +359,18 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
         resolve,
       },
     });
-    if (!this._socketIsBusy && this._isOk) {
+    if (!this._socketIsBusy) {
       this._nextRequest();
     }
   }
 
   private _nextRequest(): void {
-    if (!this._isOk) {
+    // This first half of the if always allows auth requests through to the server.
+    if (!this._requestQueue[0]?.auth && !this._hasAuthorized) {
+      return;
+    }
+
+    if (!this._socket || this._socket.readyState !== WebSocket.OPEN) {
       return;
     }
 
