@@ -16,16 +16,22 @@ class WebsocketAuth(APIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
-        return "wserror"
+        return "wsok"
 
     async def prepare(self) -> None:
         # Do not perform normal preparation for this response.
         # We're going to skip all the auth and checks.
-        pass
+        if not self.websocket_handling:
+            raise APIException("auth_required", status_code=403)
+
+        if not self.websocket_sid:
+            raise APIException("missing_argument", status_code=400)
+
+        self.sid = self.websocket_sid
 
     async def post(self) -> None:
-        if not self.websocket_handling or not self.websocket_remote_ip:
-            raise APIException("auth_required", status_code=403)
+        if not self.websocket_remote_ip:
+            raise APIException("missing_argument", status_code=400)
 
         input = self.get_validated_input(
             rainwave_dto.Api4AuthPostRequest, self.websocket_message

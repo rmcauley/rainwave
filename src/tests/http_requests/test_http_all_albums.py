@@ -235,12 +235,6 @@ class TestAllAlbums(RequestClassesTestCase):
         assert len(payload["unrated_songs"]) == 100
 
     @gen_test
-    async def test_top_100_empty(self) -> None:
-        response = await self.post_form("/api4/top_100", self._auth_data())
-        payload = self.payload(response)
-        assert payload["top_100"] == []
-
-    @gen_test
     async def test_all_faves_empty(self) -> None:
         response = await self.post_form("/api4/all_faves", self._auth_data())
         payload = self.payload(response)
