@@ -88,7 +88,9 @@ async def _cleanup_temp_users(cursor: RainwaveCursor) -> None:
     )
 
 
-async def _ensure_temp_user(cursor: RainwaveCursor, user_id: int, username: str) -> None:
+async def _ensure_temp_user(
+    cursor: RainwaveCursor, user_id: int, username: str
+) -> None:
     await cursor.update(
         """
         INSERT INTO phpbb_users (user_id, username)
@@ -157,7 +159,9 @@ def test_listener_and_user_rating_helpers() -> None:
 
                 assert await can_user_rate_song(anonymous, 1, song_id) is False
                 assert await can_user_rate_song(donor, 1, song_id) is True
-                assert await can_user_rate_song(low_priv_registered, 1, song_id) is False
+                assert (
+                    await can_user_rate_song(low_priv_registered, 1, song_id) is False
+                )
 
                 await cache_set_station(
                     1, "user_rating_acl", {song_id: [low_priv_user_id]}
@@ -189,7 +193,10 @@ def test_request_line_requeue_and_album_request_flags() -> None:
             assert len(song_ids) == 2
             await mark_songs_requestable(cursor, 1, song_ids)
 
-            for user_id, song_id in [(waiting_user, song_ids[0]), (drop_user, song_ids[1])]:
+            for user_id, song_id in [
+                (waiting_user, song_ids[0]),
+                (drop_user, song_ids[1]),
+            ]:
                 await cursor.update(
                     "INSERT INTO r4_request_store (user_id, song_id, sid, reqstor_order) VALUES (%s, %s, %s, %s)",
                     (user_id, song_id, 1, 1),
@@ -313,6 +320,7 @@ def test_schedule_helper_progression_paths() -> None:
                     "sid": 1,
                     "sched_timed": True,
                     "sched_creator_user_id": None,
+                    "sched_is_auto_ph": False,
                 },
             )
             await mark_ended_schedule_entries_as_used(cursor, 1)
@@ -336,6 +344,7 @@ def test_schedule_helper_progression_paths() -> None:
                     "sid": 1,
                     "sched_timed": True,
                     "sched_creator_user_id": None,
+                    "sched_is_auto_ph": False,
                 },
             )
             power_hour = PowerHour("OneUpProducer", active_schedule_row)
@@ -346,9 +355,7 @@ def test_schedule_helper_progression_paths() -> None:
             queued_power_hour_song = cast(PowerHourSong, in_progress)
             song_to_play = await start_next_timeline_entry_and_get_song_to_play(
                 cursor,
-                TimelineOnStation(
-                    [], queued_power_hour_song, [queued_power_hour_song]
-                ),
+                TimelineOnStation([], queued_power_hour_song, [queued_power_hour_song]),
             )
             assert isinstance(song_to_play, SongOnStation)
             assert song_to_play.id == song_id

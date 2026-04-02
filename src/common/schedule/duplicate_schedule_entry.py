@@ -28,5 +28,6 @@ async def duplicate_schedule_entry(
             "sched_type": entry["sched_type"],
             "sched_url": entry["sched_url"],
             "sid": entry["sid"],
+            "sched_is_auto_ph": False,
         },
     )

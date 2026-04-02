@@ -1,6 +1,5 @@
 import asyncio
 import math
-import sys
 from datetime import datetime, timedelta
 from typing import TypedDict
 from pytz import timezone
@@ -8,17 +7,17 @@ from pytz import timezone
 from common import config, log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
-from common.db.cursor import get_cursor
+from common.db.cursor import RainwaveCursor, get_tx_cursor
 from common.schedule.create_schedule_entry import create_schedule_entry
 from common.schedule.power_hours.power_hour import PowerHour
 
-
-TARGET_SID = 5
 TARGET_LENGTH = 120 * 60
 MIN_LENGTH = 20 * 60
 
-# mon/tue/thu
-ALLOWED_DAYS_OF_WEEK = [1, 2, 4]
+# For scheduling reasoning see auto_pvp.py.
+# Auto PHs run on Mon, Tue, Wed, and Thurs.
+# These weekdays are `datetime.weekday` 0-index.
+ALLOWED_DAYS_OF_WEEK = (0, 1, 2, 3)
 
 
 class SongsTodayRow(TypedDict):
@@ -26,144 +25,201 @@ class SongsTodayRow(TypedDict):
     song_length: int
 
 
+async def get_furthest_future_new_music_power_hour_start(
+    cursor: RainwaveCursor,
+) -> int | None:
+    return await cursor.fetch_var(
+        """
+        SELECT sched_start
+        FROM r4_schedule
+        WHERE sched_is_auto_ph = FALSE AND sched_used = FALSE
+        ORDER BY sched_start DESC
+        LIMIT 1
+        """,
+        var_type=int,
+    )
+
+
+async def get_newly_added_songs(
+    cursor: RainwaveCursor, sid: int
+) -> list[SongsTodayRow]:
+    return await cursor.fetch_all(
+        """
+        SELECT
+            r4_songs.song_id,
+            r4_songs.song_length
+        FROM r4_song_sid
+        JOIN r4_songs ON (
+            r4_song_sid.song_id = r4_songs.song_id
+        )
+        WHERE song_new_played = FALSE
+            AND song_verified = TRUE
+            AND sid = %s
+            AND song_origin_sid != 2
+        ORDER BY sid, random()
+        """,
+        (sid,),
+        row_type=SongsTodayRow,
+    )
+
+
+def get_next_start(
+    original_start: datetime, furthest_future_start: datetime | None
+) -> datetime:
+    if not furthest_future_start:
+        return original_start
+
+    next_start = original_start
+    while (
+        next_start < (furthest_future_start + timedelta(hours=23))
+        or next_start.weekday() not in ALLOWED_DAYS_OF_WEEK
+    ):
+        next_start += timedelta(days=1)
+    return next_start
+
+
+async def make_auto_power_hours(
+    cursor: RainwaveCursor,
+    sid: int,
+    songs_today: list[SongsTodayRow],
+    total_seconds: int,
+) -> None:
+    number_of_ph = int(math.ceil(float(total_seconds) / float(TARGET_LENGTH)))
+    length_of_each_ph = total_seconds / number_of_ph
+
+    log.debug("auto_ph", "Total minutes    : %s" % (total_seconds / 60))
+    log.debug("auto_ph", "Number of PH:    : %s" % number_of_ph)
+    log.debug("auto_ph", "Length of each PH: %s" % (length_of_each_ph / 60))
+
+    furthest_future_start_epoch = await get_furthest_future_new_music_power_hour_start(
+        cursor
+    )
+    furthest_future_start = (
+        datetime.fromtimestamp(furthest_future_start_epoch, tz=timezone("US/Pacific"))
+        if furthest_future_start_epoch is not None
+        else None
+    )
+    date_for_ph_name = datetime.now(timezone("US/Pacific")).replace(
+        hour=11, minute=0, second=0, microsecond=0
+    )
+    ph_name = date_for_ph_name.strftime("%b %d New Music")
+
+    for part in range(number_of_ph):
+        start_na = get_next_start(
+            datetime.now(timezone("US/Pacific")).replace(
+                hour=11, minute=0, second=0, microsecond=0
+            ),
+            furthest_future_start,
+        )
+        start_epoch_na = int(
+            (
+                start_na - datetime.fromtimestamp(0, timezone("US/Pacific"))
+            ).total_seconds()
+        )
+
+        start_eu = get_next_start(
+            datetime.now(timezone("Europe/Amsterdam")).replace(
+                hour=11, minute=0, second=0, microsecond=0
+            ),
+            furthest_future_start,
+        ) + timedelta(days=1)
+        start_epoch_eu = int(
+            (
+                start_eu - datetime.fromtimestamp(0, timezone("Europe/Amsterdam"))
+            ).total_seconds()
+        )
+
+        furthest_future_start = start_na
+
+        name = ph_name
+        if number_of_ph > 1:
+            name += " (Part %s)" % (part + 1)
+
+        schedule_entry_row_na = await create_schedule_entry(
+            cursor,
+            {
+                "sched_creator_user_id": None,
+                "sched_end": start_epoch_na + 1,
+                "sched_name": name,
+                "sched_start": start_epoch_na,
+                "sched_timed": True,
+                "sched_type": "OneUpProducer",
+                "sched_url": None,
+                "sid": sid,
+                "sched_is_auto_ph": True,
+            },
+        )
+
+        north_america_ph = PowerHour("OneUpProducer", schedule_entry_row_na)
+
+        length = 0
+        while length < length_of_each_ph and len(songs_today):
+            song_row = songs_today.pop()
+            await cursor.update(
+                "UPDATE r4_songs SET song_new_played = TRUE WHERE song_id = %s",
+                (song_row["song_id"],),
+            )
+            await north_america_ph.add_song_id(cursor, song_row["song_id"])
+            length += song_row["song_length"]
+            if length > TARGET_LENGTH:
+                break
+
+        await north_america_ph.shuffle_songs(cursor)
+
+        all_songs = await north_america_ph.load_all_songs(cursor)
+
+        schedule_entry_row_eu = await create_schedule_entry(
+            cursor,
+            {
+                "sched_creator_user_id": None,
+                "sched_end": start_epoch_eu + 1,
+                "sched_name": name + " Reprisal",
+                "sched_start": start_epoch_eu,
+                "sched_timed": True,
+                "sched_type": "OneUpProducer",
+                "sched_url": None,
+                "sid": sid,
+                "sched_is_auto_ph": True,
+            },
+        )
+        p_eu = PowerHour("OneUpProducer", schedule_entry_row_eu)
+        for song in all_songs:
+            await p_eu.add_song_id(cursor, song.song_on_station.id)
+
+        length_human = "%s:%02u" % (int(math.floor(length / 60)), (length % 60))
+        log.debug(
+            "auto_ph",
+            f"PH on {sid}, part {part}, {len(all_songs)} new songs, {length_human} length, at {start_na.isoformat(timespec="minutes")}.",
+        )
+
+
 async def main() -> None:
     log_file = "%s/rw_auto_ph.log" % (config.log_dir,)
     log.init(log_file, "debug")
 
-    async with db_connect(auto_retry=False), cache_connect(), get_cursor() as cursor:
-        songs_today = await cursor.fetch_all(
-            """
-            SELECT
-                r4_songs.song_id,
-                r4_songs.song_length
-            FROM r4_song_sid
-            JOIN r4_songs ON (
-                r4_song_sid.song_id = r4_songs.song_id
-            )
-            WHERE song_new_played = FALSE
-                AND song_verified = TRUE
-                AND sid = %s
-                AND song_origin_sid != 2
-                AND song_origin_sid != 6
-            ORDER BY random()
-            """,
-            (TARGET_SID,),
-            row_type=SongsTodayRow,
-        )
+    day_of_week = datetime.now().weekday()
+    if day_of_week not in ALLOWED_DAYS_OF_WEEK:
+        log.debug("auto_ph", "Not running any new music PHs today.")
+        return
 
-        day_of_week = datetime.now().isoweekday()
-        if day_of_week not in ALLOWED_DAYS_OF_WEEK:
-            log.debug("auto_ph", "Not running any new music PHs today.")
-        elif len(songs_today) > 0:
-            total_seconds = 0
-            for song_row in songs_today:
-                total_seconds = total_seconds + song_row["song_length"]
+    async with db_connect(auto_retry=False), cache_connect(), get_tx_cursor() as cursor:
+        for sid in (5, 6):
+            songs_today = await get_newly_added_songs(cursor, sid)
 
-            if total_seconds < MIN_LENGTH:
-                log.debug(
-                    "auto_ph",
-                    "Added songs do not add up to enough time to make a Power Hour",
-                )
-                sys.exit(0)
+            if len(songs_today) == 0:
+                log.debug("auto_ph", f"No new songs on {sid}.")
+            else:
+                total_seconds = 0
+                for song_row in songs_today:
+                    total_seconds = total_seconds + song_row["song_length"]
 
-            number_of_ph = int(math.ceil(float(total_seconds) / float(TARGET_LENGTH)))
-            length_of_each_ph = total_seconds / number_of_ph
-
-            log.debug("auto_ph", "Total minutes    : %s" % (total_seconds / 60))
-            log.debug("auto_ph", "Number of PH:    : %s" % number_of_ph)
-            log.debug("auto_ph", "Length of each PH: %s" % (length_of_each_ph / 60))
-
-            # hack - plan only one day
-            number_of_ph = 1
-
-            original_start = start = datetime.now(timezone("US/Eastern")).replace(
-                hour=14, minute=0, second=0, microsecond=0
-            )
-
-            delta_days = 0
-            for _ in range(number_of_ph):
-                start = datetime.now(timezone("US/Eastern")).replace(
-                    hour=14, minute=0, second=0, microsecond=0
-                ) + timedelta(days=delta_days)
-                start_epoch = int(
-                    (
-                        start - datetime.fromtimestamp(0, timezone("US/Eastern"))
-                    ).total_seconds()
-                )
-
-                name = original_start.strftime("%b %d New Music")
-                if number_of_ph > 1:
-                    name += " (Part %s)" % (delta_days + 1)
-
-                schedule_entry_row = await create_schedule_entry(
-                    cursor,
-                    {
-                        "sched_creator_user_id": None,
-                        "sched_end": start_epoch + 1,
-                        "sched_name": name,
-                        "sched_start": start_epoch,
-                        "sched_timed": True,
-                        "sched_type": "OneUpProducer",
-                        "sched_url": None,
-                        "sid": TARGET_SID,
-                    },
-                )
-
-                p = PowerHour("OneUpProducer", schedule_entry_row)
-
-                length = 0
-                while length < length_of_each_ph and len(songs_today):
-                    song_row = songs_today.pop()
-                    await cursor.update(
-                        "UPDATE r4_songs SET song_new_played = TRUE WHERE song_id = %s",
-                        (song_row["song_id"],),
+                if total_seconds < MIN_LENGTH:
+                    log.debug(
+                        "auto_ph",
+                        f"Added songs on {sid} do not add up to enough time to make a Power Hour",
                     )
-                    await p.add_song_id(cursor, song_row["song_id"], TARGET_SID)
-                    length += song_row["song_length"]
-                    if length > TARGET_LENGTH:
-                        break
-
-                await p.shuffle_songs(cursor)
-
-                all_songs = await p.load_all_songs(cursor)
-
-                start_eu = datetime.now(timezone("Europe/London")).replace(
-                    hour=10, minute=0, second=0, microsecond=0
-                ) + timedelta(days=delta_days + 1)
-                start_epoch_eu = int(
-                    (
-                        start_eu - datetime.fromtimestamp(0, timezone("US/Eastern"))
-                    ).total_seconds()
-                )
-                schedule_entry_row_eu = await create_schedule_entry(
-                    cursor,
-                    {
-                        "sched_creator_user_id": None,
-                        "sched_end": start_epoch_eu + 1,
-                        "sched_name": original_start.strftime(
-                            "%b %d New Music Reprisal"
-                        ),
-                        "sched_start": start_epoch_eu,
-                        "sched_timed": True,
-                        "sched_type": "OneUpProducer",
-                        "sched_url": None,
-                        "sid": TARGET_SID,
-                    },
-                )
-                p_eu = PowerHour("OneUpProducer", schedule_entry_row_eu)
-                for song in all_songs:
-                    await p_eu.add_song_id(cursor, song.id, TARGET_SID)
-
-                length_human = "%s:%02u" % (int(math.floor(length / 60)), (length % 60))
-                log.debug(
-                    "auto_ph",
-                    "PH %s, %s new songs, %s length, %s day(s) in the future."
-                    % (delta_days, len(all_songs), length_human, delta_days),
-                )
-
-                delta_days += 1
-        else:
-            log.debug("auto_ph", "No new songs.")
+                else:
+                    await make_auto_power_hours(cursor, sid, songs_today, total_seconds)
 
 
 if __name__ == "__main__":

@@ -113,6 +113,7 @@ def test_album_on_station_methods_and_schedule_dispatch(tmp_path: Path) -> None:
                     "sid": 1,
                     "sched_timed": True,
                     "sched_creator_user_id": 2,
+                    "sched_is_auto_ph": False,
                 },
             )
             duplicated = await duplicate_schedule_entry(cursor, schedule_row, 3)
@@ -142,6 +143,7 @@ def test_album_on_station_methods_and_schedule_dispatch(tmp_path: Path) -> None:
                     "sid": 1,
                     "sched_timed": True,
                     "sched_creator_user_id": 2,
+                    "sched_is_auto_ph": False,
                 },
             )
             assert isinstance(get_schedule_entry_from_row(pvp_schedule), ElectionHour)
@@ -151,8 +153,8 @@ def test_album_on_station_methods_and_schedule_dispatch(tmp_path: Path) -> None:
                     cast(
                         ScheduleEntryRow,
                         {
-                        **schedule_row,
-                        "sched_type": "Nope",
+                            **schedule_row,
+                            "sched_type": "Nope",
                         },
                     )
                 )

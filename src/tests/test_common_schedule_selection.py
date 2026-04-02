@@ -107,7 +107,9 @@ def test_random_song_selection_fallbacks_and_timed_paths() -> None:
                 """,
                 (TEMP_RANDOM_SID,),
             )
-            fallback_song = await get_random_song_ignore_requests(cursor, TEMP_RANDOM_SID)
+            fallback_song = await get_random_song_ignore_requests(
+                cursor, TEMP_RANDOM_SID
+            )
             assert fallback_song.id in song_ids
 
             await cursor.update(
@@ -176,15 +178,20 @@ def test_election_hour_creation_queueing_and_empty_in_progress_paths() -> None:
                         "sid": 1,
                         "sched_timed": True,
                         "sched_creator_user_id": None,
+                        "sched_is_auto_ph": False,
                     },
                 )
                 election_hour = ElectionHour("PVPElection", schedule_row)
 
-                assert await election_hour.has_timeline_entries_remaining(cursor) is False
+                assert (
+                    await election_hour.has_timeline_entries_remaining(cursor) is False
+                )
                 created = await election_hour.get_next_timeline_entry(cursor, [], None)
                 assert created.data["elec_type"] == "PVPElection"
                 assert created.entries
-                assert await election_hour.has_timeline_entries_remaining(cursor) is True
+                assert (
+                    await election_hour.has_timeline_entries_remaining(cursor) is True
+                )
 
                 queued = await election_hour.get_queued_timeline_entries(cursor)
                 assert len(queued) == 1
@@ -213,7 +220,9 @@ def test_election_hour_creation_queueing_and_empty_in_progress_paths() -> None:
                     """,
                     (now, empty.id),
                 )
-                empty_result = await election_hour.get_timeline_entry_in_progress(cursor)
+                empty_result = await election_hour.get_timeline_entry_in_progress(
+                    cursor
+                )
                 assert empty_result is None
                 assert (
                     await cursor.fetch_var(
@@ -312,6 +321,7 @@ def test_power_hour_empty_used_and_fill_unrated_paths() -> None:
                         "sid": TEMP_POWER_HOUR_SID,
                         "sched_timed": True,
                         "sched_creator_user_id": 2,
+                        "sched_is_auto_ph": False,
                     },
                 )
                 empty_power_hour = PowerHour("OneUpProducer", empty_schedule)
@@ -343,6 +353,7 @@ def test_power_hour_empty_used_and_fill_unrated_paths() -> None:
                         "sid": TEMP_POWER_HOUR_SID,
                         "sched_timed": True,
                         "sched_creator_user_id": 2,
+                        "sched_is_auto_ph": False,
                     },
                 )
                 await cursor.update(
@@ -353,15 +364,12 @@ def test_power_hour_empty_used_and_fill_unrated_paths() -> None:
                 actual_power_hour = PowerHour("OneUpProducer", actual_schedule)
                 await cast(Any, actual_power_hour)._update_length(cursor)
                 assert (
-                    (
-                        await cursor.fetch_var(
+                    await cursor.fetch_var(
                         "SELECT sched_end FROM r4_schedule WHERE sched_id = %s",
                         (actual_schedule["sched_id"],),
                         var_type=int,
                     )
-                    )
-                    == now
-                )
+                ) == now
 
                 limited_schedule = await create_schedule_entry(
                     cursor,
@@ -374,6 +382,7 @@ def test_power_hour_empty_used_and_fill_unrated_paths() -> None:
                         "sid": TEMP_POWER_HOUR_SID,
                         "sched_timed": True,
                         "sched_creator_user_id": 2,
+                        "sched_is_auto_ph": False,
                     },
                 )
                 limited_power_hour = PowerHour("OneUpProducer", limited_schedule)
@@ -398,6 +407,7 @@ def test_power_hour_empty_used_and_fill_unrated_paths() -> None:
                         "sid": TEMP_POWER_HOUR_SID,
                         "sched_timed": True,
                         "sched_creator_user_id": 2,
+                        "sched_is_auto_ph": False,
                     },
                 )
                 full_power_hour = PowerHour("OneUpProducer", full_schedule)
@@ -445,6 +455,7 @@ def test_load_timeline_uses_current_and_upnext_schedule_entries() -> None:
                         "sid": TEMP_TIMELINE_SID,
                         "sched_timed": True,
                         "sched_creator_user_id": 2,
+                        "sched_is_auto_ph": False,
                     },
                 )
                 current_power_hour = PowerHour("OneUpProducer", current_schedule)
@@ -465,6 +476,7 @@ def test_load_timeline_uses_current_and_upnext_schedule_entries() -> None:
                         "sid": TEMP_TIMELINE_SID,
                         "sched_timed": True,
                         "sched_creator_user_id": 2,
+                        "sched_is_auto_ph": False,
                     },
                 )
                 future_power_hour = PowerHour("OneUpProducer", future_schedule)

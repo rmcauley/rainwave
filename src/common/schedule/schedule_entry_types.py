@@ -15,6 +15,7 @@ class ScheduleEntryInsertRow(TypedDict):
     sid: int
     sched_timed: bool
     sched_creator_user_id: int | None
+    sched_is_auto_ph: bool | None
 
 
 class ScheduleEntryRow(ScheduleEntryInsertRow):

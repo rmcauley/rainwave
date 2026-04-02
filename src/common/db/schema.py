@@ -233,7 +233,8 @@ async def create_tables() -> None:
                 song_vote_count				INTEGER		DEFAULT 0, \
                 song_votes_seen				INTEGER		DEFAULT 0, \
                 song_vote_share				REAL 		, \
-                song_artist_parseable		TEXT \
+                song_artist_parseable		TEXT        , \
+                song_new_played             BOOLEAN     DEFAULT FALSE \
             )"
         )
         await create_index(cursor, "r4_songs", ["song_verified"])
@@ -468,6 +469,7 @@ async def create_tables() -> None:
                 sched_in_progress		BOOLEAN		DEFAULT FALSE, \
                 sched_used				BOOLEAN		DEFAULT FALSE, \
                 sched_use_crossfade		BOOLEAN		DEFAULT TRUE, \
+                sched_is_auto_ph    	BOOLEAN		DEFAULT FALSE, \
                 sched_use_tag_suffix	BOOLEAN		DEFAULT TRUE, \
                 sched_creator_user_id	INT \
             )"

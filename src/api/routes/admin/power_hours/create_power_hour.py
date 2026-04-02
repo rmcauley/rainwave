@@ -8,12 +8,14 @@ from common.db.cursor import get_tx_cursor
 from common.schedule.create_schedule_entry import create_schedule_entry
 from common.schedule.power_hours.power_hour import PowerHour
 
+
 @handle_api_url("admin/create_power_hour")
 class CreatePowerHour(RegisteredUserAPIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hour"
+
     admin_required = True
     sid_required = False
 
@@ -31,6 +33,7 @@ class CreatePowerHour(RegisteredUserAPIHandler):
                     "sched_type": "OneUpProducer",
                     "sched_url": input.name,
                     "sid": input.sid,
+                    "sched_is_auto_ph": False,
                 },
             )
 
