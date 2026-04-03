@@ -1,4 +1,5 @@
-function rating(context) {
+import type { ratingContext } from './rating.context';
+function rating(context: ratingContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `rating`;

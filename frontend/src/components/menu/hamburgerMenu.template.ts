@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function hamburgerMenu(context) {
+
+import type { hamburgerMenuContext } from './hamburgerMenu.context';
+function hamburgerMenu(context: hamburgerMenuContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `hamburgered menu_dropdown`;

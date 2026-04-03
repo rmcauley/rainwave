@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function hotkey(context) {
+
+import type { hotkeyContext } from './hotkey.context';
+function hotkey(context: hotkeyContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v1.appendChild(v2);

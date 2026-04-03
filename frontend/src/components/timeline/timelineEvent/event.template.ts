@@ -1,5 +1,7 @@
 import { timelineSong } from '../timelineSong/timelineSong.template';
-function event(context) {
+
+import type { eventContext } from './event.context';
+function event(context: eventContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `timeline_event timeline_` + context.type;

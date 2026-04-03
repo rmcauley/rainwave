@@ -51,6 +51,10 @@ def _relative_module_path(from_file_name: str, to_file_name: str) -> str:
     return module_path
 
 
+def context_type_name(template_name: str) -> str:
+    return f"{template_name}Context"
+
+
 def solve_ts_imports(
     template_file_name: str,
     imports: set[str],
@@ -72,11 +76,14 @@ def solve_ts_imports(
             imported_template_file_name = template_name_to_filename.get(import_name)
             if not imported_template_file_name:
                 raise Exception(f"Unknown template import '{import_name}'.")
+            imported_template_file_name = (
+                os.path.splitext(imported_template_file_name)[0] + ".template.ts"
+            )
             if imported_template_file_name == template_file_name:
                 continue
             import_buffer += (
                 f"import {{{import_name}}} from "
-                f"'{_relative_module_path(template_file_name, imported_template_file_name)}.template';\n"
+                f"'{_relative_module_path(template_file_name, imported_template_file_name)}';\n"
             )
     return import_buffer
 
@@ -93,11 +100,16 @@ def compile_templates(source_dir: str) -> None:
 
     for template_name, file_name in template_name_to_filename.items():
         template_output_file_name = os.path.splitext(file_name)[0] + ".template.ts"
+        template_context_file_name = os.path.splitext(file_name)[0] + ".context.ts"
         try:
             with open(file_name) as html_file, open(
                 template_output_file_name, "w"
             ) as ts_file:
-                buffer = f"function {template_name}(context) {{\n"
+                buffer = (
+                    f"import type {{ {context_type_name(template_name)} }} from "
+                    f"'{_relative_module_path(template_output_file_name, template_context_file_name)}';\n"
+                )
+                buffer += f"function {template_name}(context: {context_type_name(template_name)}) {{\n"
                 buffer += "const v1 = document.createDocumentFragment();\n"
                 parsed_result_binds: dict[str, str] = {"$root": "v1"}
                 parsed_result_imports: set[str] = set()
@@ -116,7 +128,7 @@ def compile_templates(source_dir: str) -> None:
 
                 buffer = (
                     solve_ts_imports(
-                        file_name,
+                        template_output_file_name,
                         parsed_result_imports,
                         template_name_to_filename,
                     )

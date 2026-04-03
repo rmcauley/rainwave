@@ -1,6 +1,8 @@
 import { $l } from '../../../language';
 import { rating } from '../../ratings/rating.template';
-function listenerDetail(context) {
+
+import type { listenerDetailContext } from './listenerDetail.context';
+function listenerDetail(context: listenerDetailContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `art_anchor`;

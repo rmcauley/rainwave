@@ -1,5 +1,7 @@
 import { songTable } from '../songTable/songTable.template';
-function artistDetail(context) {
+
+import type { artistDetailContext } from './artistDetail.context';
+function artistDetail(context: artistDetailContext) {
   const v1 = document.createDocumentFragment();
   const v2 = context.albums.map((context) => {
     const v3 = document.createDocumentFragment();

@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function oops(context) {
+
+import type { oopsContext } from './oops.context';
+function oops(context: oopsContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.setAttribute('style', `margin-left: 5px`);

@@ -2,7 +2,9 @@ import { $l } from '../language';
 
 import { menu } from './menu/menu.template';
 import { search } from './search/search.template';
-function index(context) {
+
+import type { indexContext } from './index.context';
+function index(context: indexContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `measure_box`;

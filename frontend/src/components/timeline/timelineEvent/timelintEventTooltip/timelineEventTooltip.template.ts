@@ -1,4 +1,5 @@
-function timelineEventTooltip(context) {
+import type { timelineEventTooltipContext } from './timelineEventTooltip.context';
+function timelineEventTooltip(context: timelineEventTooltipContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.appendChild(document.createTextNode(context.text));

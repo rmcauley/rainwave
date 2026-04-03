@@ -1,6 +1,8 @@
 import { fave } from '../../fave/fave.template';
 import { rating } from '../../ratings/rating.template';
-function songTable(context) {
+
+import type { songTableContext } from './songTable.context';
+function songTable(context: songTableContext) {
   const v1 = document.createDocumentFragment();
   const v2 = context.songs.map((context) => {
     const v3 = document.createDocumentFragment();

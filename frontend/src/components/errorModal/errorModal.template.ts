@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function errorModal(context) {
+
+import type { errorModalContext } from './errorModal.context';
+function errorModal(context: errorModalContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('p');
   v2.appendChild(document.createTextNode($l('report_sending')));

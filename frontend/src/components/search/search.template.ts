@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function search(context) {
+
+import type { searchContext } from './search.context';
+function search(context: searchContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `close`;

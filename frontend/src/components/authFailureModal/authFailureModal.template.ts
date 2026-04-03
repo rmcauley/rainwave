@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function authFailureModal(context) {
+
+import type { authFailureModalContext } from './authFailureModal.context';
+function authFailureModal(context: authFailureModalContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('p');
   v2.appendChild(document.createTextNode($l('auth_failed_message')));

@@ -2,7 +2,9 @@ import { $l } from '../../language';
 import { songTable } from '../detail/songTable/songTable.template';
 import { fave } from '../fave/fave.template';
 import { rating } from '../ratings/rating.template';
-function searchResults(context) {
+
+import type { searchResultsContext } from './searchResults.context';
+function searchResults(context: searchResultsContext) {
   const v1 = document.createDocumentFragment();
   if (context.artists.length) {
     const v2 = document.createElement('h2');

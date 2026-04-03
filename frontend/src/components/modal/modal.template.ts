@@ -1,4 +1,5 @@
-function modal(context) {
+import type { modalContext } from './modal.context';
+function modal(context: modalContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `modal_container`;

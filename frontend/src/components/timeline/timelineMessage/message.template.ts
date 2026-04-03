@@ -1,4 +1,5 @@
-function message(context) {
+import type { messageContext } from './message.context';
+function message(context: messageContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `timeline_event timeline_message`;

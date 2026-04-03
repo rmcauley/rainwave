@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function whatIsCooldownModal(context) {
+
+import type { whatIsCooldownModalContext } from './whatIsCooldownModal.context';
+function whatIsCooldownModal(context: whatIsCooldownModalContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('p');
   v2.appendChild(document.createTextNode($l('cd_blue_bkg_is')));

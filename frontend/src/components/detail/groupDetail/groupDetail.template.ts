@@ -1,5 +1,7 @@
 import { songTable } from '../songTable/songTable.template';
-function groupDetail(context) {
+
+import type { groupDetailContext } from './groupDetail.context';
+function groupDetail(context: groupDetailContext) {
   const v1 = document.createDocumentFragment();
   const v2 = context.albums.map((context) => {
     const v3 = document.createDocumentFragment();
@@ -11,10 +13,10 @@ function groupDetail(context) {
     v4.appendChild(v5);
     v3.appendChild(songTable(context).$root);
     v1.appendChild(v3);
-
-    return { $root: v3 };
+    
+return { $root: v3 };
   });
-
-  return { $root: v1, albums: v2 };
+  
+return { $root: v1, albums: v2 };
 }
 export { groupDetail };

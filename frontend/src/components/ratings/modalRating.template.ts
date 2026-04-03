@@ -1,4 +1,5 @@
-function modalRating(context) {
+import type { modalRatingContext } from './modalRating.context';
+function modalRating(context: modalRatingContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.appendChild(document.createTextNode(`5.0`));

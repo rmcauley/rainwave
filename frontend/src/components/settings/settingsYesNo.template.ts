@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function settingsYesNo(context) {
+
+import type { settingsYesNoContext } from './settingsYesNo.context';
+function settingsYesNo(context: settingsYesNoContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className =

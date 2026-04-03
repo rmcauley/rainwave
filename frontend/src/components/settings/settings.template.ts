@@ -2,7 +2,9 @@ import { $l } from '../../language';
 
 import { settingsMultiOption } from './settingsMultiOption.template';
 import { settingsYesNo } from './settingsYesNo.template';
-function settings(context) {
+
+import type { settingsContext } from './settings.context';
+function settings(context: settingsContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('with');
   v2.setAttribute('context', `locales`);

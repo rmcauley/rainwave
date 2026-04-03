@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function requestsPanel(context) {
+
+import type { requestsPanelContext } from './requestsPanel.context';
+function requestsPanel(context: requestsPanelContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `close`;

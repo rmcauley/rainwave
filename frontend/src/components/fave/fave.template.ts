@@ -1,4 +1,5 @@
-function fave(context) {
+import type { faveContext } from './fave.context';
+function fave(context: faveContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `fave`;

@@ -1,6 +1,8 @@
 import { svgIcon as _svg } from '../../helpers/svg';
 import { $l } from '../../language';
-function timeline(context) {
+
+import type { timelineContext } from './timeline.context';
+function timeline(context: timelineContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `timeline`;

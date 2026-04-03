@@ -1,5 +1,7 @@
 import { $l } from '../../language';
-function searchList(context) {
+
+import type { searchListContext } from './searchList.context';
+function searchList(context: searchListContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `searchbox_container`;

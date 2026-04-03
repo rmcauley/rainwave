@@ -2,7 +2,9 @@ import { svgIcon as _svg } from '../../helpers/svg';
 import { $l } from '../../language';
 
 import { hamburgerMenu } from './hamburgerMenu.template';
-function menu(context) {
+
+import type { menuContext } from './menu.context';
+function menu(context: menuContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `header unselectable`;

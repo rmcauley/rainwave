@@ -1,7 +1,9 @@
 import { $l } from '../../../language';
 import { fave } from '../../fave/fave.template';
 import { rating } from '../../ratings/rating.template';
-function timelineSong(context) {
+
+import type { timelineSongContext } from './timelineSong.context';
+function timelineSong(context: timelineSongContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `song`;

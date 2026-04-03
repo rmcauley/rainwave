@@ -1,5 +1,7 @@
 import { $l } from '../../../language';
-function albumDetail(context) {
+
+import type { albumDetailContext } from './albumDetail.context';
+function albumDetail(context: albumDetailContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `art_anchor`;
@@ -105,8 +107,8 @@ function albumDetail(context) {
         v26.href = `#!/group/` + context.id;
         v25.appendChild(v26);
         v23.appendChild(v25);
-        
-return { $root: v25 };
+
+        return { $root: v25 };
       });
     }
   }
@@ -125,8 +127,8 @@ return { $root: v25 };
     v30.className = `unfave_all_songs`;
     v27.appendChild(v30);
   }
-  
-return {
+
+  return {
     $root: v1,
     art: v3,
     detail_header: v4,

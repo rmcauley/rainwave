@@ -1,4 +1,5 @@
-function albumRating(context) {
+import type { albumRatingContext } from './albumRating.context';
+function albumRating(context: albumRatingContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = `rating album_rating`;
