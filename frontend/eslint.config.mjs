@@ -201,7 +201,7 @@ export default defineConfig([
   tsRules,
 
   {
-    files: ['src/templates/index.ts'],
+    files: ['**/*.template.ts'],
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
     },

@@ -76,12 +76,12 @@ def solve_ts_imports(
                 continue
             import_buffer += (
                 f"import {{{import_name}}} from "
-                f"'{_relative_module_path(template_file_name, imported_template_file_name)}';\n"
+                f"'{_relative_module_path(template_file_name, imported_template_file_name)}.template';\n"
             )
     return import_buffer
 
 
-def compile_templates(source_dir: str) -> list[str]:
+def compile_templates(source_dir: str) -> None:
     template_name_to_filename: dict[str, str] = {}
     for root, _subdirs, files in os.walk(source_dir):
         for file_name in files:
@@ -92,7 +92,7 @@ def compile_templates(source_dir: str) -> list[str]:
                 template_name_to_filename[template_name] = os.path.join(root, file_name)
 
     for template_name, file_name in template_name_to_filename.items():
-        template_output_file_name = os.path.splitext(file_name)[0] + ".ts"
+        template_output_file_name = os.path.splitext(file_name)[0] + ".template.ts"
         try:
             with open(file_name) as html_file, open(
                 template_output_file_name, "w"
@@ -127,22 +127,6 @@ def compile_templates(source_dir: str) -> list[str]:
         except:
             print(f"Failed on {file_name}")
             raise
-
-    return list(template_name_to_filename.values())
-
-
-def ts_start() -> str:
-    to_ret = "import { svgIcon as _svg } from '../helpers/svg';\n"
-    to_ret += "import { $l } from '../language';\n"
-    return to_ret
-
-
-def ts_end(template_names: set[str]) -> str:
-    buffer = "export default {"
-    for template_name in sorted(template_names):
-        buffer += template_name + ","
-    buffer += "}"
-    return buffer
 
 
 if __name__ == "__main__":

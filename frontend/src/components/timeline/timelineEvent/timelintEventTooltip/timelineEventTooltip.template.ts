@@ -1,0 +1,10 @@
+function timelineEventTooltip(context) {
+  const v1 = document.createDocumentFragment();
+  const v2 = document.createElement('div');
+  v2.appendChild(document.createTextNode(context.text));
+  v2.className = `error_tooltip`;
+  v1.appendChild(v2);
+  
+return { $root: v1, el: v2 };
+}
+export { timelineEventTooltip };
