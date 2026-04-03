@@ -8,12 +8,14 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
 from common.db.cursor import get_cursor
 from api.rainwave_dto import Api4AdminAddAlbumToPowerHourPostRequest
 
+
 @handle_api_url("admin/add_album_to_power_hour")
 class AddAlbumToPowerHour(APIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hour"
+
     admin_required = True
     sid_required = True
     allow_sid_zero = True

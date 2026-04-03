@@ -144,8 +144,12 @@ def test_submit_vote_and_registered_user_refresh_paths() -> None:
     async def _run() -> None:
         async with ensure_cache_connection():
             async with get_test_cursor() as cursor:
-                await cache.cache_set("request_expire_times", {TUNED_IN_LOGGED_IN_USER_ID: 1234})
-                await cache_set_station(1, "request_user_positions", {TUNED_IN_LOGGED_IN_USER_ID: 7})
+                await cache.cache_set(
+                    "request_expire_times", {TUNED_IN_LOGGED_IN_USER_ID: 1234}
+                )
+                await cache_set_station(
+                    1, "request_user_positions", {TUNED_IN_LOGGED_IN_USER_ID: 7}
+                )
                 await cache_set_user(TUNED_IN_LOGGED_IN_USER_ID, "already_voted", [])
                 await cache_set_user(1, "already_voted", [])
 
@@ -390,7 +394,9 @@ def test_election_power_hour_and_user_request_management() -> None:
                 starting_request_count = await get_request_count_for_any_station(
                     cursor, TUNED_IN_LOGGED_IN_USER_ID
                 )
-                starting_remaining_slots = await user.get_remaining_request_slots(cursor)
+                starting_remaining_slots = await user.get_remaining_request_slots(
+                    cursor
+                )
 
                 requestable_song = await SongOnStation.load(cursor, song_ids[0], 1)
                 other_album_song = await SongOnStation.load(cursor, song_ids[1], 1)
@@ -421,7 +427,9 @@ def test_election_power_hour_and_user_request_management() -> None:
                     "DELETE FROM r4_request_store WHERE user_id = %s",
                     (TUNED_IN_LOGGED_IN_USER_ID,),
                 )
-                for overflow_song_id in overflow_song_ids[: user.get_max_request_slots()]:
+                for overflow_song_id in overflow_song_ids[
+                    : user.get_max_request_slots()
+                ]:
                     await cursor.update(
                         "INSERT INTO r4_request_store (user_id, song_id, sid) VALUES (%s, %s, %s)",
                         (TUNED_IN_LOGGED_IN_USER_ID, overflow_song_id, 1),
@@ -444,14 +452,19 @@ def test_election_power_hour_and_user_request_management() -> None:
                     await user.add_request(cursor, requestable_song)
                 assert same_request_error.value.tl_key == "same_request_exists"
 
-                if requestable_song.data["album_id"] == other_album_song.data["album_id"]:
+                if (
+                    requestable_song.data["album_id"]
+                    == other_album_song.data["album_id"]
+                ):
                     same_album_song_id = await cursor.fetch_var(
                         "SELECT song_id FROM r4_songs WHERE album_id = %s AND song_id <> %s LIMIT 1",
                         (requestable_song.data["album_id"], requestable_song.id),
                         var_type=int,
                     )
                     assert same_album_song_id is not None
-                    other_album_song = await SongOnStation.load(cursor, same_album_song_id, 1)
+                    other_album_song = await SongOnStation.load(
+                        cursor, same_album_song_id, 1
+                    )
                 with pytest.raises(APIException) as same_album_error:
                     await user.add_request(cursor, other_album_song)
                 assert same_album_error.value.tl_key == "same_request_album"
@@ -587,7 +600,10 @@ def test_election_fill_and_user_bulk_request_paths() -> None:
                 )
                 await filled_election.fill(cursor, request_line)
                 assert len(filled_election.entries) == 3
-                assert filled_election.entries[0]["entry_type"] == ElectionEntryType.request
+                assert (
+                    filled_election.entries[0]["entry_type"]
+                    == ElectionEntryType.request
+                )
 
                 vote_history_count = await cursor.fetch_var(
                     "SELECT COUNT(*) FROM r4_vote_history WHERE elec_id = %s",

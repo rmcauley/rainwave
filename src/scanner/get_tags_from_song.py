@@ -7,6 +7,7 @@ from scanner.exceptions import (
     NonFatalScannerError,
 )
 
+
 class MissingID3TagError(NonFatalScannerError):
     pass
 

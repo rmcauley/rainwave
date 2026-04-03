@@ -24,7 +24,9 @@ def test_backend_server_start_single_station_without_periodic_jobs() -> None:
 
     with (
         patch("backend.server.zeromq.init_proxy") as init_proxy,
-        patch("backend.server.asyncio.run", side_effect=_fake_asyncio_run) as asyncio_run,
+        patch(
+            "backend.server.asyncio.run", side_effect=_fake_asyncio_run
+        ) as asyncio_run,
     ):
         BackendServer().start(
             per_station_logging=False,
@@ -53,7 +55,9 @@ def test_backend_server_start_enables_periodic_jobs_and_forks() -> None:
         ),
         patch("backend.server.tornado.process.fork_processes") as fork_processes,
         patch("backend.server.tornado.process.task_id", return_value=1),
-        patch("backend.server.asyncio.run", side_effect=_fake_asyncio_run) as asyncio_run,
+        patch(
+            "backend.server.asyncio.run", side_effect=_fake_asyncio_run
+        ) as asyncio_run,
     ):
         BackendServer().start(
             per_station_logging=True,
@@ -77,7 +81,9 @@ def test_backend_server_start_skips_listen_when_no_task_id() -> None:
     with (
         patch("backend.server.tornado.process.fork_processes") as fork_processes,
         patch("backend.server.tornado.process.task_id", return_value=None),
-        patch("backend.server.asyncio.run", side_effect=_fake_asyncio_run) as asyncio_run,
+        patch(
+            "backend.server.asyncio.run", side_effect=_fake_asyncio_run
+        ) as asyncio_run,
     ):
         BackendServer().start(
             per_station_logging=True,
@@ -104,7 +110,9 @@ def test_backend_server_listen_initializes_and_shuts_down() -> None:
         patch("backend.server.db_connect", side_effect=_noop_async_context),
         patch("backend.server.cache_connect", side_effect=_noop_async_context),
         patch("backend.server.log.init") as log_init,
-        patch("backend.server.tornado.web.Application", return_value=Mock()) as app_ctor,
+        patch(
+            "backend.server.tornado.web.Application", return_value=Mock()
+        ) as app_ctor,
         patch("backend.server.tornado.httpserver.HTTPServer", return_value=server),
         patch(
             "backend.server.get_cursor",

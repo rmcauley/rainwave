@@ -34,7 +34,9 @@ def test_locale_and_rainwave_locale_behavior() -> None:
     assert "times" in ranked
     assert "ranking " in ranked
     assert english_canada.gettext("internal_error") == "Internal server error."
-    assert english_canada.pgettext("unused", "internal_error") == "Internal server error."
+    assert (
+        english_canada.pgettext("unused", "internal_error") == "Internal server error."
+    )
     assert english_canada.ngettext("one", "many", 1) == "one"
     assert english_canada.ngettext("one", "many", 2) == "many"
 
@@ -83,7 +85,9 @@ def test_log_init_shutdown_and_connection_cache_guards(tmp_path: Path) -> None:
             async with cache.cache_connect():
                 await cache.cache_set("unit_key", {"value": 3})
                 assert await cache.cache_get("unit_key") == {"value": 3}
-                with pytest.raises(APIException, match="cache_connect was called twice"):
+                with pytest.raises(
+                    APIException, match="cache_connect was called twice"
+                ):
                     async with cache.cache_connect():
                         pass
         else:

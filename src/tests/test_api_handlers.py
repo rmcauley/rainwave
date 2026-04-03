@@ -158,7 +158,9 @@ def test_get_json_error_response_branches() -> None:
 
     handler = _handler()
     handler.locale = _DummyLocale()
-    response = handler.get_json_error_response(500, exc_info=(RuntimeError, generic_exc, None))
+    response = handler.get_json_error_response(
+        500, exc_info=(RuntimeError, generic_exc, None)
+    )
     assert response["error"]["code"] == 500
 
 
@@ -171,7 +173,11 @@ def test_get_request_validation_data_and_validation_errors() -> None:
     assert validated.song_id == 3
 
     handler = _handler()
-    handler.request.arguments = {"song_id": [b"4"], "name": [b"B"], "tags": [b"x", b"y"]}
+    handler.request.arguments = {
+        "song_id": [b"4"],
+        "name": [b"B"],
+        "tags": [b"x", b"y"],
+    }
     assert handler._get_request_validation_data() == {
         "song_id": "4",
         "name": "B",
@@ -218,7 +224,9 @@ def test_write_output_and_pretty_print_sort_keys() -> None:
     handler = _handler()
     handler.response = {}
     handler.write = Mock()
-    with patch("api.handler_classes.rainwave_handler.time.monotonic", return_value=0.25):
+    with patch(
+        "api.handler_classes.rainwave_handler.time.monotonic", return_value=0.25
+    ):
         handler._write_rainwave_output_json()
     assert "api_info" in handler.response
     handler.write.assert_called_once()
@@ -250,13 +258,13 @@ def test_rainwave_handler_init_and_prepare_websocket_branches() -> None:
     handler = cast(
         Any,
         _DummyAPIHandler(
-        app,
-        request,
-        websocket_handling=True,
-        websocket_user=cast(Any, user),
-        websocket_locale=cast(Any, locale),
-        websocket_sid=4,
-        websocket_uuid="abc",
+            app,
+            request,
+            websocket_handling=True,
+            websocket_user=cast(Any, user),
+            websocket_locale=cast(Any, locale),
+            websocket_sid=4,
+            websocket_uuid="abc",
         ),
     )
     handler.locale = cast(Any, locale)
@@ -302,7 +310,10 @@ def test_prepare_and_prepare_http_error_branches() -> None:
     handler = _handler()
     handler.local_only = True
     handler.request.remote_ip = "8.8.8.8"
-    with patch("api.handler_classes.rainwave_handler.config.api_trusted_ip_addresses", ["127.0.0.1"]):
+    with patch(
+        "api.handler_classes.rainwave_handler.config.api_trusted_ip_addresses",
+        ["127.0.0.1"],
+    ):
         try:
             asyncio.run(handler._prepare_http())
         except APIException as exc:
@@ -317,7 +328,10 @@ def test_prepare_and_prepare_http_error_branches() -> None:
     handler.set_header = Mock()
     handler.set_cookie = Mock()
     with (
-        patch("api.handler_classes.rainwave_handler.get_browser_locale", return_value=_DummyLocale()),
+        patch(
+            "api.handler_classes.rainwave_handler.get_browser_locale",
+            return_value=_DummyLocale(),
+        ),
         patch("api.handler_classes.rainwave_handler.config.default_station", 9),
         patch("api.handler_classes.rainwave_handler.get_cursor") as get_cursor_mock,
         patch.object(handler, "rainwave_auth", new=AsyncMock(return_value=None)),
@@ -344,7 +358,9 @@ def test_prepare_and_prepare_http_error_branches() -> None:
 
     handler = _handler()
     handler.request.remote_ip = "127.0.0.1"
-    handler.get_argument = Mock(side_effect=lambda key, default=None: "999" if key == "sid" else default)
+    handler.get_argument = Mock(
+        side_effect=lambda key, default=None: "999" if key == "sid" else default
+    )
     try:
         asyncio.run(handler._prepare_http())
     except APIException as exc:
@@ -410,15 +426,17 @@ def test_permission_checks_and_rainwave_auth_branches() -> None:
 
     handler = _handler()
     handler.unlocked_listener_only = True
-    handler.permission_checks(cast(Any, _DummyUser(lock=True, lock_sid=1, lock_counter=3)), 1)
+    handler.permission_checks(
+        cast(Any, _DummyUser(lock=True, lock_sid=1, lock_counter=3)), 1
+    )
 
     handler = _handler()
     handler.unlocked_listener_only = True
     try:
         handler.permission_checks(
-                cast(Any, _DummyUser(lock=True, lock_sid=2, lock_counter=3)),
-                1,
-            )
+            cast(Any, _DummyUser(lock=True, lock_sid=2, lock_counter=3)),
+            1,
+        )
     except APIException as exc:
         assert exc.tl_key == "unlocked_only"
     else:
@@ -453,8 +471,12 @@ def test_permission_checks_and_rainwave_auth_branches() -> None:
 
     handler = _handler()
     handler.request.arguments = {"user_id": [b"2"], "key": [b"bad"]}
-    handler.get_argument = Mock(side_effect=lambda key, default=None: "2" if key == "user_id" else "bad")
-    with patch("api.handler_classes.rainwave_handler.is_valid_api_key", return_value=False):
+    handler.get_argument = Mock(
+        side_effect=lambda key, default=None: "2" if key == "user_id" else "bad"
+    )
+    with patch(
+        "api.handler_classes.rainwave_handler.is_valid_api_key", return_value=False
+    ):
         try:
             asyncio.run(handler.rainwave_auth(cursor, 1))
         except APIException as exc:
@@ -464,30 +486,52 @@ def test_permission_checks_and_rainwave_auth_branches() -> None:
 
     handler = _handler()
     handler.request.arguments = {"user_id": [b"1"], "key": [b"ok"]}
-    handler.get_argument = Mock(side_effect=lambda key, default=None: "1" if key == "user_id" else "1234567890abcdef1234567890abcdef")
+    handler.get_argument = Mock(
+        side_effect=lambda key, default=None: (
+            "1" if key == "user_id" else "1234567890abcdef1234567890abcdef"
+        )
+    )
     with (
-        patch("api.handler_classes.rainwave_handler.is_valid_api_key", return_value=True),
-        patch("api.handler_classes.rainwave_handler.get_authorized_anonymous_user", new=AsyncMock(return_value="anon")),
+        patch(
+            "api.handler_classes.rainwave_handler.is_valid_api_key", return_value=True
+        ),
+        patch(
+            "api.handler_classes.rainwave_handler.get_authorized_anonymous_user",
+            new=AsyncMock(return_value="anon"),
+        ),
     ):
         assert asyncio.run(handler.rainwave_auth(cursor, 1)) == "anon"
 
     handler = _handler()
     handler.request.arguments = {"user_id": [b"2"], "key": [b"ok"]}
-    handler.get_argument = Mock(side_effect=lambda key, default=None: "2" if key == "user_id" else "1234567890abcdef1234567890abcdef")
+    handler.get_argument = Mock(
+        side_effect=lambda key, default=None: (
+            "2" if key == "user_id" else "1234567890abcdef1234567890abcdef"
+        )
+    )
     with (
-        patch("api.handler_classes.rainwave_handler.is_valid_api_key", return_value=True),
-        patch("api.handler_classes.rainwave_handler.get_authorized_registered_user", new=AsyncMock(return_value="reg")),
+        patch(
+            "api.handler_classes.rainwave_handler.is_valid_api_key", return_value=True
+        ),
+        patch(
+            "api.handler_classes.rainwave_handler.get_authorized_registered_user",
+            new=AsyncMock(return_value="reg"),
+        ),
     ):
         assert asyncio.run(handler.rainwave_auth(cursor, 1)) == "reg"
 
     handler = _handler()
-    handler.get_cookie = Mock(side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None)
+    handler.get_cookie = Mock(
+        side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None
+    )
     cursor = AsyncMock()
     cursor.fetch_row = AsyncMock(return_value=None)
     assert asyncio.run(handler.rainwave_auth(cursor, 1)) is None
 
     handler = _handler()
-    handler.get_cookie = Mock(side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None)
+    handler.get_cookie = Mock(
+        side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None
+    )
     cursor = AsyncMock()
     cursor.fetch_row = AsyncMock(return_value={"user_id": None, "api_key": "abc"})
     try:
@@ -499,7 +543,9 @@ def test_permission_checks_and_rainwave_auth_branches() -> None:
         raise AssertionError("APIException was not raised")
 
     handler = _handler()
-    handler.get_cookie = Mock(side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None)
+    handler.get_cookie = Mock(
+        side_effect=lambda key, default=None: "sess" if key == "r4_session_id" else None
+    )
     cursor = AsyncMock()
     cursor.fetch_row = AsyncMock(return_value={"user_id": 2, "api_key": None})
     try:
@@ -521,35 +567,59 @@ def test_cookie_and_error_rendering_and_pretty_print_branches() -> None:
     handler = _handler()
     handler.content_type = "application/json"
     handler.write = Mock()
-    handler.write_error(400, exc_info=(APIException, APIException("auth_required", status_code=403), None))
+    handler.write_error(
+        400,
+        exc_info=(APIException, APIException("auth_required", status_code=403), None),
+    )
     assert handler.response["error"]["tl_key"] == "auth_required"
 
     handler = _handler()
     handler.content_type = "text/javascript"
     handler.write = Mock()
-    RainwaveHandler.write_error(handler, 400, exc_info=(APIException, APIException("auth_required", status_code=403), None))
+    RainwaveHandler.write_error(
+        handler,
+        400,
+        exc_info=(APIException, APIException("auth_required", status_code=403), None),
+    )
     handler.write.assert_called_once()
 
     handler = _handler()
     handler.content_type = "text/html"
     handler.write = Mock()
-    handler.render_string = Mock(side_effect=lambda template, title=None: f"{template}:{title}")
-    handler._write_error_html(400, exc_info=(OAuthRejectedError, OAuthRejectedError("oauth_rejected"), None))
-    assert any("oauth_rejected" in str(call.args[0]) for call in handler.write.call_args_list)
+    handler.render_string = Mock(
+        side_effect=lambda template, title=None: f"{template}:{title}"
+    )
+    handler._write_error_html(
+        400, exc_info=(OAuthRejectedError, OAuthRejectedError("oauth_rejected"), None)
+    )
+    assert any(
+        "oauth_rejected" in str(call.args[0]) for call in handler.write.call_args_list
+    )
 
     handler = _handler()
     handler.content_type = "text/html"
     handler.write = Mock()
-    handler.render_string = Mock(side_effect=lambda template, title=None: f"{template}:{title}")
-    handler._write_error_html(400, exc_info=(HTTPError, HTTPError(400, reason="Bad"), None))
-    assert any("400 - Bad" in str(call.args[0]) for call in handler.write.call_args_list)
+    handler.render_string = Mock(
+        side_effect=lambda template, title=None: f"{template}:{title}"
+    )
+    handler._write_error_html(
+        400, exc_info=(HTTPError, HTTPError(400, reason="Bad"), None)
+    )
+    assert any(
+        "400 - Bad" in str(call.args[0]) for call in handler.write.call_args_list
+    )
 
     handler = _handler()
     handler.content_type = "text/html"
     handler.write = Mock()
-    handler.render_string = Mock(side_effect=lambda template, title=None: f"{template}:{title}")
+    handler.render_string = Mock(
+        side_effect=lambda template, title=None: f"{template}:{title}"
+    )
     handler._write_error_html(400)
-    assert any("HTTP 400 - Bad Request" in str(call.args[0]) for call in handler.write.call_args_list)
+    assert any(
+        "HTTP 400 - Bad Request" in str(call.args[0])
+        for call in handler.write.call_args_list
+    )
 
     handler = _handler()
     handler.pretty_print_html = True
@@ -562,22 +632,44 @@ def test_cookie_and_error_rendering_and_pretty_print_branches() -> None:
         },
     )
     handler.write = Mock()
-    handler.render_string = Mock(side_effect=lambda template, title=None: f"{template}:{title}")
+    handler.render_string = Mock(
+        side_effect=lambda template, title=None: f"{template}:{title}"
+    )
     handler.request.arguments = {"page_start": [b"2"], "sid": [b"1"]}
-    handler.get_argument = Mock(side_effect=lambda key, default=None: {"page_start": "2", "sid": "1"}.get(key, default))
-    with patch("api.handler_classes.rainwave_handler.get_pagination_params", return_value=(2, 2)):
+    handler.get_argument = Mock(
+        side_effect=lambda key, default=None: {"page_start": "2", "sid": "1"}.get(
+            key, default
+        )
+    )
+    with patch(
+        "api.handler_classes.rainwave_handler.get_pagination_params",
+        return_value=(2, 2),
+    ):
         handler._write_rainwave_output_json_pretty_print_html()
-    assert any("Previous Page" in str(call.args[0]) for call in handler.write.call_args_list)
-    assert any("Next Page" in str(call.args[0]) for call in handler.write.call_args_list)
+    assert any(
+        "Previous Page" in str(call.args[0]) for call in handler.write.call_args_list
+    )
+    assert any(
+        "Next Page" in str(call.args[0]) for call in handler.write.call_args_list
+    )
 
     handler = _handler()
     handler.pretty_print_html = True
     handler.pagination = True
     handler.response = cast(Any, {"other": [{"title": "A"}]})
     handler.write = Mock()
-    handler.render_string = Mock(side_effect=lambda template, title=None: f"{template}:{title}")
+    handler.render_string = Mock(
+        side_effect=lambda template, title=None: f"{template}:{title}"
+    )
     handler.request.arguments = {"sid": [b"1"]}
-    handler.get_argument = Mock(side_effect=lambda key, default=None: {"sid": "1"}.get(key, default))
-    with patch("api.handler_classes.rainwave_handler.get_pagination_params", return_value=(2, 0)):
+    handler.get_argument = Mock(
+        side_effect=lambda key, default=None: {"sid": "1"}.get(key, default)
+    )
+    with patch(
+        "api.handler_classes.rainwave_handler.get_pagination_params",
+        return_value=(2, 0),
+    ):
         handler._write_rainwave_output_json_pretty_print_html()
-    assert any("Next Page" in str(call.args[0]) for call in handler.write.call_args_list)
+    assert any(
+        "Next Page" in str(call.args[0]) for call in handler.write.call_args_list
+    )

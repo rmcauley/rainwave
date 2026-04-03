@@ -61,7 +61,13 @@ class TestVote(RequestClassesTestCase):
                     listener_voted_entry = NULL
                 WHERE user_id = %s AND listener_ip = %s
                 """,
-                (1, ANONYMOUS_LISTEN_KEY, purged, ANONYMOUS_USER_ID, TUNED_IN_ANONYMOUS_IP),
+                (
+                    1,
+                    ANONYMOUS_LISTEN_KEY,
+                    purged,
+                    ANONYMOUS_USER_ID,
+                    TUNED_IN_ANONYMOUS_IP,
+                ),
             )
 
     @gen_test

@@ -181,7 +181,9 @@ def test_playlist_models_real_stack_behavior() -> None:
                     or "",
                 )
 
-                assert TEMP_PLAYLIST_SID in await inserted_sid_album.reconcile_sids(cursor)
+                assert TEMP_PLAYLIST_SID in await inserted_sid_album.reconcile_sids(
+                    cursor
+                )
                 assert (
                     await cursor.fetch_var(
                         "SELECT album_song_count FROM r4_album_sid WHERE album_id = %s AND sid = %s",
@@ -502,7 +504,12 @@ def test_album_ratings_and_song_file_upsert_real_fixture(tmp_path: Path) -> None
                 INSERT INTO r4_song_ratings (song_id, user_id, song_rating_user, song_fave)
                 VALUES (%s, %s, %s, %s)
                 """,
-                (completion_song_ids[0], completion_users["stays_incomplete"], 4.0, False),
+                (
+                    completion_song_ids[0],
+                    completion_users["stays_incomplete"],
+                    4.0,
+                    False,
+                ),
             )
 
             await rated_album.reconcile_sids(cursor)
@@ -515,7 +522,11 @@ def test_album_ratings_and_song_file_upsert_real_fixture(tmp_path: Path) -> None
                     FROM r4_album_ratings
                     WHERE album_id = %s AND sid = %s AND user_id = %s
                     """,
-                    (rated_album.id, TEMP_ALBUM_COMPLETION_SID, completion_users["complete"]),
+                    (
+                        rated_album.id,
+                        TEMP_ALBUM_COMPLETION_SID,
+                        completion_users["complete"],
+                    ),
                     var_type=bool,
                 )
                 is True
@@ -595,7 +606,11 @@ def test_album_ratings_and_song_file_upsert_real_fixture(tmp_path: Path) -> None
                     FROM r4_album_ratings
                     WHERE album_id = %s AND sid = %s AND user_id = %s
                     """,
-                    (rated_album.id, TEMP_ALBUM_COMPLETION_SID, completion_users["complete"]),
+                    (
+                        rated_album.id,
+                        TEMP_ALBUM_COMPLETION_SID,
+                        completion_users["complete"],
+                    ),
                     var_type=bool,
                 )
                 is True

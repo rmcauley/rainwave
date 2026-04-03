@@ -14,7 +14,7 @@ class APIException(HTTPError):
         translation_key: rainwave_typeddicts.TranslationKey,
         text: str | None = None,
         status_code: int = 200,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__(status_code, text, **kwargs)
         self.tl_key = translation_key

@@ -4,4 +4,3 @@ Serializer = Callable[[Any], tuple[bytes, int]]
 Deserializer = Callable[[bytes, int], Any]
 
 pickle_serde: tuple[Serializer, Deserializer]
-

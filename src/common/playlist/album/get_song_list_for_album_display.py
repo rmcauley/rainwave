@@ -37,8 +37,7 @@ async def get_songs_for_album_display(
         else sql.SQL("ORDER BY song_title")
     )
 
-    query = sql.SQL(
-        """
+    query = sql.SQL("""
         SELECT 
             r4_song_sid.song_id AS id, 
             song_length AS length, 
@@ -65,8 +64,7 @@ async def get_songs_for_album_display(
             AND r4_songs.album_id = %s 
             AND r4_song_sid.sid = %s
         {order_by}
-    """
-    ).format(requestable=requestable, order_by=order_by)
+    """).format(requestable=requestable, order_by=order_by)
 
     return await cursor.fetch_all(
         query, (user_id, album_id, sid), row_type=SongListForAlbumDisplayRow

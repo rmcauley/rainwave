@@ -424,7 +424,7 @@ class RainwaveHandler(RequestHandler, ABC):
             )
         )
 
-        (per_page, page_start) = get_pagination_params(self)
+        per_page, page_start = get_pagination_params(self)
         previous_page_link: str | None = None
         next_page_link: str | None = None
         previous_page_start = None

@@ -29,8 +29,7 @@ class AllSongsHandler(RegisteredUserAPIHandler):
                 distinct_on = "song_rating_user, album_name, song_title"
 
             self.response["all_songs"] = await cursor.fetch_all(
-                sql.SQL(
-                    """
+                sql.SQL("""
                     SELECT DISTINCT ON ({distinct_on})
                         r4_songs.song_id AS id,
                         song_title AS title,
@@ -46,8 +45,7 @@ class AllSongsHandler(RegisteredUserAPIHandler):
                     )
                     WHERE song_verified = TRUE
                     ORDER BY {order}
-                    """
-                ).format(
+                    """).format(
                     distinct_on=sql.SQL(distinct_on),
                     order=sql.SQL(order),
                 )

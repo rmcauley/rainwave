@@ -44,8 +44,7 @@ class SongForArtist(TypedDict):
 
 
 def get_select_sql_for_songs_for_artist_or_group_display() -> sql.SQL:
-    return sql.SQL(
-        """
+    return sql.SQL("""
         SELECT 
             r4_songs.song_id AS id, 
             r4_songs.song_origin_sid AS sid, 
@@ -61,15 +60,13 @@ def get_select_sql_for_songs_for_artist_or_group_display() -> sql.SQL:
             COALESCE(song_fave, FALSE) AS fave, 
             album_name, 
             r4_albums.album_id 
-        """
-    )
+        """)
 
 
 async def get_song_list_by_album_for_artist_display(
     cursor: RainwaveCursor, artist_id: int, sid: int, user_id: int
 ) -> rainwave_typeddicts.AllSongsForArtist:
-    query = get_select_sql_for_songs_for_artist_or_group_display() + sql.SQL(
-        """
+    query = get_select_sql_for_songs_for_artist_or_group_display() + sql.SQL("""
         FROM r4_song_artist 
             JOIN r4_songs USING (song_id) 
             JOIN r4_albums USING (album_id) 
@@ -78,8 +75,7 @@ async def get_song_list_by_album_for_artist_display(
             LEFT JOIN r4_song_ratings ON (r4_song_artist.song_id = r4_song_ratings.song_id AND r4_song_ratings.user_id = %s) 
         WHERE r4_song_artist.artist_id = %s AND r4_songs.song_verified = TRUE 
         ORDER BY song_exists DESC, album_name, song_title
-        """
-    )
+        """)
     query_params = (sid, sid, user_id, artist_id)
 
     to_return: rainwave_typeddicts.AllSongsForArtist = {}

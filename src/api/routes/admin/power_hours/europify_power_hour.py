@@ -14,12 +14,14 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
 from common.db.cursor import get_cursor
 from common.schedule.power_hours.duplicate_power_hour import duplicate_power_hour
 
+
 @handle_api_url("admin/europify_power_hour")
 class EuropifyPowerHour(RegisteredUserAPIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hour"
+
     admin_required = True
     sid_required = True
 

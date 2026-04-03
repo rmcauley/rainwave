@@ -1,7 +1,6 @@
 from common import config, stations
 from common.config import PublicRelayConfig
 
-
 public_relays: dict[int, list[PublicRelayConfig]] = {}
 
 # Used to generate CSP security headers for browsers

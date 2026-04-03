@@ -184,7 +184,7 @@ class SongOnStation:
         )
 
     async def update_rating(self, cursor: RainwaveCursor) -> None:
-        (rating, rating_count) = await update_song_rating(cursor, self.id)
+        rating, rating_count = await update_song_rating(cursor, self.id)
         self.data["song_rating"] = rating
         self.data["song_rating_count"] = rating_count
 

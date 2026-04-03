@@ -5,12 +5,14 @@ from api.rainwave_dto import Api4AdminSetSongCooldownPostRequest
 
 from common.db.cursor import get_cursor
 
+
 @handle_api_url("admin/set_song_cooldown")
 class SetSongCooldown(APIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "set_song_cooldown_result"
+
     admin_required = True
     description = "Sets the song cooldown multiplier and override.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
 

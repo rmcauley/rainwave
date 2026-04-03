@@ -38,8 +38,8 @@ def _attach_rating_to_song(
     album_ratings: AlbumRatings,
     song: rainwave_typeddicts.TimelineSong,
 ) -> None:
-    (rating_user, fave) = song_ratings.get(song["id"], (None, None))
-    (album_rating_user, album_fave) = album_ratings.get(
+    rating_user, fave = song_ratings.get(song["id"], (None, None))
+    album_rating_user, album_fave = album_ratings.get(
         song["albums"][0]["id"], (None, None)
     )
     song["rating_user"] = rating_user
@@ -62,7 +62,7 @@ async def get_station_info(
     if include_request_line:
         response["request_line"] = await cache_get_station(sid, "request_line")
 
-    (timeline_api, album_diff, all_station_info, user_rating_acl) = cast(
+    timeline_api, album_diff, all_station_info, user_rating_acl = cast(
         tuple[
             TimelineApiCache | None,
             rainwave_typeddicts.AlbumDiff,

@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from backend.server import BackendServer
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Rainwave song change API server.")
     parser.add_argument("--testmode", action="store_true", default=False)

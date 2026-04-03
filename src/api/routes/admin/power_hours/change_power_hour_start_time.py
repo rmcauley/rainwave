@@ -15,6 +15,7 @@ class ChangePowerHourStartTime(APIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hour"
+
     admin_required = True
 
     async def post(self):

@@ -9,10 +9,12 @@ from api.handler_classes.rainwave_handler import RainwaveHandler
 
 from common.db.cursor import get_cursor
 
+
 class CreateTestUserInput(BaseModel):
     admin: bool
     registered: bool
     perks: bool
+
 
 @handle_url(r"/test/create_user")
 class CreateTestUser(RainwaveHandler):

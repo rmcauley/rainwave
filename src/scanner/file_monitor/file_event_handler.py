@@ -25,7 +25,7 @@ class FileEventHandler(ProcessEvent):
         self,
         loop: asyncio.AbstractEventLoop,
         pevent: Any = None,
-        **kargs: dict[str, Any]
+        **kargs: dict[str, Any],
     ):
         super().__init__(pevent, **kargs)
         self._loop = loop

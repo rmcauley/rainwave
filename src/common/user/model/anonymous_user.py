@@ -97,7 +97,7 @@ class AnonymousUser(UserBase):
     async def create_anonymous_user_with_api_key(
         cursor: RainwaveCursor, sid: int, ip_address: str
     ) -> AnonymousUser:
-        (api_key, listen_key) = await generate_api_key_and_listen_key(
+        api_key, listen_key = await generate_api_key_and_listen_key(
             cursor, 1, int(timestamp()) + 86400
         )
         return AnonymousUser(
@@ -130,7 +130,7 @@ class AnonymousUser(UserBase):
         )
 
     async def refresh(self, cursor: RainwaveCursor) -> None:
-        (self.public_data, self.private_data, self.server_data) = (
+        self.public_data, self.private_data, self.server_data = (
             await AnonymousUser.get_refreshed_data(
                 cursor, self.private_data["sid"], 1, self.private_data["api_key"]
             )

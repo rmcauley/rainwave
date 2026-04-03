@@ -10,9 +10,11 @@ from common.playlist.artist.get_song_list_for_artist_display import (
     get_song_list_by_album_for_artist_display,
 )
 
+
 class ArtistDetailRow(TypedDict):
     artist_id: int
     artist_name: str
+
 
 @handle_api_url("artist")
 class ArtistHandler(APIHandler):

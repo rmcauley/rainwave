@@ -7,6 +7,7 @@ from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.helpers.paginated_requests import get_pagination_sql_limit_string
 from common.db.cursor import get_cursor
 
+
 @handle_api_url("user_recent_votes")
 class RecentlyVotedSongs(RegisteredUserAPIHandler):
     description = "Shows the user's recently voted on songs."
@@ -14,6 +15,7 @@ class RecentlyVotedSongs(RegisteredUserAPIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "user_recent_votes"
+
     login_required = True
     sid_required = True
     pagination = True
@@ -21,8 +23,7 @@ class RecentlyVotedSongs(RegisteredUserAPIHandler):
     async def post(self):
         async with get_cursor() as cursor:
             self.response["user_recent_votes"] = await cursor.fetch_all(
-                sql.SQL(
-                    """
+                sql.SQL("""
                     SELECT
                         r4_songs.song_id AS id,
                         song_title AS title,
@@ -42,12 +43,11 @@ class RecentlyVotedSongs(RegisteredUserAPIHandler):
                         AND r4_vote_history.user_id = %s
                         AND song_verified = TRUE
                     ORDER BY vote_id DESC
-                    """
-                )
-                + get_pagination_sql_limit_string(self),
+                    """) + get_pagination_sql_limit_string(self),
                 (self.sid, self.user.id),
                 row_type=rainwave_typeddicts.UserRecentVote,
             )
+
 
 @handle_api_html_url("user_recent_votes")
 class RecentlyVotedSongsHTML(RecentlyVotedSongs):

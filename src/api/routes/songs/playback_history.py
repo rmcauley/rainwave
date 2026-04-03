@@ -12,6 +12,7 @@ from psycopg import sql
 
 from common.libs.pretty_date import pretty_date
 
+
 @handle_api_url("playback_history")
 class PlaybackHistory(APIHandler):
     description = "Get the last 100 songs that played on the station."
@@ -19,6 +20,7 @@ class PlaybackHistory(APIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "playback_history"
+
     login_required = False
     sid_required = True
     pagination = True
@@ -27,8 +29,7 @@ class PlaybackHistory(APIHandler):
         async with get_cursor() as cursor:
             if not self.optional_user or self.optional_user.is_anonymous():
                 self.response["playback_history"] = await cursor.fetch_all(
-                    sql.SQL(
-                        """
+                    sql.SQL("""
                         SELECT
                             r4_song_history.song_id AS id,
                             song_title AS title,
@@ -43,16 +44,13 @@ class PlaybackHistory(APIHandler):
                         JOIN r4_albums USING (album_id)
                         WHERE r4_song_history.sid = %s
                         ORDER BY songhist_id DESC
-                        """
-                    )
-                    + get_pagination_sql_limit_string(self),
+                        """) + get_pagination_sql_limit_string(self),
                     (self.sid,),
                     row_type=rainwave_typeddicts.PlaybackHistoryEntry,
                 )
             else:
                 self.response["playback_history"] = await cursor.fetch_all(
-                    sql.SQL(
-                        """
+                    sql.SQL("""
                         SELECT
                             r4_song_history.song_id AS id,
                             song_title AS title,
@@ -72,12 +70,11 @@ class PlaybackHistory(APIHandler):
                             ON r4_song_history.song_id = r4_song_ratings.song_id AND user_id = %s
                         WHERE r4_song_history.sid = %s
                         ORDER BY songhist_id DESC
-                        """
-                    )
-                    + get_pagination_sql_limit_string(self),
+                        """) + get_pagination_sql_limit_string(self),
                     (self.optional_user.id, self.sid),
                     row_type=rainwave_typeddicts.PlaybackHistoryEntry,
                 )
+
 
 @handle_api_html_url("playback_history")
 class PlaybackHistoryHTML(PlaybackHistory):

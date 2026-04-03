@@ -12,10 +12,10 @@ from api.handler_classes.api_handler import APIHandler
 from common.db.cursor import get_cursor
 from common.playlist import object_counts
 
+
 def get_all_albums_list_sql(user_id: int | None) -> sql.Composed:
     if user_id is None or user_id == 1:
-        return sql.SQL(
-            """
+        return sql.SQL("""
             SELECT 
                 r4_albums.album_id AS id, 
                 album_name AS name, 
@@ -31,11 +31,9 @@ def get_all_albums_list_sql(user_id: int | None) -> sql.Composed:
             WHERE 
                 r4_album_sid.sid = {sid}
                 AND r4_album_sid.album_exists = TRUE 
-            """
-        ).format(sid=sql.Placeholder(name="sid"))
+            """).format(sid=sql.Placeholder(name="sid"))
     else:
-        return sql.SQL(
-            """
+        return sql.SQL("""
             SELECT 
                 r4_albums.album_id AS id, 
                 album_name AS name, 
@@ -60,10 +58,10 @@ def get_all_albums_list_sql(user_id: int | None) -> sql.Composed:
             WHERE 
                 r4_album_sid.sid = {sid} 
                 AND r4_album_sid.album_exists = TRUE 
-            """
-        ).format(
+            """).format(
             user_id=sql.Placeholder(name="user_id"), sid=sql.Placeholder(name="sid")
         )
+
 
 @handle_api_url("all_albums_paginated")
 class AllAlbumsPaginatedHandler(APIHandler):

@@ -9,12 +9,14 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
 )
 from common.db.cursor import get_cursor
 
+
 @handle_api_url("admin/add_song_to_power_hour")
 class AddSongToPowerHour(APIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hour"
+
     admin_required = True
 
     async def post(self):

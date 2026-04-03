@@ -9,7 +9,10 @@ from contextlib import asynccontextmanager
 
 from common.cache import cache
 from common.cache.station_cache import cache_get_station, cache_set_station
-from common.cache.update_user_rating_acl import get_user_rating_acl, update_user_rating_acl
+from common.cache.update_user_rating_acl import (
+    get_user_rating_acl,
+    update_user_rating_acl,
+)
 from common.db.build_insert import (
     build_insert,
     build_insert_on_conflict_do_update,
@@ -46,14 +49,26 @@ async def _ensure_cache_connection():
 
 
 async def _cleanup_temp_users(cursor: RainwaveCursor) -> None:
-    await cursor.update("DELETE FROM r4_request_history WHERE user_id >= %s", (TEMP_USER_BASE,))
-    await cursor.update("DELETE FROM r4_request_store WHERE user_id >= %s", (TEMP_USER_BASE,))
-    await cursor.update("DELETE FROM r4_request_line WHERE user_id >= %s", (TEMP_USER_BASE,))
-    await cursor.update("DELETE FROM r4_listeners WHERE user_id >= %s", (TEMP_USER_BASE,))
-    await cursor.update("DELETE FROM phpbb_users WHERE user_id >= %s", (TEMP_USER_BASE,))
+    await cursor.update(
+        "DELETE FROM r4_request_history WHERE user_id >= %s", (TEMP_USER_BASE,)
+    )
+    await cursor.update(
+        "DELETE FROM r4_request_store WHERE user_id >= %s", (TEMP_USER_BASE,)
+    )
+    await cursor.update(
+        "DELETE FROM r4_request_line WHERE user_id >= %s", (TEMP_USER_BASE,)
+    )
+    await cursor.update(
+        "DELETE FROM r4_listeners WHERE user_id >= %s", (TEMP_USER_BASE,)
+    )
+    await cursor.update(
+        "DELETE FROM phpbb_users WHERE user_id >= %s", (TEMP_USER_BASE,)
+    )
 
 
-async def _ensure_temp_user(cursor: RainwaveCursor, user_id: int, username: str) -> None:
+async def _ensure_temp_user(
+    cursor: RainwaveCursor, user_id: int, username: str
+) -> None:
     await cursor.update(
         "INSERT INTO phpbb_users (user_id, username) VALUES (%s, %s) "
         + "ON CONFLICT (user_id) DO UPDATE SET username = EXCLUDED.username",
@@ -176,7 +191,9 @@ def test_build_insert_update_helpers_execute() -> None:
                 "CREATE TEMP TABLE temp_build_helper (id INTEGER PRIMARY KEY, value TEXT)"
             )
             insert_values = {"id": 1, "value": "alpha"}
-            await cursor.update(build_insert("temp_build_helper", insert_values), insert_values)
+            await cursor.update(
+                build_insert("temp_build_helper", insert_values), insert_values
+            )
             inserted_value = await cursor.fetch_var(
                 "SELECT value FROM temp_build_helper WHERE id = 1",
                 var_type=str,
@@ -230,7 +247,9 @@ def test_request_line_and_write_back_flow() -> None:
 
             async with get_test_cursor() as cursor:
                 line = await get_request_line(cursor, 1)
-                temp_entries = [entry for entry in line if entry["user_id"] >= TEMP_USER_BASE]
+                temp_entries = [
+                    entry for entry in line if entry["user_id"] >= TEMP_USER_BASE
+                ]
                 assert [entry["user_id"] for entry in temp_entries] == [
                     user_valid,
                     user_countdown,
@@ -242,12 +261,17 @@ def test_request_line_and_write_back_flow() -> None:
                 valid_entry = temp_entries[0]
                 assert valid_entry["song"] is not None
                 assert valid_entry["song"]["id"] == song_id
-                assert valid_entry["actions_to_take"] == {"set_request_line_entry_has_had_valid_true"}
+                assert valid_entry["actions_to_take"] == {
+                    "set_request_line_entry_has_had_valid_true"
+                }
                 assert valid_entry["skip"] is False
 
                 countdown_entry = temp_entries[1]
                 assert countdown_entry["song"] is None
-                assert "update_request_line_expiry_election" in countdown_entry["actions_to_take"]
+                assert (
+                    "update_request_line_expiry_election"
+                    in countdown_entry["actions_to_take"]
+                )
                 assert countdown_entry["line_expiry_election"] is not None
                 assert countdown_entry["skip"] is False
 
@@ -257,7 +281,9 @@ def test_request_line_and_write_back_flow() -> None:
                 assert requeue_entry["skip"] is True
 
                 tuned_out_entry = temp_entries[3]
-                assert tuned_out_entry["actions_to_take"] == {"update_request_line_entry_expiry_tune_in"}
+                assert tuned_out_entry["actions_to_take"] == {
+                    "update_request_line_entry_expiry_tune_in"
+                }
                 assert tuned_out_entry["skip"] is False
 
                 expired_entry = temp_entries[4]
@@ -386,7 +412,10 @@ def test_request_expiry_times_and_sequencing_and_acl() -> None:
 
                 line = await get_request_line(cursor, 1)
                 temp_line = [entry for entry in line if entry["user_id"] in users[:5]]
-                assert await get_next_request_and_mark_as_fulfilled_if_needed(1, temp_line) is None
+                assert (
+                    await get_next_request_and_mark_as_fulfilled_if_needed(1, temp_line)
+                    is None
+                )
                 assert elections_since_last_request[1] == 1
 
                 next_request = await get_next_request_and_mark_as_fulfilled_if_needed(

@@ -7,8 +7,7 @@ from common.db.cursor import RainwaveCursor
 async def get_unrated_songs_for_user(
     cursor: RainwaveCursor, user_id: int, limit: int | None
 ) -> list[rainwave_typeddicts.UnratedSong]:
-    query = sql.SQL(
-        """
+    query = sql.SQL("""
         SELECT
             r4_songs.song_id AS id,
             song_title AS title,
@@ -23,8 +22,7 @@ async def get_unrated_songs_for_user(
             AND song_rating_user IS NULL
             AND song_origin_sid > 0
         ORDER BY album_name, song_title
-        """
-    ).format(user_id=sql.Placeholder(name="user_id"))
+        """).format(user_id=sql.Placeholder(name="user_id"))
     if limit is not None:
         query += sql.SQL("LIMIT {limit}").format(limit=sql.Placeholder(name="limit"))
     return await cursor.fetch_all(

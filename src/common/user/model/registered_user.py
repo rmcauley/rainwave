@@ -125,7 +125,7 @@ class RegisteredUser(UserBase):
         )
 
     async def refresh(self, cursor: RainwaveCursor) -> None:
-        (self.public_data, self.private_data, self.server_data) = (
+        self.public_data, self.private_data, self.server_data = (
             await RegisteredUser.get_refreshed_data(
                 cursor, self.private_data["sid"], self.id, self.private_data["api_key"]
             )

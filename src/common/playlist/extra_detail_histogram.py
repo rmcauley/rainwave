@@ -1,7 +1,6 @@
 from api import rainwave_typeddicts
 from common.ratings.rating_calculator import RatingMapReadyDict
 
-
 RatingHistogram = rainwave_typeddicts.RatingHistogram
 
 

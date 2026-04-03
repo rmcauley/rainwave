@@ -12,9 +12,11 @@ from common.playlist.album.get_song_list_for_album_display import (
     get_songs_for_album_display,
 )
 
+
 class AlbumDetailRatingRow(TypedDict):
     album_rating_user: float | None
     album_fave: bool | None
+
 
 @handle_api_url("album")
 class AlbumHandler(AuthRequiredAPIHandler):

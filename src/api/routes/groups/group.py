@@ -14,6 +14,7 @@ from common.playlist.artist.get_song_list_for_artist_display import (
 )
 from common.playlist.song_group.song_group import SongGroupRow
 
+
 @handle_api_url("group")
 class GroupHandler(APIHandler):
     description = "Get detailed information about a song group."

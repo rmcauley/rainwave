@@ -149,7 +149,9 @@ def test_make_auto_power_hours_creates_entries_on_requested_station() -> None:
                 ):
                     assert north_america_row["sched_start"] is not None
                     assert reprisal_row["sched_start"] is not None
-                    assert reprisal_row["sched_start"] > north_america_row["sched_start"]
+                    assert (
+                        reprisal_row["sched_start"] > north_america_row["sched_start"]
+                    )
 
                 one_up_sids = await cursor.fetch_list(
                     """

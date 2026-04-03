@@ -39,13 +39,11 @@ class SubmitFaveAllSongs(RegisteredUserAPIHandler):
             insert_rows = [(song_id, self.user.id, input.fave) for song_id in song_ids]
 
             await cursor.update(
-                sql.SQL(
-                    """
+                sql.SQL("""
                 INSERT INTO r4_song_ratings (song_id, user_id, song_fave) VALUES {values}
                 ON CONFLICT (user_id, song_id) DO UPDATE
                 SET song_fave = EXCLUDED.song_fave
-                """
-                ).format(
+                """).format(
                     values=sql.SQL(", ").join(sql.SQL("(%s, %s, %s)") for _ in song_ids)
                 ),
                 [v for row in insert_rows for v in row],

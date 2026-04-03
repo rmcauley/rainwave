@@ -33,7 +33,7 @@ def get_pagination_sql_limit_string(
     default_per_page: int = DEFAULT_PAGE_LIMIT,
     max_per_page: int = MAX_PAGE_LIMIT,
 ) -> sql.Composed:
-    (limit, offset) = get_pagination_params(request, default_per_page, max_per_page)
+    limit, offset = get_pagination_params(request, default_per_page, max_per_page)
 
     return sql.SQL(" LIMIT {limit} OFFSET {offset}").format(
         limit=sql.Literal(limit),

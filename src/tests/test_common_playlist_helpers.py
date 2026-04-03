@@ -96,24 +96,20 @@ def test_playlist_helper_queries_and_sid_reconciliation(tmp_path: Path) -> None:
                         == 0
                     )
 
-                await cursor.update(
-                    """
+                await cursor.update("""
                     UPDATE r4_song_sid
                     SET song_elec_blocked = TRUE,
                         song_elec_blocked_num = 9,
                         song_cool = TRUE,
                         song_cool_end = 12345
                     WHERE sid = 1
-                    """
-                )
-                await cursor.update(
-                    """
+                    """)
+                await cursor.update("""
                     UPDATE r4_album_sid
                     SET album_cool = TRUE,
                         album_cool_lowest = 7
                     WHERE sid = 1
-                    """
-                )
+                    """)
                 await remove_all_locks(cursor, 1)
                 assert (
                     await cursor.fetch_var(

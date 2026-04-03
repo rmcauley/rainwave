@@ -10,6 +10,6 @@ async def ensure_api_key(cursor: RainwaveCursor, user_id: int) -> str:
     )
 
     if not key:
-        (key, _listen_key) = await generate_api_key_and_listen_key(cursor, user_id)
+        key, _listen_key = await generate_api_key_and_listen_key(cursor, user_id)
 
     return key

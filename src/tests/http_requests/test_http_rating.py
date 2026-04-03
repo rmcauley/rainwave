@@ -3,7 +3,12 @@ from typing import Any
 import pytest
 from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 
-from tests.http_requests.base import AuthData, FormData, FormValue, RequestClassesTestCase
+from tests.http_requests.base import (
+    AuthData,
+    FormData,
+    FormValue,
+    RequestClassesTestCase,
+)
 from tests.seed_data import (
     ANONYMOUS_API_KEY,
     ANONYMOUS_USER_ID,

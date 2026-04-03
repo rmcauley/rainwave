@@ -39,13 +39,11 @@ class TipJarHTML(HtmlHandler):
         self.write("<li>%s</li></ul>" % self.locale.translate("tip_jar_instruction_3"))
         self.write("<p>%s</p>" % self.locale.translate("tip_jar_opener_end"))
 
-        self.write(
-            """
+        self.write("""
             <div>
                 <a href='https://paypal.me/Rainwave/5USD'>Donate at https://paypal.me/Rainwave</a>
             </div>
-            """
-        )
+            """)
 
         async with get_cursor() as cursor:
             summary = await cursor.fetch_row(

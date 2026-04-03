@@ -6,12 +6,14 @@ from api.exceptions import APIException
 from api.rainwave_dto import Api4AdminDeletePowerHourPostRequest
 from common.db.cursor import get_cursor
 
+
 @handle_api_url("admin/delete_power_hour")
 class DeletePowerHour(APIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hour"
+
     admin_required = True
     sid_required = False
 

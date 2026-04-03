@@ -37,8 +37,7 @@ class AlbumOnStationFullRow(TypedDict):
     album_updated_at: datetime
 
 
-select_sql = sql.SQL(
-    """
+select_sql = sql.SQL("""
     SELECT 
         r4_albums.album_id,
         r4_albums.album_name,
@@ -64,8 +63,7 @@ select_sql = sql.SQL(
         r4_album_sid.album_updated_at
     FROM r4_album_sid 
         JOIN r4_albums USING (album_id)
-    """
-)
+    """)
 
 
 async def get_album_on_station(

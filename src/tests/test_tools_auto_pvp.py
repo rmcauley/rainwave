@@ -26,16 +26,16 @@ class AutoPvpScheduleRow(TypedDict):
 
 async def _delete_schedule_by_start(sched_start: int) -> None:
     async with get_test_cursor() as cursor:
-        await cursor.update("DELETE FROM r4_schedule WHERE sched_start = %s", (sched_start,))
+        await cursor.update(
+            "DELETE FROM r4_schedule WHERE sched_start = %s", (sched_start,)
+        )
 
 
 def test_get_auto_pvp_schedule_entry_covers_normal_special_and_skip_paths() -> None:
     pacific = timezone("US/Pacific")
 
     monday = pacific.localize(datetime(2026, 4, 6, 10, 0, 0))
-    monday_entry = get_auto_pvp_schedule_entry(
-        monday, station_for_day_of_week_america
-    )
+    monday_entry = get_auto_pvp_schedule_entry(monday, station_for_day_of_week_america)
     assert monday_entry is not None
     assert monday_entry["sid"] == 4
     assert monday_entry["sched_name"] == "PvP Hour"
@@ -45,9 +45,7 @@ def test_get_auto_pvp_schedule_entry_covers_normal_special_and_skip_paths() -> N
     assert monday_entry["sched_is_auto_ph"] is False
 
     sunday = pacific.localize(datetime(2026, 4, 12, 10, 0, 0))
-    chill_entry = get_auto_pvp_schedule_entry(
-        sunday, station_for_day_of_week_america
-    )
+    chill_entry = get_auto_pvp_schedule_entry(sunday, station_for_day_of_week_america)
     assert chill_entry is not None
     assert chill_entry["sid"] == 6
     assert chill_entry["sched_name"] == "Chill-Off Hour"

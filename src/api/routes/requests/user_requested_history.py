@@ -6,6 +6,7 @@ from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from psycopg import sql
 from common.db.cursor import get_cursor
 
+
 @handle_api_url("user_requested_history")
 class AllRequestedSongs(RegisteredUserAPIHandler):
     description = "Shows the user's completed requests."
@@ -13,6 +14,7 @@ class AllRequestedSongs(RegisteredUserAPIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "user_requested_history"
+
     login_required = True
     sid_required = True
     pagination = True
@@ -20,8 +22,7 @@ class AllRequestedSongs(RegisteredUserAPIHandler):
     async def post(self):
         async with get_cursor() as cursor:
             self.response["user_requested_history"] = await cursor.fetch_all(
-                sql.SQL(
-                    """
+                sql.SQL("""
                     SELECT
                         r4_songs.song_id AS id,
                         song_title AS title,
@@ -41,12 +42,11 @@ class AllRequestedSongs(RegisteredUserAPIHandler):
                         AND r4_request_history.user_id = %s
                         AND song_verified = TRUE
                     ORDER BY request_fulfilled_at DESC
-                    """
-                )
-                + get_pagination_sql_limit_string(self),
+                    """) + get_pagination_sql_limit_string(self),
                 (self.sid, self.user.id),
                 row_type=rainwave_typeddicts.UserRecentVote,
             )
+
 
 @handle_api_html_url("user_requested_history")
 class AllRequestedSongsHTML(AllRequestedSongs):

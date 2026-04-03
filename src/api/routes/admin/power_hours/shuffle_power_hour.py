@@ -9,12 +9,14 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
     get_power_hour_by_id,
 )
 
+
 @handle_api_url("admin/shuffle_power_hour")
 class ShufflePowerHour(APIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hour"
+
     admin_required = True
     sid_required = True
 

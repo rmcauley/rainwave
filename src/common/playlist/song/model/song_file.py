@@ -156,13 +156,11 @@ class SongFile:
             for artist_order, artist in enumerate(artists)
         ]
         await cursor.update(
-                sql.SQL(
-                    """
+            sql.SQL("""
                     INSERT INTO r4_song_artist (song_id, artist_id, artist_order) VALUES {values}
                     ON CONFLICT (artist_id, song_id)
                     DO UPDATE SET artist_order = EXCLUDED.artist_order
-                    """
-                ).format(
+                    """).format(
                 values=sql.SQL(", ").join(
                     sql.SQL("(%s, %s, %s)") for _ in artist_insert_rows
                 )
@@ -177,12 +175,10 @@ class SongFile:
         group_insert_rows = [(song_row["song_id"], group.id) for group in groups]
         if group_insert_rows:
             await cursor.update(
-                sql.SQL(
-                    """
+                sql.SQL("""
                     INSERT INTO r4_song_group (song_id, group_id) VALUES {values}
                     ON CONFLICT DO NOTHING
-                    """
-                ).format(
+                    """).format(
                     values=sql.SQL(", ").join(
                         sql.SQL("(%s, %s)") for _ in group_insert_rows
                     )

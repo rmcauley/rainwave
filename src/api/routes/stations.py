@@ -8,6 +8,7 @@ from api.helpers import public_relays
 from api.routes.tune_in import get_round_robin_url
 from common import stations
 
+
 @handle_api_url("stations")
 class StationsRequest(APIHandler):
     description = "Get information about all available stations."
@@ -16,6 +17,7 @@ class StationsRequest(APIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "stations"
+
     sid_required = False
     allow_cors = True
 

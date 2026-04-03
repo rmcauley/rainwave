@@ -61,7 +61,9 @@ async def _noop_async_context():
 
 def test_rw_backend_main_default_mode() -> None:
     with (
-        patch("argparse.ArgumentParser.parse_args", return_value=Namespace(testmode=False)),
+        patch(
+            "argparse.ArgumentParser.parse_args", return_value=Namespace(testmode=False)
+        ),
         patch("rw_backend.load_dotenv") as load_dotenv,
         patch("common.log.init") as log_init,
         patch("rw_backend.BackendServer.start") as backend_start,
@@ -80,7 +82,9 @@ def test_rw_backend_main_default_mode() -> None:
 
 def test_rw_backend_main_testmode() -> None:
     with (
-        patch("argparse.ArgumentParser.parse_args", return_value=Namespace(testmode=True)),
+        patch(
+            "argparse.ArgumentParser.parse_args", return_value=Namespace(testmode=True)
+        ),
         patch("rw_backend.load_dotenv") as load_dotenv,
         patch("common.log.init") as log_init,
         patch("rw_backend.BackendServer.start") as backend_start,

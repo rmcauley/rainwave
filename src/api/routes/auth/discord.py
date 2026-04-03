@@ -167,8 +167,7 @@ class DiscordAuth(OAuthHandler, OAuth2Mixin):
                     f"Updating exising user {user_id} from Discord {discord_user_id}",
                 )
                 await cursor.update(
-                    (
-                        """
+                    ("""
                         UPDATE phpbb_users
                         SET discord_user_id = %s,
                             radio_username = %s,
@@ -178,8 +177,7 @@ class DiscordAuth(OAuthHandler, OAuth2Mixin):
                             user_email = '',
                             user_email_hash = 0
                         WHERE user_id = %s
-                        """
-                    ),
+                        """),
                     (
                         discord_user_id,
                         radio_username,
@@ -193,8 +191,7 @@ class DiscordAuth(OAuthHandler, OAuth2Mixin):
                     "discord", f"Creating new user from Discord {discord_user_id}"
                 )
                 user_id = await cursor.fetch_guaranteed(
-                    (
-                        """
+                    ("""
                         INSERT INTO phpbb_users (
                             username,
                             username_clean,
@@ -205,8 +202,7 @@ class DiscordAuth(OAuthHandler, OAuth2Mixin):
                         )
                         VALUES (%s , %s, %s , %s , %s , %s)
                         RETURNING user_id
-                        """
-                    ),
+                        """),
                     (
                         username,
                         username,

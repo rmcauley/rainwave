@@ -7,12 +7,14 @@ from api.handler_classes.api_handler import APIHandler
 
 from common.db.cursor import get_cursor
 
+
 @handle_api_url("admin/power_hours")
 class GetPowerHours(APIHandler):
 
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hours"
+
     admin_required = True
     sid_required = False
 

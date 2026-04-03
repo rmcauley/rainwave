@@ -6,6 +6,7 @@ from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from common.db.cursor import get_cursor
 from common.ratings.set_song_rating import set_song_rating
 
+
 @handle_api_url("clear_rating")
 class ClearRating(RegisteredUserAPIHandler):
     sid_required = True
@@ -14,6 +15,7 @@ class ClearRating(RegisteredUserAPIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "rate_result"
+
     tunein_required = False
     unlocked_listener_only = False
     sync_across_sessions = True

@@ -5,6 +5,7 @@ from api.helpers.paginated_requests import get_pagination_params
 from common.db.cursor import get_cursor
 from common.user.get_unrated_songs_for_user import get_unrated_songs_for_user
 
+
 @handle_api_url("unrated_songs")
 class UnratedSongsHandler(RegisteredUserAPIHandler):
     description = "Get all of a user's unrated songs."
@@ -12,6 +13,7 @@ class UnratedSongsHandler(RegisteredUserAPIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "unrated_songs"
+
     login_required = True
     pagination = True
 
@@ -21,6 +23,7 @@ class UnratedSongsHandler(RegisteredUserAPIHandler):
             self.response["unrated_songs"] = await get_unrated_songs_for_user(
                 cursor, self.user.id, limit
             )
+
 
 @handle_api_html_url("unrated_songs")
 class UnratedSongsHTML(UnratedSongsHandler):

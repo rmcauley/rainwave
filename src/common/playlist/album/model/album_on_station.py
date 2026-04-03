@@ -290,7 +290,7 @@ class AlbumOnStation:
                 (sid, self.album_id),
                 row_type=RatingMapReadyDict,
             )
-            (rating, rating_count) = rating_calculator(ratings)
+            rating, rating_count = rating_calculator(ratings)
             log.debug(
                 "song_rating",
                 "%s album ratings for %s (%s)"

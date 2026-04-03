@@ -84,7 +84,9 @@ class TestAdminPowerHours(RequestClassesTestCase):
 
         response = await self.post_form("/api4/admin/power_hours", self._auth_data())
         power_hours = self.payload(response)["admin_power_hours"]
-        assert any(int(power_hour["sched_id"]) == sched_id for power_hour in power_hours)
+        assert any(
+            int(power_hour["sched_id"]) == sched_id for power_hour in power_hours
+        )
 
         response = await self.post_form(
             "/api4/admin/delete_power_hour",
@@ -125,9 +127,7 @@ class TestAdminPowerHours(RequestClassesTestCase):
 
         response = await self.post_form(
             "/api4/admin/order_power_hour_songs",
-            self._auth_data(
-                sched_id=sched_id, order=f"{second_one_up_id},{one_up_id}"
-            ),
+            self._auth_data(sched_id=sched_id, order=f"{second_one_up_id},{one_up_id}"),
         )
         payload = self.payload(response)
         songs = self._songs(payload["admin_power_hour"])

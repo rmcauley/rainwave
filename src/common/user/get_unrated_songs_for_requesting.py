@@ -16,8 +16,7 @@ class UnratedAlbumsOnCooldownRow(TypedDict):
     is_blocked: bool
 
 
-with_request_albums_sql = sql.SQL(
-    """
+with_request_albums_sql = sql.SQL("""
     WITH requested_albums AS (
         SELECT r4_songs.album_id 
         FROM r4_request_store 
@@ -28,8 +27,7 @@ with_request_albums_sql = sql.SQL(
             JOIN r4_songs ON (r4_songs.song_id = r4_request_store.song_id) 
         WHERE user_id = {user_id}
     )
-    """
-).format(user_id=sql.Placeholder(name="user_id"))
+    """).format(user_id=sql.Placeholder(name="user_id"))
 
 
 async def get_unrated_songs_for_requesting(
@@ -39,8 +37,7 @@ async def get_unrated_songs_for_requesting(
     unrated: list[int] = []
     for row in await cursor.fetch_all(
         with_request_albums_sql
-        + sql.SQL(
-            """
+        + sql.SQL("""
             SELECT
                 FIRST(r4_song_sid.song_id ORDER BY random()) AS song_id,
                 COUNT(r4_song_sid.song_id) AS unrated_count,
@@ -63,8 +60,7 @@ async def get_unrated_songs_for_requesting(
             GROUP BY r4_songs.album_id
             ORDER BY unrated_count DESC
             LIMIT {limit}
-            """
-        ).format(
+            """).format(
             user_id=sql.Placeholder(name="user_id"),
             sid=sql.Placeholder(name="sid"),
             limit=sql.Placeholder(name="limit"),
@@ -84,8 +80,7 @@ async def get_unrated_songs_on_cooldown_for_requesting(
     unrated: list[int] = []
     for album_row in await cursor.fetch_all(
         with_request_albums_sql
-        + sql.SQL(
-            """
+        + sql.SQL("""
             SELECT
                 r4_songs.album_id,
                 MIN(song_cool_end) AS min_song_cool_end,
@@ -108,8 +103,7 @@ async def get_unrated_songs_on_cooldown_for_requesting(
             ORDER BY is_blocked DESC,
                 MIN(song_cool_end)
             LIMIT {limit}
-            """
-        ).format(
+            """).format(
             user_id=sql.Placeholder(name="user_id"),
             sid=sql.Placeholder(name="sid"),
             limit=sql.Placeholder(name="limit"),

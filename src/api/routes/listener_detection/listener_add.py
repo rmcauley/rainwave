@@ -40,10 +40,8 @@ class AddListener(IcecastHandler):
                     "ip": self.get_argument("ip"),
                 }
             )
-            (_mount, user_id, listen_key, listener_ip) = parse_icecast_mount(
-                input.mount
-            )
-        except (pydantic.ValidationError, InvalidIcecastMount):
+            _mount, user_id, listen_key, listener_ip = parse_icecast_mount(input.mount)
+        except pydantic.ValidationError, InvalidIcecastMount:
             self.write("Invalid Icecast request")
             return
 

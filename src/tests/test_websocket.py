@@ -85,7 +85,9 @@ class TestWebsocket(RequestClassesTestCase):
         connection.write_message(
             json.dumps({"action": "auth", "user_id": user_id, "key": key})
         )
-        message = await self._wait_for_message(connection, lambda payload: "wsok" in payload)
+        message = await self._wait_for_message(
+            connection, lambda payload: "wsok" in payload
+        )
         assert message["wsok"] is True
 
     async def _first_election_entry(self) -> int:
@@ -171,7 +173,9 @@ class TestWebsocket(RequestClassesTestCase):
                     }
                 )
             )
-            message = await self._wait_for_message(connection, lambda payload: "wsok" in payload)
+            message = await self._wait_for_message(
+                connection, lambda payload: "wsok" in payload
+            )
             assert message["wsok"] is True
             assert message["message_id"]["message_id"] == 7
         finally:
@@ -187,9 +191,7 @@ class TestWebsocket(RequestClassesTestCase):
                 key=TUNED_IN_LOGGED_IN_API_KEY,
             )
 
-            connection.write_message(
-                json.dumps({"action": "ping", "message_id": 123})
-            )
+            connection.write_message(json.dumps({"action": "ping", "message_id": 123}))
 
             message = await self._wait_for_message(
                 connection, lambda payload: "pong" in payload, timeout=5.0
@@ -231,7 +233,9 @@ class TestWebsocket(RequestClassesTestCase):
             connection.close()
 
     @gen_test(timeout=20)
-    async def test_websocket_receives_station_update_after_backend_advance(self) -> None:
+    async def test_websocket_receives_station_update_after_backend_advance(
+        self,
+    ) -> None:
         connection = await self._connect_websocket()
         try:
             await self._auth_websocket(

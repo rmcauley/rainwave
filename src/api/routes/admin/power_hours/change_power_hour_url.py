@@ -16,6 +16,7 @@ class ChangePowerHourUrl(APIHandler):
     @property
     def return_name(self) -> RainwaveResponseKey:
         return "admin_power_hour"
+
     admin_required = True
     sid_required = False
 

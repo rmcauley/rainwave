@@ -1,7 +1,6 @@
 from typing import cast
 from common.cache.station_cache import cache_get_station
 
-
 RequestUserPositions = dict[int, int]
 
 

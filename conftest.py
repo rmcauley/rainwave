@@ -221,9 +221,7 @@ def _start_test_backend_server() -> None:
 
     env = os.environ.copy()
     env["RW_TEST_BACKEND_PORT"] = str(_get_test_backend_port())
-    env["RW_TEST_BACKEND_BASE_URL"] = (
-        f"http://127.0.0.1:{_get_test_backend_port() + 1}"
-    )
+    env["RW_TEST_BACKEND_BASE_URL"] = f"http://127.0.0.1:{_get_test_backend_port() + 1}"
     backend_server_log_path = Path("/tmp") / "rainwave-test-backend-server.log"
 
     _progress(f"starting backend server on port {_get_test_backend_port() + 1}")

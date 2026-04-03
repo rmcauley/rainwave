@@ -20,8 +20,7 @@ async def get_favorited_songs_for_requesting(
     favorited: list[int] = []
     for row in await cursor.fetch_all(
         with_request_albums_sql
-        + sql.SQL(
-            """
+        + sql.SQL("""
             SELECT
                 FIRST(r4_song_ratings.song_id ORDER BY song_fave DESC NULLS LAST, random()) AS song_id,
                 r4_songs.album_id,
@@ -47,8 +46,7 @@ async def get_favorited_songs_for_requesting(
             GROUP BY r4_songs.album_id
             ORDER BY song_fave DESC NULLS LAST, random()
             LIMIT {limit}
-            """
-        ).format(
+            """).format(
             user_id=sql.Placeholder(name="user_id"),
             sid=sql.Placeholder(name="sid"),
             limit=sql.Placeholder(name="limit"),
