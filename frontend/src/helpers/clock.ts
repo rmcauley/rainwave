@@ -1,8 +1,8 @@
-import { api } from '../../../api';
+import { api } from '../rainwaveApi';
 
-import type { RainwaveResponseTypes } from '../../../api/responseTypes';
+import type { RainwaveSchemas } from '../rainwaveApi/types';
 
-function calculateTimeDiff(json: RainwaveResponseTypes['api_info']): number {
+function calculateTimeDiff(json: RainwaveSchemas['api_info']): number {
   return json.time - Math.round(new Date().getTime() / 1000) + 2;
 }
 
@@ -13,7 +13,7 @@ function getServerTime(): number {
   return Math.round(new Date().getTime() / 1000) + timeDiff;
 }
 
-function resync(json: RainwaveResponseTypes['api_info']): void {
+function resync(json: RainwaveSchemas['api_info']): void {
   timeDiff = calculateTimeDiff(json);
 }
 

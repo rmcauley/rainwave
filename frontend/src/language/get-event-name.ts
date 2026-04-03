@@ -3,20 +3,20 @@ import { $l } from '.';
 import { translation } from './translations';
 
 import type { RainwaveTranslationKey } from './translations';
-import type { RainwaveEvent } from '../../../api/types';
+import type { TimelineEntry } from '../rainwaveApi/types';
 
-function getEventName(event: RainwaveEvent): string {
+function getTimelineEntryName(timelineEntry: TimelineEntry): string {
   if (
-    event.type != 'Election' &&
-    event.name &&
-    'event_naming__' + event.type.toLowerCase() in translation
+    timelineEntry.type != 'Election' &&
+    timelineEntry.name &&
+    'event_naming__' + timelineEntry.type.toLowerCase() in translation
   ) {
-    return $l(('event_naming__' + event.type.toLowerCase()) as RainwaveTranslationKey, {
-      name: event.name,
+    return $l(('event_naming__' + timelineEntry.type.toLowerCase()) as RainwaveTranslationKey, {
+      name: timelineEntry.name,
     });
   }
 
-  return event.name || event.type;
+  return timelineEntry.name || timelineEntry.type;
 }
 
-export { getEventName };
+export { getTimelineEntryName };

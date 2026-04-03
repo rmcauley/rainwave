@@ -25,5 +25,5 @@
       { "name": "typescript-plugin-css-modules" }
     ]
   },
-  "include": ["src", "../lang", "../api", "src/frontend_sdk"]
+  "include": ["src", "../lang"]
 }

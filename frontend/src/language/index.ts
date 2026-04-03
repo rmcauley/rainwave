@@ -76,6 +76,4 @@ function $l(
   return text;
 }
 
-window.$l = $l;
-
 export { $l };

@@ -1,4 +1,4 @@
-import type { paths } from './rainwave-openapi';
+import type { components, paths } from './rainwave-openapi';
 
 type JsonBody<T> = T extends { requestBody: { content: { 'application/json': infer B } } }
   ? B
@@ -24,4 +24,36 @@ type OperationForAction<A extends RainwaveAction> = paths[PathForAction<A>]['pos
 type RainwaveParams<A extends RainwaveAction> = JsonBody<OperationForAction<A>>;
 type RainwaveResponse<A extends RainwaveAction> = JsonResponse<OperationForAction<A>>;
 
-export type { RainwaveAction, RainwaveParams, RainwaveResponse };
+type TimelineEntry = components['schemas']['_timeline_entry'];
+type RainwaveSchemas = components['schemas'];
+
+interface RainwaveBootstrap {
+  all_stations_info: RainwaveSchemas['all_stations_info'];
+  already_voted: RainwaveSchemas['already_voted'];
+  api_info: RainwaveSchemas['api_info'];
+  build_version: RainwaveSchemas['build_version'];
+  cookie_domain: RainwaveSchemas['cookie_domain'];
+  live_voting: RainwaveSchemas['live_voting'];
+  locale: RainwaveSchemas['locale'];
+  locales: RainwaveSchemas['locales'];
+  mobile: boolean;
+  relays: RainwaveSchemas['relays'];
+  request_line: RainwaveSchemas['request_line'];
+  requests: RainwaveSchemas['requests'];
+  sched_current: RainwaveSchemas['sched_current'];
+  sched_history: RainwaveSchemas['sched_history'];
+  sched_next: RainwaveSchemas['sched_next'];
+  station_list: RainwaveSchemas['station_list'];
+  stream_filename: RainwaveSchemas['stream_filename'];
+  user: RainwaveSchemas['user'] & { api_key: string };
+  websocket_host: RainwaveSchemas['websocket_host'];
+}
+
+export type {
+  RainwaveAction,
+  RainwaveParams,
+  RainwaveResponse,
+  TimelineEntry,
+  RainwaveSchemas,
+  RainwaveBootstrap,
+};

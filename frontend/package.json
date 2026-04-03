@@ -2,6 +2,7 @@
   "name": "rainwave",
   "version": "5.0.0",
   "description": "rainwave.cc",
+  "private": true,
   "scripts": {
     "prepare": "husky",
     "test": "echo \"Error: no test specified\" && exit 1",

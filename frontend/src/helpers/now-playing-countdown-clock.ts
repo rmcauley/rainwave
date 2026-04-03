@@ -1,5 +1,5 @@
-import { api } from '../../../api';
 import { preferences } from '../preferences';
+import { api } from '../rainwaveApi';
 
 import { getServerTime } from './clock';
 import { formatRating, getMinuteClock } from './formatting';
