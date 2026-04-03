@@ -18,17 +18,20 @@ def parse_node(
     js_variable_count: int,
 ) -> ParseNodeResults:
     if node.tag == "if":
-        result = parse_if_node(node, append_to_variable_name, js_variable_count)
+        results = parse_if_node(node, append_to_variable_name, js_variable_count)
     elif node.tag == "else":
-        result = parse_else_node(node, append_to_variable_name, js_variable_count)
+        results = parse_else_node(node, append_to_variable_name, js_variable_count)
     elif node.tag == "for":
-        result = parse_for_node(node, append_to_variable_name, js_variable_count)
+        results = parse_for_node(node, append_to_variable_name, js_variable_count)
     elif node.tag == "template":
-        result = parse_template_node(node, append_to_variable_name, js_variable_count)
+        results = parse_template_node(node, append_to_variable_name, js_variable_count)
     else:
-        return parse_html_node(node, append_to_variable_name, js_variable_count)
+        results = parse_html_node(node, append_to_variable_name, js_variable_count)
 
-    return result
+    if "$l(" in results.buffer:
+        results.imports.add("$l")
+
+    return results
 
 
 def parse_if_node(
@@ -50,7 +53,10 @@ def parse_if_node(
     buffer += "}\n"
 
     return ParseNodeResults(
-        buffer=buffer, binds=walked.binds, js_variable_count=walked.js_variable_count
+        buffer=buffer,
+        binds=walked.binds,
+        js_variable_count=walked.js_variable_count,
+        imports=walked.imports,
     )
 
 
@@ -66,7 +72,10 @@ def parse_else_node(
     buffer += "}\n"
 
     return ParseNodeResults(
-        buffer=buffer, binds=walked.binds, js_variable_count=walked.js_variable_count
+        buffer=buffer,
+        binds=walked.binds,
+        js_variable_count=walked.js_variable_count,
+        imports=walked.imports,
     )
 
 
@@ -108,7 +117,10 @@ def parse_for_node(
         buffer += "});\n"
 
     return ParseNodeResults(
-        buffer=buffer, binds=binds, js_variable_count=walked.js_variable_count
+        buffer=buffer,
+        binds=binds,
+        js_variable_count=walked.js_variable_count,
+        imports=walked.imports,
     )
 
 
@@ -140,7 +152,10 @@ def parse_template_node(
         buffer += f"{append_to_variable_name}.appendChild({use_attr}(context).$root);\n"
 
     return ParseNodeResults(
-        buffer=buffer, binds=binds, js_variable_count=js_variable_count
+        buffer=buffer,
+        binds=binds,
+        js_variable_count=js_variable_count,
+        imports={use_attr},
     )
 
 
@@ -154,17 +169,17 @@ def parse_html_node(
         tag = tag.decode()
     elif not isinstance(tag, str):
         return ParseNodeResults(
-            buffer="",
-            binds={},
-            js_variable_count=js_variable_count,
+            buffer="", binds={}, js_variable_count=js_variable_count, imports=set()
         )
 
     buffer = ""
     binds: dict[str, str] = {}
     js_variable_count += 1
     var_name = js_variable_name(js_variable_count)
+    imports: set[str] = set()
 
     if node.tag == "svg":
+        imports.add("svg")
         svg_use = node.attrib.get("use")
         if svg_use:
             buffer += f"const {var_name} = _svg('{svg_use}');\n"
@@ -204,6 +219,7 @@ def parse_html_node(
         buffer=buffer + walked.buffer,
         binds=binds,
         js_variable_count=walked.js_variable_count,
+        imports=imports.union(walked.imports),
     )
 
 
@@ -234,7 +250,7 @@ def walk_nodes(
     node: HtmlElement, append_to_variable_name: str, js_variable_count: int
 ) -> ParseNodeResults:
     walk_result = ParseNodeResults(
-        buffer="", binds={}, js_variable_count=js_variable_count
+        buffer="", binds={}, js_variable_count=js_variable_count, imports=set()
     )
     previous_child_tag: str | None = None
     for child in node:
@@ -250,6 +266,7 @@ def walk_nodes(
         walk_result.buffer += child_result.buffer
         walk_result.binds.update(child_result.binds)
         walk_result.js_variable_count = child_result.js_variable_count
+        walk_result.imports = walk_result.imports.union(child_result.imports)
         previous_child_tag = child.tag if isinstance(child.tag, str) else None
     return walk_result
 

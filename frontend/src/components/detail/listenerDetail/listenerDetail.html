@@ -7,9 +7,9 @@
     <if condition="rank">
       <span style="color: #{{ colour }}; padding-right: 5px;"> {{ rank }}. </span>
     </if>
-    <span> {{ $l("registered_in_year", { 'year': _c.regdate }) }} </span>
+    <span> {{ $l("registered_in_year", { 'year': context.regdate }) }} </span>
   </div>
-  <if condition="^_c.user_id == User.id">
+  <if condition="^context.user_id == User.id">
     <div>{{ $l("view_your") }}</div>
     <div style="padding-left: 10px">
       <a class="obvious" target="_blank" href="/pages/user_recent_votes">
@@ -27,20 +27,20 @@
   </if>
 </div>
 
-<if condition="^_c.top_albums.length">
+<if condition="^context.top_albums.length">
   <h2>{{ $l("top_rated_albums") }}</h2>
   <for each="top_albums" bind="top_albums">
     <div class="row">
       <template use="rating" />
       <!--<div class="rating_site">
-				{{ ^Formatting.rating(_c.rating_site) }}
+				{{ ^Formatting.rating(context.rating_site) }}
 			</div>-->
       <div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
     </div>
   </for>
 </if>
 
-<if condition="^_c.top_request_albums">
+<if condition="^context.top_request_albums">
   <h2>{{ $l("top_requested_albums") }}</h2>
   <for each="top_request_albums" bind="top_request_albums">
     <div class="row">

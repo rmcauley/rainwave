@@ -1,17 +1,17 @@
 <div class="song_detail" bind="details">
-  <if condition="^_c.artists">
-    <div class="{{ ^'full_artists ' + ((_c.artists.length > 1) ? 'multi_artist' : '') }}">
+  <if condition="^context.artists">
+    <div class="{{ ^'full_artists ' + ((context.artists.length > 1) ? 'multi_artist' : '') }}">
       <span
-        >{{ ^($l_has("Artists_pluralized") ? $l("Artists_pluralized", { "count": _c.artists.length
-        }) : $l("Artists")) + ": " }}</span
+        >{{ ^($l_has("Artists_pluralized") ? $l("Artists_pluralized", { "count":
+        context.artists.length }) : $l("Artists")) + ": " }}</span
       >
       <for each="artists" bind="artists">
         <a href="#!/artist/{{ id }}">{{ name }}</a>
       </for>
     </div>
   </if>
-  <if condition="^_c.groups && _c.groups.length && !MOBILE">
-    <div class="{{ ^'full_groups ' + ((_c.groups.length > 1) ? 'multi_group' : '') }}">
+  <if condition="^context.groups && context.groups.length && !MOBILE">
+    <div class="{{ ^'full_groups ' + ((context.groups.length > 1) ? 'multi_group' : '') }}">
       <span>{{ $l("Groups") + ": " }}</span>
       <for each="groups" bind="groups">
         <a href="#!/group/{{ id }}">{{ name }}</a>
@@ -22,9 +22,9 @@
     <div>
       <span>{{ $l("song_rating_detail") }}</span>
       <span style="margin-left: 2px">
-        {{ $l("rating_detail_numbers", { "rating": Formatting.rating(_c.rating), "count":
-        _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message":
-        _c.rating_percentile_message }) }}
+        {{ $l("rating_detail_numbers", { "rating": Formatting.rating(context.rating), "count":
+        context.rating_count, "percentile": context.rating_rank_percentile, "percentile_message":
+        context.rating_percentile_message }) }}
       </span>
     </div>
     <div bind="graph_placement"></div>

@@ -1,4 +1,4 @@
-<if condition="^_c.artists.length">
+<if condition="^context.artists.length">
   <h2>{{ $l("Artists") }}</h2>
   <for each="artists" bind="artists">
     <div class="row row_artist">
@@ -7,16 +7,16 @@
       </div>
     </div>
   </for>
-  <if condition="^_c.artists.length >= 50">
+  <if condition="^context.artists.length >= 50">
     <div class="row search_oob">{{ $l("search_result_limit") }}</div>
   </if>
 </if>
 
-<if condition="^_c.albums.length">
+<if condition="^context.albums.length">
   <h2>{{ $l("Albums") }}</h2>
   <for each="albums" bind="albums">
     <div
-      class="{{ ^'row row_album ' + (_c.cool ? 'cool' : '') + ' ' + (_c.fave ? 'song_fave_highlight' : '') }}"
+      class="{{ ^'row row_album ' + (context.cool ? 'cool' : '') + ' ' + (context.fave ? 'song_fave_highlight' : '') }}"
     >
       <template use="rating" />
       <template use="fave" />
@@ -25,15 +25,15 @@
       </div>
     </div>
   </for>
-  <if condition="^_c.albums.length >= 50">
+  <if condition="^context.albums.length >= 50">
     <div class="row search_oob">{{ $l("search_result_limit") }}</div>
   </if>
 </if>
 
-<if condition="^_c.songs.length">
+<if condition="^context.songs.length">
   <h2>{{ $l("Songs") }}</h2>
-  <template use="detail.songtable" />
-  <if condition="^_c.songs.length >= 100">
+  <template use="songTable" />
+  <if condition="^context.songs.length >= 100">
     <div class="row search_oob">{{ $l("search_result_limit") }}</div>
   </if>
 </if>

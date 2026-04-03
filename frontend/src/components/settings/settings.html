@@ -1,84 +1,84 @@
 <with context="locales">
-  <template use="settings_multi" />
+  <template use="settingsMultiOption" />
 </with>
 
 <div class="power_only">
   <with context="hkm">
-    <template use="settings_multi" />
+    <template use="settingsMultiOption" />
   </with>
 </div>
 
 <if condition="notify">
   <with context="notify">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
 </if>
 
 <div class="setting_subheader">{{ $l("site_mode") }}</div>
 <with context="pwr">
-  <template use="settings_yesno" />
+  <template use="settingsYesNo" />
 </with>
 
 <div class="setting_subheader">{{ $l("tab_title_preferences") }}</div>
 <with context="t_tl">
-  <template use="settings_yesno" />
+  <template use="settingsYesNo" />
 </with>
 <with context="t_clk">
-  <template use="settings_yesno" />
+  <template use="settingsYesNo" />
 </with>
 <with context="t_rt">
-  <template use="settings_yesno" />
+  <template use="settingsYesNo" />
 </with>
 
 <div class="setting_subheader">{{ $l("font_options") }}</div>
 <with context="roboto">
-  <template use="settings_yesno" />
+  <template use="settingsYesNo" />
 </with>
 <div class="power_only">
   <with context="f_norm">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
 </div>
 
 <div class="setting_subheader">{{ $l("timeline_preferences") }}</div>
 <with context="l_displose">
-  <template use="settings_yesno" />
+  <template use="settingsYesNo" />
 </with>
 <div class="power_only">
   <with context="l_stksz">
-    <template use="settings_multi" />
+    <template use="settingsMultiOption" />
   </with>
 
   <div class="setting_subheader">{{ $l("playlist_preferences") }}</div>
   <with context="p_sort">
-    <template use="settings_multi" />
+    <template use="settingsMultiOption" />
   </with>
   <with context="p_favup">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
   <with context="p_fav1">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
   <with context="p_avup">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
   <with context="p_null1">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
   <with context="p_songsort">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
 
   <div class="setting_subheader">{{ $l("rating_preferences") }}</div>
   <with context="r_incmplt">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
 
   <with context="r_noglbl">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
 
   <with context="r_clear">
-    <template use="settings_yesno" />
+    <template use="settingsYesNo" />
   </with>
 </div>

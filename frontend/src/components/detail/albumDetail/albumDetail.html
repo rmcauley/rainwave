@@ -21,15 +21,17 @@
     </if>
   </else>
   <if condition="rating_user">
-    <div>{{ $l("your_album_rating", { 'rating_user': Formatting.rating(_c.rating_user) }) }}</div>
+    <div>
+      {{ $l("your_album_rating", { 'rating_user': Formatting.rating(context.rating_user) }) }}
+    </div>
   </if>
   <if condition="rating_count">
     <div>
       <span>{{ $l("album_rating_detail") }}</span>
       <span>
-        {{ $l("rating_detail_numbers", { "rating": Formatting.rating(_c.rating), "count":
-        _c.rating_count, "percentile": _c.rating_rank_percentile, "percentile_message":
-        _c.rating_percentile_message }) }}
+        {{ $l("rating_detail_numbers", { "rating": Formatting.rating(context.rating), "count":
+        context.rating_count, "percentile": context.rating_rank_percentile, "percentile_message":
+        context.rating_percentile_message }) }}
       </span>
       <div bind="graph_placement"></div>
     </div>
@@ -37,14 +39,14 @@
   <!--<if condition="request_count">
 		<div>{{ request_percentile_message }}</div>
 	</if>-->
-  <if condition="^_c.genres.length && !MOBILE">
+  <if condition="^context.genres.length && !MOBILE">
     <div class="genres">
-      <if condition="^_c.genres.length <= 2">
+      <if condition="^context.genres.length <= 2">
         <span>{{ $l("relevant_category") }}</span>
-        <a href="#!/group/{{ ^_c.genres[0].id }}">{{ ^_c.genres[0].name }}</a>
-        <if condition="^_c.genres.length == 2">
+        <a href="#!/group/{{ ^context.genres[0].id }}">{{ ^context.genres[0].name }}</a>
+        <if condition="^context.genres.length == 2">
           <span style="margin-right: 2px">,</span>
-          <a href="#!/group/{{ ^_c.genres[1].id }}">{{ ^_c.genres[1].name }}</a>
+          <a href="#!/group/{{ ^context.genres[1].id }}">{{ ^context.genres[1].name }}</a>
         </if>
       </if>
       <else>

@@ -5,7 +5,7 @@
     </div>
   </if>
 
-  <if condition="^_c.entry_id">
+  <if condition="^context.entry_id">
     <div class="song_highlight song_highlight_left"></div>
     <div class="song_highlight song_highlight_right"></div>
     <div class="song_highlight song_highlight_topleft"></div>
@@ -14,7 +14,7 @@
     <div class="song_highlight song_highlight_bottomright"></div>
   </if>
 
-  <if condition="^_c.entry_id && !MOBILE && Sizing.simple">
+  <if condition="^context.entry_id && !MOBILE && Sizing.simple">
     <div class="vote_button">
       <span class="vote_button_rotate" bind="vote_button_text">{{ $l("vote") }}</span>
     </div>
@@ -27,14 +27,14 @@
       </div>
     </if>
     <div bind="art" class="art_container">
-      <if condition="^_c._is_timeline && User.sid === 5">
+      <if condition="^context._is_timeline && User.sid === 5">
         <div
           class="power_only song_station_indicator song_station_indicator_{{ origin_sid }}"
         ></div>
       </if>
 
       <if condition="elec_request_user_id">
-        <if condition="^_c.elec_request_user_id == User.id">
+        <if condition="^context.elec_request_user_id == User.id">
           <div class="requester your_request">
             <if condition="^!MOBILE">
               <a href="#!/listener/{{ elec_request_user_id }}"> {{ elec_request_username }} </a>
@@ -61,7 +61,7 @@
   <div class="song_content">
     <template use="rating" />
 
-    <if condition="^_c.entry_id">
+    <if condition="^context.entry_id">
       <div class="entry_votes">
         <span bind="votes"></span>
       </div>
