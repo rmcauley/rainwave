@@ -199,4 +199,11 @@ export default defineConfig([
   // IAM Typescript rules for both FE and BE
   jsRules,
   tsRules,
+
+  {
+    files: ['src/templates/index.ts'],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
+  },
 ]);

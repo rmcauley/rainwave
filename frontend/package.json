@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "husky",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint:fix": "uv run black . && eslint --fix . && prettier --write ."
+    "lint:fix": "eslint --fix . && prettier --write ."
   },
   "repository": {
     "type": "git",

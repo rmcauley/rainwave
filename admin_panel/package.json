@@ -7,7 +7,7 @@
     "dev": "vite",
     "prepare": "husky",
     "test": "vitest run",
-    "lint:fix": "uv run black . && eslint --fix . && prettier --write ."
+    "lint:fix": "eslint --fix . && prettier --write ."
   },
   "repository": {
     "type": "git",
