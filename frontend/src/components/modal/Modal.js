@@ -1,13 +1,13 @@
 let stopAll = false;
 const blocker = document.createElement("div");
-blocker.className = "modal_blocker";
+blocker.className = "modal-blocker";
 
 function doClose(modalToClose) {
   if (
-    modalToClose.classList.contains("modal_container") &&
-    !modalToClose.classList.contains("modal_closing")
+    modalToClose.classList.contains("modal-container") &&
+    !modalToClose.classList.contains("modal-closing")
   ) {
-    modalToClose.classList.add("modal_closing");
+    modalToClose.classList.add("modal-closing");
     setTimeout(function () {
       modalToClose.parentNode.removeChild(modalToClose);
     }, 300);
@@ -22,8 +22,8 @@ function closeModal(e, chaining) {
   if (stopAll) {
     return;
   }
-  document.body.classList.remove("modal_active");
-  var toClose = document.body.querySelectorAll("div.modal_container");
+  document.body.classList.remove("modal-active");
+  var toClose = document.body.querySelectorAll("div.modal-container");
   for (var i = 0; i < toClose.length; i++) {
     doClose(toClose[i]);
   }
@@ -60,12 +60,12 @@ function modalClass(title, templateName, templateObject, noClose) {
   });
   document.body.insertBefore(blocker, document.body.firstChild);
   document.body.insertBefore(mt.container, document.body.firstChild);
-  document.body.classList.add("modal_active");
+  document.body.classList.add("modal-active");
   requestNextAnimationFrame(function () {
     mt.container.classList.add("open");
     blocker.classList.add("active");
     setTimeout(function () {
-      mt.container.classList.add("full_open");
+      mt.container.classList.add("full-open");
     }, 300);
   });
   return ct;

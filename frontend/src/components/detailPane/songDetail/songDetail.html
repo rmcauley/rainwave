@@ -1,6 +1,8 @@
-<div class="song_detail" bind="details">
+<div class="song-detail" bind="details">
   <if condition="^context.artists">
-    <div class="{{ ^'full_artists ' + ((context.artists.length > 1) ? 'multi_artist' : '') }}">
+    <div
+      data-old-class="{{ ^'full-artists ' + ((context.artists.length > 1) ? 'multi-artist' : '') }}"
+    >
       <span
         >{{ ^($l_has("Artists_pluralized") ? $l("Artists_pluralized", { "count":
         context.artists.length }) : $l("Artists")) + ": " }}</span
@@ -11,7 +13,7 @@
     </div>
   </if>
   <if condition="^context.groups && context.groups.length && !MOBILE">
-    <div class="{{ ^'full_groups ' + ((context.groups.length > 1) ? 'multi_group' : '') }}">
+    <div class="multi-group">
       <span>{{ $l("Groups") + ": " }}</span>
       <for each="groups" bind="groups">
         <a href="#!/group/{{ id }}">{{ name }}</a>

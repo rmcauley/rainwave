@@ -1,5 +1,5 @@
 div.detail {
-  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 
   &,
   &.scrollable {
@@ -9,10 +9,11 @@ div.detail {
   body.detail & {
     opacity: 1;
     visibility: visible;
+
     @include transform(translateX(-100%));
   }
 
-  div.art_anchor {
+  div.art-anchor {
     float: left;
     margin-left: 10px;
     margin-bottom: 10px;
@@ -20,20 +21,20 @@ div.detail {
     height: 90px;
   }
 
-  div.detail_header {
+  div.detail-header {
     color: $details;
     font-size: 0.8em;
     margin: 0 10px 0 110px;
 
-    div.new_indicator {
-      color: $new_indicator;
+    div.new-indicator {
+      color: $new-indicator;
       background-repeat: no-repeat;
       background-size: 12px;
       background-image: url("/static/images4/new.png");
       padding-left: 4px;
     }
 
-    div.newish_indicator {
+    div.newish-indicator {
       background-repeat: no-repeat;
       background-size: 12px;
       background-image: url("/static/images4/newish.png");
@@ -41,10 +42,10 @@ div.detail {
     }
 
     div.genres {
-      div.category_list {
+      div.category-list {
         box-sizing: border-box;
         position: absolute;
-        background: $panel_bkg;
+        background: $panel-bkg;
         padding: 5px 5px 5px 15px;
         width: 100%;
         z-index: 1;
@@ -56,7 +57,7 @@ div.detail {
     }
   }
 
-  ul.panel_header {
+  ul.panel-header {
     border-bottom: none;
   }
 
@@ -68,12 +69,12 @@ div.detail {
     float: left;
   }
 
-  div.art_container {
+  div.art-container {
     width: 90px;
     height: 90px;
   }
 
-  ul.panel_header {
+  ul.panel-header {
     z-index: 1;
     width: 100%;
     box-sizing: border-box;
@@ -94,14 +95,14 @@ div.detail {
 }
 
 div.detail,
-div.search_results {
+div.search-results {
   h2 {
     clear: both;
     font-size: inherit;
     font-weight: inherit;
-    border-bottom: 1px solid $subheader_b;
-    margin: 0 0 5px 0;
-    padding: 0 10px 2px 10px;
+    border-bottom: 1px solid $subheader-b;
+    margin: 0 0 5px;
+    padding: 0 10px 2px;
   }
 
   table + h2,
@@ -110,19 +111,20 @@ div.search_results {
   }
 }
 
-div.no_songs_message {
-  padding: 2px 10px 2px 10px;
+div.no-songs-message {
+  padding: 2px 10px;
   clear: both;
 }
 
 div.row {
-  padding: 2px 10px 2px 10px;
+  padding: 2px 10px;
   clear: both;
   border-bottom: solid 1px transparent;
   word-break: break-all;
   white-space: nowrap;
   min-height: 20px;
-  background: $row_bkg;
+  background: $row-bkg;
+
   @include transition-wtime(
     300ms,
     width,
@@ -150,75 +152,76 @@ div.row {
   body.desktop &:hover,
   &.hover,
   body.mobile &:active {
-    background-color: $hover_bkg;
-    border-bottom-color: $hover_b;
-    @include no-transition();
+    background-color: $hover-bkg;
+    border-bottom-color: $hover-b;
 
-    img.fave_lined {
+    @include no-transition;
+
+    img.fave-lined {
       opacity: 1;
     }
   }
 
   body.desktop.full &:nth-child(even) {
-    background-color: $row_bkg_alternating;
-    border-bottom-color: $row_bkg_alternating;
+    background-color: $row-bkg-alternating;
+    border-bottom-color: $row-bkg-alternating;
 
     &:hover,
     &.hover {
-      background-color: $hover_bkg;
-      border-bottom-color: $hover_b;
+      background-color: $hover-bkg;
+      border-bottom-color: $hover-b;
     }
   }
 
   &.cool {
-    background-color: $row_cool_bkg;
-    border-bottom-color: $row_cool_bkg;
+    background-color: $row-cool-bkg;
+    border-bottom-color: $row-cool-bkg;
 
     body.desktop &:hover,
     body.desktop &.hover,
     body.mobile &:active {
-      background-color: $cooldown_h;
-      border-bottom-color: $cooldown_hb;
+      background-color: $cooldown-h;
+      border-bottom-color: $cooldown-hb;
     }
 
     body.desktop.full &:nth-child(even) {
-      background-color: $row_cool_bkg_alternating;
-      border-bottom-color: $row_cool_bkg_alternating;
+      background-color: $row-cool-bkg-alternating;
+      border-bottom-color: $row-cool-bkg-alternating;
 
       &:hover,
       &.hover {
-        background-color: $cooldown_h;
-        border-bottom-color: $cooldown_hb;
+        background-color: $cooldown-h;
+        border-bottom-color: $cooldown-hb;
       }
     }
   }
 
-  &.song_fave_highlight {
+  &.song-fave-highlight {
     div.title {
       color: $fave;
     }
 
     body.desktop &:hover,
     &.hover {
-      background-color: $fave_h !important;
-      border-bottom-color: $fave_hb !important;
+      background-color: $fave-h !important;
+      border-bottom-color: $fave-hb !important;
     }
   }
 
-  div.rating_clear,
-  div.fake_url,
-  div.cool_info,
+  div.rating-clear,
+  div.fake-url,
+  div.cool-info,
   div.artists,
-  div.rating_site,
+  div.rating-site,
   div.length,
   a.url,
-  div.request_count,
-  div.album_name {
+  div.request-count,
+  div.album-name {
     margin-left: 10px;
     float: right;
   }
 
-  div.request_count {
+  div.request-count {
     margin-right: 10px;
   }
 
@@ -226,12 +229,12 @@ div.row {
     width: 35px;
   }
 
-  div.rating_site {
-    color: $rating_site_text;
+  div.rating-site {
+    color: $rating-site-text;
   }
 
   a.url,
-  div.fake_url {
+  div.fake-url {
     display: inline-block;
     width: 14px;
     height: 18px;
@@ -250,7 +253,7 @@ div.row {
     background-image: url("/static/images4/link_external.svg");
   }
 
-  div.detail_icon {
+  div.detail-icon {
     float: left;
     cursor: pointer;
     margin-right: 10px;
@@ -270,7 +273,7 @@ div.row {
     }
   }
 
-  div.cool_info {
+  div.cool-info {
     width: 35px;
     min-height: 10px;
   }
@@ -281,18 +284,18 @@ div.row {
     padding-left: 9px;
   }
 
-  &.is_new div.title {
+  &.is-new div.title {
     background-repeat: no-repeat;
     background-size: 14px;
     background-image: url("/static/images4/new.png");
-    background-position: 3px 0px;
+    background-position: 3px 0;
   }
 
-  &.is_newish div.title {
+  &.is-newish div.title {
     background-repeat: no-repeat;
     background-size: 14px;
     background-image: url("/static/images4/newish.png");
-    background-position: 3px 0px;
+    background-position: 3px 0;
   }
 
   &.requestable div.title {
@@ -309,14 +312,14 @@ div.row {
   }
 
   div.artists,
-  div.album_name {
+  div.album-name {
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   div.artists,
-  div.full_artists,
-  div.full_groups {
+  div.full-artists,
+  div.full-groups {
     a::after {
       content: ",";
     }
@@ -330,7 +333,7 @@ div.row {
     }
   }
 
-  div.song_detail {
+  div.song-detail {
     clear: both;
     padding-top: 2px;
     padding-left: 50px;
@@ -339,11 +342,11 @@ div.row {
   }
 }
 
-div.album_has_cooldown,
-div.album_all_cooldown {
+div.album-has-cooldown,
+div.album-all-cooldown {
   color: $text;
-  background-color: $row_cool_bkg;
-  border-bottom-color: $row_cool_bkg;
+  background-color: $row-cool-bkg;
+  border-bottom-color: $row-cool-bkg;
   cursor: pointer;
 
   &:hover {
@@ -351,20 +354,20 @@ div.album_all_cooldown {
   }
 }
 
-table.cooldown_explain {
+table.cooldown-explain {
   width: 100%;
 
   th,
   td {
     text-align: left;
-    border-bottom: solid 1px $text_dd;
+    border-bottom: solid 1px $text-dd;
   }
 }
 
-.fave_all_songs {
+.fave-all-songs {
   margin-right: 4px;
 }
 
-.unfave_all_songs {
+.unfave-all-songs {
   margin-left: 4px;
 }

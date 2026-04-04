@@ -12,7 +12,7 @@ function focus() {
 }
 
 var searchResetColor = function () {
-  inputContainer.classList.remove("search_error");
+  inputContainer.classList.remove("search-error");
   inputContainer.classList.remove("active");
   input.removeEventListener("input", searchResetColor);
 };
@@ -23,11 +23,11 @@ var searchError = function (json) {
     }
 
     var div = document.createElement("div");
-    div.className = "no_result_message";
+    div.className = "no-result-message";
     div.textContent = $l(json.tl_key, json);
     el.appendChild(div);
 
-    inputContainer.classList.add("search_error");
+    inputContainer.classList.add("search-error");
     input.addEventListener("input", searchResetColor);
 
     return true;
@@ -38,7 +38,7 @@ var searchError = function (json) {
       el.removeChild(el.lastChild);
     }
     input.value = "";
-    inputContainer.classList.remove("has_value");
+    inputContainer.classList.remove("has-value");
     searchResetColor();
   };
 
@@ -60,7 +60,7 @@ var searchError = function (json) {
       }
 
       var highlightEl = document.createElement("span");
-      highlightEl.className = "search_highlight";
+      highlightEl.className = "search-highlight";
       highlightEl.textContent = m[2];
       title.appendChild(highlightEl);
 
@@ -100,7 +100,7 @@ var searchError = function (json) {
       highlightText(json.songs[i].$t.title);
 
       div = document.createElement("div");
-      div.className = "album_name";
+      div.className = "album-name";
       a = document.createElement("a");
       a.setAttribute("href", "#!/album/" + json.songs[i].album_id);
       a.textContent = json.songs[i].album_name;
@@ -163,7 +163,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
   });
 
   rootTemplate.search_link.addEventListener("click", function () {
-    if (!document.body.classList.contains("search_open")) {
+    if (!document.body.classList.contains("search-open")) {
       Router.change("search");
     } else if (!Sizing.simple) {
       Router.openLastId();
@@ -182,13 +182,13 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
       }
     });
     input.addEventListener("input", function () {
-      if (input.value && !inputContainer.classList.contains("has_value")) {
-        inputContainer.classList.add("has_value");
+      if (input.value && !inputContainer.classList.contains("has-value")) {
+        inputContainer.classList.add("has-value");
       } else if (
         !input.value &&
-        inputContainer.classList.contains("has_value")
+        inputContainer.classList.contains("has-value")
       ) {
-        inputContainer.classList.remove("has_value");
+        inputContainer.classList.remove("has-value");
       }
     });
   rootTemplate.search_cancel.addEventListener("click", function () {

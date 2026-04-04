@@ -1,14 +1,19 @@
 import { $l } from '../../../language';
 
 import type { songDetailContext } from './songDetail.context';
+
+import style from './songDetail.module.scss';
 function songDetail(context: songDetailContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
-  v2.className = `song_detail`;
+  v2.className = style['song-detail'];
   v1.appendChild(v2);
   if (context.artists) {
     const v3 = document.createElement('div');
-    v3.className = 'full_artists ' + (context.artists.length > 1 ? 'multi_artist' : '');
+    v3.setAttribute(
+      'data-old-class',
+      'full-artists ' + (context.artists.length > 1 ? 'multi-artist' : ''),
+    );
     v2.appendChild(v3);
     const v4 = document.createElement('span');
     v4.appendChild(
@@ -32,7 +37,7 @@ return { $root: v6 };
   }
   if (context.groups && context.groups.length && !MOBILE) {
     const v8 = document.createElement('div');
-    v8.className = 'full_groups ' + (context.groups.length > 1 ? 'multi_group' : '');
+    v8.className = style['multi-group'];
     v2.appendChild(v8);
     const v9 = document.createElement('span');
     v9.appendChild(document.createTextNode($l('Groups') + ': '));

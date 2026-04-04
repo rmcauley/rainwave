@@ -24,7 +24,7 @@ var RatingChart = function (json) {
   }
   if (data.length === 0) return;
   var c = HDivChart(data, { minShare: 4, addShareToTooltip: true });
-  c.classList.add("chart_ratings");
+  c.classList.add("chart-ratings");
   return c;
 };
 
@@ -217,7 +217,7 @@ var AlbumView = function (album) {
       }
     }
     var msg = document.createElement("div");
-    msg.className = "no_songs_message";
+    msg.className = "no-songs-message";
     msg.textContent = $l("no_songs_on_this_station", { station: sta });
     template._root.appendChild(msg);
   } else {

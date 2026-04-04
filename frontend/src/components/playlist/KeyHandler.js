@@ -169,11 +169,11 @@ var isIgnorable = function (evt) {
   if (Sizing.simple && evt.keyCode != 27) return true;
   if (
     evt.target &&
-    evt.target.classList.contains("search_box") &&
+    evt.target.classList.contains("search-box") &&
     evt.keyCode != 27
   )
     return true;
-  if (document.body.classList.contains("search_open")) return true;
+  if (document.body.classList.contains("search-open")) return true;
   return false;
 };
 
@@ -326,7 +326,7 @@ var hotkeyModeDisable = function () {
     clearTimeout(hotkeyModeTimeout);
   }
   hotkeyModeOn = false;
-  document.body.classList.remove("hotkey_on");
+  document.body.classList.remove("hotkey-on");
   return true;
 };
 
@@ -336,20 +336,20 @@ var hotkeyModeEnable = function () {
     clearTimeout(hotkeyModeTimeout);
   }
   if (hotkeyModeErrorTimeout) {
-    document.body.classList.remove("hotkey_error");
+    document.body.classList.remove("hotkey-error");
     clearTimeout(hotkeyModeErrorTimeout);
   }
   hotkeyModeTimeout = setTimeout(hotkeyModeDisable, 4000);
-  document.body.classList.add("hotkey_on");
+  document.body.classList.add("hotkey-on");
   return true;
 };
 
 var hotkeyModeError = function (tlKey) {
   hotkeyModeDisable();
-  document.body.classList.add("hotkey_error");
+  document.body.classList.add("hotkey-error");
   document.getElementById("hotkey_error").textContent = $l(tlKey);
   hotkeyModeErrorTimeout = setTimeout(function () {
-    document.body.classList.remove("hotkey_error");
+    document.body.classList.remove("hotkey-error");
   }, 3000);
 };
 

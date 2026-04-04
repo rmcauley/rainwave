@@ -269,9 +269,9 @@ var reflow = function (reflowEverything) {
 
   var historySize = Prefs.get('l_stk') ? schedHistory.length : Prefs.get('l_stksz') || 0;
   if (historySize == schedHistory.length) {
-    template.history_header.classList.remove('history_expandable');
+    template.history_header.classList.remove('history-expandable');
   } else {
-    template.history_header.classList.add('history_expandable');
+    template.history_header.classList.add('history-expandable');
   }
 
   historyBar.style[Fx.transform] = 'translateY(' + runningY + 'px)';
@@ -283,24 +283,24 @@ var reflow = function (reflowEverything) {
   for (i = 0; i < hiddenEvents && i < schedHistory.length; i++) {
     events[i].el.style[Fx.transform] =
       'translateY(' + -(((hiddenEvents - i - 1) * 5 + 1) * Sizing.songSize + 1) + 'px)';
-    events[i].el.classList.add('sched_history_hidden');
+    events[i].el.classList.add('sched-history-hidden');
   }
 
   runningY += 17;
   var historyGap;
   for (i = hiddenEvents; i < events.length; i++) {
     if (events[i].history) {
-      events[i].el.classList.remove('sched_history_hidden');
+      events[i].el.classList.remove('sched-history-hidden');
     } else if (!historyGap) {
       historyGap = true;
       historyBar.style[Fx.transform] = 'translateY(' + (runningY + 9) + 'px)';
       runningY += 19;
     }
-    if (events[i].el.classList.contains('no_progress')) {
-      events[i].el.classList.remove('no_progress');
+    if (events[i].el.classList.contains('no-progress')) {
+      events[i].el.classList.remove('no-progress');
     }
-    // if (!events[i].showing_header && (i !== 0) && (!events[i - 1].el.classList.contains("no_header"))) {
-    // 	events[i - 1].el.classList.add("no_progress");
+    // if (!events[i].showing_header && (i !== 0) && (!events[i - 1].el.classList.contains("no-header"))) {
+    // 	events[i - 1].el.classList.add("no-progress");
     // 	runningY -= Sizing.timeline_header_size;
     // 	runningY += 16;
     // }

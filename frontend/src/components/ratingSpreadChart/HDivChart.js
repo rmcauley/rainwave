@@ -39,12 +39,12 @@ function HDivChart(data, options) {
   }
 
   var outside = document.createElement("div");
-  outside.className = "chart_outside";
+  outside.className = "chart-outside";
   var d, t, pos;
   pos = 0;
   for (i = 0; i < data.length; i++) {
     d = document.createElement("div");
-    d.className = "chart_bar";
+    d.className = "chart-bar";
     d.style.width = data[i].share + "%";
     d.style.backgroundColor = data[i].color;
     d.style.left = pos + "%";
@@ -54,18 +54,18 @@ function HDivChart(data, options) {
       (!options.guideLines || data.length !== 1)
     ) {
       t = document.createElement("span");
-      t.className = "chart_label";
+      t.className = "chart-label";
       t.textContent = data[i].label;
       d.appendChild(t);
     }
     if (data[i].tooltip) {
       t = document.createElement("span");
       if (pos <= 15) {
-        t.className = "chart_tooltip chart_tooltip_left";
+        t.className = "chart-tooltip chart-tooltip-left";
       } else if (pos >= 85) {
-        t.className = "chart_tooltip chart_tooltip_right";
+        t.className = "chart-tooltip chart-tooltip-right";
       } else {
-        t.className = "chart_tooltip";
+        t.className = "chart-tooltip";
       }
       t.textContent = data[i].tooltip;
       d.appendChild(t);
@@ -77,14 +77,14 @@ function HDivChart(data, options) {
   if (options.guideLines) {
     for (i = 1; i < options.guideLines; i++) {
       d = document.createElement("div");
-      d.className = "chart_pip";
+      d.className = "chart-pip";
       d.style.left = Math.round(100 / options.guideLines) * i + "%";
       outside.appendChild(d);
     }
 
     if (data.length === 1) {
       t = document.createElement("span");
-      t.className = "chart_label";
+      t.className = "chart-label";
       t.textContent = data[0].label;
       outside.appendChild(t);
     }

@@ -2,7 +2,7 @@
   <template use="settingsMultiOption" />
 </with>
 
-<div class="power_only">
+<div class="power-only">
   <with context="hkm">
     <template use="settingsMultiOption" />
   </with>
@@ -14,12 +14,12 @@
   </with>
 </if>
 
-<div class="setting_subheader">{{ $l("site_mode") }}</div>
+<div class="setting-subheader">{{ $l("site_mode") }}</div>
 <with context="pwr">
   <template use="settingsYesNo" />
 </with>
 
-<div class="setting_subheader">{{ $l("tab_title_preferences") }}</div>
+<div class="setting-subheader">{{ $l("tab_title_preferences") }}</div>
 <with context="t_tl">
   <template use="settingsYesNo" />
 </with>
@@ -30,26 +30,26 @@
   <template use="settingsYesNo" />
 </with>
 
-<div class="setting_subheader">{{ $l("font_options") }}</div>
+<div class="setting-subheader">{{ $l("font_options") }}</div>
 <with context="roboto">
   <template use="settingsYesNo" />
 </with>
-<div class="power_only">
+<div class="power-only">
   <with context="f_norm">
     <template use="settingsYesNo" />
   </with>
 </div>
 
-<div class="setting_subheader">{{ $l("timeline_preferences") }}</div>
+<div class="setting-subheader">{{ $l("timeline_preferences") }}</div>
 <with context="l_displose">
   <template use="settingsYesNo" />
 </with>
-<div class="power_only">
+<div class="power-only">
   <with context="l_stksz">
     <template use="settingsMultiOption" />
   </with>
 
-  <div class="setting_subheader">{{ $l("playlist_preferences") }}</div>
+  <div class="setting-subheader">{{ $l("playlist_preferences") }}</div>
   <with context="p_sort">
     <template use="settingsMultiOption" />
   </with>
@@ -69,7 +69,7 @@
     <template use="settingsYesNo" />
   </with>
 
-  <div class="setting_subheader">{{ $l("rating_preferences") }}</div>
+  <div class="setting-subheader">{{ $l("rating_preferences") }}</div>
   <with context="r_incmplt">
     <template use="settingsYesNo" />
   </with>

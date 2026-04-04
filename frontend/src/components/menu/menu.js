@@ -29,7 +29,7 @@ function closeStationSelect(e) {
 
 function openStationSelect(e) {
   if (!template.station_select.classList.contains('open')) {
-    template.hamburger_container.classList.remove('burger_open');
+    template.hamburger_container.classList.remove('burger-open');
     template.station_select.classList.add('open');
     template.station_select.classList.remove('closed');
     template.station_select_header.addEventListener('click', closeStationSelect);
@@ -79,7 +79,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
       Stations[i].$t.menu_link._href = Stations[i].url;
       Stations[i].$t.menu_link.addEventListener('click', openStation);
     } else {
-      Stations[i].$t.menu_link.classList.add('selected_station');
+      Stations[i].$t.menu_link.classList.add('selected-station');
       if (Stations.length > 1) {
         template.station_select_header.addEventListener('click', toggleStationSelect);
         template.station_select.classList.add('openable');
@@ -103,11 +103,11 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
   });
 
   template.burger_button.addEventListener('click', function () {
-    template.hamburger_container.classList.toggle('burger_open');
+    template.hamburger_container.classList.toggle('burger-open');
   });
 
   var closeBurger = function () {
-    template.hamburger_container.classList.remove('burger_open');
+    template.hamburger_container.classList.remove('burger-open');
   };
 
   template.menu_wrapper.addEventListener('mouseleave', closeBurger);

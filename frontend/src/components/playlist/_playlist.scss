@@ -1,8 +1,8 @@
-ul.panel_header {
+ul.panel-header {
   height: 25px;
   padding-left: 0;
-  margin: 10px 0 7px 0;
-  border-bottom: 2px solid $tab_b;
+  margin: 10px 0 7px;
+  border-bottom: 2px solid $tab-b;
   list-style: none;
   white-space: nowrap;
 
@@ -10,56 +10,57 @@ ul.panel_header {
     display: block;
     height: 25px;
     padding: 0 10px;
-
     color: $tab;
     border-bottom: 2px solid transparent;
+
     @include transition(LINKCOLOR, background, opacity, border-bottom);
 
     div.lists &.open,
     body.simple &.open {
-      color: $tab_open;
-      border-bottom-color: $tab_open_b;
+      color: $tab-open;
+      border-bottom-color: $tab-open-b;
     }
   }
 }
 
-div.no_result_message {
+div.no-result-message {
   position: absolute;
-  color: $text_d;
+  color: $text-d;
   text-align: center;
   width: 100%;
   display: none;
   top: 50px;
 
-  div.no_results & {
+  div.no-results & {
     display: block;
   }
 
-  div.no_results.search_active & {
+  div.no-results.search-active & {
     display: none;
   }
 
-  &.while_search_active,
-  div.no_results &.while_search_active {
+  &.while-search-active,
+  div.no-results &.while-search-active {
     display: none;
   }
 
-  div.no_results.search_active &.while_search_active {
+  div.no-results.search-active &.while-search-active {
     display: block;
   }
 }
 
 body.simple div.panel,
-div.search_panel {
+div.search-panel {
   position: absolute;
   z-index: 100;
   width: 450px;
   max-width: 100%;
-  background: $panel_bkg;
-  border-left: solid 1px $panel_b;
-  top: 0px;
+  background: $panel-bkg;
+  border-left: solid 1px $panel-b;
+  top: 0;
   opacity: 0;
   visibility: hidden;
+
   @include transform(none);
   @include transition-wtime(
     300ms,
@@ -75,7 +76,7 @@ div.search_panel {
 }
 
 div.lists {
-  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 
   div.scrollable {
     position: relative;
@@ -84,64 +85,68 @@ div.lists {
   body.playlist & {
     opacity: 1;
     visibility: visible;
+
     @include transform(translateX(-100%));
   }
 
   body.simple.desktop.playlist.normal.detail & {
-    background: $panel_bkg_d;
+    background: $panel-bkg-d;
+
     @include transform(translateX(-200%));
 
-    @media (max-width: 950px) {
+    @media (width <= 950px) {
       @include transform(translateX(-150%));
     }
 
-    @media (max-width: 800px) {
+    @media (width <= 800px) {
       @include transform(translateX(-120%));
     }
   }
 
-  ul.panel_header {
+  ul.panel-header {
     margin-bottom: 0;
 
     li {
       cursor: pointer;
       display: inline-block;
+
       @include transition(LINKCOLOR, TOUCHTRANSFORM);
 
       body.desktop &:hover {
-        color: $link_h;
+        color: $link-h;
       }
 
       body.mobile &:active {
-        @include touchtransform();
+        @include touchtransform;
       }
 
-      body.playlist_artist &.artist_tab,
-      body.playlist_group &.group_tab,
-      body.playlist_album &.album_tab,
-      body.playlist_request_line &.listener_tab {
-        color: $tab_open;
-        border-bottom-color: $tab_open_b;
+      body.playlist-artist &.artist-tab,
+      body.playlist-group &.group-tab,
+      body.playlist-album &.album-tab,
+      body.playlist-request-line &.listener-tab {
+        color: $tab-open;
+        border-bottom-color: $tab-open-b;
       }
 
-      body.mobile &.group_tab,
-      body.mobile &.listener_tab {
+      body.mobile &.group-tab,
+      body.mobile &.listener-tab {
         display: none;
       }
     }
   }
 }
 
-div.searchbox_container {
+div.searchbox-container {
   position: relative;
-  border-bottom: solid 1px $subpanel_separator;
+  border-bottom: solid 1px $subpanel-separator;
   padding: 5px 8px;
   height: 29px;
+
   @include transition-wtime(200ms, background-color);
 
-  &.search_error,
-  &.active.search_error {
-    background-color: $search_error_b;
+  &.search-error,
+  &.active.search-error {
+    background-color: $search-error-b;
   }
 
   img {
@@ -151,6 +156,7 @@ div.searchbox_container {
     left: 10px;
     top: 13px;
     opacity: 0.5;
+
     @include transition-wtime(300ms, opacity);
   }
 
@@ -162,29 +168,32 @@ div.searchbox_container {
   }
 
   &.active {
-    background-color: $search_on_b;
+    background-color: $search-on-b;
   }
 
   &.active,
-  &.search_error,
-  &.has_value {
+  &.search-error,
+  &.has-value {
     img.cancel {
       display: inline;
     }
+
     img.search {
       display: none;
     }
   }
 
-  .searchlist_loading_bar {
+  .searchlist-loading-bar {
     display: none;
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: $open_item_bkg;
+    background-color: $open-item-bkg;
     left: 0;
     top: 0;
+
     @include transition-wtime(300ms, transform, opacity);
+
     transform-origin: center left;
     transform: scaleX(0);
   }
@@ -200,12 +209,10 @@ div.searchbox_container {
     width: 100%;
     padding-left: 25px;
     padding-right: 4px;
+
     @include transition-wtime(300ms, border-color, opacity);
 
-    &::-webkit-input-placeholder,
-    &:-moz-placeholder,
-    &::-moz-placeholder,
-    &:-ms-input-placeholder {
+    &::placeholder {
       color: $text;
     }
 
@@ -233,22 +240,23 @@ div.list {
   position: relative;
   display: none;
 
-  body.playlist_artist &.artist_list,
-  body.playlist_group &.group_list,
-  body.playlist_album &.album_list,
-  body.playlist_request_line &.listener_list,
-  &.measure_list {
+  body.playlist-artist &.artist-list,
+  body.playlist-group &.group-list,
+  body.playlist-album &.album-list,
+  body.playlist-request-line &.listener-list,
+  &.measure-list {
     display: block;
   }
 
-  div.list_contents,
+  div.list-contents,
   div.scrollblock {
     position: relative;
   }
 
-  div.list_contents {
+  div.list-contents {
     padding-top: 3px;
-    body.custom_scrollbars & {
+
+    body.custom-scrollbars & {
       padding-right: 8px;
     }
   }
@@ -259,6 +267,7 @@ div.list {
     padding: 2px 65px 2px 10px;
     border-bottom: solid 1px transparent;
     cursor: pointer;
+
     @include transition-wtime(
       250ms,
       background-color,
@@ -266,12 +275,13 @@ div.list {
       color,
       TOUCHTRANSFORM
     );
+
     overflow: hidden;
     word-break: break-all;
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    &.album_fave_highlight {
+    &.album-fave-highlight {
       color: $fave;
     }
 
@@ -283,32 +293,33 @@ div.list {
     body.desktop &.hover,
     body.mobile &:active {
       color: $link;
-      background-color: $hover_bkg;
-      border-bottom-color: $hover_b;
+      background-color: $hover-bkg;
+      border-bottom-color: $hover-b;
+
       @include transition-wtime(250ms, TOUCHTRANSFORM);
 
-      img.fave_lined {
+      img.fave-lined {
         opacity: 0.5;
       }
 
-      &.album_fave_highlight:hover,
-      &.cool.album_fave_highlight:hover {
-        background-color: $fave_h;
-        border-bottom-color: $fave_hb;
+      &.album-fave-highlight:hover,
+      &.cool.album-fave-highlight:hover {
+        background-color: $fave-h;
+        border-bottom-color: $fave-hb;
       }
     }
 
     body.mobile &:active {
-      @include touchtransform();
+      @include touchtransform;
     }
 
     &.open {
       color: $text !important;
-      background-color: $open_item_bkg !important;
-      border-bottom-color: $open_item_b !important;
+      background-color: $open-item-bkg !important;
+      border-bottom-color: $open-item-b !important;
 
-      &.album_fave_highlight {
-        background-color: $open_item_fave_bkg !important;
+      &.album-fave-highlight {
+        background-color: $open-item-fave-bkg !important;
       }
 
       span.name {
@@ -322,81 +333,83 @@ div.list {
       body.desktop &:hover,
       body.desktop &.hover,
       body.mobile &:active {
-        background-color: $cooldown_h;
-        border-bottom-color: $cooldown_hb;
+        background-color: $cooldown-h;
+        border-bottom-color: $cooldown-hb;
       }
     }
 
     span.name {
       padding-left: 9px;
+
       @include transition-wtime(300ms, padding);
     }
 
-    div.requestlist_song,
-    div.requestlist_album {
-      color: $text_d;
+    div.requestlist-song,
+    div.requestlist-album {
+      color: $text-d;
       padding-left: 2em;
     }
 
     &.skip {
-      div.requestlist_album {
+      div.requestlist-album {
         color: transparent;
       }
     }
   }
 
-  &.album_list div.item,
-  &.artist_list div.item,
-  &.group_list div.item {
+  &.album-list div.item,
+  &.artist-list div.item,
+  &.group-list div.item {
     height: 26px;
   }
 
-  &.album_list div.item {
-    background-image: $site_rating;
-    background-size: $rating_bkg_size;
+  &.album-list div.item {
+    background-image: $site-rating;
+    background-size: $rating-bkg-size;
 
-    &.rating_user {
-      background-image: $user_rating;
+    &.rating-user {
+      background-image: $user-rating;
 
-      &.album_fave_highlight {
-        background-image: $fav_rating;
+      &.album-fave-highlight {
+        background-image: $fav-rating;
       }
 
-      body.show_incomplete &.rating_incomplete {
-        background-color: $album_incomplete;
-        background-image: $incomplete_rating;
+      body.show-incomplete &.rating-incomplete {
+        background-color: $album-incomplete;
+        background-image: $incomplete-rating;
 
         body.desktop &:hover,
         body.desktop &.hover,
         body.mobile &:active {
-          background-color: $hover_bkg;
-          border-bottom-color: $hover_b;
+          background-color: $hover-bkg;
+          border-bottom-color: $hover-b;
         }
 
-        &.album_fave_highlight {
-          background-image: $incomplete_rating;
+        &.album-fave-highlight {
+          background-image: $incomplete-rating;
         }
 
         &.cool {
-          color: $text_d;
-          background-color: $album_incomplete_cool;
+          color: $text-d;
+          background-color: $album-incomplete-cool;
 
           body.desktop &:hover,
           body.desktop &.hover,
           body.mobile &:active {
-            background-color: $hover_bkg;
-            border-bottom-color: $hover_b;
+            background-color: $hover-bkg;
+            border-bottom-color: $hover-b;
           }
         }
       }
     }
 
-    &.has_new {
+    &.has-new {
       span.name {
         background-repeat: no-repeat;
         background-size: 14px;
         background-image: url("/static/images4/new.png");
-        background-position: 3px 0px;
+        background-position: 3px 0;
+
         @include transition-wtime(
           300ms,
           padding,
@@ -404,7 +417,8 @@ div.list {
           LINKCOLOR,
           TOUCHTRANSFORM
         );
-        color: $new_indicator;
+
+        color: $new-indicator;
       }
 
       &.open span.name {
@@ -412,21 +426,23 @@ div.list {
       }
 
       body.desktop &:hover span.name {
-        color: $link_h;
+        color: $link-h;
       }
 
       body.mobile &:active {
-        color: $link_h;
-        @include touchtransform();
+        color: $link-h;
+
+        @include touchtransform;
       }
     }
 
-    &.has_newish {
+    &.has-newish {
       span.name {
         background-repeat: no-repeat;
         background-size: 14px;
         background-image: url("/static/images4/newish.png");
-        background-position: 3px 0px;
+        background-position: 3px 0;
+
         @include transition-wtime(300ms, padding, background-position);
       }
 
@@ -436,9 +452,9 @@ div.list {
     }
   }
 
-  &.artist_list,
-  &.group_list,
-  &.listener_list {
+  &.artist-list,
+  &.group-list,
+  &.listener-list {
     div.item {
       padding-left: 22px;
     }
@@ -457,6 +473,7 @@ div.close {
   top: 11px;
   cursor: pointer;
   opacity: 0.6;
+
   @include transform(translateX(-25px));
 
   img {
@@ -466,6 +483,7 @@ div.close {
 
   @media ($phone-media) {
     top: 8px;
+
     @include transform(translateX(-30px));
 
     img {
@@ -477,6 +495,7 @@ div.close {
 
 body.desktop div.close {
   opacity: 0.5;
+
   @include transition-wtime(300ms, opacity);
 
   &:hover {

@@ -1,14 +1,14 @@
 <div class="close" bind="search_close">
   <img src="/static/images4/cancel.png" alt="X" />
 </div>
-<ul class="panel_header">
+<ul class="panel-header">
   <li class="open">
     <a bind="search_header"> {{ $l("search") }} </a>
   </li>
 </ul>
-<div class="searchbox_container" bind="search_box_container">
+<div class="searchbox-container" bind="search_box_container">
   <form bind="search_form">
-    <button class="search_button" bind="search_button">{{ $l("go") }}</button>
+    <button class="search-button" bind="search_button">{{ $l("go") }}</button>
     <div>
       <input
         type="text"
@@ -18,7 +18,7 @@
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
-        class="search_box"
+        class="search-box"
       />
     </div>
   </form>
@@ -26,6 +26,6 @@
   <img src="/static/images4/search_clear.png" class="cancel" bind="search_cancel" />
 </div>
 
-<div bind="search_results_container" class="search_results_container">
-  <div bind="search_results" class="search_results"></div>
+<div bind="search_results_container" class="search-results-container">
+  <div bind="search_results" class="search-results"></div>
 </div>

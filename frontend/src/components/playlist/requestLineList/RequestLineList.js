@@ -27,9 +27,9 @@ var RequestLineList = function (el) {
     item._el.className = "item";
     item._user = document.createElement("div");
     item._song_title = document.createElement("div");
-    item._song_title.className = "requestlist_song";
+    item._song_title.className = "requestlist-song";
     item._album_title = document.createElement("div");
-    item._album_title.className = "requestlist_album";
+    item._album_title.className = "requestlist-album";
     item._el.appendChild(item._user);
     item._el.appendChild(item._song_title);
     item._el.appendChild(item._album_title);

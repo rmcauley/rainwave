@@ -1,6 +1,8 @@
 import { $l } from '../../language';
 
 import type { whatIsCooldownModalContext } from './whatIsCooldownModal.context';
+
+import style from './whatIsCooldownModal.module.scss';
 function whatIsCooldownModal(context: whatIsCooldownModalContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('p');
@@ -10,7 +12,7 @@ function whatIsCooldownModal(context: whatIsCooldownModalContext) {
   v3.appendChild(document.createTextNode($l('cd_why_use_cooldown')));
   v1.appendChild(v3);
   const v4 = document.createElement('table');
-  v4.className = `cooldown_explain`;
+  v4.className = style['cooldown-explain'];
   v1.appendChild(v4);
   const v5 = document.createElement('tr');
   v4.appendChild(v5);
@@ -49,7 +51,7 @@ function whatIsCooldownModal(context: whatIsCooldownModalContext) {
   v17.appendChild(document.createTextNode($l('cd_cooldowns_depend_on')));
   v1.appendChild(v17);
   const v18 = document.createElement('table');
-  v18.className = `cooldown_explain`;
+  v18.className = style['cooldown-explain'];
   v1.appendChild(v18);
   const v19 = document.createElement('tr');
   v18.appendChild(v19);

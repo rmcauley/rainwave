@@ -20,7 +20,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   template.list.appendChild(stretcher);
 
   list.el = document.createElement("div");
-  list.el.className = "list_contents";
+  list.el.className = "list-contents";
   template.list.appendChild(list.el);
 
   var searchBox = template.search_box;
@@ -482,10 +482,10 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   list.doSearchbarStyle = function () {
     if (searchString && visible.length === 0) {
       searchBox.classList.add("error");
-      template.box_container.classList.add("search_error");
+      template.box_container.classList.add("search-error");
     } else {
       searchBox.classList.remove("error");
-      template.box_container.classList.remove("search_error");
+      template.box_container.classList.remove("search-error");
     }
 
     if (searchString.length > 0) {
@@ -588,15 +588,15 @@ var SearchList = function (rootEl, sortKey, searchKey) {
 
   list.doSearchMessage = function () {
     if (visible.length === 0 && searchString) {
-      template._root.classList.add("no_results");
+      template._root.classList.add("no-results");
 
-      template._root.classList.add("search_active");
+      template._root.classList.add("search-active");
     } else if (visible.length === 0 && itemsToDraw.length === 0) {
-      template._root.classList.add("no_results");
-      template._root.classList.remove("search_active");
+      template._root.classList.add("no-results");
+      template._root.classList.remove("search-active");
     } else {
-      template._root.classList.remove("no_results");
-      template._root.classList.remove("search_active");
+      template._root.classList.remove("no-results");
+      template._root.classList.remove("search-active");
     }
   };
 

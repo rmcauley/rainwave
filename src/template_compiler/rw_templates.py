@@ -72,6 +72,9 @@ def solve_ts_imports(
                 f"import {{ $l }} from "
                 f"'{_relative_module_path(template_file_name, 'frontend/src/language/index.ts')}';\n"
             )
+        elif import_name == "style":
+            template_name = template_file_name.split(os.sep)[-1].split(".")[0]
+            import_buffer += f"import style from './{template_name}.module.scss';"
         else:
             imported_template_file_name = template_name_to_filename.get(import_name)
             if not imported_template_file_name:

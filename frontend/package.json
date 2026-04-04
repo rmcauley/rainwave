@@ -4,9 +4,12 @@
   "description": "rainwave.cc",
   "private": true,
   "scripts": {
-    "prepare": "husky",
+    "build": "npm run check:styles && vite build",
+    "check:styles": "node ./scripts/check-scss.mjs",
+    "lint": "eslint . && stylelint \"src/**/*.scss\" && prettier --check .",
+    "lint:styles": "stylelint \"src/**/*.scss\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint:fix": "eslint --fix . && prettier --write ."
+    "lint:fix": "eslint --fix . && stylelint --fix \"src/**/*.scss\" && prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -17,15 +20,20 @@
   "homepage": "https://github.com/rmcauley/rainwave#readme",
   "devDependencies": {
     "@types/node": "20.19.30",
-    "eslint": "9.39.2",
+    "eslint": "9.39.4",
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-n": "17.23.2",
-    "eslint-plugin-unused-imports": "4.3.0",
-    "husky": "9.1.7",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.53.1",
-    "vite": "7.3.1",
+    "eslint-plugin-n": "17.24.0",
+    "eslint-plugin-unused-imports": "4.4.1",
+    "stylelint": "17.6.0",
+    "stylelint-config-recess-order": "7.7.0",
+    "stylelint-config-standard": "40.0.0",
+    "stylelint-config-standard-scss": "17.0.0",
+    "stylelint-order": "8.1.1",
+    "typescript": "6.0.2",
+    "typescript-eslint": "8.58.0",
+    "typescript-plugin-css-modules": "5.2.0",
+    "vite": "8.0.3",
     "vite-plugin-checker": "0.12.0",
-    "vitest": "4.0.18"
+    "vitest": "4.1.2"
   }
 }

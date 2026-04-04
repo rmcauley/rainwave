@@ -1,6 +1,6 @@
 <for each="songs" bind="songs">
   <div
-    class="{{ ^'row ' + (context.cool ? 'cool' : '') + ' ' + (context.fave ? 'song_fave_highlight' : '') + ' ' + (context.requestable ? 'requestable' : 'unrequestable') + ' ' + (context.is_new ? 'is_new' : (context.is_newish ? 'is_newish' : '')) }}"
+    data-old-class="{{ ^'row ' + (context.cool ? 'cool' : '') + ' ' + (context.fave ? 'song-fave-highlight' : '') + ' ' + (context.requestable ? 'requestable' : 'unrequestable') + ' ' + (context.is_new ? 'is-new' : (context.is_newish ? 'is-newish' : '')) }}"
     bind="row"
   >
     <if condition="^!MOBILE">
@@ -9,22 +9,22 @@
           <a class="url" href="{{ url }}" target="_blank"></a>
         </if>
         <else>
-          <div class="fake_url"></div>
+          <div class="fake-url"></div>
         </else>
       </if>
       <if condition="^!Sizing.simple">
-        <div class="cool_info">{{ ^Formatting.cooldown_glance(context.cool_end) }}</div>
+        <div class="cool-info">{{ ^Formatting.cooldown_glance(context.cool_end) }}</div>
         <div class="length">{{ ^Formatting.minute_clock(context.length) }}</div>
       </if>
       <if condition="^User.id > 1">
-        <div class="rating_clear">
+        <div class="rating-clear">
           <img src="/static/images4/rating_clear.png" bind="rating_clear" />
         </div>
       </if>
     </if>
     <template use="rating" />
     <if condition="^!MOBILE && !Sizing.simple">
-      <div class="rating_site">{{ ^Formatting.rating(context.rating) }}</div>
+      <div class="rating-site">{{ ^Formatting.rating(context.rating) }}</div>
     </if>
     <if condition="^!Sizing.simple && context.artists">
       <div class="artists">
@@ -39,10 +39,10 @@
           <a class="url" href="{{ url }}" target="_blank"></a>
         </if>
         <else>
-          <div class="fake_url"></div>
+          <div class="fake-url"></div>
         </else>
       </if>
-      <div class="detail_icon" bind="detail_icon">
+      <div class="detail-icon" bind="detail_icon">
         <img src="/static/images4/info.png" />
       </div>
     </if>

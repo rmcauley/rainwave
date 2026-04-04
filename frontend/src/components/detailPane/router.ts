@@ -107,7 +107,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
     // var type_at_close = current_type;
     // if (type_at_close) {
     // 	setTimeout(function() {
-    // 		if (!document.body.classList.contains("playlist_" + type_at_close)) {
+    // 		if (!document.body.classList.contains("playlist-" + type_at_close)) {
     // 			lists[type_at_close].clear_search();
     // 		}
     // 	}, 400);
@@ -204,13 +204,13 @@ var detectUrlChange = function () {
     oldUrl = location.href;
     let newRoute = getCurrentUrl();
     if (!newRoute) {
-      document.body.classList.remove('search_open');
+      document.body.classList.remove('search-open');
       if (Sizing.simple) {
         document.body.classList.remove('playlist');
         document.body.classList.remove('requests');
         document.body.classList.remove('detail');
         for (const i in tabs) {
-          document.body.classList.remove('playlist_' + i);
+          document.body.classList.remove('playlist-' + i);
         }
       }
       if (activeList && activeList._keyHandle) {
@@ -224,7 +224,7 @@ var detectUrlChange = function () {
     }
     newRoute = newRoute.split('/');
     document.body.classList.remove('requests');
-    document.body.classList.remove('search_open');
+    document.body.classList.remove('search-open');
     if (tabs[newRoute[0]] || views[newRoute[0]]) {
       openRoute(newRoute[0], newRoute[1]);
 
@@ -236,7 +236,7 @@ var detectUrlChange = function () {
       return true;
     } else if (newRoute[0] == 'search') {
       openRoute();
-      document.body.classList.add('search_open');
+      document.body.classList.add('search-open');
       setTimeout(SearchPanel.focus, 300);
 
       return true;
@@ -429,7 +429,7 @@ var openRoute = function (typ, id) {
 
   if (Sizing.simple || lists[typ]) {
     for (const i in tabs) {
-      document.body.classList.remove('playlist_' + i);
+      document.body.classList.remove('playlist-' + i);
     }
   }
   let closeDetail = true;
@@ -438,7 +438,7 @@ var openRoute = function (typ, id) {
     lastOpen = typ;
     lastOpenId = id;
     document.body.classList.add('playlist');
-    document.body.classList.add('playlist_' + typ);
+    document.body.classList.add('playlist-' + typ);
     if (activeList && activeList._keyHandle) {
       activeList.keyNavBlur();
     }

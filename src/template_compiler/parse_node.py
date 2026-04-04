@@ -198,7 +198,8 @@ def parse_html_node(
         if attr_name == "bind":
             binds[attr_val_raw.strip()] = var_name
         elif attr_name == "class" and node.tag != "svg":
-            buffer += f"{var_name}.className={attr_val_parsed};\n"
+            buffer += f"{var_name}.className=style['{attr_val_raw.strip()}'];\n"
+            imports.add("style")
         elif attr_name == "href":
             buffer += f"{var_name}.href={attr_val_parsed};\n"
         elif attr_name == "use" and node.tag == "svg":

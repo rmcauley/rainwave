@@ -1,0 +1,202 @@
+@use "sass:color";
+
+// COLOR DEFINITIONS *****************************************************************************************
+
+// _d   == dark
+// _dd  == very dark
+// _h   == hover
+// _b   == border
+// _bkg == background (if the specificity is necessary - most colors are background colors)
+
+// Primary colors
+$bkg: #1c1d1f;
+$text: #fff;
+$blue: #1f95e5; // primary highlight color
+$orange: #f7941e; // secondary highlight color
+$donor: #ff0;
+$fave: #f7ff9f;
+$link: #6cf6ff;
+$link-h: #a7e1ff;
+$hover-bkg: #143347; // used on table rows and song voting
+$hover-b: #1b4560;
+
+// Darker versions of the primary colors
+$text-d: color.adjust($text, $lightness: -14%);
+$text-dd: color.adjust($text, $lightness: -54%);
+$text-ddd: color.adjust($text, $lightness: -73%);
+$blue-d: color.adjust($blue, $lightness: -5%);
+
+// Stations
+$station-game: #1f95e5; // Rainwave blue
+$station-ocr: #de641b; // OCR Orange
+$station-covers: #b7000f; // Red
+$station-chip: #6e439d; // Indigo
+$station-all: #a8cb2b; // greenish
+
+// Error colors
+$error-b: #f00;
+$error-bkg: color.adjust($error-b, $lightness: -30%);
+$error-bkg-bright: color.adjust($error-b, $lightness: -7%); // used in gradients
+
+// Timeline colors
+$vote-registered: #192d67;
+$song-yours: #18a485;
+$autovoted: color.adjust($song-yours, $lightness: -23%);
+$vote-requester: color.adjust(color.adjust($blue, $saturation: 15%), $lightness: 10%);
+$song-votes: $text-d;
+$song-cool-info: color.mix(
+  $blue,
+  $text,
+  $weight: 70%
+); // when request panel shows you "On cooldown for X"
+$votebtn-h: $blue;
+$votebtn-voted: $blue;
+$timeline-link-h-bkg: color.adjust(
+  color.adjust($vote-registered, $saturation: 10%),
+  $lightness: 19%
+); // when vote hover is active but links need to be differentiated
+$vote-highlight: color.adjust($hover-b, $lightness: 40%);
+
+// List colors (albums/artists/etc)
+$open-item-bkg: #1f4f70; // open album/artist/etc
+$open-item-b: $orange;
+$open-item-fave-bkg: color.adjust($fave, $lightness: -65%);
+$cooldown: #2c2e5c; // album on cooldown, also used for requests on cooldown
+$cooldown-h: color.mix($hover-bkg, $cooldown, $weight: 50%);
+$cooldown-hb: color.adjust($cooldown-h, $lightness: 10%);
+$fave-h: color.adjust($fave, $lightness: -65%);
+$fave-hb: color.adjust(color.adjust($fave, $lightness: -45%), $saturation: -70%);
+$album-incomplete: transparent; // #381e3d;
+$album-incomplete-cool: $cooldown; // #2a162e;
+$new-indicator: $orange; // when album is new
+
+// Panels
+$panel-bkg: color.adjust($bkg, $lightness: 4%);
+$panel-bkg-d: color.adjust(
+  $panel-bkg,
+  $lightness: -2.5%
+); // playlist panel bkg when detail is open at same time
+$panel-b: color.adjust($panel-bkg, $lightness: 19%);
+$tab: $text-dd;
+$tab-b: $text-ddd;
+$tab-open: $text;
+$tab-open-b: $orange;
+$pwrmode-tab: $text;
+$pwrmode-tab-b: $text-ddd;
+$subpanel-separator: $text-ddd; // e.g. below request toolbar
+$search-error-b: color.adjust($error-b, $lightness: -40%);
+$search-on-b: color.adjust($blue, $lightness: -35%);
+
+// Detail Panel
+$details: $text-d; // "Album added on Sep 9th"
+$subheader-b: $text-dd; // Border color of song list table headers
+
+// Lists of Songs
+$row-bkg: transparent;
+$row-bkg-alternating: #1f2123;
+$row-cool-bkg: $cooldown;
+$row-cool-bkg-alternating: #25264d;
+
+// Art
+$art-bkg: #000;
+$art-b: color.adjust($art-bkg, $lightness: 14%);
+$drop-shadow: $art-bkg;
+
+// Requests
+$request-indicator: $text; // +/- indicator for live voting (and a few others)
+$request-indicator-bkg: $orange;
+$request-indicator-neg: $text-d;
+$request-indicator-neg-bkg: #333;
+$requests-paused: #2a073c;
+$requests-warn: color.adjust($error-bkg, $lightness: -10%);
+$request-delete: color.mix($text, $error-b, $weight: 25%);
+$request-delete-bkg: color.adjust($request-delete, $lightness: -55%);
+$request-delete-bkg-a: color.adjust($request-delete, $lightness: -35%);
+$request-drag-bkg: #104b73;
+
+// Rating
+$rating-user-text: $blue;
+$rating-site-text: $text-d;
+$rating-confirm-text: $link-h;
+$rating-hover-text: $blue;
+$rating-touch-start-bkg: color.adjust($blue, $lightness: -15%);
+
+// Scrollbars (for Firefox and IE)
+$scrollbar-b: $text-dd;
+$scrollbar-h: color.adjust($scrollbar-b, $lightness: 20%);
+$scrollbar-drag-b: $orange;
+$scrollbar-drag-bkg: color.adjust($scrollbar-drag-b, $lightness: -20%);
+
+// Settings
+$setting-subheader: $orange;
+$setting-yesno-b: $blue;
+$setting-yesno: #0c5d93;
+
+// Station Select
+$stasel-b: #0b5c89;
+$stasel-bkg: #0b5c89;
+$stasel-h-bkg: #0f74b8;
+
+// Charts
+$chart-label: $text;
+$chart-tooltip: $text;
+$chart-tooltip-bkg: $bkg;
+$chart-tooltip-b: $blue;
+
+// Hotkey Prompt
+$hotkey-b: #2bd1ff;
+$hotkey-bkg: #25b3ff;
+
+// Timeline
+$history-header-h-bkg: #0c3c5c;
+$timeline-header: $orange;
+$progress-bkg: $text-ddd; // the countdown bar to the next song
+$progress-b: $orange;
+
+// Menu colors
+$menu: $text;
+$menu-bkg: $blue;
+$menu-pad-bkg: $blue-d; // outside the main 1024px viewport of basic mode
+$menu-link-open: #1977b7; // e.g. open playlist, look at playlist link bkg
+$submenu-separator: #25b3ff; // e.g.separator between options in tune in menu
+
+$audio-icon-active-fill: #ffb224;
+
+// STYLE MIXINS **********************************************************************************************
+
+@mixin error-colors() {
+  color: $text;
+  border: 1px solid $error-b;
+  background: $error-bkg;
+  background: linear-gradient(180deg, $error-bkg, $error-bkg-bright);
+  background: -webkit-gradient(
+    linear,
+    0% 0%,
+    0% 100%,
+    from($error-bkg-bright),
+    to($error-bkg)
+  );
+}
+
+// SIZE DEFINITIONS  *****************************************************************************************
+
+$menu-transfunc: cubic-bezier(0.77, 0, 0.175, 1);
+$menu-height: 45px;
+$phone-menu-height: 40px;
+$art-size: 70px;
+$art-hover-size: 100px;
+$art-full-size: 320px;
+$art-np-size: 100px;
+$art-np-hover-size: 120px;
+$simple-art-size: 100px;
+$simple-art-hover-size: 120px;
+$simple-np-size: 140px;
+$rating-height: 18px;
+$rating-width: 58px;
+$site-rating: url("/static/images4/rating_bar5/site_gradient.png");
+$user-rating: url("/static/images4/rating_bar5/user_gradient.png");
+$incomplete-rating: url("/static/images4/rating_bar5/incomplete_gradient.png");
+$fav-rating: url("/static/images4/rating_bar5/user_favourite_gradient.png");
+$touch-rating: url("/static/images4/rating_bar5/touch.png");
+$hidden-rating: url("/static/images4/rating_bar5/hidden_global.png");
+$rating-bkg-size: 60px 728px;

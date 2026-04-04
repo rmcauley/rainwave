@@ -36,11 +36,11 @@ var SongList = function () {
     // if (Prefs.get("pwr")) {
     // 	var move_out = function() {
     // 		out_timer = false;
-    // 		scroller.scrollblock.parentNode.classList.remove("panel_open");
+    // 		scroller.scrollblock.parentNode.classList.remove("panel-open");
     // 	};
     // 	var out_timer = false;
     // 	scroller.scrollblock.addEventListener("mouseenter", function() {
-    // 		scroller.scrollblock.parentNode.classList.add("panel_open");
+    // 		scroller.scrollblock.parentNode.classList.add("panel-open");
     // 		if (out_timer) {
     // 			clearTimeout(out_timer);
     // 			out_timer = false;
@@ -344,7 +344,7 @@ var Requests = (function () {
 
   INIT_TASKS.on_draw.push(function () {
     list.onDraw();
-    list.getScroller().scrollblock.classList.add("request_scrollblock");
+    list.getScroller().scrollblock.classList.add("request-scrollblock");
   });
 
   INIT_TASKS.on_init.push(function (rootTemplate) {
@@ -361,7 +361,7 @@ var Requests = (function () {
     rootContainer = rootTemplate.requests_container;
 
     list.helpmsg = document.createElement("div");
-    list.helpmsg.className = "blank_request_message";
+    list.helpmsg.className = "blank-request-message";
     list.helpmsg.textContent = $l("make_a_request");
 
     API.add_callback("requests", list.update);
@@ -411,7 +411,7 @@ var Requests = (function () {
     rootContainer.classList.remove("warning");
     link.classList.remove("warning");
     header.removeAttribute("href");
-    header.classList.add("no_pointer");
+    header.classList.add("no-pointer");
 
     if (User.tuned_in) {
       if (!User.requests_paused) {
@@ -438,7 +438,7 @@ var Requests = (function () {
             position: User.request_position,
           });
           header.setAttribute("href", "#!/request_line");
-          header.classList.remove("no_pointer");
+          header.classList.remove("no-pointer");
         } else {
           header.textContent = $l("Requests");
         }

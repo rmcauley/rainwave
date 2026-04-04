@@ -4,25 +4,25 @@ var albumCallback = null;
 
 var ratingClearToggle = function (v) {
   if (v) {
-    document.body.classList.add("rating_clear_ok");
+    document.body.classList.add("rating-clear-ok");
   } else {
-    document.body.classList.remove("rating_clear_ok");
+    document.body.classList.remove("rating-clear-ok");
   }
 };
 
 var ratingCompleteToggle = function (useComplete) {
   if (useComplete) {
-    document.body.classList.add("show_incomplete");
+    document.body.classList.add("show-incomplete");
   } else {
-    document.body.classList.remove("show_incomplete");
+    document.body.classList.remove("show-incomplete");
   }
 };
 
 var hideGlobalRatingCallback = function (hideGlobals) {
   if (hideGlobals) {
-    document.body.classList.add("hide_global_ratings");
+    document.body.classList.add("hide-global-ratings");
   } else {
-    document.body.classList.remove("hide_global_ratings");
+    document.body.classList.remove("hide-global-ratings");
   }
 };
 
@@ -37,8 +37,8 @@ var ratingApiCallback = function (json) {
   ratings = document.getElementsByName("srate_" + json.song_id);
   for (i = 0; i < ratings.length; i++) {
     if (json.rating_user) {
-      ratings[i].classList.add("rating_user");
-      ratings[i].classList.remove("rating_global");
+      ratings[i].classList.add("rating-user");
+      ratings[i].classList.remove("rating-global");
       ratings[i].ratingStart(json.rating_user);
       ratings[i]._ratingUser = json.rating_user;
       if (ratings[i].lastChild) {
@@ -46,13 +46,13 @@ var ratingApiCallback = function (json) {
       }
       if (
         ratings[i].previousSibling &&
-        ratings[i].previousSibling.classList.contains("rating_clear")
+        ratings[i].previousSibling.classList.contains("rating-clear")
       ) {
         ratings[i].previousSibling.classList.add("capable");
       }
     } else if (json.rating) {
-      ratings[i].classList.remove("rating_user");
-      ratings[i].classList.add("rating_global");
+      ratings[i].classList.remove("rating-user");
+      ratings[i].classList.add("rating-global");
       ratings[i].ratingStart(json.rating);
       ratings[i]._ratingUser = null;
       if (ratings[i].lastChild) {
@@ -60,13 +60,13 @@ var ratingApiCallback = function (json) {
       }
       if (
         ratings[i].previousSibling &&
-        ratings[i].previousSibling.classList.contains("rating_clear")
+        ratings[i].previousSibling.classList.contains("rating-clear")
       ) {
         ratings[i].previousSibling.classList.remove("capable");
       }
     } else {
-      ratings[i].classList.remove("rating_user");
-      ratings[i].classList.add("rating_global");
+      ratings[i].classList.remove("rating-user");
+      ratings[i].classList.add("rating-global");
       ratings[i].ratingStart(0);
       ratings[i]._ratingUser = null;
       if (ratings[i].lastChild) {
@@ -74,7 +74,7 @@ var ratingApiCallback = function (json) {
       }
       if (
         ratings[i].previousSibling &&
-        ratings[i].previousSibling.classList.contains("rating_clear")
+        ratings[i].previousSibling.classList.contains("rating-clear")
       ) {
         ratings[i].previousSibling.classList.remove("capable");
       }
@@ -87,31 +87,31 @@ var ratingApiCallback = function (json) {
       ratings = document.getElementsByName("arate_" + a.id);
       for (i = 0; i < ratings.length; i++) {
         if (a.rating_user) {
-          ratings[i].classList.add("rating_user");
-          ratings[i].classList.remove("rating_global");
+          ratings[i].classList.add("rating-user");
+          ratings[i].classList.remove("rating-global");
           ratings[i].ratingStart(a.rating_user);
           if (ratings[i].lastChild) {
             ratings[i].lastChild.textContent = Formatting.rating(a.rating_user);
           }
         } else if (a.rating) {
-          ratings[i].classList.remove("rating_user");
-          ratings[i].classList.add("rating_global");
+          ratings[i].classList.remove("rating-user");
+          ratings[i].classList.add("rating-global");
           ratings[i].ratingStart(a.rating);
           if (ratings[i].lastChild) {
             ratings[i].lastChild.textContent = "";
           }
         } else {
-          ratings[i].classList.remove("rating_user");
-          ratings[i].classList.add("rating_global");
+          ratings[i].classList.remove("rating-user");
+          ratings[i].classList.add("rating-global");
           ratings[i].ratingStart(0);
           if (ratings[i].lastChild) {
             ratings[i].lastChild.textContent = "";
           }
         }
         if (!a.rating_complete) {
-          ratings[i].classList.add("rating_incomplete");
+          ratings[i].classList.add("rating-incomplete");
         } else {
-          ratings[i].classList.remove("rating_incomplete");
+          ratings[i].classList.remove("rating-incomplete");
         }
       }
       if (albumCallback) {
@@ -216,7 +216,7 @@ var touchend = function () {
   }
   touchTimer = setTimeout(clearTouch, 30);
   if (touchingSong) {
-    touchingSong.$t.rating.classList.remove("starting_touch");
+    touchingSong.$t.rating.classList.remove("starting-touch");
   }
   document.body.removeEventListener("touchend", touchend);
   document.body.removeEventListener("touchcancel", touchend);
@@ -241,11 +241,11 @@ var triggerTouchRating = function (e) {
   document.body.addEventListener("touchend", touchend);
   document.body.addEventListener("touchcancel", touchend);
 
-  touchingSong.$t.rating.classList.add("starting_touch");
+  touchingSong.$t.rating.classList.add("starting-touch");
 
   var holdToRate = document.createElement("div");
   holdToRate.textContent = $l("hold_to_rate");
-  holdToRate.className = "hold_to_rate";
+  holdToRate.className = "hold-to-rate";
   touchingSong.$t.rating.appendChild(holdToRate);
   holdToRates.push(holdToRate);
 
@@ -275,7 +275,7 @@ var doTouchRating = function () {
   var zeroX =
     touchingSong.$t.rating.offsetLeft + ratingWidth - sliderWidth - 10;
   var zeroY = lastTouch.touches[0].pageY;
-  touchingSong.$t.rating.classList.remove("starting_touch");
+  touchingSong.$t.rating.classList.remove("starting-touch");
   var t = RWTemplates.rating_mobile();
   var cancelling = false;
   var nowNumber = 5;
@@ -287,7 +287,7 @@ var doTouchRating = function () {
     }
     Fx.removeElement(t.el);
     if (touchingSong && touchingSong.el) {
-      touchingSong.el.classList.remove("on_top");
+      touchingSong.el.classList.remove("on-top");
     }
     touchingSong = false;
     document.body.removeEventListener("touchmove", touchmove);
@@ -331,7 +331,7 @@ var doTouchRating = function () {
   touchmove(lastTouch);
   requestAnimationFrame(function () {
     if (touchingSong.el) {
-      touchingSong.el.classList.add("on_top");
+      touchingSong.el.classList.add("on-top");
     }
     t.el.classList.add("show");
   });
@@ -339,7 +339,7 @@ var doTouchRating = function () {
 
 var doRating = function (newRating, json) {
   var confirm = document.createElement("div");
-  confirm.className = "rating_number rating_confirm";
+  confirm.className = "rating-number rating-confirm";
   confirm.textContent = Formatting.rating(newRating);
   confirm.style[Fx.transform] =
     "translateX(" + Math.round((newRating / 5.0) * 50 - 15) + "px) scaleX(0.2)";
@@ -353,7 +353,7 @@ var doRating = function (newRating, json) {
     } else {
       confirm.textContent = "!";
     }
-    confirm.classList.add("bad_rating");
+    confirm.classList.add("bad-rating");
     setTimeout(function () {
       confirm.style.opacity = "0";
       setTimeout(function () {
@@ -424,16 +424,16 @@ var register = function (json) {
     else registerAlbum(json);
 
     if (json.rating_user) {
-      json.$t.rating.classList.add("rating_user");
-      json.$t.rating.classList.remove("rating_global");
+      json.$t.rating.classList.add("rating-user");
+      json.$t.rating.classList.remove("rating-global");
       if (json.$t.rating_clear) {
         json.$t.rating_clear.parentNode.classList.add("capable");
       }
     } else {
-      json.$t.rating.classList.add("rating_global");
+      json.$t.rating.classList.add("rating-global");
     }
   } else {
-    json.$t.rating.classList.remove("rating_global");
+    json.$t.rating.classList.remove("rating-global");
   }
   json.$t.rating.ratingSet(json.rating_user || json.rating);
 
@@ -449,17 +449,17 @@ var register = function (json) {
 
 var registerAlbum = function (json) {
   json.$t.rating.setAttribute("name", "arate_" + json.id);
-  json.$t.rating.classList.add("album_rating");
+  json.$t.rating.classList.add("album-rating");
 
   if (!json.rating_complete) {
-    json.$t.rating.classList.add("rating_incomplete");
+    json.$t.rating.classList.add("rating-incomplete");
   } else {
-    json.$t.rating.classList.remove("rating_incomplete");
+    json.$t.rating.classList.remove("rating-incomplete");
   }
 };
 
 var registerSong = function (json) {
-  json.$t.rating.classList.add("song_rating");
+  json.$t.rating.classList.add("song-rating");
   json.$t.rating.setAttribute("name", "srate_" + json.id);
 
   if (json.$t.rating_clear) {

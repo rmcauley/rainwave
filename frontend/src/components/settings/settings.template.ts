@@ -4,6 +4,8 @@ import { settingsMultiOption } from './settingsMultiOption.template';
 import { settingsYesNo } from './settingsYesNo.template';
 
 import type { settingsContext } from './settings.context';
+
+import style from './settings.module.scss';
 function settings(context: settingsContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('with');
@@ -11,7 +13,7 @@ function settings(context: settingsContext) {
   v1.appendChild(v2);
   v2.appendChild(settingsMultiOption(context).$root);
   const v3 = document.createElement('div');
-  v3.className = `power_only`;
+  v3.className = style['power-only'];
   v1.appendChild(v3);
   const v4 = document.createElement('with');
   v4.setAttribute('context', `hkm`);
@@ -25,7 +27,7 @@ function settings(context: settingsContext) {
   }
   const v6 = document.createElement('div');
   v6.appendChild(document.createTextNode($l('site_mode')));
-  v6.className = `setting_subheader`;
+  v6.className = style['setting-subheader'];
   v1.appendChild(v6);
   const v7 = document.createElement('with');
   v7.setAttribute('context', `pwr`);
@@ -33,7 +35,7 @@ function settings(context: settingsContext) {
   v7.appendChild(settingsYesNo(context).$root);
   const v8 = document.createElement('div');
   v8.appendChild(document.createTextNode($l('tab_title_preferences')));
-  v8.className = `setting_subheader`;
+  v8.className = style['setting-subheader'];
   v1.appendChild(v8);
   const v9 = document.createElement('with');
   v9.setAttribute('context', `t_tl`);
@@ -49,14 +51,14 @@ function settings(context: settingsContext) {
   v11.appendChild(settingsYesNo(context).$root);
   const v12 = document.createElement('div');
   v12.appendChild(document.createTextNode($l('font_options')));
-  v12.className = `setting_subheader`;
+  v12.className = style['setting-subheader'];
   v1.appendChild(v12);
   const v13 = document.createElement('with');
   v13.setAttribute('context', `roboto`);
   v1.appendChild(v13);
   v13.appendChild(settingsYesNo(context).$root);
   const v14 = document.createElement('div');
-  v14.className = `power_only`;
+  v14.className = style['power-only'];
   v1.appendChild(v14);
   const v15 = document.createElement('with');
   v15.setAttribute('context', `f_norm`);
@@ -64,14 +66,14 @@ function settings(context: settingsContext) {
   v15.appendChild(settingsYesNo(context).$root);
   const v16 = document.createElement('div');
   v16.appendChild(document.createTextNode($l('timeline_preferences')));
-  v16.className = `setting_subheader`;
+  v16.className = style['setting-subheader'];
   v1.appendChild(v16);
   const v17 = document.createElement('with');
   v17.setAttribute('context', `l_displose`);
   v1.appendChild(v17);
   v17.appendChild(settingsYesNo(context).$root);
   const v18 = document.createElement('div');
-  v18.className = `power_only`;
+  v18.className = style['power-only'];
   v1.appendChild(v18);
   const v19 = document.createElement('with');
   v19.setAttribute('context', `l_stksz`);
@@ -79,7 +81,7 @@ function settings(context: settingsContext) {
   v19.appendChild(settingsMultiOption(context).$root);
   const v20 = document.createElement('div');
   v20.appendChild(document.createTextNode($l('playlist_preferences')));
-  v20.className = `setting_subheader`;
+  v20.className = style['setting-subheader'];
   v18.appendChild(v20);
   const v21 = document.createElement('with');
   v21.setAttribute('context', `p_sort`);
@@ -107,7 +109,7 @@ function settings(context: settingsContext) {
   v26.appendChild(settingsYesNo(context).$root);
   const v27 = document.createElement('div');
   v27.appendChild(document.createTextNode($l('rating_preferences')));
-  v27.className = `setting_subheader`;
+  v27.className = style['setting-subheader'];
   v18.appendChild(v27);
   const v28 = document.createElement('with');
   v28.setAttribute('context', `r_incmplt`);

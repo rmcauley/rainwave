@@ -31,7 +31,7 @@ var SettingsWindow = function () {
       p.r_incmplt.$t.wrap.classList.remove("disabled");
     }
   };
-  p.r_incmplt.$t.wrap.classList.add("r_incmplt");
+  p.r_incmplt.$t.wrap.classList.add("r-incmplt");
   incompleteCheck(Prefs.get("r_incmplt"), Prefs.get("p_null1"));
 
   var boolSetup = function (key, obj) {
@@ -50,7 +50,7 @@ var SettingsWindow = function () {
         obj.$t.wrap.classList.remove("yes");
       }
       if (key == "pwr") {
-        ct._root.parentNode.classList.add("modal_closing");
+        ct._root.parentNode.classList.add("modal-closing");
         window.location.reload();
       }
     };

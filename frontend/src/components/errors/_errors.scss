@@ -1,5 +1,6 @@
-.error_tooltip {
+.error-tooltip {
   @include transition-wtime(300ms, opacity);
+
   position: absolute;
   padding: 0.2em;
   z-index: 10000;
@@ -8,6 +9,6 @@
 }
 
 .error,
-.error_tooltip {
-  @include error_colors();
+.error-tooltip {
+  @include error-colors;
 }

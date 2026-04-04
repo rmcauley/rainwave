@@ -1,4 +1,4 @@
-div.panel.songlist_panel {
+div.panel.songlist-panel {
   z-index: 101;
 
   div.scrollblock {
@@ -13,6 +13,7 @@ div.panel.songlist_panel {
   body.simple.requests & {
     opacity: 1;
     visibility: visible;
+
     @include transform(translateX(-100%));
   }
 
@@ -24,10 +25,11 @@ div.panel.songlist_panel {
     padding: 0 10px;
 
     &.dragging {
-      @include no-transition();
+      @include no-transition;
+
       opacity: 1;
       z-index: 2;
-      background-color: $request_drag_bkg;
+      background-color: $request-drag-bkg;
     }
 
     &.deleted {
@@ -37,30 +39,30 @@ div.panel.songlist_panel {
   }
 
   &.dragging div.song {
-    -webkit-transition-duration: 300ms;
     transition-duration: 300ms;
   }
 
   &.warning,
   body.simple &.warning {
-    background-color: $requests_warn;
+    background-color: $requests-warn;
   }
 
   &.paused,
   body.simple &.paused,
   &.warning.paused,
   body.simple &.warning.paused {
-    background-color: $requests_paused;
+    background-color: $requests-paused;
   }
 
   body.full & {
     z-index: 102;
     width: 420px;
     left: 100%;
+
     @include transition-wtime(300ms, transform, background-color);
     @include transform(translateX(-90px));
 
-    ul.request_icons {
+    ul.request-icons {
       margin-top: 9px;
       padding-bottom: 5px;
       border-bottom-width: 1px;
@@ -69,6 +71,7 @@ div.panel.songlist_panel {
         border-bottom: none;
         visibility: hidden;
         opacity: 0;
+
         @include transition-wtime(300ms, opacity, visibility);
       }
     }
@@ -77,26 +80,27 @@ div.panel.songlist_panel {
       padding: 0 20px;
     }
 
-    div.art_anchor {
+    div.art-anchor {
       @include transition-wtime(300ms, transform);
       @include transform(translateX(-30px));
     }
 
-    div.request_cancel {
+    div.request-cancel {
       opacity: 0;
     }
 
     div.scrollable {
       width: 420px;
+
       @include transition-wtime(300ms, transform);
     }
 
     &:hover,
     &.dragging,
-    &.panel_open {
+    &.panel-open {
       @include transform(translateX(-100%));
 
-      ul.request_icons li {
+      ul.request-icons li {
         visibility: visible;
         opacity: 0.5;
 
@@ -105,11 +109,11 @@ div.panel.songlist_panel {
         }
       }
 
-      div.art_anchor {
+      div.art-anchor {
         @include transform(none);
       }
 
-      div.request_cancel {
+      div.request-cancel {
         opacity: 0.6;
 
         &:hover {
@@ -120,14 +124,16 @@ div.panel.songlist_panel {
   }
 }
 
-ul.request_icons {
+ul.request-icons {
   text-align: center;
 
   li {
     margin: 0 5px;
     display: inline;
     color: $text;
+
     @include transition-wtime(300ms, opacity);
+
     cursor: pointer;
 
     body.desktop & {
@@ -138,7 +144,7 @@ ul.request_icons {
       }
     }
 
-    @media (max-width: 400px) {
+    @media (width <= 400px) {
       margin: 0 10px;
 
       span {
@@ -147,16 +153,16 @@ ul.request_icons {
     }
   }
 
-  li.requests_play {
+  li.requests-play {
     display: none;
   }
 
   div.paused & {
-    li.requests_pause {
+    li.requests-pause {
       display: none;
     }
 
-    li.requests_play {
+    li.requests-play {
       display: inline;
     }
   }
@@ -169,22 +175,22 @@ ul.request_icons {
   }
 }
 
-div.request_cancel {
+div.request-cancel {
   cursor: pointer;
   float: left;
   position: relative;
-  padding: 0 2px 2px 2px;
-  border: solid 1px $text_ddd;
+  border: solid 1px $text-ddd;
   border-right: none;
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
   height: 54px;
   margin-top: 8px;
-  padding: 14px 0px;
+  padding: 14px 0;
   box-sizing: border-box;
   font-size: larger;
   text-align: center;
   width: 20px;
+
   @include transition-wtime(
     300ms,
     border-color,
@@ -203,16 +209,16 @@ div.request_cancel {
 
   &:hover,
   &:active {
-    border-color: $request_delete;
-    color: $request_delete;
-    background-color: $request_delete_bkg;
+    border-color: $request-delete;
+    color: $request-delete;
+    background-color: $request-delete-bkg;
   }
 
   &:active {
-    @include no-transition();
-    background: $request_delete_bkg_a;
-    -webkit-box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-    box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+    @include no-transition;
+
+    background: $request-delete-bkg-a;
+    box-shadow: inset 2px 2px 5px 0 rgb(0 0 0 / 75%);
   }
 
   body.mobile & {
@@ -220,7 +226,7 @@ div.request_cancel {
   }
 }
 
-div.request_sort_grab {
+div.request-sort-grab {
   z-index: 2;
   position: absolute;
   width: 100%;
@@ -228,6 +234,7 @@ div.request_sort_grab {
   background-color: #000;
   cursor: grab;
   opacity: 0;
+
   @include transition(opacity);
 
   body.desktop div.song:hover & {
@@ -248,8 +255,8 @@ div.request_sort_grab {
   }
 }
 
-div.blank_request_message {
-  color: $text_d;
+div.blank-request-message {
+  color: $text-d;
   text-align: center;
   padding: 10px;
 
@@ -263,21 +270,23 @@ div.plusminus {
   position: absolute;
   z-index: 1;
   padding: 4px;
-  background: $request_indicator_bkg;
+  background: $request-indicator-bkg;
   height: 100%;
   opacity: 0;
-  color: $request_indicator;
-  @include transform(translateX(0px));
+  color: $request-indicator;
+
+  @include transform(translateX(0));
   @include transition-wtime(300ms, transform, opacity);
 
   &.negative,
   &.equal {
-    color: $request_indicator_neg;
-    background: $request_indicator_neg_bkg;
+    color: $request-indicator-neg;
+    background: $request-indicator-neg-bkg;
   }
 
   div.header &.show {
     opacity: 1;
+
     @include transform(translateX(-100%));
   }
 
@@ -300,8 +309,8 @@ div.plusminus {
   }
 
   @media ($phone-media) {
-    height: $phone_menu_height;
+    height: $phone-menu-height;
     box-sizing: border-box;
-    padding: 11px 7px 0px 7px;
+    padding: 11px 7px 0;
   }
 }

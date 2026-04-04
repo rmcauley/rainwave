@@ -1,13 +1,11 @@
+@use "../../cssFunctions" as css;
+@use "../../styles/theme" as theme;
+
 div.fave {
   width: 14px;
   height: 13px;
   display: none;
   margin-top: 4px;
-
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
   user-select: none;
 
   img {
@@ -15,34 +13,35 @@ div.fave {
     height: 13px;
     position: absolute;
     opacity: 0;
-    @include transition-wtime(200ms, opacity);
+
+    @include css.transition-wtime(200ms, opacity);
   }
 
-  &.is_fave {
-    img.fave_solid {
+  &.is-fave {
+    img.fave-solid {
       opacity: 1;
     }
   }
 
-  &.fave_clicked {
-    img.fave_solid {
+  &.fave-clicked {
+    img.fave-solid {
       opacity: 0.5;
     }
   }
 
-  body.logged_in & {
+  body.logged-in & {
     display: inline-block;
     cursor: pointer;
   }
 
-  body.logged_in.desktop & {
-    &:hover img.fave_lined {
+  body.logged-in.desktop & {
+    &:hover img.fave-lined {
       opacity: 1;
     }
   }
 
   body.full.small & {
-    margin-top: 0px;
+    margin-top: 0;
   }
 
   body.full.small div.detail & {
@@ -51,31 +50,31 @@ div.fave {
 
   // this only appears in lists for mobile versions
   // and the CSS for album lists and song lists has slightly different CSS :/
-  body.logged_in.mobile & {
+  body.logged-in.mobile & {
     position: relative;
     display: inline-block;
     width: 30px;
-    margin-top: 0px;
+    margin-top: 0;
     padding: 2px 0;
-    border: solid 1px $text_ddd;
+    border: solid 1px theme.$text-ddd;
     border-radius: 3px;
 
     img {
       padding: 0 8px;
     }
 
-    img.fave_lined {
+    img.fave-lined {
       opacity: 0.7;
     }
 
-    &.is_fave {
-      img.fave_lined {
+    &.is-fave {
+      img.fave-lined {
         opacity: 0;
       }
     }
   }
 
-  body.logged_in.mobile div.list & {
+  body.logged-in.mobile div.list & {
     top: 3px;
   }
 

@@ -1,7 +1,9 @@
-$pc-media: unquote("min-width: 1050px");
-$mobile-media: unquote("max-width: 1049px");
-$tablet-media: unquote("min-width: 600px and max-width: 1049px");
-$phone-media: unquote("max-width: 599px");
+@use "sass:string";
+
+$pc-media: string.unquote("min-width: 1050px");
+$mobile-media: string.unquote("max-width: 1049px");
+$tablet-media: string.unquote("min-width: 600px and max-width: 1049px");
+$phone-media: string.unquote("max-width: 599px");
 
 /* easeOutQuart */
 $transfunc: cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -11,8 +13,8 @@ $transtime: 700ms $transfunc;
   transition: none;
 }
 
-@mixin transform($transform_string...) {
-  transform: $transform_string;
+@mixin transform($transform-string...) {
+  transform: $transform-string;
 }
 
 @mixin transform-origin($t) {
@@ -28,9 +30,11 @@ $transtime: 700ms $transfunc;
 }
 
 @mixin transition-wtime($customtime, $trans...) {
-  $nice_rules: "";
+  $nice-rules: "";
+
   @each $rule in $trans {
     $finaltranstime: $customtime;
+
     @if $rule == LINKCOLOR {
       $rule: color;
       $finaltranstime: 150ms;
@@ -38,12 +42,15 @@ $transtime: 700ms $transfunc;
       $rule: transform;
       $finaltranstime: 150ms;
     }
-    @if $nice_rules != "" {
-      $nice_rules: $nice_rules + ", ";
+
+    @if $nice-rules != "" {
+      $nice-rules: $nice-rules + ", ";
     }
-    $nice_rules: unquote($nice_rules + $rule + " " + $finaltranstime);
+
+    $nice-rules: string.unquote($nice-rules + $rule + " " + $finaltranstime);
   }
-  transition: $nice_rules;
+
+  transition: $nice-rules;
 }
 
 @mixin transition($trans...) {

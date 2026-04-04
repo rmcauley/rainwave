@@ -2,42 +2,43 @@ div.rating {
   position: relative;
   float: right;
   background-repeat: no-repeat;
-  background-image: $site_rating;
-  background-size: $rating_bkg_size;
-  width: $rating_width;
+  background-image: $site-rating;
+  background-size: $rating-bkg-size;
+  width: $rating-width;
   padding: 0;
   margin: 0;
-  color: $rating_hover_text;
-  height: $rating_height;
+  color: $rating-hover-text;
+  height: $rating-height;
 
   body.full {
-    width: $rating_width + 23px;
+    width: $rating-width + 23px;
   }
 
-  &.starting_touch {
+  &.starting-touch {
     @include transition-wtime(300ms, background-color);
-    background-color: $rating_touch_start_bkg;
+
+    background-color: $rating-touch-start-bkg;
   }
 
-  &.rating_user {
-    background-image: $user_rating;
+  &.rating-user {
+    background-image: $user-rating;
 
-    div.song_fave_highlight &.song_rating {
+    div.song-fave-highlight &.song-rating {
       color: $fave;
-      background-image: $fav_rating;
+      background-image: $fav-rating;
     }
 
-    div.album_fave_highlight &.album_rating {
+    div.album-fave-highlight &.album-rating {
       color: $fave;
-      background-image: $fav_rating;
+      background-image: $fav-rating;
 
-      body.show_incomplete &.rating_incomplete {
-        background-image: $incomplete_rating;
+      body.show-incomplete &.rating-incomplete {
+        background-image: $incomplete-rating;
       }
     }
 
-    body.show_incomplete &.rating_incomplete {
-      background-image: $incomplete_rating;
+    body.show-incomplete &.rating-incomplete {
+      background-image: $incomplete-rating;
     }
   }
 
@@ -45,14 +46,15 @@ div.rating {
     cursor: pointer;
 
     &:hover {
-      @include no-transition();
-      background-image: $user_rating;
+      @include no-transition;
+
+      background-image: $user-rating;
     }
   }
 
-  body.desktop div.song_fave_highlight &.ratable.song_rating:hover {
+  body.desktop div.song-fave-highlight &.ratable.song-rating:hover {
     color: $fave;
-    background-image: $fav_rating;
+    background-image: $fav-rating;
   }
 
   body.simple.desktop &.ratable:hover {
@@ -63,89 +65,97 @@ div.rating {
     margin-left: 30px;
   }
 
-  div.rating_number {
+  div.rating-number {
     position: absolute;
-    height: $rating_height;
+    height: $rating-height;
     width: 23px;
     padding-right: 2px;
     opacity: 0;
     text-align: center;
     visibility: hidden;
-    @include transition-wtime(200ms, opacity, transform, visibility);
-    @include transform(translateX(0px));
 
-    &.listener_number {
+    @include transition-wtime(200ms, opacity, transform, visibility);
+    @include transform(translateX(0));
+
+    &.listener-number {
       color: $text;
     }
 
-    &.rating_confirm {
-      background: $rating_confirm_text;
-      color: $rating_confirm_text;
+    &.rating-confirm {
+      background: $rating-confirm-text;
+      color: $rating-confirm-text;
       overflow: hidden;
       visibility: visible;
 
-      $color_transtime: 500ms;
-      $opacity_transtime: 200ms;
-      $wait_transtime: 2s;
-      $confirm_transtime: 300ms;
+      $color-transtime: 500ms;
+      $opacity-transtime: 200ms;
+      $wait-transtime: 2s;
+      $confirm-transtime: 300ms;
 
       &.confirming {
         opacity: 1;
-        @include transform(translateX(0px) scaleX(1) !important);
-        -webkit-transition: color $color_transtime, opacity $opacity_transtime,
-          background $color_transtime, -webkit-transform $wait_transtime;
-        transition: color $color_transtime, opacity $opacity_transtime,
-          background $color_transtime, transform $wait_transtime;
+
+        @include transform(translateX(0) scaleX(1) !important);
+
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, -webkit-transform $wait-transtime;
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, transform $wait-transtime;
       }
 
       &.confirmed {
         background: transparent;
         color: $text;
+
         @include transform(translateX(-25px) scaleX(1) !important);
-        -webkit-transition: color $color_transtime, opacity $opacity_transtime,
-          background $color_transtime, -webkit-transform $confirm_transtime;
-        transition: color $color_transtime, opacity $opacity_transtime,
-          background $color_transtime, transform $confirm_transtime;
+
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, -webkit-transform $confirm-transtime;
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, transform $confirm-transtime;
       }
 
-      &.bad_rating {
-        background: $error_bkg;
+      &.bad-rating {
+        background: $error-bkg;
         color: $text;
+
         @include transform(translateX(-25px) scaleX(1) !important);
-        -webkit-transition: color $color_transtime, opacity $opacity_transtime,
-          background $color_transtime, -webkit-transform $confirm_transtime;
-        transition: color $color_transtime, opacity $opacity_transtime,
-          background $color_transtime, transform $confirm_transtime;
+
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, -webkit-transform $confirm-transtime;
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, transform $confirm-transtime;
       }
     }
   }
 
-  body.desktop &:hover div.rating_hover,
-  body.full & div.rating_hover {
+  body.desktop &:hover div.rating-hover,
+  body.full & div.rating-hover {
     opacity: 1;
     visibility: visible;
+
     @include transform(translateX(-25px));
   }
 
   body.desktop &:hover {
-    div.rating_confirm + div.rating_hover,
-    div.rating_confirm + div.rating_number {
+    div.rating-confirm + div.rating-hover,
+    div.rating-confirm + div.rating-number {
       opacity: 0;
     }
   }
 
-  div.rating_confirm + div.rating_number {
+  div.rating-confirm + div.rating-number {
     opacity: 0 !important;
   }
 
-  div.rating_confirm.fading + div.rating_hover {
+  div.rating-confirm.fading + div.rating-hover {
     opacity: 1 !important;
   }
 
-  div.hold_to_rate {
+  div.hold-to-rate {
     position: absolute;
-    border: solid 1px $text_dd;
-    box-shadow: 0px 0px 6px 3px $drop_shadow;
+    border: solid 1px $text-dd;
+    box-shadow: 0 0 6px 3px $drop-shadow;
     left: 100%;
     top: -2.5em;
     overflow: hidden;
@@ -153,28 +163,29 @@ div.rating {
     color: $text;
     padding: 2px 5px;
     background: $bkg;
+
     @include transform(translateX(-100%));
   }
 }
 
-body.simple div.timeline div.album_rating {
+body.simple div.timeline div.album-rating {
   display: none;
 }
 
-body.hide_global_ratings {
-  div.rating.rating_global {
-    background-image: $hidden_rating;
+body.hide-global-ratings {
+  div.rating.rating-global {
+    background-image: $hidden-rating;
 
-    & + div.rating_site {
+    & + div.rating-site {
       visibility: hidden;
     }
   }
 }
 
-div.rating_clear {
+div.rating-clear {
   display: none;
 
-  body.logged_in.rating_clear_ok & {
+  body.logged-in.rating-clear-ok & {
     display: block;
     visibility: hidden;
 
@@ -198,36 +209,39 @@ div.rating_clear {
   }
 }
 
-div.mobile_rating {
-  $slider_width: 200px;
-  width: $slider_width;
+div.mobile-rating {
+  $slider-width: 200px;
+
+  width: $slider-width;
   z-index: 98;
   position: absolute;
   opacity: 0;
   left: 100%;
   background: $bkg;
   padding: 20px 15px 10px 5px;
-  border: solid 1px $text_dd;
-  box-shadow: 0px 0px 6px 3px $drop_shadow;
+  border: solid 1px $text-dd;
+  box-shadow: 0 0 6px 3px $drop-shadow;
+
   @include transform(translateX(-100%) translateY(-1em));
   @include transition-wtime(200ms, opacity, transform);
 
   &.show {
     opacity: 1;
+
     @include transform(translateX(-100%) translateY(-2.5em));
   }
 
   div.slider {
-    width: $slider_width;
+    width: $slider-width;
     height: 48px;
     background-repeat: none;
-    background-image: $touch_rating;
+    background-image: $touch-rating;
     background-size: 200px 2496px;
   }
 
-  div.slide_number {
+  div.slide-number {
     position: absolute;
-    top: 0px;
+    top: 0;
     font-weight: bold;
   }
 }

@@ -1,14 +1,14 @@
 <if condition="^context.artists.length">
   <h2>{{ $l("Artists") }}</h2>
   <for each="artists" bind="artists">
-    <div class="row row_artist">
+    <div class="row row-artist">
       <div class="title">
         <a href="#!/artist/{{ id }}" bind="title">{{ name }}</a>
       </div>
     </div>
   </for>
   <if condition="^context.artists.length >= 50">
-    <div class="row search_oob">{{ $l("search_result_limit") }}</div>
+    <div class="row search-oob">{{ $l("search_result_limit") }}</div>
   </if>
 </if>
 
@@ -16,7 +16,7 @@
   <h2>{{ $l("Albums") }}</h2>
   <for each="albums" bind="albums">
     <div
-      class="{{ ^'row row_album ' + (context.cool ? 'cool' : '') + ' ' + (context.fave ? 'song_fave_highlight' : '') }}"
+      data-old-class="{{ ^'row row-album ' + (context.cool ? 'cool' : '') + ' ' + (context.fave ? 'song-fave-highlight' : '') }}"
     >
       <template use="rating" />
       <template use="fave" />
@@ -26,7 +26,7 @@
     </div>
   </for>
   <if condition="^context.albums.length >= 50">
-    <div class="row search_oob">{{ $l("search_result_limit") }}</div>
+    <div class="row search-oob">{{ $l("search_result_limit") }}</div>
   </if>
 </if>
 
@@ -34,6 +34,6 @@
   <h2>{{ $l("Songs") }}</h2>
   <template use="songTable" />
   <if condition="^context.songs.length >= 100">
-    <div class="row search_oob">{{ $l("search_result_limit") }}</div>
+    <div class="row search-oob">{{ $l("search_result_limit") }}</div>
   </if>
 </if>

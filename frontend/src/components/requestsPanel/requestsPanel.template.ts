@@ -1,34 +1,36 @@
 import { $l } from '../../language';
 
 import type { requestsPanelContext } from './requestsPanel.context';
+
+import style from './requestsPanel.module.scss';
 function requestsPanel(context: requestsPanelContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
-  v2.className = `close`;
+  v2.className = style.close;
   v1.appendChild(v2);
   const v3 = document.createElement('img');
   v3.setAttribute('src', `/static/images4/cancel.png`);
   v3.setAttribute('alt', `X`);
   v2.appendChild(v3);
   const v4 = document.createElement('ul');
-  v4.className = `panel_header`;
+  v4.className = style['panel-header'];
   v1.appendChild(v4);
   const v5 = document.createElement('li');
-  v5.className = `open`;
+  v5.className = style.open;
   v4.appendChild(v5);
   const v6 = document.createElement('a');
   v6.appendChild(document.createTextNode($l('Requests')));
   v5.appendChild(v6);
   if (!Sizing.simple) {
     const v7 = document.createElement('div');
-    v7.className = `plusminus`;
+    v7.className = style.plusminus;
     v1.appendChild(v7);
   }
   const v8 = document.createElement('ul');
-  v8.className = `panel_header request_icons unselectable`;
+  v8.className = style['panel-header request-icons unselectable'];
   v1.appendChild(v8);
   const v9 = document.createElement('li');
-  v9.className = `pause_queue`;
+  v9.className = style['pause-queue'];
   v8.appendChild(v9);
   const v10 = document.createElement('img');
   v10.setAttribute('src', `/static/images4/request_pause.png`);
@@ -37,7 +39,7 @@ function requestsPanel(context: requestsPanelContext) {
   v11.appendChild(document.createTextNode($l('Suspend')));
   v9.appendChild(v11);
   const v12 = document.createElement('li');
-  v12.className = `pause_queue`;
+  v12.className = style['pause-queue'];
   v8.appendChild(v12);
   const v13 = document.createElement('img');
   v13.setAttribute('src', `/static/images4/request_play.png`);
@@ -72,7 +74,7 @@ function requestsPanel(context: requestsPanelContext) {
   const v24 = document.createElement('div');
   v1.appendChild(v24);
   const v25 = document.createElement('div');
-  v25.className = `song`;
+  v25.className = style.song;
   v25.setAttribute('style', `visibility: hidden; z-index: -1; transition: none`);
   v24.appendChild(v25);
   

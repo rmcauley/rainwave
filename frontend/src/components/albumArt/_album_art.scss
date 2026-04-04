@@ -1,24 +1,25 @@
-div.art_anchor {
+div.art-anchor {
   position: relative;
   float: left;
-  width: $art_size;
-  height: $art_size;
+  width: $art-size;
+  height: $art-size;
   margin-right: 10px;
   z-index: 1;
 }
 
-div.art_container {
+div.art-container {
   position: absolute;
   text-align: center;
-  border-color: $art_b;
-  border-width: 0px;
+  border-color: $art-b;
+  border-width: 0;
   border-style: solid;
   background-color: $bkg;
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
-  width: $art_size;
-  height: $art_size;
+  width: $art-size;
+  height: $art-size;
+
   @include transition-wtime(
     300ms,
     width,
@@ -28,7 +29,7 @@ div.art_container {
     transform
   );
 
-  div.art_full_size {
+  div.art-full-size {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -37,48 +38,49 @@ div.art_container {
     background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;
+
     @include transition-wtime(500ms, opacity);
   }
 
-  &.art_expandable {
+  &.art-expandable {
     cursor: pointer;
 
     &:hover {
       border-width: 2px;
-      width: $art_hover_size;
-      height: $art_hover_size;
-      box-shadow: 3px 3px 5px $drop_shadow;
+      width: $art-hover-size;
+      height: $art-hover-size;
+      box-shadow: 3px 3px 5px $drop-shadow;
 
       body.simple & {
-        width: $simple_np_size;
-        height: $simple_np_size;
+        width: $simple-np-size;
+        height: $simple-np-size;
       }
     }
 
-    &.art_expanded,
-    &.art_expanded:hover {
-      width: $art_full_size !important;
-      height: $art_full_size !important;
-      box-shadow: 3px 3px 5px $drop_shadow;
+    &.art-expanded,
+    &.art-expanded:hover {
+      width: $art-full-size !important;
+      height: $art-full-size !important;
+      box-shadow: 3px 3px 5px $drop-shadow;
 
-      div.art_full_size.loaded {
+      div.art-full-size.loaded {
         opacity: 1;
       }
     }
 
-    &.art_expand_left.art_expand_up {
+    &.art-expand-left.art-expand-up {
       @include transform(translate(-200px, -200px) !important);
     }
 
-    &.art_expand_left.art_expand_down {
+    &.art-expand-left.art-expand-down {
       @include transform(translate(-250px, 0) !important);
     }
 
-    &.art_expand_right.art_expand_up {
+    &.art-expand-right.art-expand-up {
       @include transform(translate(0, -200px) !important);
     }
 
-    &.art_expand_right.art_expand_down {
+    &.art-expand-right.art-expand-down {
       @include transform(translate(0, 0));
     }
   }

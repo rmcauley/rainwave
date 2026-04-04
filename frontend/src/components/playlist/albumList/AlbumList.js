@@ -1,6 +1,6 @@
 var AlbumList = function (el) {
   var list = SearchList(el);
-  list.$t.list.classList.add("album_list_core");
+  list.$t.list.classList.add("album-list-core");
 
   var loading = false;
 
@@ -93,7 +93,7 @@ var AlbumList = function (el) {
       return;
     }
 
-    if (Sizing.simple && !document.body.classList.contains("playlist_album")) {
+    if (Sizing.simple && !document.body.classList.contains("playlist-album")) {
       list.unload();
     } else {
       list.load();
@@ -177,11 +177,11 @@ var AlbumList = function (el) {
     item._el_fave.className = "fave";
     item._el.appendChild(item._el_fave);
     var faveLined = document.createElement("img");
-    faveLined.className = "fave_lined";
+    faveLined.className = "fave-lined";
     faveLined.src = "/static/images4/heart_lined.png";
     item._el_fave.appendChild(faveLined);
     var faveSolid = document.createElement("img");
-    faveSolid.className = "fave_solid";
+    faveSolid.className = "fave-solid";
     faveSolid.src = "/static/images4/heart_solid_gold.png";
     item._el_fave.appendChild(faveSolid);
     item._el_fave._fave_id = item.id;
@@ -208,23 +208,23 @@ var AlbumList = function (el) {
   list.updateItemElement = function (item) {
     if (!item._el) return;
 
-    item._el_fave.classList.remove("fave_clicked");
+    item._el_fave.classList.remove("fave-clicked");
     if (item.fave) {
-      item._el.classList.add("album_fave_highlight");
-      item._el_fave.classList.add("is_fave");
+      item._el.classList.add("album-fave-highlight");
+      item._el_fave.classList.add("is-fave");
     } else {
-      item._el.classList.remove("album_fave_highlight");
-      item._el_fave.classList.remove("is_fave");
+      item._el.classList.remove("album-fave-highlight");
+      item._el_fave.classList.remove("is-fave");
     }
 
     if (item.rating_complete) {
-      item._el.classList.remove("rating_incomplete");
+      item._el.classList.remove("rating-incomplete");
     } else {
-      item._el.classList.add("rating_incomplete");
+      item._el.classList.add("rating-incomplete");
     }
 
     if (item.rating_user) {
-      item._el.classList.add("rating_user");
+      item._el.classList.add("rating-user");
       // R4
       // item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 6) + "px";
       // R5
@@ -233,7 +233,7 @@ var AlbumList = function (el) {
         (-(Math.round(Math.round(item.rating_user * 10) / 2) * 28) + 6) +
         "px";
     } else {
-      item._el.classList.remove("rating_user");
+      item._el.classList.remove("rating-user");
       // R4
       // item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round((item.rating || 0) * 10) / 2)) * 30) + 6) + "px";
       // R5

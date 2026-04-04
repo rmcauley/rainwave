@@ -15,9 +15,9 @@ var ListenerView = function (json, el) {
 
   for (i = 0; i < json.top_albums.length; i++) {
     Rating.fake_effect(json.top_albums[i], json.top_albums[i].rating);
-    json.top_albums[i].$t.rating_hover_number.classList.add("listener_number");
+    json.top_albums[i].$t.rating_hover_number.classList.add("listener-number");
     if (json.user_id == User.id) {
-      json.top_albums[i].$t.rating.classList.add("rating_user");
+      json.top_albums[i].$t.rating.classList.add("rating-user");
     }
   }
 
@@ -43,12 +43,12 @@ var ListenerView = function (json, el) {
     }
     if (data.length > 0) {
       var hdr = document.createElement("div");
-      hdr.className = "graph_header";
+      hdr.className = "graph-header";
       hdr.textContent = headerText;
       detailContainer.appendChild(hdr);
       var chrt = HDivChart(data, { addShareToLabel: true });
       if (overflowHidden) {
-        chrt.classList.add("overflow_hidden");
+        chrt.classList.add("overflow-hidden");
       }
       detailContainer.appendChild(chrt);
     }
@@ -65,13 +65,13 @@ var ListenerView = function (json, el) {
   chart = RatingChart(json);
   if (chart) {
     hdr = document.createElement("div");
-    hdr.className = "graph_header";
+    hdr.className = "graph-header";
     hdr.textContent = $l("rating_spread");
     detailContainer.appendChild(hdr);
     detailContainer.appendChild(chart);
 
     hdr = document.createElement("div");
-    hdr.className = "graph_header";
+    hdr.className = "graph-header";
     hdr.textContent = $l("average_rating_by_station");
     detailContainer.appendChild(hdr);
     var found;
@@ -95,7 +95,7 @@ var ListenerView = function (json, el) {
             ],
             { max: 5, guideLines: 5 },
           );
-          chart.classList.add("chart_overflow");
+          chart.classList.add("chart-overflow");
           detailContainer.appendChild(chart);
         }
       }
@@ -110,7 +110,7 @@ var ListenerView = function (json, el) {
           ],
           { max: 5, guideLines: 5 },
         );
-        chart.classList.add("chart_overflow");
+        chart.classList.add("chart-overflow");
         detailContainer.appendChild(chart);
       }
     }
@@ -133,7 +133,7 @@ var ListenerView = function (json, el) {
   //draw_chart(json.ratings_by_station, "ratings", $l("rating_counts_across_stations"), true);
 
   hdr = document.createElement("div");
-  hdr.className = "graph_header";
+  hdr.className = "graph-header";
   hdr.textContent = $l("ratings_completion_rate");
   detailContainer.appendChild(hdr);
   for (i = 0; i < Stations.length; i++) {
@@ -150,7 +150,7 @@ var ListenerView = function (json, el) {
       ],
       { max: 100, guideLines: 5 },
     );
-    chart.classList.add("chart_overflow");
+    chart.classList.add("chart-overflow");
     detailContainer.appendChild(chart);
   }
 

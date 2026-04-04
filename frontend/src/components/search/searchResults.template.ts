@@ -1,9 +1,12 @@
 import { $l } from '../../language';
-import { songTable } from '../detail/songTable/songTable.template';
+import { songTable } from '../detailPane/songTable/songTable.template';
 import { fave } from '../fave/fave.template';
 import { rating } from '../ratings/rating.template';
 
 import type { searchResultsContext } from './searchResults.context';
+
+import style from './searchResults.module.scss';
+
 function searchResults(context: searchResultsContext) {
   const v1 = document.createDocumentFragment();
   if (context.artists.length) {
@@ -13,10 +16,10 @@ function searchResults(context: searchResultsContext) {
     const v3 = context.artists.map((context) => {
       const v4 = document.createDocumentFragment();
       const v5 = document.createElement('div');
-      v5.className = `row row_artist`;
+      v5.className = style['row row-artist'];
       v4.appendChild(v5);
       const v6 = document.createElement('div');
-      v6.className = `title`;
+      v6.className = style.title;
       v5.appendChild(v6);
       const v7 = document.createElement('a');
       v7.appendChild(document.createTextNode(context.name));
@@ -29,7 +32,7 @@ return { title: v7, $root: v4 };
     if (context.artists.length >= 50) {
       const v8 = document.createElement('div');
       v8.appendChild(document.createTextNode($l('search_result_limit')));
-      v8.className = `row search_oob`;
+      v8.className = style['row search-oob'];
       v1.appendChild(v8);
     }
   }
@@ -40,16 +43,18 @@ return { title: v7, $root: v4 };
     const v10 = context.albums.map((context) => {
       const v11 = document.createDocumentFragment();
       const v12 = document.createElement('div');
-      v12.className =
-        'row row_album ' +
-        (context.cool ? 'cool' : '') +
-        ' ' +
-        (context.fave ? 'song_fave_highlight' : '');
+      v12.setAttribute(
+        'data-old-class',
+        'row row-album ' +
+          (context.cool ? 'cool' : '') +
+          ' ' +
+          (context.fave ? 'song-fave-highlight' : ''),
+      );
       v11.appendChild(v12);
       v12.appendChild(rating(context).$root);
       v12.appendChild(fave(context).$root);
       const v13 = document.createElement('div');
-      v13.className = `title`;
+      v13.className = style.title;
       v12.appendChild(v13);
       const v14 = document.createElement('a');
       v14.appendChild(document.createTextNode(context.name));
@@ -62,7 +67,7 @@ return { title: v14, $root: v11 };
     if (context.albums.length >= 50) {
       const v15 = document.createElement('div');
       v15.appendChild(document.createTextNode($l('search_result_limit')));
-      v15.className = `row search_oob`;
+      v15.className = style['row search-oob'];
       v1.appendChild(v15);
     }
   }
@@ -74,7 +79,7 @@ return { title: v14, $root: v11 };
     if (context.songs.length >= 100) {
       const v17 = document.createElement('div');
       v17.appendChild(document.createTextNode($l('search_result_limit')));
-      v17.className = `row search_oob`;
+      v17.className = style['row search-oob'];
       v1.appendChild(v17);
     }
   }

@@ -18,7 +18,7 @@ var RWEvent = function (event) {
     event.songs[i] = Song(event.songs[i], event);
     if (
       event.songs[i].$t.art &&
-      event.songs[i].$t.art.classList.contains("art_expandable")
+      event.songs[i].$t.art.classList.contains("art-expandable")
     ) {
       event.songs[i].$t.art._reset_router = true;
     }
@@ -29,9 +29,9 @@ var RWEvent = function (event) {
     for (var i = 0; i < event.songs.length; i++) {
       event.songs[i].el.style[Fx.transform] =
         "translateY(" + runningHeight + "px)";
-      if (event.songs[i].el.classList.contains("now_playing")) {
+      if (event.songs[i].el.classList.contains("now-playing")) {
         runningHeight += Sizing.songSizeNp;
-      } else if (event.songs[i].el.classList.contains("song_lost")) {
+      } else if (event.songs[i].el.classList.contains("song-lost")) {
         if (Prefs.get("l_displose")) {
           runningHeight += Sizing.songSize + rwSongGap;
         }
@@ -69,9 +69,9 @@ var RWEvent = function (event) {
   };
 
   event.recalculateHeight = function () {
-    if (event.$t.el.classList.contains("sched_next")) {
+    if (event.$t.el.classList.contains("sched-next")) {
       event.height = event.songs.length * (Sizing.songSize + rwSongGap);
-    } else if (event.$t.el.classList.contains("sched_current")) {
+    } else if (event.$t.el.classList.contains("sched-current")) {
       if (Prefs.get("l_displose")) {
         event.height =
           (event.songs.length - 1) * (Sizing.songSize + rwSongGap) +
@@ -79,7 +79,7 @@ var RWEvent = function (event) {
       } else {
         event.height = Sizing.songSizeNp + rwSongGap;
       }
-    } else if (event.$t.el.classList.contains("sched_history")) {
+    } else if (event.$t.el.classList.contains("sched-history")) {
       event.height = Sizing.songSize + rwSongGap;
     }
     if (event.showingHeader && !event.history)
@@ -87,17 +87,17 @@ var RWEvent = function (event) {
   };
 
   event.changeToComingUp = function (isContinuing) {
-    event.$t.el.classList.remove("sched_history");
-    event.$t.el.classList.remove("sched_current");
-    event.$t.el.classList.add("sched_next");
+    event.$t.el.classList.remove("sched-history");
+    event.$t.el.classList.remove("sched-current");
+    event.$t.el.classList.add("sched-next");
     event.setHeaderText(isContinuing ? $l("continued") : $l("coming_up"));
     event.recalculateHeight();
   };
 
   event.changeToNowPlaying = function () {
-    event.$t.el.classList.remove("sched_next");
-    event.$t.el.classList.remove("sched_history");
-    event.$t.el.classList.add("sched_current");
+    event.$t.el.classList.remove("sched-next");
+    event.$t.el.classList.remove("sched-history");
+    event.$t.el.classList.add("sched-current");
     Clock.pageClock = event.$t.clock;
     if (event.songs && event.songs.length > 1) {
       // other places in the code rely on songs[0] to be the winning song
@@ -109,9 +109,9 @@ var RWEvent = function (event) {
     if (event.songs[0].autovoted) {
       event.songs[0].remove_autovote();
     }
-    event.songs[0].el.classList.add("now_playing");
+    event.songs[0].el.classList.add("now-playing");
     for (var i = 1; i < event.songs.length; i++) {
-      event.songs[i].el.classList.add("song_lost");
+      event.songs[i].el.classList.add("song-lost");
     }
     event.disableVoting();
     event.setHeaderText($l("now_playing"));
@@ -121,16 +121,16 @@ var RWEvent = function (event) {
   };
 
   event.changeToHistory = function () {
-    event.$t.el.classList.remove("sched_current");
-    event.$t.el.classList.remove("sched_next");
-    event.$t.el.classList.add("sched_history");
+    event.$t.el.classList.remove("sched-current");
+    event.$t.el.classList.remove("sched-next");
+    event.$t.el.classList.add("sched-history");
     event.history = true;
     event.songs.sort(function (a, b) {
       return a.entry_position < b.entry_position ? -1 : 1;
     });
-    event.songs[0].el.classList.remove("now_playing");
+    event.songs[0].el.classList.remove("now-playing");
     for (var i = 1; i < event.songs.length; i++) {
-      event.songs[i].el.classList.add("song_lost");
+      event.songs[i].el.classList.add("song-lost");
       Fx.removeElement(event.songs[i].el);
     }
     if (event.$t.progress.parentNode) Fx.removeElement(event.$t.progress);
@@ -145,8 +145,8 @@ var RWEvent = function (event) {
     for (var i = 0; i < event.songs.length; i++) {
       event.songs[i].enableVoting();
       if (
-        event.songs[i].el.classList.contains("voting_registered") ||
-        event.songs[i].el.classList.contains("voting_clicked")
+        event.songs[i].el.classList.contains("voting-registered") ||
+        event.songs[i].el.classList.contains("voting-clicked")
       ) {
         alreadyVoted = true;
       } else if (event.songs[i].elec_request_user_id == User.id) {
@@ -159,7 +159,7 @@ var RWEvent = function (event) {
       if (Prefs.get("pwr")) {
         event.songs[selfRequest].el.classList.add("autovoted");
       } else {
-        event.songs[selfRequest].el.classList.add("voting_registered");
+        event.songs[selfRequest].el.classList.add("voting-registered");
       }
     }
   };
@@ -192,12 +192,12 @@ var RWEvent = function (event) {
   };
 
   event.hideHeader = function () {
-    event.el.classList.add("no_header");
+    event.el.classList.add("no-header");
     event.showingHeader = false;
   };
 
   event.showHeader = function () {
-    event.el.classList.remove("no_header");
+    event.el.classList.remove("no-header");
     event.showingHeader = true;
   };
 

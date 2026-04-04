@@ -1,5 +1,5 @@
-<div class="searchbox_container" bind="box_container">
-  <div class="searchlist_loading_bar" bind="loading_bar"></div>
+<div class="searchbox-container" bind="box_container">
+  <div class="searchlist-loading-bar" bind="loading_bar"></div>
   <input
     type="text"
     bind="search_box"
@@ -8,16 +8,16 @@
     autocorrect="off"
     autocapitalize="off"
     spellcheck="false"
-    class="search_box"
+    class="search-box"
     disabled
   />
   <img src="/static/images4/search.png" class="search" />
   <img src="/static/images4/search_clear.png" class="cancel" bind="cancel" />
 </div>
 
-<div class="no_result_message" bind="no_result_message">{{ $l("empty_list") }}</div>
-<div class="no_result_message while_search_active" bind="no_result_search_active_message">
+<div class="no-result-message" bind="no_result_message">{{ $l("empty_list") }}</div>
+<div class="no-result-message while-search-active" bind="no_result_search_active_message">
   {{ $l("no_search_results") }}
 </div>
 
-<div bind="list" class="list_contents"></div>
+<div bind="list" class="list-contents"></div>

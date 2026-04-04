@@ -1,39 +1,41 @@
 import { timelineSong } from '../timelineSong/timelineSong.template';
 
 import type { eventContext } from './event.context';
+
+import style from './event.module.scss';
 function event(context: eventContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
-  v2.className = `timeline_event timeline_` + context.type;
+  v2.className = style['timeline-event timeline-{{ type }}'];
   v1.appendChild(v2);
   const v3 = document.createElement('div');
-  v3.className = `timeline_event_animator`;
+  v3.className = style['timeline-event-animator'];
   v2.appendChild(v3);
   const v4 = document.createElement('div');
-  v4.className = `timeline_header`;
+  v4.className = style['timeline-header'];
   v3.appendChild(v4);
   const v5 = document.createElement('span');
-  v5.className = `timeline_header_clock`;
+  v5.className = style['timeline-header-clock'];
   v4.appendChild(v5);
   if (context.url) {
     const v6 = document.createElement('a');
-    v6.className = `header_text`;
+    v6.className = style['header-text'];
     v6.href = context.url;
     v6.setAttribute('target', `_blank`);
     v4.appendChild(v6);
   } else {
     const v7 = document.createElement('span');
-    v7.className = `header_text`;
+    v7.className = style['header-text'];
     v4.appendChild(v7);
   }
   const v8 = document.createElement('div');
-  v8.className = `progress`;
+  v8.className = style.progress;
   v3.appendChild(v8);
   const v9 = document.createElement('div');
-  v9.className = `progress_bkg`;
+  v9.className = style['progress-bkg'];
   v8.appendChild(v9);
   const v10 = document.createElement('div');
-  v10.className = `progress_inside`;
+  v10.className = style['progress-inside'];
   v9.appendChild(v10);
   const v11 = context.songs.map((context) => {
     const v12 = document.createDocumentFragment();

@@ -1,5 +1,5 @@
 #hotkey,
-#hotkey_error {
+#hotkey-error {
   position: absolute;
   display: inline-block;
   padding: 10px;
@@ -11,23 +11,24 @@
   z-index: 5;
   text-align: center;
   left: 50%;
+
   @include transform(translate(-50%, -100%));
 }
 
 #hotkey {
-  background: $hotkey_bkg;
-  border-color: $hotkey_b;
+  background: $hotkey-bkg;
+  border-color: $hotkey-b;
 
-  body.hotkey_on & {
+  body.hotkey-on & {
     @include transform(translate(-50%, 0%));
   }
 }
 
-#hotkey_error {
-  background: $error_bkg;
-  border-color: $error_b;
+#hotkey-error {
+  background: $error-bkg;
+  border-color: $error-b;
 
-  body.hotkey_error & {
+  body.hotkey-error & {
     @include transform(translate(-50%, 0%));
   }
 }

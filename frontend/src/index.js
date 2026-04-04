@@ -191,7 +191,7 @@ function rainwaveInit() {
   // var draw = function() {
   // 	var i;
   if (User.id > 1) {
-    document.body.classList.add("logged_in");
+    document.body.classList.add("logged-in");
   }
   if (Prefs.get("pwr")) {
     document.body.classList.add("full");

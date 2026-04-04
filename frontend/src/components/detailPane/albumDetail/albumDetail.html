@@ -1,20 +1,20 @@
-<div class="art_anchor">
-  <div bind="art" class="art_container"></div>
+<div class="art-anchor">
+  <div bind="art" class="art-container"></div>
 </div>
 
-<div class="detail_header" bind="detail_header">
+<div class="detail-header" bind="detail_header">
   <if condition="new_indicator">
-    <div class="{{ new_indicator_class }}">{{ new_indicator }}</div>
+    <div data-old-class="{{ new_indicator_class }}">{{ new_indicator }}</div>
   </if>
   <if condition="all_cooldown">
-    <div class="album_all_cooldown" bind="album_all_cooldown">
+    <div class="album-all-cooldown" bind="album_all_cooldown">
       <span>{{ $l("album_all_cooldown") }}</span>
       <sup>?</sup>
     </div>
   </if>
   <else>
     <if condition="has_cooldown">
-      <div class="album_has_cooldown" bind="album_has_cooldown">
+      <div class="album-has-cooldown" bind="album_has_cooldown">
         <span>{{ $l("album_has_cooldown") }}</span>
         <sup>?</sup>
       </div>
@@ -51,7 +51,7 @@
       </if>
       <else>
         <div bind="category_rollover">{{ $l("relevant_categories_rollover")}}</div>
-        <div bind="category_list" class="category_list">
+        <div bind="category_list" class="category-list">
           <for each="genres" bind="genres">
             <a href="#!/group/{{ id }}">{{ name }}</a>
           </for>
@@ -61,9 +61,9 @@
   </if>
   <if condition="^User.perks">
     <div>
-      <a class="fave_all_songs" bind="fave_all_songs">{{ $l("fave_all_songs") }}</a>
+      <a class="fave-all-songs" bind="fave_all_songs">{{ $l("fave_all_songs") }}</a>
       <span>-</span>
-      <a class="unfave_all_songs" bind="unfave_all_songs">{{ $l("unfave_all_songs") }}</a>
+      <a class="unfave-all-songs" bind="unfave_all_songs">{{ $l("unfave_all_songs") }}</a>
     </div>
   </if>
 </div>

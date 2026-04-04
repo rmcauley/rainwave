@@ -75,9 +75,9 @@ var RWAudioConstructor = function () {
 
   var userTuneinCheck = function (json) {
     if (json.tuned_in) {
-      document.body.classList.add('tuned_in');
+      document.body.classList.add('tuned-in');
     } else {
-      document.body.classList.remove('tuned_in');
+      document.body.classList.remove('tuned-in');
     }
     if (!player.isPlaying) return;
     if (lastUserTuneinCheck < Clock.now - 300) {

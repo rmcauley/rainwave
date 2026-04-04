@@ -10,7 +10,7 @@ function showTooltipError(json: RainwaveSchemas['error']): void {
     return;
   }
   const err = document.createElement('div');
-  err.className = 'error_tooltip';
+  err.className = 'error-tooltip';
   err.textContent = json.text || $l(json.tl_key);
 
   let x = Mouse.x - 5;

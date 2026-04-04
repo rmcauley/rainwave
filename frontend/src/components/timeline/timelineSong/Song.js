@@ -62,23 +62,23 @@ var Song = function (song, parentEvent) {
         return;
       }
     }
-    if (!song.el.classList.contains('voting_enabled')) {
+    if (!song.el.classList.contains('voting-enabled')) {
       return;
     }
     if (
-      (!song.autovoted && song.el.classList.contains('voting_registered')) ||
-      song.el.classList.contains('voting_clicked')
+      (!song.autovoted && song.el.classList.contains('voting-registered')) ||
+      song.el.classList.contains('voting-clicked')
     ) {
       return;
     }
     if (song.autovoted) {
       song.el.classList.remove('autovoted');
-      song.el.classList.remove('voting_registered');
+      song.el.classList.remove('voting-registered');
       song.autovoted = false;
     }
-    song.el.classList.add('voting_clicked');
+    song.el.classList.add('voting-clicked');
     API.async_get('vote', { entry_id: song.entry_id }, null, function () {
-      song.el.classList.remove('voting_clicked');
+      song.el.classList.remove('voting-clicked');
     });
   };
 
@@ -103,17 +103,17 @@ var Song = function (song, parentEvent) {
 
     if (template.rating) {
       if (song.rating_user) {
-        template.rating.classList.add('rating_user');
-      } else if (!template.rating.classList.contains('rating_user')) {
-        template.rating.classList.remove('rating_user');
+        template.rating.classList.add('rating-user');
+      } else if (!template.rating.classList.contains('rating-user')) {
+        template.rating.classList.remove('rating-user');
         template.rating.rating_set(song.rating);
       }
     }
     if (song.albums[0].$t.rating) {
       if (song.albums[0].rating_user) {
-        song.albums[0].$t.rating.classList.add('rating_user');
-      } else if (!song.albums[0].$t.rating.classList.contains('rating_user')) {
-        song.albums[0].$t.rating.classList.remove('rating_user');
+        song.albums[0].$t.rating.classList.add('rating-user');
+      } else if (!song.albums[0].$t.rating.classList.contains('rating-user')) {
+        song.albums[0].$t.rating.classList.remove('rating-user');
         song.albums[0].$t.rating.rating_set(song.albums[0].rating);
       }
     }
@@ -150,17 +150,17 @@ var Song = function (song, parentEvent) {
   };
 
   song.enableVoting = function () {
-    song.el.classList.add('voting_enabled');
+    song.el.classList.add('voting-enabled');
   };
 
   song.disableVoting = function () {
-    song.el.classList.remove('voting_enabled');
+    song.el.classList.remove('voting-enabled');
   };
 
   song.clearVotingStatus = function () {
-    song.el.classList.remove('voting_clicked');
-    song.el.classList.remove('voting_registered');
-    song.el.classList.remove('voting_enabled');
+    song.el.classList.remove('voting-clicked');
+    song.el.classList.remove('voting-registered');
+    song.el.classList.remove('voting-enabled');
     if (song.$t.vote_button_text) {
       song.$t.vote_button_text.textContent = $l('vote');
     }
@@ -173,8 +173,8 @@ var Song = function (song, parentEvent) {
 
   song.registerVote = function () {
     song.removeAutovote();
-    song.el.classList.remove('voting_clicked');
-    song.el.classList.add('voting_registered');
+    song.el.classList.remove('voting-clicked');
+    song.el.classList.add('voting-registered');
     if (song.$t.vote_button_text) {
       song.$t.vote_button_text.textContent = $l('voted');
     }
@@ -186,8 +186,8 @@ var Song = function (song, parentEvent) {
   };
 
   song.unregisterVote = function () {
-    song.el.classList.remove('voting_clicked');
-    song.el.classList.remove('voting_registered');
+    song.el.classList.remove('voting-clicked');
+    song.el.classList.remove('voting-registered');
     if (song.$t.vote_button_text) {
       song.$t.vote_button_text.textContent = $l('vote');
     }

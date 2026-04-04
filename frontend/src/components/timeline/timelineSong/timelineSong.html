@@ -1,47 +1,47 @@
 <div bind="root" class="song">
   <if condition="request_id">
-    <div class="request_cancel" bind="cancel">
-      <span class="request_cancel_x">x</span>
+    <div class="request-cancel" bind="cancel">
+      <span class="request-cancel-x">x</span>
     </div>
   </if>
 
   <if condition="^context.entry_id">
-    <div class="song_highlight song_highlight_left"></div>
-    <div class="song_highlight song_highlight_right"></div>
-    <div class="song_highlight song_highlight_topleft"></div>
-    <div class="song_highlight song_highlight_topright"></div>
-    <div class="song_highlight song_highlight_bottomleft"></div>
-    <div class="song_highlight song_highlight_bottomright"></div>
+    <div class="song-highlight song-highlight-left"></div>
+    <div class="song-highlight song-highlight-right"></div>
+    <div class="song-highlight song-highlight-topleft"></div>
+    <div class="song-highlight song-highlight-topright"></div>
+    <div class="song-highlight song-highlight-bottomleft"></div>
+    <div class="song-highlight song-highlight-bottomright"></div>
   </if>
 
   <if condition="^context.entry_id && !MOBILE && Sizing.simple">
-    <div class="vote_button">
-      <span class="vote_button_rotate" bind="vote_button_text">{{ $l("vote") }}</span>
+    <div class="vote-button">
+      <span class="vote-button-rotate" bind="vote_button_text">{{ $l("vote") }}</span>
     </div>
   </if>
 
-  <div class="art_anchor">
+  <div class="art-anchor">
     <if condition="request_id">
-      <div class="request_sort_grab" bind="request_drag">
+      <div class="request-sort-grab" bind="request_drag">
         <img src="/static/images4/sort.svg" />
       </div>
     </if>
-    <div bind="art" class="art_container">
+    <div bind="art" class="art-container">
       <if condition="^context._is_timeline && User.sid === 5">
         <div
-          class="power_only song_station_indicator song_station_indicator_{{ origin_sid }}"
+          class="power-only song-station-indicator song-station-indicator-{{ origin_sid }}"
         ></div>
       </if>
 
       <if condition="elec_request_user_id">
         <if condition="^context.elec_request_user_id == User.id">
-          <div class="requester your_request">
+          <div class="requester your-request">
             <if condition="^!MOBILE">
               <a href="#!/listener/{{ elec_request_user_id }}"> {{ elec_request_username }} </a>
             </if>
             <else> {{ elec_request_username }} </else>
           </div>
-          <div class="request_indicator your_request">
+          <div class="request-indicator your-request">
             {{ $l("timeline_art__your_request_indicator") }}
           </div>
         </if>
@@ -52,17 +52,17 @@
             </if>
             <else> {{ elec_request_username }} </else>
           </div>
-          <div class="request_indicator">{{ $l("timeline_art__request_indicator") }}</div>
+          <div class="request-indicator">{{ $l("timeline_art__request_indicator") }}</div>
         </else>
       </if>
     </div>
   </div>
 
-  <div class="song_content">
+  <div class="song-content">
     <template use="rating" />
 
     <if condition="^context.entry_id">
-      <div class="entry_votes">
+      <div class="entry-votes">
         <span bind="votes"></span>
       </div>
     </if>
@@ -85,7 +85,7 @@
 		-->
 
     <if condition="request_id">
-      <div class="cooldown_info" bind="cooldown"></div>
+      <div class="cooldown-info" bind="cooldown"></div>
     </if>
     <else>
       <div class="artist">
@@ -96,8 +96,8 @@
       </div>
 
       <if condition="url">
-        <div class="song_link_container">
-          <a class="song_link" href="{{ url }}" target="_blank"> {{ link_text }} </a>
+        <div class="song-link-container">
+          <a class="song-link" href="{{ url }}" target="_blank"> {{ link_text }} </a>
         </div>
       </if>
     </else>

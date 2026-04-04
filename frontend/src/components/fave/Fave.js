@@ -12,13 +12,13 @@ function changeFave(elName, json, favetype) {
   var faves = document.getElementsByName(elName);
   var funcn = json.fave ? "add" : "remove";
   for (var i = 0; i < faves.length; i++) {
-    faves[i].classList[funcn]("is_fave");
-    faves[i].classList.remove("fave_clicked");
+    faves[i].classList[funcn]("is-fave");
+    faves[i].classList.remove("fave-clicked");
     if (faves[i].parentNode)
-      faves[i].parentNode.classList[funcn](favetype + "_fave_highlight");
+      faves[i].parentNode.classList[funcn](favetype + "-fave-highlight");
     if (faves[i]._go_one_up)
       faves[i].parentNode.parentNode.classList[funcn](
-        favetype + "_fave_highlight",
+        favetype + "-fave-highlight",
       );
   }
 
@@ -45,7 +45,7 @@ function albumFaveUpdate(json) {
 function doFave(e) {
   if (!this._fave_id) return;
   if (e && e.stopPropagation) e.stopPropagation();
-  var setTo = !this.classList.contains("is_fave");
+  var setTo = !this.classList.contains("is-fave");
   if (
     this.getAttribute("name") &&
     this.getAttribute("name").substring(0, 5) == "sfave"
@@ -54,17 +54,17 @@ function doFave(e) {
   } else {
     API.async_get("fave_album", { fave: setTo, album_id: this._fave_id });
   }
-  this.classList.add("fave_clicked");
+  this.classList.add("fave-clicked");
 }
 
 function register(json, isAlbum) {
   if (User.id <= 1) return;
   if (json.fave) {
-    json.$t.fave.classList.add("is_fave");
+    json.$t.fave.classList.add("is-fave");
     if (json.$t.fave.parentNode) {
       if (isAlbum)
-        json.$t.fave.parentNode.classList.add("album_fave_highlight");
-      else json.$t.fave.parentNode.classList.add("song_fave_highlight");
+        json.$t.fave.parentNode.classList.add("album-fave-highlight");
+      else json.$t.fave.parentNode.classList.add("song-fave-highlight");
     }
   }
   json.$t.fave.setAttribute(
