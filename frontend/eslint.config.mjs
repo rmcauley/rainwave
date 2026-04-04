@@ -204,6 +204,7 @@ export default defineConfig([
     files: ['**/*.template.ts'],
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
 ]);

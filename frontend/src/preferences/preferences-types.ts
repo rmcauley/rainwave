@@ -7,8 +7,7 @@ interface Preferences {
   indicateIncompleteAlbums: boolean;
   hideGlobalRatings: boolean;
   showDeleteRatingButton: boolean;
-  showRatingInTitle: boolean;
-  showClockInTitle: boolean;
+  showClockInTitle: 'default' | 'on' | 'off';
   showSongInTitle: boolean;
   playlistSort: 'alphabetical' | 'rating';
   playlistUnratedFirst: boolean;
@@ -33,7 +32,6 @@ const POWER_MODE_ONLY_PREFERENCES: Array<keyof Preferences> = [
   'indicateIncompleteAlbums',
   'hideGlobalRatings',
   'showDeleteRatingButton',
-  'showRatingInTitle',
   'playlistSort',
   'playlistUnratedFirst',
   'playlistFavesFirst',

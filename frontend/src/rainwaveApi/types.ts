@@ -25,6 +25,8 @@ type RainwaveParams<A extends RainwaveAction> = JsonBody<OperationForAction<A>>;
 type RainwaveResponse<A extends RainwaveAction> = JsonResponse<OperationForAction<A>>;
 
 type TimelineEntry = components['schemas']['_timeline_entry'];
+type TimelineSong = components['schemas']['_timeline_song'];
+type RainwaveUser = components['schemas']['user'];
 type RainwaveSchemas = components['schemas'];
 
 interface RainwaveBootstrap {
@@ -56,4 +58,6 @@ export type {
   TimelineEntry,
   RainwaveSchemas,
   RainwaveBootstrap,
+  TimelineSong,
+  RainwaveUser,
 };

@@ -1,10 +1,9 @@
+import { getServerTime } from '../helpers/clock';
 import { preferences } from '../preferences';
 import { api } from '../rainwaveApi';
 
-import { getServerTime } from './clock';
-import { formatRating, getMinuteClock } from './formatting';
-
-let interval: ReturnType<typeof setInterval> | null = null;
+import { getCountdownClockFormatted } from './countdownClockFormat';
+import { shouldShowClockInTitle } from './shouldShowCountdownClock';
 
 // Countdown clock HTML element
 let nowPlayingCountdownClock: HTMLElement | null = null;
@@ -27,13 +26,13 @@ api.addEventListener('sched_current', (nowPlaying) => {
   nowPlayingEndsAt = nowPlaying.end;
 });
 
-function loop(): void {
+function countdownClockLoop(): void {
   if (nowPlayingEndsAt <= 0) {
     return;
   }
 
   const now = getServerTime();
-  const minuteClock = getMinuteClock(nowPlayingEndsAt - now);
+  const minuteClock = getCountdownClockFormatted(nowPlayingEndsAt - now);
 
   if (nowPlayingCountdownClock && nowPlayingEndsAt - now >= 0) {
     nowPlayingCountdownClock.textContent = minuteClock;
@@ -43,16 +42,7 @@ function loop(): void {
     nowPlayingCountdownCallback(nowPlayingEndsAt, now);
   }
 
-  if (
-    bootstrap.mobile ||
-    (Sizing.simple && (!preferences.showRatingInTitle || !nowPlayingTitle || !User.tuned_in))
-  ) {
-    if (document.title != originalTitle) {
-      document.title = originalTitle;
-    }
-
-    return;
-  } else if (!Sizing.simple && !preferences.showRatingInTitle) {
+  if (!shouldShowClockInTitle()) {
     if (document.title != originalTitle) {
       document.title = originalTitle;
     }
@@ -61,14 +51,6 @@ function loop(): void {
   }
 
   let thisPageTitle = nowPlayingTitle;
-  if (preferences.showRatingInTitle) {
-    const rating = Timeline.get_current_song_rating();
-    if (rating) {
-      thisPageTitle = '[' + formatRating(rating) + '] ' + thisPageTitle;
-    } else {
-      thisPageTitle = '*** ' + thisPageTitle;
-    }
-  }
   if (preferences.showClockInTitle) {
     thisPageTitle = '[' + minuteClock + '] ' + thisPageTitle;
   }
@@ -77,28 +59,4 @@ function loop(): void {
   }
 }
 
-function handleVisibilityChange(): void {
-  if (document.hidden) {
-    if (interval) {
-      clearInterval(interval);
-      interval = null;
-    }
-  } else {
-    loop();
-    if (!interval) {
-      interval = setInterval(loop, 1000);
-    }
-  }
-}
-
-if (!interval) {
-  interval = setInterval(loop, 1000);
-}
-
-// Only handle browser closing/opening on mobile.
-// We want the browser tab title to change on desktop even when the tab is not visible.
-if (bootstrap.mobile) {
-  document.addEventListener('visibilitychange', handleVisibilityChange, { passive: true });
-}
-
-export { setNowPlayingCountdownClock, setNowPlayingCountdownCallback };
+export { setNowPlayingCountdownClock, setNowPlayingCountdownCallback, countdownClockLoop };

@@ -19,9 +19,7 @@ var RWAudioConstructor = function () {
   var lastUserTuneinCheck = 0;
   var nowPlaying;
   var iOSAppMode =
-    window.webkit &&
-    window.webkit.messageHandlers &&
-    window.webkit.messageHandlers.rainwavePlay;
+    window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.rainwavePlay;
 
   if (iOSAppMode) {
     player.play = function () {
@@ -33,69 +31,60 @@ var RWAudioConstructor = function () {
     };
 
     player.useStreamURLs = function (streamURLs) {
-      window.webkit.messageHandlers.rainwaveUseStreamURLs.postMessage(
-        streamURLs,
-      );
+      window.webkit.messageHandlers.rainwaveUseStreamURLs.postMessage(streamURLs);
     };
   }
 
   INIT_TASKS.on_init.push(function (rootTemplate) {
     player.audioElDest = rootTemplate.measure_box;
 
-    rootTemplate.volume_container = document.getElementById(
-      "audio_volume_container",
-    );
-    rootTemplate.volume = document.getElementById("audio_volume");
-    rootTemplate.volume_indicator = document.getElementById(
-      "audio_volume_indicator",
-    );
-    rootTemplate.volume.style.display = "";
+    rootTemplate.volume_container = document.getElementById('audio_volume_container');
+    rootTemplate.volume = document.getElementById('audio_volume');
+    rootTemplate.volume_indicator = document.getElementById('audio_volume_indicator');
+    rootTemplate.volume.style.display = '';
     rootTemplate.mute.parentNode.appendChild(rootTemplate.volume_container);
 
-    rootTemplate.volume.addEventListener(
-      "mousedown",
-      volumeControlMousedown,
-    );
-    rootTemplate.mute.addEventListener("click", player.toggleMute);
-    rootTemplate.play.addEventListener("click", player.playToggle);
-    rootTemplate.play2.addEventListener("click", player.play);
-    rootTemplate.stop.addEventListener("click", player.stop);
+    rootTemplate.volume.addEventListener('mousedown', volumeControlMousedown);
+    rootTemplate.mute.addEventListener('click', player.toggleMute);
+    rootTemplate.play.addEventListener('click', player.playToggle);
+    rootTemplate.play2.addEventListener('click', player.play);
+    rootTemplate.stop.addEventListener('click', player.stop);
 
     el = rootTemplate.player;
     volumeEl = rootTemplate.volume;
     volumeRect = rootTemplate.volume_indicator;
     volumeContainer = rootTemplate.volume_container;
 
-    var streamQuery = "";
+    var streamQuery = '';
     if (User && User.listen_key) {
-      streamQuery += "?" + User.id + ":" + User.listen_key;
+      streamQuery += '?' + User.id + ':' + User.listen_key;
     }
     player.useStation(User.sid, streamQuery);
 
-    API.add_callback("user", userTuneinCheck);
-    API.add_callback("sched_current", function (np) {
+    API.add_callback('user', userTuneinCheck);
+    API.add_callback('sched_current', function (np) {
       nowPlaying = np;
       if (msUpdateMetadata) {
         msUpdateMetadata();
       }
     });
 
-    Prefs.define("vol", [1.0]);
-    drawVolume(Prefs.get("vol"));
+    Prefs.define('vol', [1.0]);
+    drawVolume(Prefs.get('vol'));
   });
 
   var userTuneinCheck = function (json) {
     if (json.tuned_in) {
-      document.body.classList.add("tuned_in");
+      document.body.classList.add('tuned_in');
     } else {
-      document.body.classList.remove("tuned_in");
+      document.body.classList.remove('tuned_in');
     }
     if (!player.isPlaying) return;
     if (lastUserTuneinCheck < Clock.now - 300) {
       lastUserTuneinCheck = parseInt(Clock.now);
       if (!json.tuned_in) {
-        ErrorHandler.removePermanentError("audio_connect_error_reattempting");
-        ErrorHandler.removePermanentError("chrome_mobile_takes_time");
+        ErrorHandler.removePermanentError('audio_connect_error_reattempting');
+        ErrorHandler.removePermanentError('chrome_mobile_takes_time');
         player.stop();
         setTimeout(player.play, 300);
       }
@@ -107,69 +96,64 @@ var RWAudioConstructor = function () {
   };
 
   var clearAudioErrors = function () {
-    ErrorHandler.removePermanentError("m3u_hijack_right_click");
-    ErrorHandler.removePermanentError("audio_error");
-    ErrorHandler.removePermanentError("audio_connect_error");
-    el.classList.remove("working");
+    ErrorHandler.removePermanentError('m3u_hijack_right_click');
+    ErrorHandler.removePermanentError('audio_error');
+    ErrorHandler.removePermanentError('audio_connect_error');
+    el.classList.remove('working');
   };
 
-  if (!Prefs.get("vol") || Prefs.get("vol") > 1 || Prefs.get("vol") < 0) {
+  if (!Prefs.get('vol') || Prefs.get('vol') > 1 || Prefs.get('vol') < 0) {
     player.setVolume(0.85);
   } else {
-    player.setVolume(Prefs.get("vol"));
+    player.setVolume(Prefs.get('vol'));
   }
-  player.addEventListener("volumeChange", function () {
+  player.addEventListener('volumeChange', function () {
     if (player.isMuted) {
-      el.classList.add("muted");
+      el.classList.add('muted');
     } else {
-      el.classList.remove("muted");
+      el.classList.remove('muted');
     }
-    Prefs.change("vol", player.volume);
+    Prefs.change('vol', player.volume);
     drawVolume(player.volume);
   });
 
-  player.addEventListener("stop", function () {
-    el.classList.remove("playing");
+  player.addEventListener('stop', function () {
+    el.classList.remove('playing');
     clearAudioErrors();
-    ErrorHandler.removePermanentError("chrome_mobile_takes_time");
+    ErrorHandler.removePermanentError('chrome_mobile_takes_time');
   });
 
-  player.addEventListener("loading", function () {
-    el.classList.add("working");
+  player.addEventListener('loading', function () {
+    el.classList.add('working');
   });
 
-  player.addEventListener("playing", function () {
-    el.classList.add("playing");
-    el.classList.remove("working");
-    ErrorHandler.removePermanentError("chrome_mobile_takes_time");
+  player.addEventListener('playing', function () {
+    el.classList.add('playing');
+    el.classList.remove('working');
+    ErrorHandler.removePermanentError('chrome_mobile_takes_time');
     clearAudioErrors();
   });
 
-  player.addEventListener("stall", function () {
-    el.classList.add("working");
+  player.addEventListener('stall', function () {
+    el.classList.add('working');
     // var append;
     // if (evt.detail) {
     // 	append = document.createElement("span");
     // 	append.textContent = evt.detail;
     // }
-    ErrorHandler.permanentError(
-      ErrorHandler.makeError("audio_connect_error", 500),
-    ); // , append);
+    ErrorHandler.permanentError(ErrorHandler.makeError('audio_connect_error', 500)); // , append);
   });
 
-  player.addEventListener("error", function () {
+  player.addEventListener('error', function () {
     player.stop();
-    var a = document.createElement("a");
-    a.setAttribute("href", "/tune_in/" + User.sid + ".mp3");
-    a.className = "link obvious";
-    a.textContent = $l("try_external_player");
-    a.addEventListener("click", function () {
+    var a = document.createElement('a');
+    a.setAttribute('href', '/tune_in/' + User.sid + '.mp3');
+    a.className = 'link obvious';
+    a.textContent = $l('try_external_player');
+    a.addEventListener('click', function () {
       clearAudioErrors();
     });
-    ErrorHandler.nonpermanentError(
-      ErrorHandler.makeError("audio_error", 500),
-      a,
-    );
+    ErrorHandler.nonpermanentError(ErrorHandler.makeError('audio_error', 500), a);
   });
 
   var volumeControlMousedown = function (evt) {
@@ -185,13 +169,13 @@ var RWAudioConstructor = function () {
     if (player.isMuted) {
       player.toggleMute();
     }
-    volumeEl.addEventListener("mousemove", changeVolumeFromMouse);
-    document.addEventListener("mouseup", volumeControlMouseup);
+    volumeEl.addEventListener('mousemove', changeVolumeFromMouse);
+    document.addEventListener('mouseup', volumeControlMouseup);
   };
 
   var volumeControlMouseup = function () {
-    volumeEl.removeEventListener("mousemove", changeVolumeFromMouse);
-    document.removeEventListener("mouseup", volumeControlMouseup);
+    volumeEl.removeEventListener('mousemove', changeVolumeFromMouse);
+    document.removeEventListener('mouseup', volumeControlMouseup);
   };
 
   var changeVolumeFromMouse = function (evt) {
@@ -205,7 +189,7 @@ var RWAudioConstructor = function () {
   };
 
   var drawVolume = function (v) {
-    volumeRect.setAttribute("width", 100 * Math.sqrt(v, 4));
+    volumeRect.setAttribute('width', 100 * Math.sqrt(v, 4));
   };
 
   player.detectHijack = function () {
@@ -214,7 +198,7 @@ var RWAudioConstructor = function () {
         if (navigator.plugins[i]) {
           for (var j = 0; j < navigator.plugins[i].length; j++) {
             if (navigator.plugins[i][j].type) {
-              if (navigator.plugins[i][j].type == "audio/x-mpegurl")
+              if (navigator.plugins[i][j].type == 'audio/x-mpegurl')
                 return navigator.plugins[i][j].enabledPlugin.name;
             }
           }
@@ -236,23 +220,12 @@ var RWAudioConstructor = function () {
       var song = nowPlaying.songs[0];
       var artExists = song.albums[0].art ? true : false;
       var artUrl =
-        "https://rainwave.cc" +
-        (nowPlaying.songs[0].albums[0].art || "static/images4/noart_1.jpg");
+        'https://rainwave.cc' + (nowPlaying.songs[0].albums[0].art || 'static/images4/noart_1.jpg');
       var artwork = [
         {
-          src: artUrl + (artExists ? "_120.jpg" : ""),
-          sizes: "120x120",
-          type: "image/jpeg",
-        },
-        {
-          src: artUrl + (artExists ? "_240.jpg" : ""),
-          sizes: "240x240",
-          type: "image/jpeg",
-        },
-        {
-          src: artUrl + (artExists ? "_320.jpg" : ""),
-          sizes: "320x320",
-          type: "image/jpeg",
+          src: artUrl + (artExists ? '_320.jpg' : ''),
+          sizes: '320x320',
+          type: 'image/jpeg',
         },
       ];
 
@@ -263,18 +236,18 @@ var RWAudioConstructor = function () {
 
       navigator.mediaSession.metadata = new MediaMetadata({
         title: song.title,
-        artist: artists.join(", "),
+        artist: artists.join(', '),
         album: song.albums[0].name,
         artwork: artwork,
       });
     };
 
-    navigator.mediaSession.setActionHandler("play", msPlay);
-    navigator.mediaSession.setActionHandler("pause", player.stop);
-    navigator.mediaSession.setActionHandler("previoustrack", msPlay);
-    navigator.mediaSession.setActionHandler("nexttrack", msPlay);
-    navigator.mediaSession.setActionHandler("seekbackward", function () {});
-    navigator.mediaSession.setActionHandler("seekforward", function () {});
+    navigator.mediaSession.setActionHandler('play', msPlay);
+    navigator.mediaSession.setActionHandler('pause', player.stop);
+    navigator.mediaSession.setActionHandler('previoustrack', msPlay);
+    navigator.mediaSession.setActionHandler('nexttrack', msPlay);
+    navigator.mediaSession.setActionHandler('seekbackward', function () {});
+    navigator.mediaSession.setActionHandler('seekforward', function () {});
   }
 
   return player;

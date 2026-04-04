@@ -1,29 +1,29 @@
-var oldUrl;
-var tabs = {};
-var lists = {};
-var cache = {};
-var currentType;
-var currentId;
-var currentOpenType;
-var el;
-var views = {};
-var scroll;
-var scrollPositions = {};
-var cachePageStack;
-var activeList = null;
-var activeDetail = null;
-var readyToRender = true;
-var renderedType;
-var renderedId;
-var lastOpen;
-var lastOpenId;
-var detailHeader;
-var resetCacheOnNextRequest = false;
-var requestInFlight = false;
-var tabOrder = ['album', 'artist', 'group', 'request_line'];
-var forceCloseDetail = false;
+let oldUrl;
+const tabs = {};
+const lists = {};
+const cache = {};
+let currentType;
+let currentId;
+let currentOpenType;
+let el;
+const views = {};
+let scroll;
+const scrollPositions = {};
+let cachePageStack;
+let activeList = null;
+let activeDetail = null;
+let readyToRender = true;
+let renderedType;
+let renderedId;
+let lastOpen;
+let lastOpenId;
+let detailHeader;
+let resetCacheOnNextRequest = false;
+let requestInFlight = false;
+const tabOrder = ['album', 'artist', 'group', 'request_line'];
+let forceCloseDetail = false;
 
-var resetCache = function () {
+const resetCache = function () {
   // console.log("Cache reset.");
   cache.album = {};
   cache.artist = {};
@@ -151,33 +151,36 @@ INIT_TASKS.on_draw.push(function (rootTemplate) {
   scroll = Scrollbar.create(el, false, !Sizing.simple);
   Sizing.detailArea = scroll.scrollblock;
   scroll.reposition_hook = function () {
-    if (currentType && currentId) scrollPositions[currentType][currentId] = scroll.scroll_top;
+    if (currentType && currentId) {
+      scrollPositions[currentType][currentId] = scroll.scroll_top;
+    }
   };
 });
 
-var resetEverything = function () {
+const resetEverything = function () {
   resetCache();
   change();
 };
 
-var recalculateScroll = function () {
+const recalculateScroll = function () {
   scroll.set_height(false);
 };
 
-var scrollABit = function () {
+const scrollABit = function () {
   scroll.scroll_to(scroll.scroll_top + Sizing.listItemHeight * 2);
 };
 
-var getCurrentUrl = function () {
-  var deeplinkurl = decodeURI(location.href);
+const getCurrentUrl = function () {
+  const deeplinkurl = decodeURI(location.href);
   if (deeplinkurl.indexOf('#!/') >= 0) {
     return deeplinkurl.substring(deeplinkurl.indexOf('#!/') + 3);
   }
+
   return null;
 };
 
-var tabForward = function () {
-  var idx = tabOrder.indexOf(currentType);
+const tabForward = function () {
+  let idx = tabOrder.indexOf(currentType);
   if (idx === -1 || idx == tabOrder.length - 1) {
     idx = 0;
   } else {
@@ -186,8 +189,8 @@ var tabForward = function () {
   change(tabOrder[idx]);
 };
 
-var tabBackwards = function () {
-  var idx = tabOrder.indexOf(currentType);
+const tabBackwards = function () {
+  let idx = tabOrder.indexOf(currentType);
   if (idx <= 0) {
     idx = tabOrder.length - 1;
   } else {
@@ -199,14 +202,14 @@ var tabBackwards = function () {
 var detectUrlChange = function () {
   if (oldUrl != location.href) {
     oldUrl = location.href;
-    var newRoute = getCurrentUrl();
+    let newRoute = getCurrentUrl();
     if (!newRoute) {
       document.body.classList.remove('search_open');
       if (Sizing.simple) {
         document.body.classList.remove('playlist');
         document.body.classList.remove('requests');
         document.body.classList.remove('detail');
-        for (var i in tabs) {
+        for (const i in tabs) {
           document.body.classList.remove('playlist_' + i);
         }
       }
@@ -216,6 +219,7 @@ var detectUrlChange = function () {
       currentType = null;
       currentId = null;
       currentOpenType = null;
+
       return false;
     }
     newRoute = newRoute.split('/');
@@ -223,24 +227,28 @@ var detectUrlChange = function () {
     document.body.classList.remove('search_open');
     if (tabs[newRoute[0]] || views[newRoute[0]]) {
       openRoute(newRoute[0], newRoute[1]);
+
       return true;
     } else if (newRoute[0] == 'requests') {
       openRoute();
       document.body.classList.add('requests');
+
       return true;
     } else if (newRoute[0] == 'search') {
       openRoute();
       document.body.classList.add('search_open');
       setTimeout(SearchPanel.focus, 300);
+
       return true;
     } else {
       // TODO: show error
     }
   }
+
   return false;
 };
 
-var actuallyOpen = function (typ, id) {
+const actuallyOpen = function (typ, id) {
   if (!readyToRender) {
     return;
   }
@@ -252,20 +260,22 @@ var actuallyOpen = function (typ, id) {
     document.body.classList.add('detail');
   }
 
-  if (renderedType == typ && renderedId == id) return;
+  if (renderedType == typ && renderedId == id) {
+    return;
+  }
 
   renderedType = typ;
   renderedId = id;
 
   // console.log("Rendering.");
 
-  for (var i = 0; i < el.childNodes.length; i++) {
+  for (let i = 0; i < el.childNodes.length; i++) {
     el.childNodes[i].style.display = 'none';
   }
   activeDetail = null;
   removeExcessHeaderContent();
 
-  var t;
+  let t;
   if (!cache[typ][id]) {
     RWTemplates.oops(null, el);
   } else if (cache[typ][id]._root) {
@@ -294,7 +304,7 @@ var actuallyOpen = function (typ, id) {
       cache[typ][id]._scroll = scroll;
       activeDetail = cache[typ][id];
       cachePageStack.push({ typ: typ, id: id });
-      var cps;
+      let cps;
       while (cachePageStack.length > 5) {
         cps = cachePageStack.shift();
         if (cache[cps.typ][cps.id]) {
@@ -307,7 +317,7 @@ var actuallyOpen = function (typ, id) {
     }
   }
 
-  var scrollTo = scrollPositions[typ][id] || 0; // do BEFORE scroll.set_height calls reposition_callback!
+  const scrollTo = scrollPositions[typ][id] || 0; // do BEFORE scroll.set_height calls reposition_callback!
   scroll.set_height(false);
   scroll.scroll_to(scrollTo);
 };
@@ -349,7 +359,7 @@ var openView = function (typ, id) {
       renderedType = false;
       renderedId = false;
       requestInFlight = true;
-      for (var i = 0; i < el.childNodes.length; i++) {
+      for (let i = 0; i < el.childNodes.length; i++) {
         el.childNodes[i].style.display = 'none';
       }
       activeDetail = null;
@@ -378,8 +388,8 @@ var openView = function (typ, id) {
     if (!cache[typ][id]) {
       // console.log(typ + "/" + id + ": Loading from server.");
       cache[typ][id] = true;
-      var params = { id: id };
-      var req = typ;
+      const params = { id: id };
+      let req = typ;
       if (req == 'request_line') {
         req = 'listener';
       }
@@ -401,8 +411,8 @@ var openView = function (typ, id) {
 
 var removeExcessHeaderContent = function () {
   detailHeader.parentNode.className = 'open';
-  var cs = detailHeader.parentNode.childNodes;
-  for (var i = cs.length - 1; i >= 0; i--) {
+  const cs = detailHeader.parentNode.childNodes;
+  for (let i = cs.length - 1; i >= 0; i--) {
     if (cs[i] != detailHeader) {
       cs[i].parentNode.removeChild(cs[i]);
     }
@@ -418,11 +428,11 @@ var openRoute = function (typ, id) {
   }
 
   if (Sizing.simple || lists[typ]) {
-    for (var i in tabs) {
+    for (const i in tabs) {
       document.body.classList.remove('playlist_' + i);
     }
   }
-  var closeDetail = true;
+  let closeDetail = true;
   if (typ in lists && lists[typ]) {
     Prefs.set_new_list(typ);
     lastOpen = typ;
@@ -454,7 +464,7 @@ var openRoute = function (typ, id) {
         (lists[typ] && lists[typ].getTitleFromId ? lists[typ].getTitleFromId(id) : false) ||
         $l('Loading...');
     }
-    var scrolled = false;
+    let scrolled = false;
     if (!readyToRender && lists[typ] && lists[typ].loaded) {
       lists[typ].scrollToId(id);
       scrolled = true;
@@ -482,12 +492,14 @@ var openRoute = function (typ, id) {
 };
 
 var change = function () {
-  var r = '';
-  for (var i = 0; i < arguments.length; i++) {
-    if (r) r += '/';
+  let r = '';
+  for (let i = 0; i < arguments.length; i++) {
+    if (r) {
+      r += '/';
+    }
     r += arguments[i];
   }
-  var newUrl = decodeURI(location.href);
+  let newUrl = decodeURI(location.href);
   if (newUrl.indexOf('#') >= 0) {
     newUrl = newUrl.substring(0, newUrl.indexOf('#')) + '#!/' + r;
   } else {
@@ -501,12 +513,12 @@ var change = function () {
   // detectUrlChange();
 };
 
-var openLast = function () {
+const openLast = function () {
   forceCloseDetail = true;
   change(lastOpen || 'album');
 };
 
-var openLastId = function () {
+const openLastId = function () {
   if (!lastOpenId) {
     return openLast();
   } else {

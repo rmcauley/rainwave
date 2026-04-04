@@ -59,6 +59,8 @@ if (legacyPrefsCookie) {
             legacyPreferences.hotkeyLayout = 'QWER';
           } else if (mappedKey === 'showHowManyPreviousElections') {
             legacyPreferences.showHowManyPreviousElections = parseInt(value);
+          } else if (mappedKey === 'showClockInTitle') {
+            legacyPreferences.showClockInTitle = 'default';
           } else {
             legacyPreferences[mappedKey] = value === 'true' ? true : false;
           }
@@ -68,7 +70,9 @@ if (legacyPrefsCookie) {
   } catch (e) {
     // Allow console logging this for debugging.
     // eslint-disable-next-line no-console
-    console.error('Preferences could not be loaded from cookie.  Preferences reset.', e);
+    console.warn('Preferences could not be loaded from cookie.  Preferences reset.');
+    // eslint-disable-next-line no-console
+    console.error(e);
   } finally {
     document.cookie = `${LEGACY_COOKIE_KEY}=; Max-Age=0; path=/`;
   }

@@ -8,10 +8,12 @@ const go: FrameRequestCallback = (time) => {
   toExecute.forEach((fn) => fn(time));
 };
 
+/* @deprecated */
 function delay(): void {
   requestAnimationFrame(go);
 }
 
+/* @deprecated */
 function requestNextAnimationFrame(callback: FrameRequestCallback): void {
   queue.push(callback);
   if (!requested) {
