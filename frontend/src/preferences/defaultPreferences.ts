@@ -1,4 +1,4 @@
-import type { Preferences } from './preferences-types';
+import type { Preferences } from './preferenceTypes';
 
 const DEFAULT_PREFERENCES: Preferences = {
   volume: 1,

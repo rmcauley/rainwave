@@ -1,7 +1,7 @@
-import { DEFAULT_PREFERENCES } from './default-preferences';
-import { legacyPreferences } from './load-legacy-preferences';
+import { DEFAULT_PREFERENCES } from './defaultPreferences';
+import { legacyPreferences } from './loadLegacyPreferences';
 
-import type { PreferenceChange, Preferences } from './preferences-types';
+import type { PreferenceChange, Preferences } from './preferenceTypes';
 
 const LOCAL_STORAGE_KEY = 'rw_prefs';
 

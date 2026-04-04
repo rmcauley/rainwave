@@ -1,6 +1,6 @@
-import { DEFAULT_PREFERENCES } from './default-preferences';
+import { DEFAULT_PREFERENCES } from './defaultPreferences';
 
-import type { Preferences } from './preferences-types';
+import type { Preferences } from './preferenceTypes';
 
 const LEGACY_COOKIE_KEY = 'r5_prefs';
 
@@ -13,7 +13,6 @@ const translateR5: Record<string, keyof Preferences> = {
   r_incmplt: 'indicateIncompleteAlbums',
   r_noglbl: 'hideGlobalRatings',
   r_clear: 'showDeleteRatingButton',
-  t_rt: 'showRatingInTitle',
   t_clk: 'showClockInTitle',
   t_tl: 'showSongInTitle',
   p_sort: 'playlistSort',
