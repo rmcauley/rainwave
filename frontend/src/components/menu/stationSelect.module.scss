@@ -1,0 +1,272 @@
+@use "sass:math";
+
+$station-height: 70px;
+$station-select-width: 270px;
+
+#station-select {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 20000;
+  float: left;
+  width: $station-select-width;
+  border-right: 1px solid $stasel-b;
+  height: $menu-height;
+  overflow: hidden;
+  background: $stasel-bkg;
+  transition: width 350ms, background-color 350ms, height 700ms;
+  transition-timing-function: $menu-transfunc;
+
+  @media ($mobile-media) {
+    width: 220px;
+  }
+
+  @media ($phone-media) {
+    width: 120px;
+    height: $phone-menu-height;
+  }
+
+  &.open {
+    width: $station-select-width * 1.8;
+    height: ($station-height * 6) + $menu-height;
+
+    @media ($phone-media) {
+      width: 150px;
+      height: ($phone-menu-height * 6) + $phone-menu-height;
+    }
+  }
+
+  .pulldown-arrow {
+    display: none;
+    float: right;
+    cursor: pointer;
+    position: relative;
+    z-index: 50;
+    margin-right: 15px;
+    top: math.div($menu-height, 2);
+
+    @include transition-wtime(350ms, transform);
+    @include transform(translateY(-50%) rotate(0deg));
+
+    transform-origin: center center;
+    transition-timing-function: $menu-transfunc;
+  }
+
+  &.openable .pulldown-arrow {
+    display: block;
+
+    @media ($phone-media) {
+      display: none;
+    }
+  }
+
+  &.open .pulldown-arrow {
+    @include transform(translateY(-50%) rotate(180deg));
+  }
+
+  #station-select-header {
+    position: absolute;
+    background: $menu-bkg;
+    z-index: 41;
+    height: $menu-height;
+    font-size: 0.6em;
+
+    @include transform(translateY(-100%));
+
+    @media ($phone-media) {
+      height: $phone-menu-height;
+    }
+  }
+
+  &.open #station-select-header {
+    @include transform(none);
+
+    .station-details {
+      @include transform(translateY(-50%));
+    }
+  }
+
+  &.openable .station {
+    cursor: pointer;
+  }
+
+  .station {
+    box-sizing: border-box;
+    display: block;
+    background: transparent;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    overflow: hidden;
+    height: $station-height;
+    cursor: default;
+    padding: 0 0 0 20px;
+
+    @include transform(translateY(-15px));
+
+    transition: -webkit-transform 700ms $menu-transfunc,
+      background 350ms $transfunc, color 350ms $transfunc;
+    transition: transform 700ms $menu-transfunc, background 350ms $transfunc,
+      color 350ms $transfunc;
+
+    @media ($phone-media) {
+      padding-left: 5px;
+      height: $phone-menu-height;
+
+      @include transform(none);
+    }
+
+    .desktop &:hover,
+    .mobile &:active {
+      background: $stasel-h-bkg;
+      color: $text !important;
+    }
+
+    &.selected-station {
+      background: $menu-bkg;
+      color: $menu;
+      z-index: 40 !important;
+
+      @include transform(translateY(-13px));
+
+      @media ($phone-media) {
+        @include transform(none);
+      }
+    }
+
+    .station-name {
+      text-transform: uppercase;
+    }
+
+    .station-details {
+      position: relative;
+      top: 50%;
+      font-weight: 400;
+      font-size: 2em;
+
+      @include transform(translateY(-50%));
+      @include transition-wtime(350ms, transform);
+
+      @media ($phone-media) {
+        font-size: 1.3em;
+      }
+    }
+
+    .station-description {
+      text-transform: uppercase;
+      font-weight: 400;
+      font-size: 0.4em;
+      position: absolute;
+      opacity: 0;
+
+      @include transition-wtime(300ms, transform, opacity);
+      @include transform(translateX(1em));
+
+      @media ($phone-media) {
+        display: none;
+      }
+    }
+
+    .station-song-container {
+      visibility: hidden;
+      position: relative;
+      width: 160px;
+      float: right;
+      top: 50%;
+      font-size: smaller;
+      opacity: 0;
+
+      @include transform(translateX(100%) translateY(-50%));
+
+      transition: -webkit-transform 700ms $menu-transfunc,
+        opacity 300ms $transfunc, visibility 700ms $menu-transfunc;
+      transition: transform 700ms $menu-transfunc, opacity 300ms $transfunc,
+        visibility 700ms $menu-transfunc;
+
+      @media ($phone-media) {
+        display: none;
+      }
+
+      div {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .ss-title {
+        margin-top: 7px;
+      }
+
+      .ss-art {
+        float: left;
+        height: $station-height - 20;
+        width: $station-height - 20;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  &.open .station {
+    &.selected-station {
+      cursor: default;
+    }
+
+    .station-details {
+      @include transform(translateY(-72%));
+    }
+
+    .station-description {
+      opacity: 0.7;
+
+      @include transform(translateX(0));
+
+      transition-delay: 400ms;
+    }
+
+    &:nth-of-type(2) {
+      border-top: 1px solid rgb(0 0 0 / 10%);
+    }
+
+    @for $i from 2 through 7 {
+      &:nth-of-type(#{$i}) {
+        z-index: 6 - $i;
+
+        @include transform(
+          translateY($menu-height + ($station-height * ($i - 2)))
+        );
+      }
+    }
+
+    .station-song-container {
+      visibility: visible;
+      opacity: 0.7;
+
+      @include transform(translateX(0%) translateY(-50%));
+
+      @media ($mobile-media) {
+        display: none;
+      }
+    }
+
+    .desktop &:hover,
+    .mobile &:active {
+      .station-song-container {
+        opacity: 1;
+      }
+    }
+
+    @media ($phone-media) {
+      @for $i from 2 through 7 {
+        &:nth-of-type(#{$i}) {
+          @include transform(
+            translateY($phone-menu-height + ($phone-menu-height * ($i - 2)))
+          );
+        }
+      }
+    }
+  }
+}

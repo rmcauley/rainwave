@@ -1,4 +1,4 @@
-import { requestNextAnimationFrame } from './request-next-animation-frame';
+import { requestNextAnimationFrame } from './requestNextAnimationFrame';
 
 function removeElement(el: HTMLElement): void {
   if (document.body.classList.contains('loading')) {

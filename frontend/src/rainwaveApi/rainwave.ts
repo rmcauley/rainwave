@@ -3,7 +3,7 @@ import { RainwaveEventListener } from './eventListener';
 
 import type { RainwaveSDKInvalidRatingError } from './errors';
 import type { components } from './rainwave-openapi';
-import type { RainwaveAction, RainwaveParams, RainwaveResponse } from './types';
+import type { RainwaveAction, RainwaveParams, RainwaveResponse, RainwaveUser } from './types';
 
 const DEFAULT_RECONNECT_TIMEOUT = 500;
 const MAX_QUEUED_REQUESTS = 10;
@@ -65,7 +65,9 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   private _requestQueue: RainwaveRequestWithKey[] = [];
   private _sentRequests: RainwaveRequestWithKey[] = [];
 
-  constructor(options: RainwaveOptions) {
+  private _user: RainwaveUser | undefined;
+
+  constructor(options: RainwaveOptions, initialUserState?: RainwaveUser) {
     super();
 
     this._userId = options.userId;
@@ -74,9 +76,14 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this._url = options.url || 'wss://core.rainwave.cc/api4/websocket/';
     this._debug = options?.debug || ((): void => {});
     this._externalOnSocketError = options?.onSocketError || ((): void => {});
+    this._user = initialUserState;
 
     this.addEventListener('sched_current', (current) => {
       this._currentScheduleId = current.id;
+    });
+
+    this.addEventListener('user', (user) => {
+      this._user = user;
     });
   }
 
@@ -526,6 +533,16 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     }
 
     return groups;
+  }
+
+  // Convenience getters ***********************************************************************************************
+
+  get user(): RainwaveUser {
+    if (!this._user) {
+      throw new RainwaveSDKUsageError('User accessed before definition.');
+    }
+
+    return this._user;
   }
 }
 

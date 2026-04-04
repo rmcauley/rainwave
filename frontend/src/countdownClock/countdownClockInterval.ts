@@ -1,8 +1,7 @@
-import { countdownClockLoop } from '.';
-
-import { isProbablyMobileBrowser } from '../helpers/is-probably-mobile';
+import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
 import { preferenceEvents } from '../preferences';
 
+import { countdownClockLoop } from './countdownClock';
 import { shouldShowClockInTitle } from './shouldShowCountdownClock';
 
 let interval: ReturnType<typeof setInterval> | null = null;

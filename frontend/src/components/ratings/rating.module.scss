@@ -1,0 +1,247 @@
+.rating {
+  position: relative;
+  float: right;
+  background-repeat: no-repeat;
+  background-image: $site-rating;
+  background-size: $rating-bkg-size;
+  width: $rating-width;
+  padding: 0;
+  margin: 0;
+  color: $rating-hover-text;
+  height: $rating-height;
+
+  .full {
+    width: $rating-width + 23px;
+  }
+
+  &.starting-touch {
+    @include transition-wtime(300ms, background-color);
+
+    background-color: $rating-touch-start-bkg;
+  }
+
+  &.rating-user {
+    background-image: $user-rating;
+
+    .song-fave-highlight &.song-rating {
+      color: $fave;
+      background-image: $fav-rating;
+    }
+
+    .album-fave-highlight &.album-rating {
+      color: $fave;
+      background-image: $fav-rating;
+
+      .show-incomplete &.rating-incomplete {
+        background-image: $incomplete-rating;
+      }
+    }
+
+    .show-incomplete &.rating-incomplete {
+      background-image: $incomplete-rating;
+    }
+  }
+
+  .desktop &.ratable {
+    cursor: pointer;
+
+    &:hover {
+      @include no-transition;
+
+      background-image: $user-rating;
+    }
+  }
+
+  .desktop .song-fave-highlight &.ratable.song-rating:hover {
+    color: $fave;
+    background-image: $fav-rating;
+  }
+
+  .simple.desktop &.ratable:hover {
+    margin-left: 25px;
+  }
+
+  .full & {
+    margin-left: 30px;
+  }
+
+  .rating-number {
+    position: absolute;
+    height: $rating-height;
+    width: 23px;
+    padding-right: 2px;
+    opacity: 0;
+    text-align: center;
+    visibility: hidden;
+
+    @include transition-wtime(200ms, opacity, transform, visibility);
+    @include transform(translateX(0));
+
+    &.listener-number {
+      color: $text;
+    }
+
+    &.rating-confirm {
+      background: $rating-confirm-text;
+      color: $rating-confirm-text;
+      overflow: hidden;
+      visibility: visible;
+
+      $color-transtime: 500ms;
+      $opacity-transtime: 200ms;
+      $wait-transtime: 2s;
+      $confirm-transtime: 300ms;
+
+      &.confirming {
+        opacity: 1;
+
+        @include transform(translateX(0) scaleX(1) !important);
+
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, -webkit-transform $wait-transtime;
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, transform $wait-transtime;
+      }
+
+      &.confirmed {
+        background: transparent;
+        color: $text;
+
+        @include transform(translateX(-25px) scaleX(1) !important);
+
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, -webkit-transform $confirm-transtime;
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, transform $confirm-transtime;
+      }
+
+      &.bad-rating {
+        background: $error-bkg;
+        color: $text;
+
+        @include transform(translateX(-25px) scaleX(1) !important);
+
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, -webkit-transform $confirm-transtime;
+        transition: color $color-transtime, opacity $opacity-transtime,
+          background $color-transtime, transform $confirm-transtime;
+      }
+    }
+  }
+
+  .desktop &:hover .rating-hover,
+  .full & .rating-hover {
+    opacity: 1;
+    visibility: visible;
+
+    @include transform(translateX(-25px));
+  }
+
+  .desktop &:hover {
+    .rating-confirm + .rating-hover,
+    .rating-confirm + .rating-number {
+      opacity: 0;
+    }
+  }
+
+  .rating-confirm + .rating-number {
+    opacity: 0 !important;
+  }
+
+  .rating-confirm.fading + .rating-hover {
+    opacity: 1 !important;
+  }
+
+  .hold-to-rate {
+    position: absolute;
+    border: solid 1px $text-dd;
+    box-shadow: 0 0 6px 3px $drop-shadow;
+    left: 100%;
+    top: -2.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    color: $text;
+    padding: 2px 5px;
+    background: $bkg;
+
+    @include transform(translateX(-100%));
+  }
+}
+
+.simple .timeline .album-rating {
+  display: none;
+}
+
+.hide-global-ratings {
+  .rating.rating-global {
+    background-image: $hidden-rating;
+
+    & + .rating-site {
+      visibility: hidden;
+    }
+  }
+}
+
+.rating-clear {
+  display: none;
+
+  .logged-in.rating-clear-ok & {
+    display: block;
+    visibility: hidden;
+
+    &.capable {
+      visibility: visible;
+    }
+
+    img {
+      position: relative;
+      top: 1px;
+      height: 14px;
+      opacity: 0.5;
+      cursor: pointer;
+
+      @include transition-wtime(300ms, opacity);
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.mobile-rating {
+  $slider-width: 200px;
+
+  width: $slider-width;
+  z-index: 98;
+  position: absolute;
+  opacity: 0;
+  left: 100%;
+  background: $bkg;
+  padding: 20px 15px 10px 5px;
+  border: solid 1px $text-dd;
+  box-shadow: 0 0 6px 3px $drop-shadow;
+
+  @include transform(translateX(-100%) translateY(-1em));
+  @include transition-wtime(200ms, opacity, transform);
+
+  &.show {
+    opacity: 1;
+
+    @include transform(translateX(-100%) translateY(-2.5em));
+  }
+
+  .slider {
+    width: $slider-width;
+    height: 48px;
+    background-repeat: none;
+    background-image: $touch-rating;
+    background-size: 200px 2496px;
+  }
+
+  .slide-number {
+    position: absolute;
+    top: 0;
+    font-weight: bold;
+  }
+}

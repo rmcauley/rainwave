@@ -1,7 +1,7 @@
 @use "../../cssFunctions" as css;
 @use "../../styles/theme" as theme;
 
-div.fave {
+.fave {
   width: 14px;
   height: 13px;
   display: none;
@@ -18,39 +18,39 @@ div.fave {
   }
 
   &.is-fave {
-    img.fave-solid {
+    .fave-solid {
       opacity: 1;
     }
   }
 
   &.fave-clicked {
-    img.fave-solid {
+    .fave-solid {
       opacity: 0.5;
     }
   }
 
-  body.logged-in & {
+  .logged-in & {
     display: inline-block;
     cursor: pointer;
   }
 
-  body.logged-in.desktop & {
-    &:hover img.fave-lined {
+  .logged-in.desktop & {
+    &:hover .fave-lined {
       opacity: 1;
     }
   }
 
-  body.full.small & {
+  .full.small & {
     margin-top: 0;
   }
 
-  body.full.small div.detail & {
+  .full.small .detail & {
     margin-top: 3px;
   }
 
   // this only appears in lists for mobile versions
   // and the CSS for album lists and song lists has slightly different CSS :/
-  body.logged-in.mobile & {
+  .logged-in.mobile & {
     position: relative;
     display: inline-block;
     width: 30px;
@@ -63,22 +63,22 @@ div.fave {
       padding: 0 8px;
     }
 
-    img.fave-lined {
+    .fave-lined {
       opacity: 0.7;
     }
 
     &.is-fave {
-      img.fave-lined {
+      .fave-lined {
         opacity: 0;
       }
     }
   }
 
-  body.logged-in.mobile div.list & {
+  .logged-in.mobile .list & {
     top: 3px;
   }
 
-  body.full.small div.item & {
+  .full.small .item & {
     position: relative;
     top: 1px;
   }

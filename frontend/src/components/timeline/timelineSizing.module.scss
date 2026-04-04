@@ -1,0 +1,301 @@
+.simple .timeline-sizer {
+  position: relative;
+  width: 100%;
+  max-width: 1024px;
+  margin: auto;
+}
+
+.simple.normal .timeline {
+  .song {
+    height: $simple-art-size;
+
+    .art-anchor {
+      width: $simple-art-size;
+      height: $simple-art-size;
+    }
+
+    .art-container {
+      width: $simple-art-size;
+      height: $simple-art-size;
+
+      &.art-expandable:hover {
+        width: $simple-art-hover-size;
+        height: $simple-art-hover-size;
+      }
+    }
+
+    &.now-playing {
+      height: $simple-np-size;
+
+      .art-anchor {
+        width: $simple-np-size;
+        height: $simple-np-size;
+      }
+
+      .art-container {
+        width: $simple-np-size;
+        height: $simple-np-size;
+
+        &.art-expandable:hover {
+          width: $simple-np-size * 1.2;
+          height: $simple-np-size * 1.2;
+        }
+      }
+    }
+  }
+}
+
+.timeline {
+  .song {
+    .art-anchor {
+      width: $art-size;
+      height: $art-size;
+    }
+
+    .art-container {
+      width: $art-size;
+      height: $art-size;
+
+      &.art-expandable:hover {
+        width: $art-size * 1.15;
+        height: $art-size * 1.15;
+      }
+    }
+
+    &.now-playing {
+      height: $art-size + 20;
+
+      .art-anchor {
+        width: $art-size + 20;
+        height: $art-size + 20;
+      }
+
+      .art-container {
+        width: $art-size + 20;
+        height: $art-size + 20;
+
+        &.art-expandable:hover {
+          width: $art-size + 20 * 1.15;
+          height: $art-size + 20 * 1.15;
+        }
+      }
+    }
+  }
+}
+
+.simple {
+  .panel.detail,
+  .search-panel {
+    .artists,
+    .rating-clear,
+    .rating-site {
+      display: none;
+    }
+  }
+
+  .search-panel {
+    .cool-info,
+    .length {
+      display: none;
+    }
+
+    .album-name {
+      width: 130px;
+    }
+  }
+}
+
+.full {
+  .panel {
+    position: absolute;
+    z-index: 100;
+    background: $panel-bkg;
+    top: 0;
+    overflow: hidden;
+    border-left: solid 1px $panel-b;
+
+    &.lists,
+    &.detail {
+      transform: none !important;
+      transform: translate3d(0, 0, 0) !important;
+    }
+
+    .close {
+      display: none;
+    }
+  }
+
+  .requests-link,
+  .playlist-link {
+    display: none !important;
+  }
+
+  .panel.detail,
+  .search-panel {
+    .panel-header li {
+      color: $pwrmode-tab;
+      border-bottom: 2px solid $pwrmode-tab-b;
+    }
+
+    .artists {
+      width: 25%;
+    }
+
+    .full-artists {
+      display: none;
+
+      &.multi-artist {
+        display: block;
+      }
+    }
+  }
+
+  .search-panel {
+    .album-name {
+      width: 30%;
+    }
+  }
+}
+
+@media (width >= 1024px) and (width <= 1279px) {
+  .full {
+    font-size: smaller;
+
+    &.nofontsize {
+      font-size: inherit;
+    }
+
+    .panel.lists {
+      width: 25%;
+    }
+
+    .panel.detail,
+    .search-panel {
+      width: 37%;
+
+      .artists,
+      .rating-clear,
+      .rating-site {
+        display: none;
+      }
+
+      .full-artists {
+        display: block;
+      }
+    }
+
+    .search-panel {
+      .cool-info,
+      .length {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (width >= 1280px) and (width <= 1430px) {
+  .full {
+    font-size: smaller;
+
+    &.nofontsize {
+      font-size: inherit;
+    }
+
+    .panel.lists {
+      width: 25%;
+    }
+
+    .panel.detail,
+    .search-panel {
+      width: 37%;
+
+      .artists,
+      .rating-clear,
+      .rating-site {
+        display: none;
+      }
+
+      .full-artists {
+        display: block;
+      }
+    }
+
+    .search-panel {
+      .cool-info,
+      .length {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (width >= 1431px) and (width <= 1599px) {
+  .full {
+    font-size: smaller;
+
+    &.nofontsize {
+      font-size: inherit;
+    }
+
+    .panel.lists {
+      width: 25%;
+    }
+
+    .panel.detail,
+    .search-panel {
+      width: 42%;
+    }
+  }
+}
+
+@media (width >= 1600px) and (width <= 1799px) {
+  .full {
+    .panel.lists {
+      width: 25%;
+    }
+
+    .panel.detail,
+    .search-panel {
+      width: 40%;
+    }
+  }
+}
+
+@media (width >= 1800px) and (width <= 1909px) {
+  .full {
+    .panel.lists {
+      width: 23%;
+    }
+
+    .panel.detail,
+    .search-panel {
+      width: 42%;
+    }
+  }
+}
+
+@media (width >= 1910px) and (width <= 2559px) {
+  .full {
+    .panel.lists {
+      width: 20%;
+    }
+
+    .panel.detail,
+    .search-panel {
+      width: 45%;
+    }
+  }
+}
+
+@media (width >= 2560px) {
+  .full {
+    .panel.lists {
+      width: 15%;
+    }
+
+    .panel.detail,
+    .search-panel {
+      width: 45%;
+    }
+  }
+}

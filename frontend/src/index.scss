@@ -93,7 +93,7 @@ body {
   }
 }
 
-div.sizeable {
+.sizeable {
   overflow: hidden;
   position: relative;
   z-index: 0;
@@ -101,7 +101,7 @@ div.sizeable {
   margin: 0;
 }
 
-div.debug-div {
+.debug-div {
   z-index: 1000;
   position: absolute;
   left: 100%;
@@ -111,7 +111,7 @@ div.debug-div {
   border: solid 1px $text-dd;
 }
 
-div.measure-box {
+.measure-box {
   top: -300px;
   position: absolute;
   visibility: hidden;
@@ -130,7 +130,7 @@ a:visited,
   &.obvious {
     color: $link !important;
 
-    body.desktop &:hover {
+    .desktop &:hover {
       color: $link-h !important;
     }
   }
@@ -139,7 +139,7 @@ a:visited,
     cursor: default;
   }
 
-  body.desktop &:hover {
+  .desktop &:hover {
     color: $link-h !important;
   }
 }
@@ -152,7 +152,7 @@ body {
   display: inline-block;
 }
 
-body.simple div.power-only {
+.simple .power-only {
   display: none;
 }
 

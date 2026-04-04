@@ -1,0 +1,373 @@
+.detail {
+  transform: translate3d(0, 0, 0);
+
+  &,
+  &.scrollable {
+    position: absolute;
+  }
+
+  .detail & {
+    opacity: 1;
+    visibility: visible;
+
+    @include transform(translateX(-100%));
+  }
+
+  .art-anchor {
+    float: left;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 90px;
+    height: 90px;
+  }
+
+  .detail-header {
+    color: $details;
+    font-size: 0.8em;
+    margin: 0 10px 0 110px;
+
+    .new-indicator {
+      color: $new-indicator;
+      background-repeat: no-repeat;
+      background-size: 12px;
+      background-image: url("/static/images4/new.png");
+      padding-left: 4px;
+    }
+
+    .newish-indicator {
+      background-repeat: no-repeat;
+      background-size: 12px;
+      background-image: url("/static/images4/newish.png");
+      padding-left: 4px;
+    }
+
+    .genres {
+      .category-list {
+        box-sizing: border-box;
+        position: absolute;
+        background: $panel-bkg;
+        padding: 5px 5px 5px 15px;
+        width: 100%;
+        z-index: 1;
+
+        a {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .panel-header {
+    border-bottom: none;
+  }
+
+  &.scrollblock .close {
+    @include transform(translateX(-32px));
+  }
+
+  .fave {
+    float: left;
+  }
+
+  .art-container {
+    width: 90px;
+    height: 90px;
+  }
+
+  .panel-header {
+    z-index: 1;
+    width: 100%;
+    box-sizing: border-box;
+
+    li {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: break-all;
+      word-break: break-all;
+      padding-right: 30px;
+    }
+  }
+
+  .scrollblock {
+    margin-top: 10px;
+    position: relative;
+  }
+}
+
+.detail,
+.search-results {
+  h2 {
+    clear: both;
+    font-size: inherit;
+    font-weight: inherit;
+    border-bottom: 1px solid $subheader-b;
+    margin: 0 0 5px;
+    padding: 0 10px 2px;
+  }
+
+  table + h2,
+  .row + h2 {
+    margin-top: 15px;
+  }
+}
+
+.no-songs-message {
+  padding: 2px 10px;
+  clear: both;
+}
+
+.row {
+  padding: 2px 10px;
+  clear: both;
+  border-bottom: solid 1px transparent;
+  word-break: break-all;
+  white-space: nowrap;
+  min-height: 20px;
+  background: $row-bkg;
+
+  @include transition-wtime(
+    300ms,
+    width,
+    background-color,
+    border-bottom-color,
+    transform
+  );
+
+  .full.small & {
+    line-height: 20px;
+  }
+
+  &.unrequestable {
+    display: none;
+
+    .normal & {
+      display: block;
+    }
+  }
+
+  .fave {
+    float: left;
+  }
+
+  .desktop &:hover,
+  &.hover,
+  .mobile &:active {
+    background-color: $hover-bkg;
+    border-bottom-color: $hover-b;
+
+    @include no-transition;
+
+    .fave-lined {
+      opacity: 1;
+    }
+  }
+
+  .desktop.full &:nth-child(even) {
+    background-color: $row-bkg-alternating;
+    border-bottom-color: $row-bkg-alternating;
+
+    &:hover,
+    &.hover {
+      background-color: $hover-bkg;
+      border-bottom-color: $hover-b;
+    }
+  }
+
+  &.cool {
+    background-color: $row-cool-bkg;
+    border-bottom-color: $row-cool-bkg;
+
+    .desktop &:hover,
+    .desktop &.hover,
+    .mobile &:active {
+      background-color: $cooldown-h;
+      border-bottom-color: $cooldown-hb;
+    }
+
+    .desktop.full &:nth-child(even) {
+      background-color: $row-cool-bkg-alternating;
+      border-bottom-color: $row-cool-bkg-alternating;
+
+      &:hover,
+      &.hover {
+        background-color: $cooldown-h;
+        border-bottom-color: $cooldown-hb;
+      }
+    }
+  }
+
+  &.song-fave-highlight {
+    .title {
+      color: $fave;
+    }
+
+    .desktop &:hover,
+    &.hover {
+      background-color: $fave-h !important;
+      border-bottom-color: $fave-hb !important;
+    }
+  }
+
+  .rating-clear,
+  .fake-url,
+  .cool-info,
+  .artists,
+  .rating-site,
+  .length,
+  .url,
+  .request-count,
+  .album-name {
+    margin-left: 10px;
+    float: right;
+  }
+
+  .request-count {
+    margin-right: 10px;
+  }
+
+  .length {
+    width: 35px;
+  }
+
+  .rating-site {
+    color: $rating-site-text;
+  }
+
+  .url,
+  .fake-url {
+    display: inline-block;
+    width: 14px;
+    height: 18px;
+
+    .full & {
+      float: left;
+      margin-right: 10px;
+      margin-left: 0;
+    }
+  }
+
+  .url {
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0 3px;
+    background-image: url("/static/images4/link_external.svg");
+  }
+
+  .detail-icon {
+    float: left;
+    cursor: pointer;
+    margin-right: 10px;
+
+    img {
+      position: relative;
+      top: 1px;
+      width: 13px;
+      height: 13px;
+      opacity: 0.5;
+
+      @include transition-wtime(300ms, opacity);
+    }
+
+    &:hover img {
+      opacity: 1;
+    }
+  }
+
+  .cool-info {
+    width: 35px;
+    min-height: 10px;
+  }
+
+  .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 9px;
+  }
+
+  &.is-new .title {
+    background-repeat: no-repeat;
+    background-size: 14px;
+    background-image: url("/static/images4/new.png");
+    background-position: 3px 0;
+  }
+
+  &.is-newish .title {
+    background-repeat: no-repeat;
+    background-size: 14px;
+    background-image: url("/static/images4/newish.png");
+    background-position: 3px 0;
+  }
+
+  &.requestable .title {
+    cursor: pointer;
+  }
+
+  &.unrequestable .title {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.unrequestable:hover .title {
+    opacity: 1;
+  }
+
+  .artists,
+  .album-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .artists,
+  .full-artists,
+  .full-groups {
+    a::after {
+      content: ",";
+    }
+
+    a:last-child::after {
+      content: "";
+    }
+
+    a + a::before {
+      content: " ";
+    }
+  }
+
+  .song-detail {
+    clear: both;
+    padding-top: 2px;
+    padding-left: 50px;
+    white-space: normal;
+    word-break: normal;
+  }
+}
+
+.album-has-cooldown,
+.album-all-cooldown {
+  color: $text;
+  background-color: $row-cool-bkg;
+  border-bottom-color: $row-cool-bkg;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline dotted;
+  }
+}
+
+.cooldown-explain {
+  width: 100%;
+
+  th,
+  td {
+    text-align: left;
+    border-bottom: solid 1px $text-dd;
+  }
+}
+
+.fave-all-songs {
+  margin-right: 4px;
+}
+
+.unfave-all-songs {
+  margin-left: 4px;
+}

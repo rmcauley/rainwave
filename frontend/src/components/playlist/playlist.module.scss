@@ -1,0 +1,504 @@
+.panel-header {
+  height: 25px;
+  padding-left: 0;
+  margin: 10px 0 7px;
+  border-bottom: 2px solid $tab-b;
+  list-style: none;
+  white-space: nowrap;
+
+  li {
+    display: block;
+    height: 25px;
+    padding: 0 10px;
+    color: $tab;
+    border-bottom: 2px solid transparent;
+
+    @include transition(LINKCOLOR, background, opacity, border-bottom);
+
+    .lists &.open,
+    .simple &.open {
+      color: $tab-open;
+      border-bottom-color: $tab-open-b;
+    }
+  }
+}
+
+.no-result-message {
+  position: absolute;
+  color: $text-d;
+  text-align: center;
+  width: 100%;
+  display: none;
+  top: 50px;
+
+  .no-results & {
+    display: block;
+  }
+
+  .no-results.search-active & {
+    display: none;
+  }
+
+  &.while-search-active,
+  .no-results &.while-search-active {
+    display: none;
+  }
+
+  .no-results.search-active &.while-search-active {
+    display: block;
+  }
+}
+
+.simple .panel,
+.search-panel {
+  position: absolute;
+  z-index: 100;
+  width: 450px;
+  max-width: 100%;
+  background: $panel-bkg;
+  border-left: solid 1px $panel-b;
+  top: 0;
+  opacity: 0;
+  visibility: hidden;
+
+  @include transform(none);
+  @include transition-wtime(
+    300ms,
+    transform,
+    opacity,
+    visibility,
+    background-color
+  );
+
+  .mobile & {
+    opacity: 1;
+  }
+}
+
+.lists {
+  transform: translate3d(0, 0, 0);
+
+  .scrollable {
+    position: relative;
+  }
+
+  .playlist & {
+    opacity: 1;
+    visibility: visible;
+
+    @include transform(translateX(-100%));
+  }
+
+  .simple.desktop.playlist.normal.detail & {
+    background: $panel-bkg-d;
+
+    @include transform(translateX(-200%));
+
+    @media (width <= 950px) {
+      @include transform(translateX(-150%));
+    }
+
+    @media (width <= 800px) {
+      @include transform(translateX(-120%));
+    }
+  }
+
+  .panel-header {
+    margin-bottom: 0;
+
+    li {
+      cursor: pointer;
+      display: inline-block;
+
+      @include transition(LINKCOLOR, TOUCHTRANSFORM);
+
+      .desktop &:hover {
+        color: $link-h;
+      }
+
+      .mobile &:active {
+        @include touchtransform;
+      }
+
+      .playlist-artist &.artist-tab,
+      .playlist-group &.group-tab,
+      .playlist-album &.album-tab,
+      .playlist-request-line &.listener-tab {
+        color: $tab-open;
+        border-bottom-color: $tab-open-b;
+      }
+
+      .mobile &.group-tab,
+      .mobile &.listener-tab {
+        display: none;
+      }
+    }
+  }
+}
+
+.searchbox-container {
+  position: relative;
+  border-bottom: solid 1px $subpanel-separator;
+  padding: 5px 8px;
+  height: 29px;
+
+  @include transition-wtime(200ms, background-color);
+
+  &.search-error,
+  &.active.search-error {
+    background-color: $search-error-b;
+  }
+
+  img {
+    position: absolute;
+    height: 13px;
+    width: 13px;
+    left: 10px;
+    top: 13px;
+    opacity: 0.5;
+
+    @include transition-wtime(300ms, opacity);
+  }
+
+  .cancel {
+    display: none;
+    opacity: 1;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  &.active {
+    background-color: $search-on-b;
+  }
+
+  &.active,
+  &.search-error,
+  &.has-value {
+    .cancel {
+      display: inline;
+    }
+
+    .search {
+      display: none;
+    }
+  }
+
+  .searchlist-loading-bar {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: $open-item-bkg;
+    left: 0;
+    top: 0;
+
+    @include transition-wtime(300ms, transform, opacity);
+
+    transform-origin: center left;
+    transform: scaleX(0);
+  }
+
+  input {
+    box-sizing: border-box;
+    border: none;
+    background: transparent;
+    color: $text;
+    opacity: 0.6;
+    font: inherit;
+    height: 28px;
+    width: 100%;
+    padding-left: 25px;
+    padding-right: 4px;
+
+    @include transition-wtime(300ms, border-color, opacity);
+
+    &::placeholder {
+      color: $text;
+    }
+
+    &.active {
+      border-color: $blue;
+      opacity: 1;
+
+      + img {
+        opacity: 1;
+      }
+    }
+
+    &:focus {
+      border-color: $orange !important;
+      opacity: 1;
+
+      + img {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.list {
+  position: relative;
+  display: none;
+
+  .playlist-artist &.artist-list,
+  .playlist-group &.group-list,
+  .playlist-album &.album-list,
+  .playlist-request-line &.listener-list,
+  &.measure-list {
+    display: block;
+  }
+
+  .list-contents,
+  .scrollblock {
+    position: relative;
+  }
+
+  .list-contents {
+    padding-top: 3px;
+
+    .custom-scrollbars & {
+      padding-right: 8px;
+    }
+  }
+
+  .item {
+    box-sizing: border-box;
+    background-repeat: no-repeat;
+    padding: 2px 65px 2px 10px;
+    border-bottom: solid 1px transparent;
+    cursor: pointer;
+
+    @include transition-wtime(
+      250ms,
+      background-color,
+      border-bottom-color,
+      color,
+      TOUCHTRANSFORM
+    );
+
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &.album-fave-highlight {
+      color: $fave;
+    }
+
+    .full.small & {
+      line-height: 20px;
+    }
+
+    .desktop &:hover,
+    .desktop &.hover,
+    .mobile &:active {
+      color: $link;
+      background-color: $hover-bkg;
+      border-bottom-color: $hover-b;
+
+      @include transition-wtime(250ms, TOUCHTRANSFORM);
+
+      .fave-lined {
+        opacity: 0.5;
+      }
+
+      &.album-fave-highlight:hover,
+      &.cool.album-fave-highlight:hover {
+        background-color: $fave-h;
+        border-bottom-color: $fave-hb;
+      }
+    }
+
+    .mobile &:active {
+      @include touchtransform;
+    }
+
+    &.open {
+      color: $text !important;
+      background-color: $open-item-bkg !important;
+      border-bottom-color: $open-item-b !important;
+
+      &.album-fave-highlight {
+        background-color: $open-item-fave-bkg !important;
+      }
+
+      .name {
+        padding-left: 20px;
+      }
+    }
+
+    &.cool {
+      background-color: $cooldown;
+
+      .desktop &:hover,
+      .desktop &.hover,
+      .mobile &:active {
+        background-color: $cooldown-h;
+        border-bottom-color: $cooldown-hb;
+      }
+    }
+
+    .name {
+      padding-left: 9px;
+
+      @include transition-wtime(300ms, padding);
+    }
+
+    .requestlist-song,
+    .requestlist-album {
+      color: $text-d;
+      padding-left: 2em;
+    }
+
+    &.skip {
+      .requestlist-album {
+        color: transparent;
+      }
+    }
+  }
+
+  &.album-list .item,
+  &.artist-list .item,
+  &.group-list .item {
+    height: 26px;
+  }
+
+  &.album-list .item {
+    background-image: $site-rating;
+    background-size: $rating-bkg-size;
+
+    &.rating-user {
+      background-image: $user-rating;
+
+      &.album-fave-highlight {
+        background-image: $fav-rating;
+      }
+
+      .show-incomplete &.rating-incomplete {
+        background-color: $album-incomplete;
+        background-image: $incomplete-rating;
+
+        .desktop &:hover,
+        .desktop &.hover,
+        .mobile &:active {
+          background-color: $hover-bkg;
+          border-bottom-color: $hover-b;
+        }
+
+        &.album-fave-highlight {
+          background-image: $incomplete-rating;
+        }
+
+        &.cool {
+          color: $text-d;
+          background-color: $album-incomplete-cool;
+
+          .desktop &:hover,
+          .desktop &.hover,
+          .mobile &:active {
+            background-color: $hover-bkg;
+            border-bottom-color: $hover-b;
+          }
+        }
+      }
+    }
+
+    &.has-new {
+      .name {
+        background-repeat: no-repeat;
+        background-size: 14px;
+        background-image: url("/static/images4/new.png");
+        background-position: 3px 0;
+
+        @include transition-wtime(
+          300ms,
+          padding,
+          background-position,
+          LINKCOLOR,
+          TOUCHTRANSFORM
+        );
+
+        color: $new-indicator;
+      }
+
+      &.open .name {
+        background-position: 15px 0;
+      }
+
+      .desktop &:hover .name {
+        color: $link-h;
+      }
+
+      .mobile &:active {
+        color: $link-h;
+
+        @include touchtransform;
+      }
+    }
+
+    &.has-newish {
+      .name {
+        background-repeat: no-repeat;
+        background-size: 14px;
+        background-image: url("/static/images4/newish.png");
+        background-position: 3px 0;
+
+        @include transition-wtime(300ms, padding, background-position);
+      }
+
+      &.open .name {
+        background-position: 15px 0;
+      }
+    }
+  }
+
+  &.artist-list,
+  &.group-list,
+  &.listener-list {
+    .item {
+      padding-left: 22px;
+    }
+  }
+
+  .stretcher {
+    position: absolute;
+    width: 1px;
+    display: block;
+  }
+}
+
+.close {
+  position: absolute;
+  left: 100%;
+  top: 11px;
+  cursor: pointer;
+  opacity: 0.6;
+
+  @include transform(translateX(-25px));
+
+  img {
+    width: 14px;
+    height: 14px;
+  }
+
+  @media ($phone-media) {
+    top: 8px;
+
+    @include transform(translateX(-30px));
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.desktop .close {
+  opacity: 0.5;
+
+  @include transition-wtime(300ms, opacity);
+
+  &:hover {
+    opacity: 1;
+  }
+}

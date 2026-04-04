@@ -1,0 +1,129 @@
+$modal-trans-time: 300ms;
+$initial-height: 0.2;
+
+.modal-blocker {
+  position: absolute;
+  z-index: 10000;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background: $bkg;
+  opacity: 0;
+
+  @include transition-wtime($modal-trans-time * 0.8, opacity);
+
+  &.active {
+    opacity: 0.6;
+  }
+}
+
+.modal-container {
+  padding: 2px;
+  box-sizing: border-box;
+  position: absolute;
+  opacity: 0.3;
+  top: 50%;
+  left: 50%;
+  background: $bkg;
+  z-index: 10001;
+  width: 100%;
+
+  @include transform(translate(-50%, -50%) scaleX(0) scaleY($initial-height));
+  @include transition-wtime($modal-trans-time, opacity, transform);
+
+  .content {
+    max-width: 100%;
+    width: 800px;
+    margin: 0 auto;
+    opacity: 0;
+    padding: 0;
+  }
+
+  .header-wrapper {
+    width: 100%;
+    padding-bottom: 2px;
+    border-bottom: 1px solid $blue;
+    overflow: hidden;
+
+    .bkg {
+      background: $blue;
+    }
+
+    .content {
+      width: 850px;
+
+      @include transform(translateY(40px));
+      @include transition(transform, opacity);
+    }
+  }
+
+  .bottom-border {
+    height: 2px;
+    width: 100%;
+    background: $blue;
+  }
+
+  &.error {
+    .header-wrapper {
+      border-bottom: 1px solid $error-b;
+
+      .bkg {
+        background: $error-b;
+      }
+    }
+
+    .bottom-border {
+      background: $error-b;
+    }
+  }
+
+  .main {
+    opacity: 0;
+    max-height: 80vh;
+    margin: 5px auto;
+    padding: 5px;
+    overflow: auto;
+    overflow-x: hidden;
+
+    @include transform(translate(0, 30px));
+    @include transition-wtime($modal-trans-time * 1.5, opacity, transform);
+
+    transition-delay: $modal-trans-time * 0.5;
+  }
+
+  &.open {
+    opacity: 1;
+
+    @include transform(translate(-50%, -50%) scaleX(1) scaleY($initial-height));
+
+    &.full-open {
+      @include transform(translate(-50%, -50%) scaleX(1) scaleY(1));
+
+      .main,
+      .header-wrapper .content {
+        opacity: 1;
+
+        @include transform(none);
+      }
+    }
+
+    &.modal-closing {
+      opacity: 0;
+
+      @include transform(translate(-50%, -40%) scaleX(1) scaleY(1) !important);
+    }
+  }
+
+  .modal-close {
+    float: right;
+    cursor: pointer;
+    top: 1px;
+    position: relative;
+
+    img {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}

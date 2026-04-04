@@ -1,14 +1,14 @@
-import { getAlbumArt } from '../helpers/album-art';
-import { isProbablyMobileBrowser } from '../helpers/is-probably-mobile';
+import { getAlbumArt } from '../helpers/albumArt';
+import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
 import { getUser } from '../helpers/user';
 import { preferences } from '../preferences';
 import { api } from '../rainwaveApi';
 
-import { linuxNotifier } from './linux-notifier';
-import { standardNotifier } from './standard-notifier';
-import { windowsFirefoxNotifier } from './windows-firefox-notifier';
+import { linuxNotifier } from './linuxNotifier';
+import { standardNotifier } from './standardNotifier';
+import { windowsFirefoxNotifier } from './windowsFirefoxNotifier';
 
-import type { Notifier } from './notifier-type';
+import type { Notifier } from './notifierType';
 import type { TimelineEntry } from '../rainwaveApi/types';
 
 let enabled = false;

@@ -1,0 +1,210 @@
+.timeline.scrollable {
+  overflow-y: hidden;
+}
+
+.full .timeline.scrollblock.scrollable {
+  position: absolute;
+}
+
+.history-header {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 30;
+  width: 100%;
+  opacity: 0.5;
+  cursor: pointer;
+  padding: 0 10px;
+  font-size: smaller;
+  text-transform: uppercase;
+
+  @include transform(translateY(-30px));
+
+  transition: opacity 300ms $transfunc, transform $transtime;
+
+  .desktop & {
+    will-change: opacity, background-color;
+    transition: opacity 300ms $transfunc, background-color 300ms $transfunc,
+      transform $transtime;
+    transition: opacity 300ms $transfunc,
+      background-color 300ms $transfunc, transform $transtime;
+  }
+
+  .history-header-header {
+    margin-right: 5px;
+  }
+
+  .history-pulldown-arrow {
+    display: none;
+    position: relative;
+    height: 1em;
+    width: 1em;
+    fill: $text;
+    top: 2px;
+
+    @include transform(rotate(180deg));
+    @include transition-wtime(350ms, transform);
+
+    transform-origin: 0.5em 0.5em;
+
+    .desktop & {
+      display: inline-block;
+    }
+  }
+
+  &.history-expandable .history-pulldown-arrow {
+    @include transform(rotate(0deg));
+  }
+
+  .desktop &:hover {
+    opacity: 1;
+    background-color: $history-header-h-bkg;
+  }
+}
+
+@keyframes fade-in-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(200px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timeline-event {
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+
+  @include transition(transform, opacity, visibility);
+
+  &.sched-history-hidden {
+    opacity: 0;
+  }
+
+  .timeline-event-animator {
+    animation: fade-in-from-bottom $transtime;
+  }
+
+  .timeline-header {
+    box-sizing: border-box;
+    height: 20px;
+    margin: 0;
+    text-transform: uppercase;
+    color: $text-dd;
+    padding: 0 20px 0 10px;
+
+    // fix webkit rendering things 1px too high (?!?!?!)
+    transform: translateY(1px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    html[lang="ko_KO"] & {
+      @include transform(translateY(-2px));
+    }
+
+    .header-text {
+      box-sizing: border-box;
+      display: block;
+      padding-right: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &.no-header {
+    .timeline-header {
+      display: none;
+    }
+  }
+
+  &.sched-current .timeline-header {
+    color: $timeline-header;
+  }
+
+  .timeline-header-clock {
+    float: right;
+  }
+
+  &.sched-current .progress {
+    opacity: 1;
+  }
+
+  &.timeline-message {
+    height: 45px;
+    background: $hover-bkg;
+    border: solid 1px $hover-b;
+    padding: 5px 30px 5px 10px;
+    z-index: 20;
+
+    &.error {
+      @include error-colors;
+    }
+
+    .message-text {
+      position: relative;
+      display: block;
+      top: 50%;
+
+      @include transform(translateY(-50%));
+
+      span + a {
+        margin-left: 0.5em;
+      }
+    }
+
+    .close {
+      z-index: 2;
+    }
+  }
+
+  .desktop &.sched-history {
+    &:hover {
+      z-index: 3;
+    }
+  }
+}
+
+.progress {
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+  height: 2px;
+  margin: 0;
+  opacity: 0.6;
+
+  @include transition(transform);
+
+  .simple & {
+    padding: 0 19px 0 11px;
+  }
+
+  &.history-bar {
+    opacity: 1;
+  }
+
+  .progress-bkg {
+    height: 2px;
+    background-color: $progress-bkg;
+  }
+
+  .progress-inside {
+    background-color: $progress-b;
+    height: 2px;
+    padding: 0;
+    width: 0;
+    opacity: 1;
+
+    @include transition(opacity);
+  }
+
+  .no-header &,
+  .no-progress & {
+    display: none;
+  }
+}
