@@ -6,16 +6,16 @@
 // OPTIONAL FUNCTIONS you can overwrite:
 //  sort_function(a, b);			// normal Javascript sort method - return -1, 0, or 1 (default just uses 'id')
 
-var SearchList = function (rootEl, sortKey, searchKey) {
+const SearchList = function (rootEl, sortKey, searchKey) {
   sortKey = sortKey || "nameSearchable";
   searchKey = searchKey || "nameSearchable";
 
-  var list = {};
+  const list = {};
   list.autoTrim = false;
   RWTemplates.searchlist(list, rootEl);
-  var template = list.$t;
+  const template = list.$t;
 
-  var stretcher = document.createElement("div");
+  const stretcher = document.createElement("div");
   stretcher.className = "stretcher";
   template.list.appendChild(stretcher);
 
@@ -23,32 +23,32 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   list.el.className = "list-contents";
   template.list.appendChild(list.el);
 
-  var searchBox = template.search_box;
-  var scroll = Scrollbar.create(template.list, false, true);
+  const searchBox = template.search_box;
+  const scroll = Scrollbar.create(template.list, false, true);
 
-  var data = {};
+  let data = {};
   list.data = data; // keys() are the object IDs (e.g. data[album.id])
   list.loaded = false;
 
-  var visible = []; // list of IDs sorted by the sort_function (visible on screen)
-  var hidden = []; // list of IDs unsorted - currently hidden from view during a search
+  let visible = []; // list of IDs sorted by the sort_function (visible on screen)
+  let hidden = []; // list of IDs unsorted - currently hidden from view during a search
 
-  var searchString = "";
-  var currentKeyNavId = false;
-  var currentOpenId = false;
-  var numItemsToDisplay;
-  var originalScrollTop;
-  var originalKeyNav;
-  var ignoreOriginalScrollTop;
-  var scrollToOnLoad;
-  var openToOnLoad;
-  var scrollMargin = 5;
-  var backspaceScrollTop = null;
+  let searchString = "";
+  let currentKeyNavId = false;
+  let currentOpenId = false;
+  let numItemsToDisplay;
+  let originalScrollTop;
+  let originalKeyNav;
+  let ignoreOriginalScrollTop;
+  let scrollToOnLoad;
+  let openToOnLoad;
+  let scrollMargin = 5;
+  let backspaceScrollTop = null;
 
-  var currentScrollIndex = false;
-  var currentHeight;
-  var drawOnResize = false;
-  var itemsToDraw = [];
+  let currentScrollIndex = false;
+  let currentHeight;
+  let drawOnResize = false;
+  let itemsToDraw = [];
 
   // LIST MANAGEMENT ***********************************************
 
@@ -65,7 +65,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   };
 
   list.update = function (json) {
-    var i;
+    let i;
     if (list.autoTrim) {
       for (i in data) {
         data[i]._delete = true;
@@ -106,7 +106,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   };
 
   list.refreshAllItems = function () {
-    for (var i in data) {
+    for (const i in data) {
       if (data[i]._el) {
         list.updateItemElement(data[i]);
       }
@@ -114,7 +114,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   };
 
   list.updateItem = function (json) {
-    var i;
+    let i;
     json._delete = false;
     if (json.id in data) {
       for (i in json) {
@@ -133,7 +133,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   list.updateCool = null;
 
   list.queueReinsert = function (id) {
-    var io = visible.indexOf(id);
+    const io = visible.indexOf(id);
     if (io >= 0) {
       visible.splice(io, 1);
     }
@@ -142,17 +142,18 @@ var SearchList = function (rootEl, sortKey, searchKey) {
     }
   };
 
-  var filterUnhide = function (value) {
+  const filterUnhide = function (value) {
     if (value !== null && value !== undefined) {
       return true;
     }
-    return false;
+    
+return false;
   };
 
   list.unhide = function (toReshow) {
     toReshow = toReshow || hidden;
     if (list.autoTrim) {
-      for (var i in toReshow) {
+      for (const i in toReshow) {
         if (data[toReshow[i]] && !data[toReshow[i]]._delete) {
           visible.push(toReshow[i]);
         } else if (data[toReshow[i]]) {
@@ -166,14 +167,14 @@ var SearchList = function (rootEl, sortKey, searchKey) {
     }
     visible = visible.filter(filterUnhide);
     visible.sort(list.sortFunction);
-    if (toReshow == hidden) hidden = [];
+    if (toReshow == hidden) {hidden = [];}
   };
 
   list.recalculate = function () {
-    var fullHeight =
+    const fullHeight =
       (list.listItemHeight || Sizing.listItemHeight) * visible.length + 7;
     if (fullHeight != currentHeight) {
-      stretcher.style.height = fullHeight + "px";
+      stretcher.style.height = `${fullHeight  }px`;
       scroll.set_height(fullHeight);
       currentHeight = fullHeight;
     }
@@ -194,9 +195,10 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   };
 
   list.sortFunctionSearchKey = function (a, b) {
-    if (data[a][searchKey] < data[b][searchKey]) return -1;
-    else if (data[a][searchKey] > data[b][searchKey]) return 1;
-    return 0;
+    if (data[a][searchKey] < data[b][searchKey]) {return -1;}
+    else if (data[a][searchKey] > data[b][searchKey]) {return 1;}
+    
+return 0;
   };
 
   list.sortFunction = list.sortFunctionSearchKey;
@@ -205,7 +207,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
     if (e.stopPropagation) {
       e.stopPropagation();
     }
-    var checkEl = e.target;
+    let checkEl = e.target;
     while (
       checkEl &&
       !("_id" in checkEl) &&
@@ -237,7 +239,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   };
 
   list.keyNavHighlight = function (id, noScroll) {
-    if (!data || !(id in data)) return;
+    if (!data || !(id in data)) {return;}
     originalKeyNav = false;
     list.removeKeyNavHighlight();
     currentKeyNavId = id;
@@ -245,7 +247,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
       list.drawEntry(data[currentKeyNavId]);
     }
     data[currentKeyNavId]._el.classList.add("hover");
-    if (!noScroll) list.scrollTo(data[id], true);
+    if (!noScroll) {list.scrollTo(data[id], true);}
   };
 
   list.keyNavFirstItem = function () {
@@ -256,23 +258,26 @@ var SearchList = function (rootEl, sortKey, searchKey) {
     list.keyNavHighlight(visible[visible.length - 1]);
   };
 
-  var keyNavArrowAction = function (jump) {
+  const keyNavArrowAction = function (jump) {
     backspaceScrollTop = null;
     if (!currentKeyNavId) {
       list.keyNavFirstItem();
-      return;
+      
+return;
     }
-    var currentIdx = visible.indexOf(currentKeyNavId);
+    const currentIdx = visible.indexOf(currentKeyNavId);
     if (!currentIdx && currentIdx !== 0) {
       list.keyNavFirstItem();
-      return;
+      
+return;
     }
-    var newIndex = Math.max(
+    const newIndex = Math.max(
       0,
       Math.min(currentIdx + jump, visible.length - 1),
     );
     list.keyNavHighlight(visible[newIndex]);
-    return true;
+    
+return true;
   };
 
   list.keyNavDown = function () {
@@ -318,16 +323,19 @@ var SearchList = function (rootEl, sortKey, searchKey) {
         target: data[currentKeyNavId]._el,
         enter_key: true,
       });
-      return true;
+      
+return true;
     }
-    return false;
+    
+return false;
   };
 
   list.keyNavEscape = function () {
     if (searchString.length > 0) {
       list.clearSearch();
     }
-    return true;
+    
+return true;
   };
 
   list.keyNavBlur = function () {
@@ -353,13 +361,14 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   list.keyNavBackspace = function () {
     if (searchString.length == 1) {
       list.clearSearch();
-      return true;
+      
+return true;
     } else if (searchString.length > 1) {
       searchString = searchString.substring(0, searchString.length - 1);
 
-      var useSearchString = Formatting.make_searchable_string(searchString);
-      var revisible = [];
-      for (var i = hidden.length - 1; i >= 0; i -= 1) {
+      const useSearchString = Formatting.make_searchable_string(searchString);
+      const revisible = [];
+      for (let i = hidden.length - 1; i >= 0; i -= 1) {
         if (!data[hidden[i]]) {
           continue;
         }
@@ -380,21 +389,23 @@ var SearchList = function (rootEl, sortKey, searchKey) {
         backspaceScrollTop = null;
       }
       list.reposition();
-      return true;
+      
+return true;
     }
-    return false;
+    
+return false;
   };
 
-  var doSearch = function (newString) {
-    var firstTime = searchString.length === 0 ? true : false;
+  const doSearch = function (newString) {
+    const firstTime = searchString.length === 0 ? true : false;
     if (firstTime) {
       originalKeyNav = currentKeyNavId;
       list.removeKeyNavHighlight();
     }
     searchString = newString;
-    var useSearchString = Formatting.make_searchable_string(searchString);
-    var newVisible = [];
-    for (var i = 0; i < visible.length; i += 1) {
+    const useSearchString = Formatting.make_searchable_string(searchString);
+    const newVisible = [];
+    for (let i = 0; i < visible.length; i += 1) {
       if (!data[visible[i]]) {
         continue;
       }
@@ -433,7 +444,8 @@ var SearchList = function (rootEl, sortKey, searchKey) {
 
   list.keyNavAddCharacter = function (character) {
     doSearch(searchString + character);
-    return true;
+    
+return true;
   };
 
   list.clearSearch = function () {
@@ -441,7 +453,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
     searchString = "";
     searchBox.value = "";
     list.doSearchbarStyle();
-    if (hidden.length === 0) return;
+    if (hidden.length === 0) {return;}
     list.unhide();
 
     currentScrollIndex = false;
@@ -505,8 +517,8 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   // SCROLL **************************
 
   list.scrollToId = function (id) {
-    if (id in data) list.scrollTo(data[id]);
-    else if (!list.loaded) scrollToOnLoad = id;
+    if (id in data) {list.scrollTo(data[id]);}
+    else if (!list.loaded) {scrollToOnLoad = id;}
   };
 
   list.scrollAfterLoad = function () {
@@ -528,7 +540,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
 
   list.scrollTo = function (dataItem) {
     if (dataItem) {
-      var newIndex = visible.indexOf(dataItem.id);
+      let newIndex = visible.indexOf(dataItem.id);
       if (newIndex === -1) {
         list.clearSearch();
         newIndex = visible.indexOf(dataItem.id);
@@ -539,13 +551,13 @@ var SearchList = function (rootEl, sortKey, searchKey) {
         newIndex <
           currentScrollIndex + numItemsToDisplay - scrollMargin - 1
       ) {
-        if (currentScrollIndex === false) {
+        if (!currentScrollIndex) {
           list.redrawCurrentPosition();
         }
       }
       // position at the lower edge
       else if (
-        currentScrollIndex !== false &&
+        currentScrollIndex &&
         newIndex >=
           currentScrollIndex + numItemsToDisplay - scrollMargin - 1
       ) {
@@ -601,8 +613,8 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   };
 
   list.reposition = function () {
-    if (numItemsToDisplay === undefined) return;
-    var newIndex = Math.floor(
+    if (numItemsToDisplay === undefined) {return;}
+    let newIndex = Math.floor(
       scroll.scroll_top / (list.listItemHeight || Sizing.listItemHeight),
     );
     newIndex = Math.max(
@@ -610,34 +622,35 @@ var SearchList = function (rootEl, sortKey, searchKey) {
       Math.min(newIndex, visible.length - numItemsToDisplay),
     );
 
-    var newMargin =
+    let newMargin =
       scroll.scroll_top -
       (list.listItemHeight || Sizing.listItemHeight) * newIndex;
     newMargin = newMargin ? -newMargin : 0;
     list.doSearchMessage();
     list.el.style[Fx.transform] =
-      "translateY(" + (scroll.scroll_top + newMargin) + "px)";
+      `translateY(${  scroll.scroll_top + newMargin  }px)`;
 
-    if (currentScrollIndex === newIndex) return;
+    if (currentScrollIndex === newIndex) {return;}
     if (visible.length === 0 && hidden.length === 0) {
       if (list.autoTrim) {
         while (list.el.firstChild) {
           list.el.removeChild(list.el.lastChild);
         }
       }
-      return;
+      
+return;
     }
 
     if (currentScrollIndex) {
       if (newIndex < currentScrollIndex - numItemsToDisplay)
-        currentScrollIndex = false;
+        {currentScrollIndex = false;}
       else if (newIndex > currentScrollIndex + numItemsToDisplay * 2)
-        currentScrollIndex = false;
+        {currentScrollIndex = false;}
     }
 
-    var i;
+    let i;
     // full reset
-    if (currentScrollIndex === false) {
+    if (!currentScrollIndex) {
       while (list.el.firstChild) {
         list.el.removeChild(list.el.lastChild);
       }
@@ -691,7 +704,8 @@ var SearchList = function (rootEl, sortKey, searchKey) {
   list.setNewOpen = function (id) {
     if (!list.loaded) {
       openToOnLoad = id;
-      return false;
+      
+return false;
     }
     if (currentOpenId && data[currentOpenId] && currentOpenId == id) {
       return false;
@@ -701,7 +715,7 @@ var SearchList = function (rootEl, sortKey, searchKey) {
       currentOpenId = null;
     }
     currentOpenId = id;
-    if (!id || !(id in data)) return;
+    if (!id || !(id in data)) {return;}
     if (!data[id]._el) {
       list.drawEntry(data[id]);
     }
@@ -710,14 +724,15 @@ var SearchList = function (rootEl, sortKey, searchKey) {
     if (searchString.length > 0) {
       ignoreOriginalScrollTop = true;
     }
-    return true;
+    
+return true;
   };
 
   Sizing.addResizeCallback(function () {
     scroll.offset_height = Sizing.listHeight;
-    template.list.style.height = scroll.offset_height + "px";
-    if (numItemsToDisplay === undefined && !drawOnResize) return;
-    if (!list.loaded) return;
+    template.list.style.height = `${scroll.offset_height  }px`;
+    if (numItemsToDisplay === undefined && !drawOnResize) {return;}
+    if (!list.loaded) {return;}
     currentScrollIndex = false;
     list.recalculate();
     list.recalculate();

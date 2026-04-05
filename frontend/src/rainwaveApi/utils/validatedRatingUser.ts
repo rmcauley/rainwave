@@ -22,7 +22,7 @@ function guardRatingUser(ratingUser: number): components['schemas']['_rating'] {
   } else if (ratingUser === 5) {
     return 5;
   }
-  throw new RainwaveSDKInvalidRatingError(`${String(ratingUser)}`);
+  throw new RainwaveSDKInvalidRatingError(String(ratingUser));
 }
 
 /**

@@ -1,8 +1,10 @@
 import type { albumRatingContext } from './albumRating.context';
 
 import style from './albumRating.module.scss';
+
 function albumRating(context: albumRatingContext) {
   const v1 = document.createDocumentFragment();
+
   const v2 = document.createElement('div');
   v2.className = style['rating album-rating'];
   v1.appendChild(v2);

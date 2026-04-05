@@ -1,14 +1,14 @@
-var messages = [];
-var el;
-var template;
-var events = [];
-var schedCurrent;
-var schedNext;
-var schedHistory;
-var scroller;
-var historyBar;
-var rootTemplate;
-var historyEvents = [];
+const messages = [];
+let el;
+let template;
+let events = [];
+let schedCurrent;
+let schedNext;
+let schedHistory;
+let scroller;
+let historyBar;
+let rootTemplate;
+let historyEvents = [];
 
 INIT_TASKS.on_init.push(function (rootTmpl) {
   rootTemplate = rootTmpl;
@@ -81,7 +81,7 @@ INIT_TASKS.on_draw.push(function () {
 });
 
 var update = function () {
-  var newEvents = [];
+  const newEvents = [];
 
   for (var i = 0; i < events.length; i++) {
     events[i]._pending_delete = true;
@@ -97,15 +97,15 @@ var update = function () {
     schedHistory[i].changeToHistory();
     schedHistory[i].hideHeader();
     newEvents.push(schedHistory[i]);
-    if (i === 0) schedHistory[i].height += 8;
+    if (i === 0) {schedHistory[i].height += 8;}
   }
 
   schedCurrent = findAndUpdateEvent(schedCurrent);
   schedCurrent.changeToNowPlaying();
   newEvents.push(schedCurrent);
 
-  var previousEvt = schedCurrent;
-  var isContinuing = false;
+  let previousEvt = schedCurrent;
+  let isContinuing = false;
   for (i = 0; i < schedNext.length; i++) {
     schedNext[i] = findAndUpdateEvent(schedNext[i]);
     if (
@@ -127,9 +127,9 @@ var update = function () {
   for (i = 0; i < events.length; i++) {
     if (events[i]._pending_delete) {
       events[i].el.style[Fx.transform] =
-        'translateY(-' +
-        (Sizing.songSizeNp + (Sizing.songSize * events[i].songs.length - 1)) +
-        'px)';
+        `translateY(-${ 
+        Sizing.songSizeNp + (Sizing.songSize * events[i].songs.length - 1) 
+        }px)`;
       Fx.removeElement(events[i].el);
     }
   }
@@ -146,7 +146,7 @@ var update = function () {
 
   // The now playing bar
   Clock.setPageTitle(
-    schedCurrent.songs[0].albums[0].name + ' - ' + schedCurrent.songs[0].title,
+    `${schedCurrent.songs[0].albums[0].name  } - ${  schedCurrent.songs[0].title}`,
     schedCurrent.end,
   );
 };
@@ -162,34 +162,36 @@ var update = function () {
 // 	template.progress_history_inside.style.width = new_val + "%";
 // };
 
-var findEvent = function (id) {
-  for (var i = 0; i < events.length; i++) {
+const findEvent = function (id) {
+  for (let i = 0; i < events.length; i++) {
     if (id == events[i].id) {
       return events[i];
     }
   }
-  return null;
+  
+return null;
 };
 
 var findAndUpdateEvent = function (eventJson) {
-  var evt = findEvent(eventJson.id);
+  const evt = findEvent(eventJson.id);
   if (!evt) {
     return RWEvent(eventJson);
   } else {
     evt.update(eventJson);
     evt._pending_delete = false;
-    return evt;
+    
+return evt;
   }
 };
 
-var addMessage = function (id, text, notCloseable, noReflow) {
-  for (var i = 0; i < messages.length; i++) {
+const addMessage = function (id, text, notCloseable, noReflow) {
+  for (let i = 0; i < messages.length; i++) {
     if (messages[i].id == id) {
       return;
     }
   }
 
-  var msg = {
+  const msg = {
     id: id,
     text: text,
     closeable: !notCloseable,
@@ -208,12 +210,13 @@ var addMessage = function (id, text, notCloseable, noReflow) {
   if (!noReflow) {
     reflow();
   }
-  return msg;
+  
+return msg;
 };
 
 var closeMessage = function (id) {
-  var msg;
-  for (var i = 0; i < messages.length; i++) {
+  let msg;
+  for (let i = 0; i < messages.length; i++) {
     if (messages[i].id == id) {
       msg = messages[i];
       break;
@@ -238,17 +241,17 @@ var closeMessage = function (id) {
   return msg;
 };
 
-var removeMessage = function (id) {
-  var msg = closeMessage(id);
+const removeMessage = function (id) {
+  const msg = closeMessage(id);
   if (msg) {
     messages.splice(messages.indexOf(msg), 1);
   }
 };
 
 var reflow = function (reflowEverything) {
-  if (!events.length) return;
+  if (!events.length) {return;}
 
-  var i;
+  let i;
   if (reflowEverything) {
     for (i = 0; i < events.length; i++) {
       events[i].recalculateHeight();
@@ -256,41 +259,41 @@ var reflow = function (reflowEverything) {
     }
   }
 
-  var runningY = 9;
+  let runningY = 9;
 
   for (i = 0; i < messages.length; i++) {
     if (!messages[i].closed) {
-      messages[i].$t.el.style[Fx.transform] = 'translateY(' + runningY + 'px)';
+      messages[i].$t.el.style[Fx.transform] = `translateY(${  runningY  }px)`;
       runningY += Sizing.timelineMessageSize + 5;
     }
   }
 
-  template.history_header.style[Fx.transform] = 'translateY(' + runningY + 'px)';
+  template.history_header.style[Fx.transform] = `translateY(${  runningY  }px)`;
 
-  var historySize = Prefs.get('l_stk') ? schedHistory.length : Prefs.get('l_stksz') || 0;
+  const historySize = Prefs.get('l_stk') ? schedHistory.length : Prefs.get('l_stksz') || 0;
   if (historySize == schedHistory.length) {
     template.history_header.classList.remove('history-expandable');
   } else {
     template.history_header.classList.add('history-expandable');
   }
 
-  historyBar.style[Fx.transform] = 'translateY(' + runningY + 'px)';
+  historyBar.style[Fx.transform] = `translateY(${  runningY  }px)`;
 
-  var hiddenEvents = Math.min(schedHistory.length, Math.max(0, schedHistory.length - historySize));
+  const hiddenEvents = Math.min(schedHistory.length, Math.max(0, schedHistory.length - historySize));
   for (i = 0; i < hiddenEvents && i < schedHistory.length; i++) {
     events[i].el.style[Fx.transform] =
-      'translateY(' + -(((hiddenEvents - i - 1) * 5 + 1) * Sizing.songSize + 1) + 'px)';
+      `translateY(${  -(((hiddenEvents - i - 1) * 5 + 1) * Sizing.songSize + 1)  }px)`;
     events[i].el.classList.add('sched-history-hidden');
   }
 
   runningY += 17;
-  var historyGap;
+  let historyGap;
   for (i = hiddenEvents; i < events.length; i++) {
     if (events[i].history) {
       events[i].el.classList.remove('sched-history-hidden');
     } else if (!historyGap) {
       historyGap = true;
-      historyBar.style[Fx.transform] = 'translateY(' + (runningY + 9) + 'px)';
+      historyBar.style[Fx.transform] = `translateY(${  runningY + 9  }px)`;
       runningY += 19;
     }
     if (events[i].el.classList.contains('no-progress')) {
@@ -301,24 +304,24 @@ var reflow = function (reflowEverything) {
     // 	runningY -= Sizing.timeline_header_size;
     // 	runningY += 16;
     // }
-    events[i].el.style[Fx.transform] = 'translateY(' + runningY + 'px)';
+    events[i].el.style[Fx.transform] = `translateY(${  runningY  }px)`;
     runningY += events[i].height;
-    if (Sizing.simple && !events[i].history) runningY += 4;
+    if (Sizing.simple && !events[i].history) {runningY += 4;}
   }
 
   scroller.set_height(runningY);
 };
 
 var handleAlreadyVoted = function (json) {
-  if (!events) return;
-  for (var i = 0; i < json.length; i++) {
+  if (!events) {return;}
+  for (let i = 0; i < json.length; i++) {
     registerVote(json[i][0], json[i][1]);
   }
 };
 
 var registerVote = function (eventId, entryId) {
-  if (!events) return;
-  var i, j;
+  if (!events) {return;}
+  let i, j;
   for (i = 0; i < events.length; i++) {
     if (events[i].id == eventId) {
       for (j = 0; j < events[i].songs.length; j++) {
@@ -330,7 +333,7 @@ var registerVote = function (eventId, entryId) {
   }
 };
 
-var rateCurrentSong = function (newRating) {
+const rateCurrentSong = function (newRating) {
   if (schedCurrent.songs[0].rating_allowed || User.rate_anything) {
     Rating.doRating(newRating, schedCurrent.songs[0]);
   } else {
@@ -338,15 +341,15 @@ var rateCurrentSong = function (newRating) {
   }
 };
 
-var favCurrent = function () {
+const favCurrent = function () {
   if (User.id > 1) {
-    var e = document.createEvent('Events');
+    const e = document.createEvent('Events');
     e.initEvent('click', true, false);
     schedCurrent.songs[0].$t.fave.dispatchEvent(e);
   }
 };
 
-var vote = function (whichElection, songPosition) {
+const vote = function (whichElection, songPosition) {
   if (whichElection < 0 || whichElection >= schedNext.length) {
     throw { is_rw: true, tl_key: 'invalid_hotkey_vote' };
   }
@@ -367,9 +370,9 @@ var vote = function (whichElection, songPosition) {
 };
 
 var votingAllowedCheck = function () {
-  if (!schedNext) return;
-  if (!schedNext.length) return;
-  for (var i = 0; i < schedNext.length; i++) {
+  if (!schedNext) {return;}
+  if (!schedNext.length) {return;}
+  for (let i = 0; i < schedNext.length; i++) {
     if (!schedNext[i].disableVoting) {
       // we haven't finished loading everything yet, short-circuit
       return;
@@ -387,50 +390,52 @@ var votingAllowedCheck = function () {
   }
 };
 
-var getCurrentSongRating = function () {
+const getCurrentSongRating = function () {
   if (schedCurrent && schedCurrent.songs && schedCurrent.songs.length > 0) {
     return schedCurrent.songs[0].rating_user;
   }
-  return null;
+  
+return null;
 };
 
-var doEvent = function (json, sid) {
-  var url;
-  var sname;
-  for (var i = 0; i < Stations.length; i++) {
+const doEvent = function (json, sid) {
+  let url;
+  let sname;
+  for (let i = 0; i < Stations.length; i++) {
     if (Stations[i].id == sid) {
       url = Stations[i].url;
       sname = Stations[i].name;
     }
   }
-  var msg = addMessage('event_' + sid, $l('special_event_alert', { station: sname }), false, true);
+  const msg = addMessage(`event_${  sid}`, $l('special_event_alert', { station: sname }), false, true);
   // duplicate message
-  if (!msg) return;
-  var xmsg = document.createElement('span');
+  if (!msg) {return;}
+  const xmsg = document.createElement('span');
   xmsg.textContent = Formatting.eventName(json.event_type, json.event_name);
   msg.$t.message.appendChild(xmsg);
   msg.$t.el.addEventListener('click', function () {
     window.location.href = url;
   });
   msg.$t.el.style.cursor = 'pointer';
-  return msg;
+  
+return msg;
 };
 
 var checkForEvents = function (json) {
-  var sid;
+  let sid;
   for (sid in json) {
     if (json[sid] && json[sid].event_name && sid != User.sid) {
       doEvent(json[sid], sid);
     } else if (!json[sid] || !json[sid].event_name) {
-      closeMessage('event_' + sid);
+      closeMessage(`event_${  sid}`);
     }
   }
 };
 
 var lockCheck = function (json) {
   if (json.lock_in_effect && json.lock_sid != json.sid) {
-    var lockedName, thisName;
-    for (var i = 0; i < Stations.length; i++) {
+    let lockedName, thisName;
+    for (let i = 0; i < Stations.length; i++) {
       if (Stations[i].id == json.lock_sid) {
         lockedName = Stations[i].name;
       } else if (Stations[i].id == User.sid) {
@@ -454,7 +459,7 @@ var lockCheck = function (json) {
 
 // LIVE VOTING *******************************************************************************************
 
-var lastLiveVote;
+let lastLiveVote;
 
 var liveVotingVisibilityChange = function () {
   if (!document.hidden) {
@@ -467,10 +472,11 @@ var liveVotingVisibilityChange = function () {
 var liveVoting = function (json) {
   if (document.hidden) {
     lastLiveVote = json;
-    return;
+    
+return;
   }
   lastLiveVote = null;
-  for (var i = 0; i < events.length; i++) {
+  for (let i = 0; i < events.length; i++) {
     if (json[events[i].id]) {
       events[i].liveVoting(json[events[i].id]);
     }

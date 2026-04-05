@@ -1,5 +1,5 @@
-var Song = function (song, parentEvent) {
-  var template;
+const Song = function (song, parentEvent) {
+  let template;
   if (!song.$t) {
     if (parentEvent) {
       song._is_timeline = true;
@@ -47,10 +47,10 @@ var Song = function (song, parentEvent) {
   }
   if (template.votes && song.entry_votes) {
     if (Sizing.simple)
-      template.votes.textContent = $l('num_votes', {
+      {template.votes.textContent = $l('num_votes', {
         num_votes: song.entry_votes,
-      });
-    else template.votes.textContent = song.entry_votes;
+      });}
+    else {template.votes.textContent = song.entry_votes;}
   }
 
   song.vote = function (e) {
@@ -83,7 +83,7 @@ var Song = function (song, parentEvent) {
   };
 
   song.update = function (json) {
-    for (var i in json) {
+    for (const i in json) {
       if (typeof json[i] !== 'object') {
         song[i] = json[i];
       }
@@ -127,7 +127,7 @@ var Song = function (song, parentEvent) {
     } else if ('valid' in song && !song.valid && !song.good) {
       song.el.classList.add('cool');
       template.cooldown.textContent = $l('request_only_on_x', {
-        station: $l('station_name_' + song.origin_sid),
+        station: $l(`station_name_${  song.origin_sid}`),
       });
     } else if (song.cool && song.cool_end > Clock.now + 20) {
       song.el.classList.add('cool');
@@ -142,7 +142,7 @@ var Song = function (song, parentEvent) {
       song.elec_blocked_by =
         song.elec_blocked_by.charAt(0).toUpperCase() + song.elec_blocked_by.slice(1);
       template.cooldown.textContent = $l('request_in_election', {
-        blocked_by: $l('blocked_by_name__' + song.elec_blocked_by.toLowerCase()),
+        blocked_by: $l(`blocked_by_name__${  song.elec_blocked_by.toLowerCase()}`),
       });
     } else {
       song.el.classList.remove('cool');
@@ -178,7 +178,7 @@ var Song = function (song, parentEvent) {
     if (song.$t.vote_button_text) {
       song.$t.vote_button_text.textContent = $l('voted');
     }
-    for (var i = 0; i < parentEvent.songs.length; i++) {
+    for (let i = 0; i < parentEvent.songs.length; i++) {
       if (parentEvent.songs[i].id != song.id) {
         parentEvent.songs[i].unregisterVote();
       }
@@ -194,24 +194,24 @@ var Song = function (song, parentEvent) {
   };
 
   if (song.entry_id) {
-    var indicators = [];
+    const indicators = [];
 
-    var indicate = function (diff) {
-      var div = document.createElement('div');
+    const indicate = function (diff) {
+      const div = document.createElement('div');
       if (diff <= 0) {
         div.className = 'plusminus negative';
         div.textContent = diff;
       } else {
         div.className = 'plusminus positive';
-        div.textContent = '+' + diff;
+        div.textContent = `+${  diff}`;
       }
       template.votes.parentNode.insertBefore(div, template.votes);
-      for (var i = 0; i < indicators.length; i++) {
+      for (let i = 0; i < indicators.length; i++) {
         if (Sizing.simple) {
-          indicators[i].style[Fx.transform] = 'translateX(' + (indicators.length - i) * 23 + 'px)';
+          indicators[i].style[Fx.transform] = `translateX(${  (indicators.length - i) * 23  }px)`;
         } else {
           indicators[i].style[Fx.transform] =
-            'translateX(-100%) translateX(-' + ((indicators.length - i) * 23 + 5) + 'px)';
+            `translateX(-100%) translateX(-${  (indicators.length - i) * 23 + 5  }px)`;
         }
         indicators[i].style.opacity = 0.7;
       }
@@ -231,7 +231,7 @@ var Song = function (song, parentEvent) {
     };
 
     song.liveVoting = function (json) {
-      var diff = json.entry_votes - song.entry_votes;
+      const diff = json.entry_votes - song.entry_votes;
       song.entry_votes = json.entry_votes;
 
       if (!document.hidden && diff) {

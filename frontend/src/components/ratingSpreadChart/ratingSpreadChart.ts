@@ -2,7 +2,7 @@ function HDivChart(data, options) {
   options = options || {};
   options.minShare = options.minShare || 0;
 
-  var total, i;
+  let total, i;
   if (options.max) {
     total = options.max;
   } else {
@@ -12,7 +12,7 @@ function HDivChart(data, options) {
     }
   }
 
-  var totalPercent = 0;
+  let totalPercent = 0;
   for (i = 0; i < data.length; i++) {
     data[i].share = Math.floor((data[i].value / total) * 100);
     data[i].shareAccurate = Math.round((data[i].value / total) * 100);
@@ -28,26 +28,26 @@ function HDivChart(data, options) {
 
   if (options.addShareToLabel) {
     for (i = 0; i < data.length; i++) {
-      data[i].label += data[i].share + "%";
+      data[i].label += `${data[i].share  }%`;
     }
   }
 
   if (options.addShareToTooltip) {
     for (i = 0; i < data.length; i++) {
-      data[i].tooltip += " (" + data[i].shareAccurate + "%)";
+      data[i].tooltip += ` (${  data[i].shareAccurate  }%)`;
     }
   }
 
-  var outside = document.createElement("div");
+  const outside = document.createElement("div");
   outside.className = "chart-outside";
-  var d, t, pos;
+  let d, t, pos;
   pos = 0;
   for (i = 0; i < data.length; i++) {
     d = document.createElement("div");
     d.className = "chart-bar";
-    d.style.width = data[i].share + "%";
+    d.style.width = `${data[i].share  }%`;
     d.style.backgroundColor = data[i].color;
-    d.style.left = pos + "%";
+    d.style.left = `${pos  }%`;
     if (
       data[i].label &&
       data[i].share >= options.minShare &&
@@ -78,7 +78,7 @@ function HDivChart(data, options) {
     for (i = 1; i < options.guideLines; i++) {
       d = document.createElement("div");
       d.className = "chart-pip";
-      d.style.left = Math.round(100 / options.guideLines) * i + "%";
+      d.style.left = `${Math.round(100 / options.guideLines) * i  }%`;
       outside.appendChild(d);
     }
 

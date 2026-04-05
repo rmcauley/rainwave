@@ -1,4 +1,4 @@
-var ListenerView = function (json, el) {
+const ListenerView = function (json, el) {
   for (var i = 0; i < json.top_albums.length; i++) {
     json.top_albums[i].rating_site = json.top_albums[i].rating;
     json.top_albums[i].rating = json.top_albums[i].rating_listener;
@@ -7,7 +7,7 @@ var ListenerView = function (json, el) {
 
   // no need to be terribly accurate here
   json.regdate = new Date(json.regdate * 1000).getYear() + 1900;
-  var template = RWTemplates.detail.listener(
+  const template = RWTemplates.detail.listener(
     json,
     document.createElement("div"),
   );
@@ -23,11 +23,11 @@ var ListenerView = function (json, el) {
 
   el.appendChild(template._root);
 
-  var detailContainer = template.user_detail_container;
+  const detailContainer = template.user_detail_container;
 
-  var drawChart = function (jd, key, headerText, overflowHidden) {
-    var data = [];
-    var i, j, sid;
+  const drawChart = function (jd, key, headerText, overflowHidden) {
+    const data = [];
+    let i, j, sid;
     for (j = 0; j < Stations.length; j++) {
       sid = Stations[j].id;
       for (i = 0; i < jd.length; i++) {
@@ -35,18 +35,18 @@ var ListenerView = function (json, el) {
           data.push({
             value: jd[i][key],
             color: Stations[j].color,
-            label: Stations[j].name + ": ",
+            label: `${Stations[j].name  }: `,
           });
           break;
         }
       }
     }
     if (data.length > 0) {
-      var hdr = document.createElement("div");
+      const hdr = document.createElement("div");
       hdr.className = "graph-header";
       hdr.textContent = headerText;
       detailContainer.appendChild(hdr);
-      var chrt = HDivChart(data, { addShareToLabel: true });
+      const chrt = HDivChart(data, { addShareToLabel: true });
       if (overflowHidden) {
         chrt.classList.add("overflow-hidden");
       }
@@ -54,7 +54,7 @@ var ListenerView = function (json, el) {
     }
   };
 
-  var sid, j, hdr, chart;
+  let sid, j, hdr, chart;
 
   // done for compatibility with RatingChart
   json.rating_histogram = {};
@@ -74,10 +74,10 @@ var ListenerView = function (json, el) {
     hdr.className = "graph-header";
     hdr.textContent = $l("average_rating_by_station");
     detailContainer.appendChild(hdr);
-    var found;
+    let found;
     for (i = 0; i < Stations.length; i++) {
       sid = Stations[i].id;
-      if (sid == 5) continue;
+      if (sid == 5) {continue;}
       found = false;
       for (j = 0; j < json.ratings_by_station.length; j++) {
         if (json.ratings_by_station[j].sid == sid) {
@@ -88,9 +88,9 @@ var ListenerView = function (json, el) {
                 value: json.ratings_by_station[j].average_rating,
                 color: Stations[i].color,
                 label:
-                  Stations[i].name +
-                  ": " +
-                  Formatting.rating(json.ratings_by_station[j].average_rating),
+                  `${Stations[i].name 
+                  }: ${ 
+                  Formatting.rating(json.ratings_by_station[j].average_rating)}`,
               },
             ],
             { max: 5, guideLines: 5 },
@@ -105,7 +105,7 @@ var ListenerView = function (json, el) {
             {
               value: 0,
               color: Stations[i].color,
-              label: Stations[i].name + ": " + $l("no_ratings"),
+              label: `${Stations[i].name  }: ${  $l("no_ratings")}`,
             },
           ],
           { max: 5, guideLines: 5 },
@@ -138,14 +138,14 @@ var ListenerView = function (json, el) {
   detailContainer.appendChild(hdr);
   for (i = 0; i < Stations.length; i++) {
     sid = Stations[i].id;
-    if (sid == 5) continue;
+    if (sid == 5) {continue;}
     chart = HDivChart(
       [
         {
           value: json.rating_completion[sid] || 0,
           color: Stations[i].color,
           label:
-            Stations[i].name + ": " + (json.rating_completion[sid] || 0) + "%",
+            `${Stations[i].name  }: ${  json.rating_completion[sid] || 0  }%`,
         },
       ],
       { max: 100, guideLines: 5 },

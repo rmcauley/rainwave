@@ -1,6 +1,6 @@
-var rwSongGap = 1;
+const rwSongGap = 1;
 
-var RWEvent = function (event) {
+const RWEvent = function (event) {
   event.type = event.type.toLowerCase();
   event.headerText = null;
   if (!event.used && event.type.indexOf("election") != -1) {
@@ -25,10 +25,10 @@ var RWEvent = function (event) {
   }
 
   event.reflow = function () {
-    var runningHeight = 0;
-    for (var i = 0; i < event.songs.length; i++) {
+    let runningHeight = 0;
+    for (let i = 0; i < event.songs.length; i++) {
       event.songs[i].el.style[Fx.transform] =
-        "translateY(" + runningHeight + "px)";
+        `translateY(${  runningHeight  }px)`;
       if (event.songs[i].el.classList.contains("now-playing")) {
         runningHeight += Sizing.songSizeNp;
       } else if (event.songs[i].el.classList.contains("song-lost")) {
@@ -43,8 +43,8 @@ var RWEvent = function (event) {
       event.songs[i].el._zIndex = event.songs.length - i;
     }
     if (event.$t.progress)
-      event.$t.progress.style[Fx.transform] =
-        "translateY(" + (runningHeight + 12) + "px)";
+      {event.$t.progress.style[Fx.transform] =
+        `translateY(${  runningHeight + 12  }px)`;}
   };
   event.reflow();
 
@@ -57,7 +57,7 @@ var RWEvent = function (event) {
     event.type = event.type.toLowerCase();
 
     if (event.songs) {
-      var j;
+      let j;
       for (i = 0; i < event.songs.length; i++) {
         for (j = 0; j < json.songs.length; j++) {
           if (event.songs[i].id == json.songs[j].id) {
@@ -83,7 +83,7 @@ var RWEvent = function (event) {
       event.height = Sizing.songSize + rwSongGap;
     }
     if (event.showingHeader && !event.history)
-      event.height += Sizing.timelineHeaderSize;
+      {event.height += Sizing.timelineHeaderSize;}
   };
 
   event.changeToComingUp = function (isContinuing) {
@@ -110,7 +110,7 @@ var RWEvent = function (event) {
       event.songs[0].remove_autovote();
     }
     event.songs[0].el.classList.add("now-playing");
-    for (var i = 1; i < event.songs.length; i++) {
+    for (let i = 1; i < event.songs.length; i++) {
       event.songs[i].el.classList.add("song-lost");
     }
     event.disableVoting();
@@ -129,20 +129,20 @@ var RWEvent = function (event) {
       return a.entry_position < b.entry_position ? -1 : 1;
     });
     event.songs[0].el.classList.remove("now-playing");
-    for (var i = 1; i < event.songs.length; i++) {
+    for (let i = 1; i < event.songs.length; i++) {
       event.songs[i].el.classList.add("song-lost");
       Fx.removeElement(event.songs[i].el);
     }
-    if (event.$t.progress.parentNode) Fx.removeElement(event.$t.progress);
+    if (event.$t.progress.parentNode) {Fx.removeElement(event.$t.progress);}
     event.reflow();
     event.disableVoting();
     event.recalculateHeight();
   };
 
   event.enableVoting = function () {
-    var alreadyVoted;
-    var selfRequest = false;
-    for (var i = 0; i < event.songs.length; i++) {
+    let alreadyVoted;
+    let selfRequest = false;
+    for (let i = 0; i < event.songs.length; i++) {
       event.songs[i].enableVoting();
       if (
         event.songs[i].el.classList.contains("voting-registered") ||
@@ -153,7 +153,7 @@ var RWEvent = function (event) {
         selfRequest = i;
       }
     }
-    if (selfRequest !== false && !alreadyVoted) {
+    if (selfRequest && !alreadyVoted) {
       event.songs[selfRequest].registerVote();
       event.songs[selfRequest].autovoted = true;
       if (Prefs.get("pwr")) {
@@ -165,25 +165,25 @@ var RWEvent = function (event) {
   };
 
   event.disableVoting = function () {
-    for (var i = 0; i < event.songs.length; i++) {
+    for (let i = 0; i < event.songs.length; i++) {
       event.songs[i].disableVoting();
     }
   };
 
   event.unregisterVote = function () {
-    for (var i = 0; i < event.songs.length; i++) {
+    for (let i = 0; i < event.songs.length; i++) {
       event.songs[i].unregisterVote();
     }
   };
 
   event.setHeaderText = function (defaultText) {
-    var eventDesc = Formatting.eventName(event.type, event.name);
+    const eventDesc = Formatting.eventName(event.type, event.name);
     if (eventDesc && !event.voting_allowed) {
-      event.$t.header.textContent = defaultText + " - " + eventDesc;
+      event.$t.header.textContent = `${defaultText  } - ${  eventDesc}`;
     } else if (eventDesc && event.voting_allowed) {
-      event.$t.header.textContent = eventDesc + " - " + $l("vote_now");
+      event.$t.header.textContent = `${eventDesc  } - ${  $l("vote_now")}`;
     } else if (event.voting_allowed) {
-      event.$t.header.textContent = defaultText + " - " + $l("vote_now");
+      event.$t.header.textContent = `${defaultText  } - ${  $l("vote_now")}`;
     } else {
       event.$t.header.textContent = defaultText;
     }
@@ -207,24 +207,24 @@ var RWEvent = function (event) {
   };
 
   var progressBarUpdate = function () {
-    var newVal = Math.min(
+    const newVal = Math.min(
       Math.max(
         Math.floor(((event.end - Clock.now) / (event.songs[0].length - 1)) * 100),
         0,
       ),
       100,
     );
-    event.$t.progress_inside.style.width = newVal + "%";
+    event.$t.progress_inside.style.width = `${newVal  }%`;
   };
 
   event.destroy = function () {
-    for (var i = 0; i < event.songs.length; i++) {
+    for (let i = 0; i < event.songs.length; i++) {
       event.songs[i].destroy();
     }
   };
 
   event.liveVoting = function (lvsongs) {
-    var lvi, si;
+    let lvi, si;
     for (lvi = 0; lvi < lvsongs.length; lvi++) {
       for (si = 0; si < event.songs.length; si++) {
         if (lvsongs[lvi].entry_id == event.songs[si].entry_id) {

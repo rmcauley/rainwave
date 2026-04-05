@@ -1,8 +1,10 @@
 import type { timelineEventTooltipContext } from './timelineEntryTooltip.context';
 
 import style from './timelineEventTooltip.module.scss';
+
 function timelineEventTooltip(context: timelineEventTooltipContext) {
   const v1 = document.createDocumentFragment();
+
   const v2 = document.createElement('div');
   v2.appendChild(document.createTextNode(context.text));
   v2.className = style['error-tooltip'];

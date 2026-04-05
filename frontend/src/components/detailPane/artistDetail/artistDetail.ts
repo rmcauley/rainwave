@@ -1,22 +1,22 @@
-var UnavailableOnThisStationPopup = function () {
+const UnavailableOnThisStationPopup = function () {
   ErrorHandler.tooltipError({
     text: $l("song_on_other_station", {
-      station: $l("station_name_" + User.sid),
+      station: $l(`station_name_${  User.sid}`),
     }),
   });
 };
 
-var ArtistView = function (json) {
-  var order = [1, 4, 2, 3];
-  var finalOrder = [User.sid];
+const ArtistView = function (json) {
+  const order = [1, 4, 2, 3];
+  const finalOrder = [User.sid];
   for (var i = 0; i < order.length; i++) {
-    if (order[i] === User.sid) continue;
-    if (!json.all_songs[order[i]]) continue;
+    if (order[i] === User.sid) {continue;}
+    if (!json.all_songs[order[i]]) {continue;}
     finalOrder.push(order[i]);
   }
-  var albumsSid;
-  var albums = [];
-  var albumId, a, sid;
+  let albumsSid;
+  let albums = [];
+  let albumId, a, sid;
   if (!json.albums) {
     // for this to work with songstable we have to restructure all the JSON to look like albums
     for (i = 0; i < finalOrder.length; i++) {
@@ -27,7 +27,7 @@ var ArtistView = function (json) {
         a.sid = sid;
         if (sid !== User.sid) {
           a.name = $l("album_on_station", {
-            station: $l("station_name_" + sid),
+            station: $l(`station_name_${  sid}`),
             album: a.name,
           });
         } else {
@@ -43,11 +43,11 @@ var ArtistView = function (json) {
     }
     json.albums = albums;
   }
-  var template = RWTemplates.detail.artist(
+  const template = RWTemplates.detail.artist(
     { artist: json, albums: json.albums },
     document.createElement("div"),
   );
-  var j;
+  let j;
   for (i = 0; i < albums.length; i++) {
     for (j = 0; j < albums[i].songs.length; j++) {
       Fave.register(albums[i].songs[j]);

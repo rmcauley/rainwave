@@ -4,10 +4,13 @@ import { rating } from '../../ratings/rating.template';
 import type { songTableContext } from './songTable.context';
 
 import style from './songTable.module.scss';
+
 function songTable(context: songTableContext) {
   const v1 = document.createDocumentFragment();
+
   const v2 = context.songs.map((context) => {
     const v3 = document.createDocumentFragment();
+
     const v4 = document.createElement('div');
     v4.setAttribute(
       'data-old-class',
@@ -40,6 +43,7 @@ function songTable(context: songTableContext) {
         v7.appendChild(document.createTextNode(Formatting.cooldown_glance(context.cool_end)));
         v7.className = style['cool-info'];
         v4.appendChild(v7);
+
         const v8 = document.createElement('div');
         v8.appendChild(document.createTextNode(Formatting.minute_clock(context.length)));
         v8.className = style.length;
@@ -49,6 +53,7 @@ function songTable(context: songTableContext) {
         const v9 = document.createElement('div');
         v9.className = style['rating-clear'];
         v4.appendChild(v9);
+
         const v10 = document.createElement('img');
         v10.setAttribute('src', `/static/images4/rating_clear.png`);
         v9.appendChild(v10);
@@ -65,8 +70,10 @@ function songTable(context: songTableContext) {
       const v12 = document.createElement('div');
       v12.className = style.artists;
       v4.appendChild(v12);
+
       const v13 = context.artists.map((context) => {
         const v14 = document.createDocumentFragment();
+
         const v15 = document.createElement('a');
         v15.appendChild(document.createTextNode(context.name));
         v15.href = `#!/artist/` + context.id;
@@ -90,14 +97,17 @@ return { $root: v14 };
           v4.appendChild(v17);
         }
       }
+
       const v18 = document.createElement('div');
       v18.className = style['detail-icon'];
       v4.appendChild(v18);
+
       const v19 = document.createElement('img');
       v19.setAttribute('src', `/static/images4/info.png`);
       v18.appendChild(v19);
     }
     v4.appendChild(fave(context).$root);
+
     const v20 = document.createElement('div');
     v20.appendChild(document.createTextNode(context.title));
     v20.className = style.title;

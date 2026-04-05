@@ -9,7 +9,8 @@ function openStation(e) {
     e.stopPropagation();
     e.preventDefault();
     window.location.href = this._href;
-    return false;
+    
+return false;
   }
 }
 
@@ -51,8 +52,8 @@ function toggleStationSelect(e) {
 }
 
 function updateStationInfo(json) {
-  var i;
-  var key;
+  let i;
+  let key;
   for (key in json) {
     if (!json[key]) {
       continue;
@@ -60,7 +61,7 @@ function updateStationInfo(json) {
 
     for (i = 0; i < Stations.length; i++) {
       if (Stations[i].id == key && Stations[i].$t.menu_np_art) {
-        Stations[i].$t.menu_np_art.style.backgroundImage = 'url(' + json[key].art + '_320.jpg)';
+        Stations[i].$t.menu_np_art.style.backgroundImage = `url(${  json[key].art  }_320.jpg)`;
         Stations[i].$t.menu_np_song.textContent = json[key].title;
         Stations[i].$t.menu_np_album.textContent = json[key].album;
       }
@@ -73,7 +74,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
 
   // must be done in JS, if you try to do it in the template you still get a clickable <a> for
   // the station that shouldn't have a link
-  for (var i = 0; i < Stations.length; i++) {
+  for (let i = 0; i < Stations.length; i++) {
     if (Stations[i].url) {
       Stations[i].$t.menu_link.setAttribute('href', Stations[i].url);
       Stations[i].$t.menu_link._href = Stations[i].url;
@@ -106,7 +107,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
     template.hamburger_container.classList.toggle('burger-open');
   });
 
-  var closeBurger = function () {
+  const closeBurger = function () {
     template.hamburger_container.classList.remove('burger-open');
   };
 

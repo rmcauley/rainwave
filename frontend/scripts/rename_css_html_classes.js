@@ -22,8 +22,9 @@ function toKebab(value) {
 
 function replaceOutsideTemplates(value) {
   return value.replace(/(\{\{[\s\S]*?\}\})|([^{}]+)/g, (match, templateExpr, plain) => {
-    if (templateExpr) return templateExpr;
-    return toKebab(plain);
+    if (templateExpr) {return templateExpr;}
+    
+return toKebab(plain);
   });
 }
 
@@ -58,7 +59,8 @@ function replaceJsTs(text) {
   text = replaceInMatches(text, /getElementsByClassName\(([\s\S]*?)\)/g);
   text = replaceInMatches(text, /querySelector(?:All)?\(([\s\S]*?)\)/g);
   text = replaceInMatches(text, /setAttribute\((['"])class\1\s*,([\s\S]*?)\)/g);
-  return text;
+  
+return text;
 }
 
 const htmlFiles = [];

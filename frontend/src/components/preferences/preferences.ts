@@ -1,13 +1,13 @@
-var SettingsWindow = function () {
-  var p = Prefs.get_meta();
+const SettingsWindow = function () {
+  const p = Prefs.get_meta();
   p.p_sort.legal_values[0].name = $l("prefs_sort_playlist_by_alpha");
   p.p_sort.legal_values[1].name = $l("prefs_sort_playlist_by_rating_user");
-  var ct = Modal($l("Settings"), "settings", p);
+  const ct = Modal($l("Settings"), "settings", p);
   if (Prefs.powertripped) {
     ct._root.classList.add("powertripped");
   }
 
-  var tTlCheck = function () {
+  const tTlCheck = function () {
     if (Prefs.get("t_tl")) {
       p.t_clk.$t.item_root.style.opacity = 1;
       p.t_rt.$t.item_root.style.opacity = 1;
@@ -17,7 +17,7 @@ var SettingsWindow = function () {
     }
   };
 
-  var incompleteCheck = function (incomplete, nullfirst) {
+  const incompleteCheck = function (incomplete, nullfirst) {
     if (incomplete) {
       p.r_incmplt.$t.wrap.classList.remove("no");
       p.r_incmplt.$t.wrap.classList.add("yes");
@@ -34,13 +34,13 @@ var SettingsWindow = function () {
   p.r_incmplt.$t.wrap.classList.add("r-incmplt");
   incompleteCheck(Prefs.get("r_incmplt"), Prefs.get("p_null1"));
 
-  var boolSetup = function (key, obj) {
-    var check = function () {
+  const boolSetup = function (key, obj) {
+    const check = function () {
       if (Prefs.get(key)) {
         if (obj.$t.wrap.classList.contains("no")) {
           obj.$t.wrap.classList.remove("yes");
           obj.$t.wrap.classList.remove("no");
-          obj.$t.wrap.offsetWidth; // eslint-disable-line no-unused-expressions
+          obj.$t.wrap.offsetWidth;  
         }
         obj.$t.wrap.classList.add("yes");
       } else if (obj.$t.wrap.classList.contains("yes")) {
@@ -56,7 +56,7 @@ var SettingsWindow = function () {
     };
     obj.$t.item_root.addEventListener("click", function (e) {
       e.stopPropagation();
-      var val = !Prefs.get(key);
+      const val = !Prefs.get(key);
       Prefs.change(key, val);
       check();
       if (key == "t_tl") {
@@ -93,23 +93,23 @@ var SettingsWindow = function () {
     }
   };
 
-  var multiHighlight = function (el, highlighter) {
-    var w = el.offsetWidth;
-    var h = el.offsetHeight;
-    var l = el.offsetLeft;
-    var t = el.offsetTop;
+  const multiHighlight = function (el, highlighter) {
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    const l = el.offsetLeft;
+    const t = el.offsetTop;
 
-    for (var i = 0; i < el.parentNode.childNodes.length; i++) {
+    for (let i = 0; i < el.parentNode.childNodes.length; i++) {
       el.parentNode.childNodes[i].classList.remove("selected");
     }
     el.classList.add("selected");
 
-    highlighter.style.width = w + "px";
-    highlighter.style.height = h + "px";
-    highlighter.style[Fx.transform] = "translate(" + l + "px, " + t + "px)";
+    highlighter.style.width = `${w  }px`;
+    highlighter.style.height = `${h  }px`;
+    highlighter.style[Fx.transform] = `translate(${  l  }px, ${  t  }px)`;
   };
 
-  var multiSetup = function (key, obj, val) {
+  const multiSetup = function (key, obj, val) {
     if (key == "locales") {
       val.$t.link.addEventListener("click", function () {
         Prefs.change_language(val.value);
@@ -122,13 +122,13 @@ var SettingsWindow = function () {
     }
   };
 
-  var highlightLater = function (el, highlighter) {
+  const highlightLater = function (el, highlighter) {
     setTimeout(function () {
       multiHighlight(el, highlighter);
     }, 400);
   };
 
-  var i, j;
+  let i, j;
   for (i in p) {
     if (!p[i].$t) {
       continue;

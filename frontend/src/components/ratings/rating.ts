@@ -1,8 +1,8 @@
-var albumCallback = null;
+const albumCallback = null;
 
 // PREF CALLBACKS
 
-var ratingClearToggle = function (v) {
+const ratingClearToggle = function (v) {
   if (v) {
     document.body.classList.add('rating-clear-ok');
   } else {
@@ -10,7 +10,7 @@ var ratingClearToggle = function (v) {
   }
 };
 
-var ratingCompleteToggle = function (useComplete) {
+const ratingCompleteToggle = function (useComplete) {
   if (useComplete) {
     document.body.classList.add('show-incomplete');
   } else {
@@ -18,7 +18,7 @@ var ratingCompleteToggle = function (useComplete) {
   }
 };
 
-var hideGlobalRatingCallback = function (hideGlobals) {
+const hideGlobalRatingCallback = function (hideGlobals) {
   if (hideGlobals) {
     document.body.classList.add('hide-global-ratings');
   } else {
@@ -28,13 +28,13 @@ var hideGlobalRatingCallback = function (hideGlobals) {
 
 // API CALLBACKS
 
-var ratingApiCallback = function (json) {
+const ratingApiCallback = function (json) {
   // Errors are handled in the individual rating functions, not globally here.
-  if (!json.success) return;
+  if (!json.success) {return;}
 
-  var ratings, i, a;
+  let ratings, i, a;
 
-  ratings = document.getElementsByName('srate_' + json.song_id);
+  ratings = document.getElementsByName(`srate_${  json.song_id}`);
   for (i = 0; i < ratings.length; i++) {
     if (json.rating_user) {
       ratings[i].classList.add('rating-user');
@@ -84,7 +84,7 @@ var ratingApiCallback = function (json) {
   for (i = 0; i < json.updated_album_ratings.length; i++) {
     if (json.updated_album_ratings[i]) {
       a = json.updated_album_ratings[i];
-      ratings = document.getElementsByName('arate_' + a.id);
+      ratings = document.getElementsByName(`arate_${  a.id}`);
       for (i = 0; i < ratings.length; i++) {
         if (a.rating_user) {
           ratings[i].classList.add('rating-user');
@@ -123,9 +123,9 @@ var ratingApiCallback = function (json) {
 
 // RATING EFFECTS
 
-var ratingStep = function (steptime) {
+const ratingStep = function (steptime) {
   if (steptime < this.rating_started + 300 && this.rating_now != this.rating_to) {
-    var timeoverduration = (steptime - this.rating_started) / 300;
+    const timeoverduration = (steptime - this.rating_started) / 300;
     this.rating_now =
       -(this.rating_to - this.rating_from) * timeoverduration * (timeoverduration - 2) +
       this.rating_from;
@@ -138,10 +138,10 @@ var ratingStep = function (steptime) {
   // this.style.backgroundPosition = "0px " + (-(Math.round((Math.round(this.rating_now * 10) / 2)) * 30) + 3) + "px";
   // R5 images
   this.style.backgroundPosition =
-    '0px ' + (-(Math.round(Math.round(this.rating_now * 10) / 2) * 28) + 3) + 'px';
+    `0px ${  -(Math.round(Math.round(this.rating_now * 10) / 2) * 28) + 3  }px`;
 };
 
-var ratingSet = function (pos) {
+const ratingSet = function (pos) {
   this.rating_now = pos;
   this.rating_to = pos;
   if (!this.rating_anim_id) {
@@ -149,8 +149,8 @@ var ratingSet = function (pos) {
   }
 };
 
-var ratingStart = function (stopat) {
-  if (this.rating_to == stopat) return;
+const ratingStart = function (stopat) {
+  if (this.rating_to == stopat) {return;}
   this.rating_started = performance.now();
   this.rating_to = stopat;
   this.rating_from = this.rating_now;
@@ -159,7 +159,7 @@ var ratingStart = function (stopat) {
   }
 };
 
-var addEffect = function (el) {
+const addEffect = function (el) {
   el.rating_to = 0;
   el.rating_from = 0;
   el.rating_now = 0;
@@ -172,8 +172,8 @@ var addEffect = function (el) {
   el.ratingStep = ratingStep.bind(el);
 };
 
-var getRatingFromMouse = function (evt) {
-  var x, y;
+const getRatingFromMouse = function (evt) {
+  let x, y;
   if (typeof evt.offsetX != 'undefined' && typeof evt.offsetY != 'undefined') {
     x = evt.offsetX;
     y = evt.offsetY;
@@ -182,27 +182,28 @@ var getRatingFromMouse = function (evt) {
     y = evt.layerY || evt.y;
   }
 
-  if (x < 0 || y < 0) return 1;
-  var result = Math.round(((x - 4 + (18 - y) * 0.5) / 10) * 2) / 2;
-  if (result <= 1) return 1;
-  else if (result >= 5) return 5;
-  return result;
+  if (x < 0 || y < 0) {return 1;}
+  const result = Math.round(((x - 4 + (18 - y) * 0.5) / 10) * 2) / 2;
+  if (result <= 1) {return 1;}
+  else if (result >= 5) {return 5;}
+  
+return result;
 };
 
-var isTouching = false;
-var touchTimer;
-var startTouchTimer;
-var touchingSong;
-var lastTouch;
-var clearTouch = function () {
+let isTouching = false;
+let touchTimer;
+let startTouchTimer;
+let touchingSong;
+let lastTouch;
+const clearTouch = function () {
   touchTimer = false;
   isTouching = false;
 };
 
-var holdToRates = [];
+let holdToRates = [];
 
-var touchend = function () {
-  for (var i = 0; i < holdToRates.length; i++) {
+const touchend = function () {
+  for (let i = 0; i < holdToRates.length; i++) {
     holdToRates[i].parentNode.removeChild(holdToRates[i]);
   }
   holdToRates = [];
@@ -221,8 +222,8 @@ var touchend = function () {
   document.body.removeEventListener('touchmove', scrollCheck);
 };
 
-var scrollCheckMin;
-var scrollCheckMax;
+let scrollCheckMin;
+let scrollCheckMax;
 var scrollCheck = function (e) {
   if (e.touches[0].pageY < scrollCheckMin || e.touches[0].pageY > scrollCheckMax) {
     touchend(e);
@@ -230,7 +231,7 @@ var scrollCheck = function (e) {
   lastTouch = e;
 };
 
-var triggerTouchRating = function (e) {
+const triggerTouchRating = function (e) {
   e.preventDefault();
 
   document.body.addEventListener('touchend', touchend);
@@ -238,7 +239,7 @@ var triggerTouchRating = function (e) {
 
   touchingSong.$t.rating.classList.add('starting-touch');
 
-  var holdToRate = document.createElement('div');
+  const holdToRate = document.createElement('div');
   holdToRate.textContent = $l('hold_to_rate');
   holdToRate.className = 'hold-to-rate';
   touchingSong.$t.rating.appendChild(holdToRate);
@@ -255,25 +256,25 @@ var triggerTouchRating = function (e) {
   document.body.addEventListener('touchmove', scrollCheck);
 };
 
-var ratingWidth = 58;
-var sliderWidth = 200;
+const ratingWidth = 58;
+const sliderWidth = 200;
 var doTouchRating = function () {
   // document.body.addEventListener("touchend", touchend);
   // document.body.addEventListener("touchcancel", touchend);
   document.body.removeEventListener('touchmove', scrollCheck);
 
-  for (var i = 0; i < holdToRates.length; i++) {
+  for (let i = 0; i < holdToRates.length; i++) {
     holdToRates[i].parentNode.removeChild(holdToRates[i]);
   }
   holdToRates = [];
 
-  var zeroX = touchingSong.$t.rating.offsetLeft + ratingWidth - sliderWidth - 10;
-  var zeroY = lastTouch.touches[0].pageY;
+  const zeroX = touchingSong.$t.rating.offsetLeft + ratingWidth - sliderWidth - 10;
+  const zeroY = lastTouch.touches[0].pageY;
   touchingSong.$t.rating.classList.remove('starting-touch');
-  var t = RWTemplates.rating_mobile();
-  var cancelling = false;
-  var nowNumber = 5;
-  var remove = function (e) {
+  const t = RWTemplates.rating_mobile();
+  let cancelling = false;
+  let nowNumber = 5;
+  const remove = function (e) {
     if (!cancelling && touchingSong && touchingSong.$t && e.target == touchingSong.$t.rating) {
       doRating(nowNumber, touchingSong);
     } else if (touchingSong) {
@@ -288,13 +289,13 @@ var doTouchRating = function () {
     document.body.removeEventListener('touchend', remove);
     document.body.removeEventListener('touchcancel', remove);
   };
-  var highlight = function (rating, width) {
-    t.number.style[Fx.transform] = 'translateX(' + Math.max(15, width - 15) + 'px)';
+  const highlight = function (rating, width) {
+    t.number.style[Fx.transform] = `translateX(${  Math.max(15, width - 15)  }px)`;
     t.slider.style.backgroundPosition =
-      '0px ' +
-      -(Math.max(5, Math.min(25, Math.floor(width / ((sliderWidth - 25) / 24)))) * 96) +
-      'px';
-    if (rating === nowNumber) return;
+      `0px ${ 
+      -(Math.max(5, Math.min(25, Math.floor(width / ((sliderWidth - 25) / 24)))) * 96) 
+      }px`;
+    if (rating === nowNumber) {return;}
     nowNumber = rating;
     t.number.textContent = Formatting.rating(rating);
   };
@@ -307,10 +308,11 @@ var doTouchRating = function () {
         cancelling = true;
         nowNumber = false;
       }
-      return;
+      
+return;
     }
     cancelling = false;
-    var rating = Math.floor((e.touches[0].pageX - (zeroX + 25)) / ((sliderWidth - 25) / 9)) / 2 + 1;
+    let rating = Math.floor((e.touches[0].pageX - (zeroX + 25)) / ((sliderWidth - 25) / 9)) / 2 + 1;
     rating = Math.min(Math.max(1, rating), 5);
     highlight(rating, Math.min(sliderWidth, Math.max(0, e.touches[0].pageX - zeroX)));
   };
@@ -328,16 +330,16 @@ var doTouchRating = function () {
 };
 
 var doRating = function (newRating, json) {
-  var confirm = document.createElement('div');
+  const confirm = document.createElement('div');
   confirm.className = 'rating-number rating-confirm';
   confirm.textContent = Formatting.rating(newRating);
   confirm.style[Fx.transform] =
-    'translateX(' + Math.round((newRating / 5.0) * 50 - 15) + 'px) scaleX(0.2)';
+    `translateX(${  Math.round((newRating / 5.0) * 50 - 15)  }px) scaleX(0.2)`;
   json.$t.rating.insertBefore(confirm, json.$t.rating.firstChild);
   requestNextAnimationFrame(function () {
     confirm.classList.add('confirming');
   });
-  var ratingErr = function () {
+  const ratingErr = function () {
     if (newRating === null) {
       confirm.textContent = 'x';
     } else {
@@ -353,7 +355,8 @@ var doRating = function (newRating, json) {
   };
   if (newRating === null) {
     ratingErr();
-    return;
+    
+return;
   }
   API.async_get(
     'rate',
@@ -380,7 +383,7 @@ var doRating = function (newRating, json) {
   );
 };
 
-var fakeEffect = function (json, rating) {
+const fakeEffect = function (json, rating) {
   json.$t.rating.rating_to = rating;
   ratingStep.call(json.$t.rating, 0);
   json.$t.rating_hover_number.textContent = Formatting.rating(rating);
@@ -388,7 +391,7 @@ var fakeEffect = function (json, rating) {
 
 // INDIVIDUAL RATING BAR CODE
 
-var register = function (json) {
+const register = function (json) {
   if (!json || !json.$t.rating || !json.id || isNaN(json.id)) {
     return;
   }
@@ -402,12 +405,12 @@ var register = function (json) {
   addEffect(json.$t.rating);
 
   if (User.id > 1) {
-    var isSong =
+    const isSong =
       json.title || json.albums || json.album_id || json.album_rating || json.artist_parseable
         ? true
         : false;
-    if (isSong) registerSong(json);
-    else registerAlbum(json);
+    if (isSong) {registerSong(json);}
+    else {registerAlbum(json);}
 
     if (json.rating_user) {
       json.$t.rating.classList.add('rating-user');
@@ -434,7 +437,7 @@ var register = function (json) {
 };
 
 var registerAlbum = function (json) {
-  json.$t.rating.setAttribute('name', 'arate_' + json.id);
+  json.$t.rating.setAttribute('name', `arate_${  json.id}`);
   json.$t.rating.classList.add('album-rating');
 
   if (!json.rating_complete) {
@@ -446,7 +449,7 @@ var registerAlbum = function (json) {
 
 var registerSong = function (json) {
   json.$t.rating.classList.add('song-rating');
-  json.$t.rating.setAttribute('name', 'srate_' + json.id);
+  json.$t.rating.setAttribute('name', `srate_${  json.id}`);
 
   if (json.$t.rating_clear) {
     json.$t.rating_clear.addEventListener('click', function () {
@@ -457,22 +460,23 @@ var registerSong = function (json) {
     });
   }
 
-  var onMouseMove = function (evt) {
-    if (!json.rating_allowed && !User.rate_anything) return;
+  const onMouseMove = function (evt) {
+    if (!json.rating_allowed && !User.rate_anything) {return;}
     if (evt.target !== this) {
       if (Prefs.get('r_noglbl')) {
         json.$t.rating.ratingSet(0);
       }
-      return;
+      
+return;
     }
-    var tr = getRatingFromMouse(evt);
+    const tr = getRatingFromMouse(evt);
     if (tr) {
       json.$t.rating.ratingSet(tr);
       json.$t.rating_hover_number.textContent = Formatting.rating(tr);
     }
   };
 
-  var onMouseOver = function (evt) {
+  const onMouseOver = function (evt) {
     if (json.$t.rating._ratingUser) {
       json.rating_user = json.$t.rating._ratingUser;
       json.$t.rating._ratingUser = null;
@@ -481,7 +485,8 @@ var registerSong = function (json) {
       if (json.$t.rating.classList.contains('ratable')) {
         json.$t.rating.classList.remove('ratable');
       }
-      return;
+      
+return;
     }
     if (!json.$t.rating.classList.contains('ratable')) {
       json.$t.rating.classList.add('ratable');
@@ -489,7 +494,7 @@ var registerSong = function (json) {
     onMouseMove(evt);
   };
 
-  var onMouseOut = function () {
+  const onMouseOut = function () {
     this.ratingStart(json.rating_user || json.rating);
     if (!Sizing.simple) {
       if (json.rating_user) {
@@ -500,11 +505,11 @@ var registerSong = function (json) {
     }
   };
 
-  var click = function (evt) {
+  const click = function (evt) {
     evt.stopPropagation();
-    if (isTouching) return;
-    if (!json.rating_allowed && !User.rate_anything) return;
-    if (evt.target !== this) return;
+    if (isTouching) {return;}
+    if (!json.rating_allowed && !User.rate_anything) {return;}
+    if (evt.target !== this) {return;}
     doRating(getRatingFromMouse(evt), json);
   };
 

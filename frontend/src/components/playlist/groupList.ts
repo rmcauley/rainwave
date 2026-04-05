@@ -1,6 +1,6 @@
-var GroupList = function (el) {
-  var list = SearchList(el);
-  var loading = false;
+const GroupList = function (el) {
+  const list = SearchList(el);
+  let loading = false;
 
   api.addEventListener('all_groups_paginated', function (json) {
     if (json.has_more) {
@@ -10,7 +10,7 @@ var GroupList = function (el) {
       artist.nameSearchable = Formatting.make_searchable_string(artist.name);
     });
     list.update(json.data);
-    list.$t.loadingBar.style.transform = 'scaleX(' + ((json.progress * 0.8) / 100 + 0.2) + ')';
+    list.$t.loadingBar.style.transform = `scaleX(${  (json.progress * 0.8) / 100 + 0.2  })`;
     if (!json.has_more) {
       loading = false;
       list.loaded = true;

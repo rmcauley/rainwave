@@ -1,8 +1,8 @@
-var GroupView = function (json) {
-  var template;
+const GroupView = function (json) {
+  let template;
   if (!json.$t) {
-    var albums = [];
-    var a, albumId, i;
+    const albums = [];
+    let a, albumId, i;
     for (albumId in json.all_songs_for_sid) {
       a = json.all_songs_for_sid[albumId][0].albums[0];
       // cut off a circular memory reference quick-like
@@ -20,7 +20,7 @@ var GroupView = function (json) {
       document.createElement("div"),
     );
 
-    var j;
+    let j;
     for (i = 0; i < albums.length; i++) {
       for (j = 0; j < albums[i].songs.length; j++) {
         Fave.register(albums[i].songs[j]);

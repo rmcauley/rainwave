@@ -1,7 +1,7 @@
-var ArtistList = function (el) {
-  var list = SearchList(el);
+const ArtistList = function (el) {
+  const list = SearchList(el);
 
-  var loading = false;
+  let loading = false;
 
   api.addEventListener('all_artists_paginated', function (json) {
     if (json.has_more) {
@@ -11,7 +11,7 @@ var ArtistList = function (el) {
       artist.nameSearchable = Formatting.make_searchable_string(artist.name);
     });
     list.update(json.data);
-    list.$t.loadingBar.style.transform = 'scaleX(' + ((json.progress * 0.8) / 100 + 0.2) + ')';
+    list.$t.loadingBar.style.transform = `scaleX(${  (json.progress * 0.8) / 100 + 0.2  })`;
     if (!json.has_more) {
       loading = false;
       list.loaded = true;

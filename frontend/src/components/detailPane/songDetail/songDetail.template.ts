@@ -3,8 +3,10 @@ import { $l } from '../../../language';
 import type { songDetailContext } from './songDetail.context';
 
 import style from './songDetail.module.scss';
+
 function songDetail(context: songDetailContext) {
   const v1 = document.createDocumentFragment();
+
   const v2 = document.createElement('div');
   v2.className = style['song-detail'];
   v1.appendChild(v2);
@@ -15,6 +17,7 @@ function songDetail(context: songDetailContext) {
       'full-artists ' + (context.artists.length > 1 ? 'multi-artist' : ''),
     );
     v2.appendChild(v3);
+
     const v4 = document.createElement('span');
     v4.appendChild(
       document.createTextNode(
@@ -24,8 +27,10 @@ function songDetail(context: songDetailContext) {
       ),
     );
     v3.appendChild(v4);
+
     const v5 = context.artists.map((context) => {
       const v6 = document.createDocumentFragment();
+
       const v7 = document.createElement('a');
       v7.appendChild(document.createTextNode(context.name));
       v7.href = `#!/artist/` + context.id;
@@ -39,11 +44,14 @@ return { $root: v6 };
     const v8 = document.createElement('div');
     v8.className = style['multi-group'];
     v2.appendChild(v8);
+
     const v9 = document.createElement('span');
     v9.appendChild(document.createTextNode($l('Groups') + ': '));
     v8.appendChild(v9);
+
     const v10 = context.groups.map((context) => {
       const v11 = document.createDocumentFragment();
+
       const v12 = document.createElement('a');
       v12.appendChild(document.createTextNode(context.name));
       v12.href = `#!/group/` + context.id;
@@ -56,9 +64,11 @@ return { $root: v11 };
   if (context.rating_count) {
     const v13 = document.createElement('div');
     v2.appendChild(v13);
+
     const v14 = document.createElement('span');
     v14.appendChild(document.createTextNode($l('song_rating_detail')));
     v13.appendChild(v14);
+
     const v15 = document.createElement('span');
     v15.appendChild(
       document.createTextNode(
@@ -72,6 +82,7 @@ return { $root: v11 };
     );
     v15.setAttribute('style', `margin-left: 2px`);
     v13.appendChild(v15);
+
     const v16 = document.createElement('div');
     v2.appendChild(v16);
   } else {

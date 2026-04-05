@@ -1,28 +1,28 @@
-var container;
-var el;
-var scroller;
-var input;
-var searchText;
-var searchRegex;
-var searchRegexGreedy;
-var inputContainer;
+let container;
+let el;
+let scroller;
+let input;
+let searchText;
+let searchRegex;
+let searchRegexGreedy;
+let inputContainer;
 
 function focus() {
   input.focus();
 }
 
-var searchResetColor = function () {
+const searchResetColor = function () {
   inputContainer.classList.remove("search-error");
   inputContainer.classList.remove("active");
   input.removeEventListener("input", searchResetColor);
 };
 
-var searchError = function (json) {
+const searchError = function (json) {
     while (el.hasChildNodes()) {
       el.removeChild(el.lastChild);
     }
 
-    var div = document.createElement("div");
+    const div = document.createElement("div");
     div.className = "no-result-message";
     div.textContent = $l(json.tl_key, json);
     el.appendChild(div);
@@ -33,7 +33,7 @@ var searchError = function (json) {
     return true;
   };
 
-  var clearSearch = function () {
+  const clearSearch = function () {
     while (el.hasChildNodes()) {
       el.removeChild(el.lastChild);
     }
@@ -42,11 +42,11 @@ var searchError = function (json) {
     searchResetColor();
   };
 
-  var highlightText = function (title) {
+  const highlightText = function (title) {
     // too many characters = too big a regex.  NOPE.
-    if (searchText.length > 8) return;
-    var t = title.textContent;
-    var m = t.match(searchRegex);
+    if (searchText.length > 8) {return;}
+    const t = title.textContent;
+    let m = t.match(searchRegex);
     if (!m) {
       m = t.match(searchRegexGreedy);
     }
@@ -54,25 +54,25 @@ var searchError = function (json) {
       title.textContent = "";
 
       if (m[1]) {
-        var beforeEl = document.createElement("span");
+        const beforeEl = document.createElement("span");
         beforeEl.textContent = m[1];
         title.appendChild(beforeEl);
       }
 
-      var highlightEl = document.createElement("span");
+      const highlightEl = document.createElement("span");
       highlightEl.className = "search-highlight";
       highlightEl.textContent = m[2];
       title.appendChild(highlightEl);
 
       if (m[2]) {
-        var afterEl = document.createElement("span");
+        const afterEl = document.createElement("span");
         afterEl.textContent = m[3];
         title.appendChild(afterEl);
       }
     }
   };
 
-  var searchResult = function (json) {
+  const searchResult = function (json) {
     if (json.artists.length + json.albums.length + json.songs.length === 0) {
       return searchError({ tl_key: "no_search_results" });
     }
@@ -84,7 +84,7 @@ var searchError = function (json) {
     inputContainer.classList.add("active");
     input.addEventListener("input", searchResetColor);
     RWTemplates.search_results(json, el);
-    var div, a, i;
+    let div, a, i;
 
     for (i = 0; i < json.artists.length; i++) {
       highlightText(json.artists[i].$t.title);
@@ -102,7 +102,7 @@ var searchError = function (json) {
       div = document.createElement("div");
       div.className = "album-name";
       a = document.createElement("a");
-      a.setAttribute("href", "#!/album/" + json.songs[i].album_id);
+      a.setAttribute("href", `#!/album/${  json.songs[i].album_id}`);
       a.textContent = json.songs[i].album_name;
       div.appendChild(a);
       json.songs[i].$t.row.insertBefore(div, json.songs[i].$t.title);
@@ -119,23 +119,24 @@ var searchError = function (json) {
     scroller.refresh();
   };
 
-  var doSearch = function (e) {
+  const doSearch = function (e) {
     e.preventDefault();
     e.stopPropagation();
     if (Formatting.make_searchable_string(input.value).trim().length < 3) {
       // fake a server response
       searchError({ tl_key: "search_string_too_short" });
-      return;
+      
+return;
     }
     searchText = input.value.trim();
-    var rawRe = Formatting.make_searchable_string(searchText)
+    let rawRe = Formatting.make_searchable_string(searchText)
       .split("")
       .join("{1}[^ws]?");
-    searchRegex = new RegExp("^(.*?)(" + rawRe + ")", "i");
+    searchRegex = new RegExp(`^(.*?)(${  rawRe  })`, "i");
     rawRe = Formatting.make_searchable_string(searchText)
       .split("")
       .join("{1}[^ws]*?");
-    searchRegexGreedy = new RegExp("^(.*?)(" + rawRe + ")", "i");
+    searchRegexGreedy = new RegExp(`^(.*?)(${  rawRe  })`, "i");
     API.async_get(
       "search",
       { search: input.value },

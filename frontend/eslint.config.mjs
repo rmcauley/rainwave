@@ -42,6 +42,7 @@ const jsRules = defineConfig({
     'sort-imports': 'off',
     'unused-imports/no-unused-imports': 'error',
     'curly': ['error', 'all'],
+    'prefer-template': 'error',
 
     '@stylistic/padding-line-between-statements': [
       'error',
@@ -135,6 +136,7 @@ const jsRules = defineConfig({
 });
 
 const tsRules = defineConfig({
+  extends: [tseslint.configs.strictTypeChecked],
   files: ['**/*.{ts,tsx,mts}'],
   plugins: {
     '@typescript-eslint': tseslint.plugin,
@@ -188,7 +190,6 @@ export default defineConfig([
 
   // Base ES Lint and TS ES Lint rules
   eslint.configs.recommended,
-  tseslint.configs.recommendedTypeChecked,
 
   // IAM Typescript rules for both FE and BE
   jsRules,
@@ -199,6 +200,7 @@ export default defineConfig([
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
+      'prefer-template': 'off',
 
       '@typescript-eslint/no-unused-vars': [
         'error',

@@ -5,8 +5,10 @@ import { rating } from '../../ratings/rating.template';
 import type { timelineSongContext } from './timelineSong.context';
 
 import style from './timelineSong.module.scss';
+
 function timelineSong(context: timelineSongContext) {
   const v1 = document.createDocumentFragment();
+
   const v2 = document.createElement('div');
   v2.className = style.song;
   v1.appendChild(v2);
@@ -14,6 +16,7 @@ function timelineSong(context: timelineSongContext) {
     const v3 = document.createElement('div');
     v3.className = style['request-cancel'];
     v2.appendChild(v3);
+
     const v4 = document.createElement('span');
     v4.appendChild(document.createTextNode(`x`));
     v4.className = style['request-cancel-x'];
@@ -23,18 +26,23 @@ function timelineSong(context: timelineSongContext) {
     const v5 = document.createElement('div');
     v5.className = style['song-highlight song-highlight-left'];
     v2.appendChild(v5);
+
     const v6 = document.createElement('div');
     v6.className = style['song-highlight song-highlight-right'];
     v2.appendChild(v6);
+
     const v7 = document.createElement('div');
     v7.className = style['song-highlight song-highlight-topleft'];
     v2.appendChild(v7);
+
     const v8 = document.createElement('div');
     v8.className = style['song-highlight song-highlight-topright'];
     v2.appendChild(v8);
+
     const v9 = document.createElement('div');
     v9.className = style['song-highlight song-highlight-bottomleft'];
     v2.appendChild(v9);
+
     const v10 = document.createElement('div');
     v10.className = style['song-highlight song-highlight-bottomright'];
     v2.appendChild(v10);
@@ -43,11 +51,13 @@ function timelineSong(context: timelineSongContext) {
     const v11 = document.createElement('div');
     v11.className = style['vote-button'];
     v2.appendChild(v11);
+
     const v12 = document.createElement('span');
     v12.appendChild(document.createTextNode($l('vote')));
     v12.className = style['vote-button-rotate'];
     v11.appendChild(v12);
   }
+
   const v13 = document.createElement('div');
   v13.className = style['art-anchor'];
   v2.appendChild(v13);
@@ -55,10 +65,12 @@ function timelineSong(context: timelineSongContext) {
     const v14 = document.createElement('div');
     v14.className = style['request-sort-grab'];
     v13.appendChild(v14);
+
     const v15 = document.createElement('img');
     v15.setAttribute('src', `/static/images4/sort.svg`);
     v14.appendChild(v15);
   }
+
   const v16 = document.createElement('div');
   v16.className = style['art-container'];
   v13.appendChild(v16);
@@ -81,6 +93,7 @@ function timelineSong(context: timelineSongContext) {
       } else {
         v18.appendChild(document.createTextNode(context.elec_request_username));
       }
+
       const v20 = document.createElement('div');
       v20.appendChild(document.createTextNode($l('timeline_art__your_request_indicator')));
       v20.className = style['request-indicator your-request'];
@@ -97,12 +110,14 @@ function timelineSong(context: timelineSongContext) {
       } else {
         v21.appendChild(document.createTextNode(context.elec_request_username));
       }
+
       const v23 = document.createElement('div');
       v23.appendChild(document.createTextNode($l('timeline_art__request_indicator')));
       v23.className = style['request-indicator'];
       v16.appendChild(v23);
     }
   }
+
   const v24 = document.createElement('div');
   v24.className = style['song-content'];
   v2.appendChild(v24);
@@ -111,10 +126,12 @@ function timelineSong(context: timelineSongContext) {
     const v25 = document.createElement('div');
     v25.className = style['entry-votes'];
     v24.appendChild(v25);
+
     const v26 = document.createElement('span');
     v25.appendChild(v26);
   }
   v24.appendChild(fave(context).$root);
+
   const v27 = document.createElement('div');
   v27.appendChild(document.createTextNode(context.title));
   v27.className = style.title;
@@ -128,12 +145,15 @@ function timelineSong(context: timelineSongContext) {
     const v29 = document.createElement('div');
     v29.className = style.artist;
     v24.appendChild(v29);
+
     const v30 = context.artists.map((context) => {
       const v31 = document.createDocumentFragment();
+
       const v32 = document.createElement('a');
       v32.appendChild(document.createTextNode(context.name));
       v32.href = `#!/artist/` + context.id;
       v31.appendChild(v32);
+
       const v33 = document.createElement('span');
       v33.appendChild(document.createTextNode(`,`));
       v31.appendChild(v33);
@@ -145,6 +165,7 @@ return { $root: v31 };
       const v34 = document.createElement('div');
       v34.className = style['song-link-container'];
       v24.appendChild(v34);
+
       const v35 = document.createElement('a');
       v35.appendChild(document.createTextNode(context.link_text));
       v35.className = style['song-link'];

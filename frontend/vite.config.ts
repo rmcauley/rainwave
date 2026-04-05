@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { cwd } from 'process';
 
+import { defineConfig } from 'vite';
 import { checker } from 'vite-plugin-checker';
 
 const entryPath = resolve(cwd(), 'src/index.js');

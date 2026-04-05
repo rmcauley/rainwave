@@ -1,5 +1,12 @@
 import type { components } from './rainwave-openapi';
 
+class RainwaveSDKInternalError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RainwaveSDKInternalError';
+  }
+}
+
 class RainwaveSDKUsageError extends Error {
   constructor(message: string) {
     super(message);
@@ -45,4 +52,5 @@ export {
   RainwaveSDKInvalidRatingError,
   RainwaveSDKDisconnectedError,
   RainwaveError,
+  RainwaveSDKInternalError,
 };

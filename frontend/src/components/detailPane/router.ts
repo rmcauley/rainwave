@@ -210,7 +210,7 @@ var detectUrlChange = function () {
         document.body.classList.remove('requests');
         document.body.classList.remove('detail');
         for (const i in tabs) {
-          document.body.classList.remove('playlist-' + i);
+          document.body.classList.remove(`playlist-${  i}`);
         }
       }
       if (activeList && activeList._keyHandle) {
@@ -429,7 +429,7 @@ var openRoute = function (typ, id) {
 
   if (Sizing.simple || lists[typ]) {
     for (const i in tabs) {
-      document.body.classList.remove('playlist-' + i);
+      document.body.classList.remove(`playlist-${  i}`);
     }
   }
   let closeDetail = true;
@@ -438,7 +438,7 @@ var openRoute = function (typ, id) {
     lastOpen = typ;
     lastOpenId = id;
     document.body.classList.add('playlist');
-    document.body.classList.add('playlist-' + typ);
+    document.body.classList.add(`playlist-${  typ}`);
     if (activeList && activeList._keyHandle) {
       activeList.keyNavBlur();
     }
@@ -501,9 +501,9 @@ var change = function () {
   }
   let newUrl = decodeURI(location.href);
   if (newUrl.indexOf('#') >= 0) {
-    newUrl = newUrl.substring(0, newUrl.indexOf('#')) + '#!/' + r;
+    newUrl = `${newUrl.substring(0, newUrl.indexOf('#'))  }#!/${  r}`;
   } else {
-    newUrl = newUrl + '#!/' + r;
+    newUrl = `${newUrl  }#!/${  r}`;
   }
   if (oldUrl == newUrl) {
     oldUrl = null;
@@ -520,7 +520,9 @@ const openLast = function () {
 
 const openLastId = function () {
   if (!lastOpenId) {
-    return openLast();
+    openLast(); 
+
+return;
   } else {
     change(lastOpen, lastOpenId);
   }

@@ -1,8 +1,8 @@
-var AlbumList = function (el) {
-  var list = SearchList(el);
+const AlbumList = function (el) {
+  const list = SearchList(el);
   list.$t.list.classList.add('album-list-core');
 
-  var loading = false;
+  let loading = false;
 
   Prefs.define('p_sort', ['az', 'rt'], true);
   Prefs.define('p_null1', [false, true], true);
@@ -11,30 +11,30 @@ var AlbumList = function (el) {
   Prefs.define('p_fav1', [false, true], true);
   Prefs.define('p_songsort', [false, true], true);
 
-  var sortUnratedFirst = Prefs.get('p_null1');
-  var sortFavesFirst = Prefs.get('p_favup');
-  var sortAvailableFirst = Prefs.get('p_avup');
-  var prioritizeFaves = Prefs.get('p_fav1');
-  var songsortSameAsAlbum = Prefs.get('p_songsort');
+  let sortUnratedFirst = Prefs.get('p_null1');
+  let sortFavesFirst = Prefs.get('p_favup');
+  let sortAvailableFirst = Prefs.get('p_avup');
+  let prioritizeFaves = Prefs.get('p_fav1');
+  let songsortSameAsAlbum = Prefs.get('p_songsort');
 
-  var prefsUpdate = function (unused_arg, unused_arg2, no_redraw) {
+  const prefsUpdate = function (unused_arg, unused_arg2, no_redraw) {
     sortUnratedFirst = Prefs.get('p_null1');
     sortFavesFirst = Prefs.get('p_favup');
     sortAvailableFirst = Prefs.get('p_avup');
     prioritizeFaves = Prefs.get('p_fav1');
 
-    var nv = Prefs.get('p_sort');
+    const nv = Prefs.get('p_sort');
     if (['az', 'rt'].indexOf(nv) == -1) {
       Prefs.change('sort', 'az');
     }
-    if (nv == 'rt') list.sortFunction = list.sortByRatingUser;
-    else list.sortFunction = list.sortByAlpha;
+    if (nv == 'rt') {list.sortFunction = list.sortByRatingUser;}
+    else {list.sortFunction = list.sortByAlpha;}
 
     if (sortUnratedFirst) {
       Prefs.change('r_incmplt', true);
     }
 
-    var redrawAlbum = false;
+    let redrawAlbum = false;
     if (!no_redraw && list.loaded && !loading) {
       list.update([]);
       list.redrawCurrentPosition();
@@ -63,7 +63,7 @@ var AlbumList = function (el) {
       album.nameSearchable = Formatting.make_searchable_string(album.name);
     });
     list.update(json.data);
-    list.$t.loadingBar.style.transform = 'scaleX(' + ((json.progress * 0.8) / 100 + 0.2) + ')';
+    list.$t.loadingBar.style.transform = `scaleX(${  (json.progress * 0.8) / 100 + 0.2  })`;
     if (!json.has_more) {
       loading = false;
       list.loaded = true;
@@ -114,22 +114,22 @@ var AlbumList = function (el) {
     loading = false;
   };
 
-  var updateRating = function (json) {
-    var albumId;
-    for (var i = 0; i < json.length; i++) {
+  const updateRating = function (json) {
+    let albumId;
+    for (let i = 0; i < json.length; i++) {
       albumId = json[i].id;
       if (albumId in list.data) {
-        if ('rating' in json[i]) list.data[albumId].rating = json[i].rating;
-        if ('rating_user' in json[i]) list.data[albumId].rating_user = json[i].rating_user;
+        if ('rating' in json[i]) {list.data[albumId].rating = json[i].rating;}
+        if ('rating_user' in json[i]) {list.data[albumId].rating_user = json[i].rating_user;}
         if (json[i].rating_complete !== null)
-          list.data[albumId].rating_complete = json[i].rating_complete;
+          {list.data[albumId].rating_complete = json[i].rating_complete;}
         list.updateItemElement(list.data[albumId]);
       }
     }
   };
   Rating.album_callback = updateRating;
 
-  var updateFave = function (json) {
+  const updateFave = function (json) {
     if (json.id in list.data) {
       list.data[json.id].fave = json.fave;
       list.updateItemElement(list.data[json.id]);
@@ -141,8 +141,8 @@ var AlbumList = function (el) {
     Router.change('album', id);
   };
 
-  var hasNewThreshold;
-  var hasNewishThreshold;
+  let hasNewThreshold;
+  let hasNewishThreshold;
   if (!Clock.now && window.BOOTSTRAP && window.BOOTSTRAP.api_info) {
     hasNewThreshold = window.BOOTSTRAP.api_info.time;
     hasNewishThreshold = window.BOOTSTRAP.api_info.time;
@@ -159,30 +159,30 @@ var AlbumList = function (el) {
   list.drawEntry = function (item) {
     item._el = document.createElement('div');
     item._el.className =
-      'item' +
-      (item.newest_song_time > hasNewThreshold
+      `item${ 
+      item.newest_song_time > hasNewThreshold
         ? ' has_new'
         : item.newest_song_time > hasNewishThreshold
           ? ' has_newish'
-          : '');
+          : ''}`;
     item._el._id = item.id;
 
     // could do this using RWTemplates.fave but... speed.  want to inline here as much as possible.
     item._el_fave = document.createElement('div');
     item._el_fave.className = 'fave';
     item._el.appendChild(item._el_fave);
-    var faveLined = document.createElement('img');
+    const faveLined = document.createElement('img');
     faveLined.className = 'fave-lined';
     faveLined.src = '/static/images4/heart_lined.png';
     item._el_fave.appendChild(faveLined);
-    var faveSolid = document.createElement('img');
+    const faveSolid = document.createElement('img');
     faveSolid.className = 'fave-solid';
     faveSolid.src = '/static/images4/heart_solid_gold.png';
     item._el_fave.appendChild(faveSolid);
     item._el_fave._fave_id = item.id;
     item._el_fave.addEventListener('click', Fave.doFave);
 
-    var span = document.createElement('span');
+    const span = document.createElement('span');
     span.className = 'name';
     span.textContent = item.name;
     item._el.appendChild(span);
@@ -192,7 +192,7 @@ var AlbumList = function (el) {
   };
 
   list.updateCool = function (item) {
-    if (!item._el) return;
+    if (!item._el) {return;}
     if (item.cool && item.cool_lowest > Clock.now) {
       item._el.classList.add('cool');
     } else {
@@ -201,7 +201,7 @@ var AlbumList = function (el) {
   };
 
   list.updateItemElement = function (item) {
-    if (!item._el) return;
+    if (!item._el) {return;}
 
     item._el_fave.classList.remove('fave-clicked');
     if (item.fave) {
@@ -224,7 +224,7 @@ var AlbumList = function (el) {
       // item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 6) + "px";
       // R5
       item._el.style.backgroundPosition =
-        'right ' + (-(Math.round(Math.round(item.rating_user * 10) / 2) * 28) + 6) + 'px';
+        `right ${  -(Math.round(Math.round(item.rating_user * 10) / 2) * 28) + 6  }px`;
     } else {
       item._el.classList.remove('rating-user');
       // R4
@@ -234,7 +234,7 @@ var AlbumList = function (el) {
         item._el.style.backgroundPosition = 'right 6px';
       } else {
         item._el.style.backgroundPosition =
-          'right ' + (-(Math.round(Math.round(item.rating * 10) / 2) * 28) + 6) + 'px';
+          `right ${  -(Math.round(Math.round(item.rating * 10) / 2) * 28) + 6  }px`;
       }
     }
   };
@@ -249,26 +249,26 @@ var AlbumList = function (el) {
     }
 
     if (prioritizeFaves && sortFavesFirst && list.data[a].fave !== list.data[b].fave) {
-      if (list.data[a].fave) return -1;
-      else return 1;
+      if (list.data[a].fave) {return -1;}
+      else {return 1;}
     }
 
     if (sortAvailableFirst && list.data[a].cool !== list.data[b].cool) {
-      if (list.data[a].cool === false) return -1;
-      else return 1;
+      if (list.data[a].cool === false) {return -1;}
+      else {return 1;}
     }
 
     if (!prioritizeFaves && sortFavesFirst && list.data[a].fave !== list.data[b].fave) {
-      if (list.data[a].fave) return -1;
-      else return 1;
+      if (list.data[a].fave) {return -1;}
+      else {return 1;}
     }
 
     if (sortUnratedFirst) {
-      if (!list.data[a].rating_user && list.data[b].rating_user) return -1;
-      if (list.data[a].rating_user && !list.data[b].rating_user) return 1;
+      if (!list.data[a].rating_user && list.data[b].rating_user) {return -1;}
+      if (list.data[a].rating_user && !list.data[b].rating_user) {return 1;}
 
-      if (!list.data[a].rating_complete && list.data[b].rating_complete) return -1;
-      if (list.data[a].rating_complete && !list.data[b].rating_complete) return 1;
+      if (!list.data[a].rating_complete && list.data[b].rating_complete) {return -1;}
+      if (list.data[a].rating_complete && !list.data[b].rating_complete) {return 1;}
     }
 
     return list.data[a].name.localeCompare(list.data[b].name);
@@ -276,30 +276,30 @@ var AlbumList = function (el) {
 
   list.sortByRatingUser = function (a, b) {
     if (prioritizeFaves && sortFavesFirst && list.data[a].fave !== list.data[b].fave) {
-      if (list.data[a].fave) return -1;
-      else return 1;
+      if (list.data[a].fave) {return -1;}
+      else {return 1;}
     }
 
     if (sortAvailableFirst && list.data[a].cool !== list.data[b].cool) {
-      if (list.data[a].cool === false) return -1;
-      else return 1;
+      if (list.data[a].cool === false) {return -1;}
+      else {return 1;}
     }
 
     if (!prioritizeFaves && sortFavesFirst && list.data[a].fave !== list.data[b].fave) {
-      if (list.data[a].fave) return -1;
-      else return 1;
+      if (list.data[a].fave) {return -1;}
+      else {return 1;}
     }
 
     if (sortUnratedFirst) {
-      if (!list.data[a].rating_user && list.data[b].rating_user) return -1;
-      if (list.data[a].rating_user && !list.data[b].rating_user) return 1;
+      if (!list.data[a].rating_user && list.data[b].rating_user) {return -1;}
+      if (list.data[a].rating_user && !list.data[b].rating_user) {return 1;}
 
-      if (!list.data[a].rating_complete && list.data[b].rating_complete) return -1;
-      if (list.data[a].rating_complete && !list.data[b].rating_complete) return 1;
+      if (!list.data[a].rating_complete && list.data[b].rating_complete) {return -1;}
+      if (list.data[a].rating_complete && !list.data[b].rating_complete) {return 1;}
     }
 
-    if (list.data[a].rating_user < list.data[b].rating_user) return 1;
-    if (list.data[a].rating_user > list.data[b].rating_user) return -1;
+    if (list.data[a].rating_user < list.data[b].rating_user) {return 1;}
+    if (list.data[a].rating_user > list.data[b].rating_user) {return -1;}
 
     return list.data[a].name.localeCompare(list.data[b].name);
   };

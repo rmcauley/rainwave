@@ -1,4 +1,4 @@
-var keymaps = {
+const keymaps = {
   QWER: {
     activate: ["`", "<", "'", "\\"],
     play: [" "],
@@ -45,12 +45,12 @@ keymaps.AZER.rate15 = ["a"];
 keymaps.AZER.rate25 = ["z"];
 keymaps.AZER.vote0_0 = ["q"];
 keymaps.AZER.vote1_0 = ["w"];
-var keymap = keymaps.QWER;
+let keymap = keymaps.QWER;
 
 INIT_TASKS.on_draw.push(function (template) {
   Prefs.define("hkm", ["QWER", "AZER", "DVOR"]);
   if (Prefs.get("pwr")) {
-    var mapchange = function (nv) {
+    const mapchange = function (nv) {
       if (!nv || !keymaps[nv]) {
         keymap = keymaps.QWER;
       } else {
@@ -62,16 +62,16 @@ INIT_TASKS.on_draw.push(function (template) {
       }
 
       template.hotkeys_rate10.textContent = (
-        keymap.rate10[0] + "-" + keymap.rate50[0]
+        `${keymap.rate10[0]  }-${  keymap.rate50[0]}`
       ).toUpperCase();
       template.hotkeys_rate05.textContent = (
-        keymap.rate15[0] + "-" + keymap.rate45[0]
+        `${keymap.rate15[0]  }-${  keymap.rate45[0]}`
       ).toUpperCase();
       template.hotkeys_vote0.textContent = (
-        keymap.vote0_0[0] + "," + keymap.vote0_1[0] + "," + keymap.vote0_2[0]
+        `${keymap.vote0_0[0]  },${  keymap.vote0_1[0]  },${  keymap.vote0_2[0]}`
       ).toUpperCase();
       template.hotkeys_vote1.textContent = (
-        keymap.vote1_0[0] + "," + keymap.vote1_1[0] + "," + keymap.vote1_2[0]
+        `${keymap.vote1_0[0]  },${  keymap.vote1_1[0]  },${  keymap.vote1_2[0]}`
       ).toUpperCase();
       template.hotkeys_fave.textContent = keymap.fave[0].toUpperCase();
 
@@ -86,20 +86,20 @@ INIT_TASKS.on_draw.push(function (template) {
   }
 });
 
-var backspaceTrap = false;
-var backspaceTimer = false;
+let backspaceTrap = false;
+let backspaceTimer = false;
 
 // these key codes are handled by on_key_down, as browser's default behaviour
 // tend to act on them at that stage rather than on_key_press
 // backspace, escape, down, up, page up, page down, home, end, right arrow, left arrow, tab
-var keydownHandled = [8, 27, 38, 40, 33, 34, 36, 35, 39, 37, 9];
+const keydownHandled = [8, 27, 38, 40, 33, 34, 36, 35, 39, 37, 9];
 
-var preventDefault = function (evt) {
+const preventDefault = function (evt) {
   evt.preventDefault(evt);
 };
 
-var enableBackspaceTrap = function () {
-  if (backspaceTimer) clearTimeout(backspaceTimer);
+const enableBackspaceTrap = function () {
+  if (backspaceTimer) {clearTimeout(backspaceTimer);}
   backspaceTimer = setTimeout(disableBackspaceTrap, 3000);
 };
 
@@ -108,8 +108,8 @@ var disableBackspaceTrap = function () {
   backspaceTrap = false;
 };
 
-var onKeyPress = function (evt) {
-  if (isIgnorable(evt)) return true;
+const onKeyPress = function (evt) {
+  if (isIgnorable(evt)) {return true;}
 
   if (keydownHandled.indexOf(evt.keyCode) == -1) {
     return handleEvent(evt);
@@ -122,8 +122,8 @@ var onKeyPress = function (evt) {
   }
 };
 
-var onKeyDown = function (evt) {
-  if (isIgnorable(evt)) return true;
+const onKeyDown = function (evt) {
+  if (isIgnorable(evt)) {return true;}
   // Short-circuit backspace on Webkit - which fires its backspace handler at the end of the keyDown bubble.
   if (evt.keyCode == 8) {
     // if event was handled, don't trap back
@@ -132,7 +132,8 @@ var onKeyDown = function (evt) {
       enableBackspaceTrap();
       preventDefault(evt);
     }
-    return !backspaceTrap;
+    
+return !backspaceTrap;
   }
   // Code 27 is escape, and this stops esc from cancelling our AJAX requests by cutting it off early
   // Codes 38 and 40 are arrow keys, since Webkit browsers don't fire keyPress events on them and need to be handled here
@@ -143,7 +144,8 @@ var onKeyDown = function (evt) {
     // escape, as mentioned, will cause AJAX requests to stop
     // up/down arrow keys will cause unintended scrolling of the entire page (which we want to stop)
     preventDefault(evt);
-    return false;
+    
+return false;
   }
 };
 
@@ -151,50 +153,53 @@ var onKeyDown = function (evt) {
 // user releases backspace, then X seconds later we release our backspace trap flag.
 // this stops the user from accidentally browsing away from the site while using
 // type to find, but doesn't stop them from leaving the site otherwise
-var onKeyUp = function (evt) {
+const onKeyUp = function (evt) {
   if (backspaceTrap && evt.keyCode == 8) {
     enableBackspaceTrap();
     preventDefault(evt);
-    return false;
+    
+return false;
   }
 };
 
 var isIgnorable = function (evt) {
-  if (evt.ctrlKey || evt.altKey || evt.metaKey) return true;
+  if (evt.ctrlKey || evt.altKey || evt.metaKey) {return true;}
   // we can't trap anything beyond here for opera without losing important keys
-  if (!("charCode" in evt)) return false;
+  if (!("charCode" in evt)) {return false;}
   // F1 to F12 keys
   if (evt.charCode === 0 && evt.keyCode >= 112 && evt.keyCode <= 123)
-    return true;
-  if (Sizing.simple && evt.keyCode != 27) return true;
+    {return true;}
+  if (Sizing.simple && evt.keyCode != 27) {return true;}
   if (
     evt.target &&
     evt.target.classList.contains("search-box") &&
     evt.keyCode != 27
   )
-    return true;
-  if (document.body.classList.contains("search-open")) return true;
-  return false;
+    {return true;}
+  if (document.body.classList.contains("search-open")) {return true;}
+  
+return false;
 };
 
 var handleEvent = function (evt) {
   // thanks Quirksmode, not sure how relevant it is with present browsers though, but keeping it around
-  var targ;
-  if (!evt) evt = window.event;
-  if (evt.target) targ = evt.target;
-  else if (evt.srcElement) targ = evt.srcElement;
-  if (targ.nodeType == 3) targ = targ.parentNode; // defeat Safari bug
+  let targ;
+  if (!evt) {evt = window.event;}
+  if (evt.target) {targ = evt.target;}
+  else if (evt.srcElement) {targ = evt.srcElement;}
+  if (targ.nodeType == 3) {targ = targ.parentNode;} // defeat Safari bug
   if (targ.tagName.toLowerCase() == "input" && targ.hasAttribute("stop"))
-    return true;
+    {return true;}
 
   if (isIgnorable(evt)) {
     if (evt.keyCode == 27) {
       preventDefault(evt);
     }
-    return true;
+    
+return true;
   }
 
-  var chr = "";
+  let chr = "";
   if (!("charCode" in evt)) {
     chr = String.fromCharCode(evt.keyCode);
   } else if (evt.charCode > 0) {
@@ -207,14 +212,15 @@ var handleEvent = function (evt) {
     // ... which is unfortunately backwards from browsers, which expect "false" to stop the event bubble
     return false;
   }
-  return true;
+  
+return true;
 };
 
-var canRouteToDetail = function () {
+const canRouteToDetail = function () {
   return Router.activeDetail && Router.activeDetail._keyHandle;
 };
 
-var routeToLists = function () {
+const routeToLists = function () {
   if (routeToDetailState) {
     if (Router.activeList && Router.activeList.loaded) {
       Router.activeList.keyNavFocus();
@@ -226,7 +232,7 @@ var routeToLists = function () {
   routeToDetailState = false;
 };
 
-var routeToDetail = function () {
+const routeToDetail = function () {
   if (!routeToDetailState && canRouteToDetail()) {
     routeToDetailState = true;
     Router.activeList.keyNavBlur();
@@ -235,7 +241,7 @@ var routeToDetail = function () {
 };
 
 var routeToDetailState = false;
-var hotkeyModeOn = false;
+let hotkeyModeOn = false;
 var routeKey = function (keyCode, chr, shift) {
   if (hotkeyModeOn && hotkeyModeHandle(keyCode, chr)) {
     return true;
@@ -243,16 +249,16 @@ var routeKey = function (keyCode, chr, shift) {
     return hotkeyModeEnable();
   }
 
-  var routeTo = "activeList";
+  let routeTo = "activeList";
   if (routeToDetailState && canRouteToDetail()) {
     routeTo = "activeDetail";
   } else {
     routeToDetailState = false;
-    if (!Router.activeList) return;
-    if (!Router.activeList.loaded) return;
+    if (!Router.activeList) {return;}
+    if (!Router.activeList.loaded) {return;}
   }
 
-  var toret;
+  let toret;
   if (keyCode == 40) {
     // down arrow
     return Router[routeTo].keyNavDown();
@@ -289,7 +295,8 @@ var routeKey = function (keyCode, chr, shift) {
       toret = true;
       routeToLists();
     }
-    return toret;
+    
+return toret;
   } else if (keyCode == 39) {
     // right arrow
     toret = Router[routeTo].keyNavRight();
@@ -297,7 +304,8 @@ var routeKey = function (keyCode, chr, shift) {
       toret = true;
       routeToDetail();
     }
-    return toret;
+    
+return toret;
   } else if (keyCode == 27) {
     // escape
     Router.activeList.keyNavEscape();
@@ -305,7 +313,8 @@ var routeKey = function (keyCode, chr, shift) {
       Router.activeDetail.keyNavEscape();
     }
     routeToDetailState = false;
-    return true;
+    
+return true;
   } else if (keyCode == 9) {
     // tab
     if (shift) {
@@ -318,16 +327,17 @@ var routeKey = function (keyCode, chr, shift) {
   return false;
 };
 
-var hotkeyModeTimeout;
-var hotkeyModeErrorTimeout;
+let hotkeyModeTimeout;
+let hotkeyModeErrorTimeout;
 
-var hotkeyModeDisable = function () {
+const hotkeyModeDisable = function () {
   if (hotkeyModeTimeout) {
     clearTimeout(hotkeyModeTimeout);
   }
   hotkeyModeOn = false;
   document.body.classList.remove("hotkey-on");
-  return true;
+  
+return true;
 };
 
 var hotkeyModeEnable = function () {
@@ -341,10 +351,11 @@ var hotkeyModeEnable = function () {
   }
   hotkeyModeTimeout = setTimeout(hotkeyModeDisable, 4000);
   document.body.classList.add("hotkey-on");
-  return true;
+  
+return true;
 };
 
-var hotkeyModeError = function (tlKey) {
+const hotkeyModeError = function (tlKey) {
   hotkeyModeDisable();
   document.body.classList.add("hotkey-error");
   document.getElementById("hotkey_error").textContent = $l(tlKey);
@@ -356,42 +367,45 @@ var hotkeyModeError = function (tlKey) {
 var hotkeyModeHandle = function (keyCode, character) {
   try {
     if (keymap.rate10.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(1.0);
+      {Timeline.rateCurrentSong(1.0);}
     else if (keymap.rate15.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(1.5);
+      {Timeline.rateCurrentSong(1.5);}
     else if (keymap.rate20.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(2.0);
+      {Timeline.rateCurrentSong(2.0);}
     else if (keymap.rate25.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(2.5);
+      {Timeline.rateCurrentSong(2.5);}
     else if (keymap.rate30.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(3.0);
+      {Timeline.rateCurrentSong(3.0);}
     else if (keymap.rate35.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(3.5);
+      {Timeline.rateCurrentSong(3.5);}
     else if (keymap.rate40.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(4.0);
+      {Timeline.rateCurrentSong(4.0);}
     else if (keymap.rate45.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(4.5);
+      {Timeline.rateCurrentSong(4.5);}
     else if (keymap.rate50.indexOf(character) !== -1)
-      Timeline.rateCurrentSong(5.0);
-    else if (keymap.play.indexOf(character) !== -1) RWAudio.playToggle();
-    else if (keymap.vote0_0.indexOf(character) !== -1) Timeline.vote(0, 0);
-    else if (keymap.vote0_1.indexOf(character) !== -1) Timeline.vote(0, 1);
-    else if (keymap.vote0_2.indexOf(character) !== -1) Timeline.vote(0, 2);
-    else if (keymap.vote1_0.indexOf(character) !== -1) Timeline.vote(1, 0);
+      {Timeline.rateCurrentSong(5.0);}
+    else if (keymap.play.indexOf(character) !== -1) {RWAudio.playToggle();}
+    else if (keymap.vote0_0.indexOf(character) !== -1) {Timeline.vote(0, 0);}
+    else if (keymap.vote0_1.indexOf(character) !== -1) {Timeline.vote(0, 1);}
+    else if (keymap.vote0_2.indexOf(character) !== -1) {Timeline.vote(0, 2);}
+    else if (keymap.vote1_0.indexOf(character) !== -1) {Timeline.vote(1, 0);}
     // quertz layout
-    else if (keymap.vote1_1.indexOf(character) !== -1) Timeline.vote(1, 1);
-    else if (keymap.vote1_2.indexOf(character) !== -1) Timeline.vote(1, 2);
-    else if (keymap.fave.indexOf(character) !== -1) Timeline.favCurrent();
+    else if (keymap.vote1_1.indexOf(character) !== -1) {Timeline.vote(1, 1);}
+    else if (keymap.vote1_2.indexOf(character) !== -1) {Timeline.vote(1, 2);}
+    else if (keymap.fave.indexOf(character) !== -1) {Timeline.favCurrent();}
     else {
       hotkeyModeError("invalid_hotkey");
-      return true;
+      
+return true;
     }
     hotkeyModeDisable();
-    return true;
+    
+return true;
   } catch (err) {
     if ("is_rw" in err) {
       hotkeyModeError(err.tl_key);
-      return true;
+      
+return true;
     } else {
       throw err;
     }

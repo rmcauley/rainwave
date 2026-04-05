@@ -22,7 +22,7 @@ const originalTitle = document.title;
 let nowPlayingTitle = '';
 let nowPlayingEndsAt = 0;
 api.addEventListener('sched_current', (nowPlaying) => {
-  nowPlayingTitle = nowPlaying.songs[0]!.albums[0].name + ' - ' + nowPlaying.songs[0]!.title;
+  nowPlayingTitle = `${nowPlaying.songs[0]!.albums[0].name  } - ${  nowPlaying.songs[0]!.title}`;
   nowPlayingEndsAt = nowPlaying.end;
 });
 
@@ -52,7 +52,7 @@ function countdownClockLoop(): void {
 
   let thisPageTitle = nowPlayingTitle;
   if (preferences.showClockInTitle) {
-    thisPageTitle = '[' + minuteClock + '] ' + thisPageTitle;
+    thisPageTitle = `[${  minuteClock  }] ${  thisPageTitle}`;
   }
   if (thisPageTitle != document.title) {
     document.title = thisPageTitle;

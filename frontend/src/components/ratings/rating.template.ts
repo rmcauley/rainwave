@@ -1,8 +1,10 @@
 import type { ratingContext } from './rating.context';
 
 import style from './rating.module.scss';
+
 function rating(context: ratingContext) {
   const v1 = document.createDocumentFragment();
+
   const v2 = document.createElement('div');
   v2.className = style.rating;
   v1.appendChild(v2);

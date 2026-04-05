@@ -67,7 +67,7 @@ function $l(
       if (el) {
         const piece = document.createElement('span');
         piece.textContent = tokenText;
-        piece.className = 'lang-' + key + '-' + token.key;
+        piece.className = `lang-${  key  }-${  token.key}`;
         el.appendChild(piece);
       }
     }

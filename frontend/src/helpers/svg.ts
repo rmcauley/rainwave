@@ -4,7 +4,7 @@ function svgIcon(icon: string): SVGSVGElement {
   use.setAttributeNS(
     'http://www.w3.org/1999/xlink',
     'xlink:href',
-    '/static/images4/symbols.svg#' + icon,
+    `/static/images4/symbols.svg#${  icon}`,
   );
   svg.appendChild(use);
 

@@ -133,8 +133,8 @@ const RainwavePlayer = (function () {
       audioEl.addEventListener("canplay", function () {
         if (self.debug)
           {console.log(
-            "RainwavePlayer: <audio> canplay            :: " +
-              audioEl.currentSrc,
+            `RainwavePlayer: <audio> canplay            :: ${ 
+              audioEl.currentSrc}`,
           );}
       });
     }
@@ -159,7 +159,7 @@ const RainwavePlayer = (function () {
     if (i === streamURLs.length - 1) {
       source.addEventListener("error", function (e) {
         if (self.debug) {
-          console.log("RainwavePlayer: Error on source " + stream_url);
+          console.log(`RainwavePlayer: Error on source ${  stream_url}`);
           console.log("RainwavePlayer: Error on final source.");
         }
         onError(e);
@@ -170,7 +170,7 @@ const RainwavePlayer = (function () {
     else {
       source.addEventListener("error", function (e) {
         if (self.debug)
-          {console.log("RainwavePlayer: Error on source " + stream_url);}
+          {console.log(`RainwavePlayer: Error on source ${  stream_url}`);}
         onStall(e, i);
       });
     }
@@ -211,13 +211,13 @@ return source;
         station = hardcodedStationToSID[station.toLowerCase()];
       } else {
         console.warn(
-          "Unknown Rainwave Station " + station + ", defaulting to All.",
+          `Unknown Rainwave Station ${  station  }, defaulting to All.`,
         );
         station = 5;
       }
     }
 
-    streamURLs = [hardcodedStations[station] + "." + self.type + streamQuery];
+    streamURLs = [`${hardcodedStations[station]  }.${  self.type  }${streamQuery}`];
   };
 
   /**
@@ -355,7 +355,7 @@ return to_return;
   var stopAudioConnectError = function () {
     if (stall_timeout) {
       if (self.debug)
-        {console.log("RainwavePlayer: Stutter on " + audioEl.currentSrc);}
+        {console.log(`RainwavePlayer: Stutter on ${  audioEl.currentSrc}`);}
       clearTimeout(stall_timeout);
       stall_timeout = null;
     }
@@ -377,9 +377,9 @@ return to_return;
   var dispatchStall = function (detail) {
     if (self.debug) {
       console.log(
-        "RainwavePlayer: Dispatching stall: " + (detail || "<audio>"),
+        `RainwavePlayer: Dispatching stall: ${  detail || "<audio>"}`,
       );
-      console.log("RainwavePlayer: Stalled on URL " + audioEl.currentSrc);
+      console.log(`RainwavePlayer: Stalled on URL ${  audioEl.currentSrc}`);
     }
     const evt = createEvent("stall");
     evt.detail = detail;
@@ -395,7 +395,7 @@ return to_return;
   var onPlay = function () {
     if (self.debug)
       {console.log(
-        "RainwavePlayer: <audio> playing            :: " + audioEl.currentSrc,
+        `RainwavePlayer: <audio> playing            :: ${  audioEl.currentSrc}`,
       );}
     stopAudioConnectError();
     self.dispatchEvent(createEvent("playing"));
@@ -404,7 +404,7 @@ return to_return;
   var onWaiting = function () {
     if (self.debug)
       {console.log(
-        "RainwavePlayer: <audio> waiting            ::" + audioEl.currentSrc,
+        `RainwavePlayer: <audio> waiting            ::${  audioEl.currentSrc}`,
       );}
     stopAudioConnectError();
     self.dispatchEvent(createEvent("loading"));
@@ -413,7 +413,7 @@ return to_return;
   var onEnded = function () {
     if (self.debug)
       {console.log(
-        "RainwavePlayer: <audio> ended              :: " + audioEl.currentSrc,
+        `RainwavePlayer: <audio> ended              :: ${  audioEl.currentSrc}`,
       );}
     onStop();
     self.play();
@@ -422,7 +422,7 @@ return to_return;
   var onAbort = function () {
     if (self.debug)
       {console.log(
-        "RainwavePlayer: <audio> aborted            :: " + audioEl.currentSrc,
+        `RainwavePlayer: <audio> aborted            :: ${  audioEl.currentSrc}`,
       );}
     onStop();
   };
@@ -430,7 +430,7 @@ return to_return;
   var onStop = function () {
     if (self.debug)
       {console.log(
-        "RainwavePlayer: <audio> stop               :: " + audioEl.currentSrc,
+        `RainwavePlayer: <audio> stop               :: ${  audioEl.currentSrc}`,
       );}
     self.stop();
   };
@@ -438,7 +438,7 @@ return to_return;
   var onSuspend = function (e) {
     if (self.debug)
       {console.log(
-        "RainwavePlayer: <audio> suspend            :: " + audioEl.currentSrc,
+        `RainwavePlayer: <audio> suspend            :: ${  audioEl.currentSrc}`,
       );}
     onStall(e);
   };
@@ -452,7 +452,7 @@ return to_return;
     if (i === undefined) {
       if (self.debug)
         {console.log(
-          "RainwavePlayer: <audio> stall              :: " + audioEl.currentSrc,
+          `RainwavePlayer: <audio> stall              :: ${  audioEl.currentSrc}`,
         );}
       if (chromeSpecialFlag) {
         // we can ignore <audio> element stalls when Chrome is being special
@@ -467,23 +467,23 @@ return;
     } else {
       if (self.debug)
         {console.log(
-          "RainwavePlayer: <source> stall             :: " + audioEl.currentSrc,
+          `RainwavePlayer: <source> stall             :: ${  audioEl.currentSrc}`,
         );}
     }
 
     let detail;
     if (i !== undefined) {
-      detail = " (" + (i + 1) + "/" + streamURLs.length + ")";
+      detail = ` (${  i + 1  }/${  streamURLs.length  })`;
     }
     if (self.debug)
-      {console.log("RainwavePlayer: Stall event detail: " + detail);}
+      {console.log(`RainwavePlayer: Stall event detail: ${  detail}`);}
     doAudioConnectError(detail);
   };
 
   var onError = function (e) {
     if (self.debug)
       {console.log(
-        "RainwavePlayer: <audio> error              :: " + audioEl.currentSrc,
+        `RainwavePlayer: <audio> error              :: ${  audioEl.currentSrc}`,
       );}
     stopAudioConnectError();
     self.stop();
@@ -513,7 +513,7 @@ return;
   self.addEventListener = function (evtname, callback) {
     if (!callbacks[evtname]) {
       console.error(
-        evtname + " is not a supported event for the Rainwave Player.",
+        `${evtname  } is not a supported event for the Rainwave Player.`,
       );
       
 return;

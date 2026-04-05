@@ -25,5 +25,5 @@
       { "name": "typescript-plugin-css-modules" }
     ]
   },
-  "include": ["src", "../lang"]
+  "include": ["src", "../lang", "vite.config.ts", "vitest.config.ts"]
 }

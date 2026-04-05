@@ -1,24 +1,24 @@
-var SongList = function () {
-  var list = {};
+const SongList = function () {
+  const list = {};
 
-  var container;
-  var el;
-  var scroller;
-  var padder;
+  let container;
+  let el;
+  let scroller;
+  let padder;
 
-  var draggingSong;
-  var draggingIndex;
-  var orderChanged = false;
-  var originalMouseY;
-  var originalRequestY;
-  var lastMouseEvent;
-  var currentDraggingY;
-  var upperNormalFold;
-  var lowerNormalFold;
-  var upperFold;
-  var lowerFold;
+  let draggingSong;
+  let draggingIndex;
+  let orderChanged = false;
+  let originalMouseY;
+  let originalRequestY;
+  let lastMouseEvent;
+  let currentDraggingY;
+  let upperNormalFold;
+  let lowerNormalFold;
+  let upperFold;
+  let lowerFold;
 
-  var songs = [];
+  let songs = [];
 
   list.getSongs = function () {
     return songs;
@@ -74,7 +74,7 @@ var SongList = function () {
   list.remove = function () {};
 
   list.removeEvent = function () {
-    if (!this._song_id) return;
+    if (!this._song_id) {return;}
     list.remove(this._song_id);
   };
 
@@ -86,11 +86,12 @@ var SongList = function () {
       // and we'll get a fresh list of requests back
       // which'll keep things all in sync
       orderChanged = true;
-      return;
+      
+return;
     }
-    var i, j, found, n;
+    let i, j, found, n;
 
-    var newSongs = [];
+    const newSongs = [];
     for (i = json.length - 1; i >= 0; i--) {
       found = false;
       for (j = songs.length - 1; j >= 0; j--) {
@@ -109,7 +110,7 @@ var SongList = function () {
         n.$t.request_drag.addEventListener('touchstart', startTouchDrag);
         n.$t.cancel._song_id = n.id;
         n.$t.cancel.addEventListener('click', list.removeEvent);
-        n.el.style[Fx.transform] = 'translateY(' + Sizing.height + 'px)';
+        n.el.style[Fx.transform] = `translateY(${  Sizing.height  }px)`;
         newSongs.unshift(n);
         el.appendChild(n.el);
       }
@@ -146,11 +147,11 @@ var SongList = function () {
   };
 
   list.reflow = function () {
-    var runningHeight = 0;
-    for (var i = 0; i < songs.length; i++) {
+    let runningHeight = 0;
+    for (let i = 0; i < songs.length; i++) {
       songs[i]._request_y = runningHeight;
       songs[i].el.style[Fx.transform] =
-        'translateY(' + (runningHeight + Sizing.height * (i + 1)) + 'px)';
+        `translateY(${  runningHeight + Sizing.height * (i + 1)  }px)`;
       runningHeight += Sizing.requestSize;
     }
     list.reflow = list.realReflow;
@@ -159,57 +160,58 @@ var SongList = function () {
   };
 
   list.realReflow = function () {
-    var runningHeight = 0;
-    for (var i = 0; i < songs.length; i++) {
+    let runningHeight = 0;
+    for (let i = 0; i < songs.length; i++) {
       if (draggingSong != songs[i]) {
         songs[i]._request_y = runningHeight;
-        songs[i].el.style[Fx.transform] = 'translateY(' + runningHeight + 'px)';
+        songs[i].el.style[Fx.transform] = `translateY(${  runningHeight  }px)`;
       }
       runningHeight += Sizing.requestSize;
     }
-    padder.style[Fx.transform] = 'translateY(' + (runningHeight - Sizing.requestSize) + 'px)';
+    padder.style[Fx.transform] = `translateY(${  runningHeight - Sizing.requestSize  }px)`;
     scroller.set_height(runningHeight);
   };
 
   list.findSongToRemove = function (songId) {
-    var foundSong;
-    var songs = list.getSongs();
-    for (var i = 0; i < songs.length; i++) {
+    let foundSong;
+    const songs = list.getSongs();
+    for (let i = 0; i < songs.length; i++) {
       if (songId == songs[i].id) {
         foundSong = songs[i];
         break;
       }
     }
-    if (!foundSong) return;
+    if (!foundSong) {return;}
     if (foundSong._deleted) {
       return;
     }
     foundSong._deleted = true;
     foundSong.el.classList.add('deleted');
-    return foundSong;
+    
+return foundSong;
   };
 
   // DRAG AND DROP *********************************************************
 
-  var captureTouchMove = function (e) {
+  const captureTouchMove = function (e) {
     lastMouseEvent = {
       clientY: e.touches[0].pageY,
       target: e.target,
     };
   };
 
-  var captureMouseMove = function (e) {
+  const captureMouseMove = function (e) {
     lastMouseEvent = e;
   };
 
-  var continueDrag = function () {
-    if (!draggingSong) return;
-    var newY = originalRequestY - (originalMouseY - (lastMouseEvent.clientY + scroller.scroll_top));
+  const continueDrag = function () {
+    if (!draggingSong) {return;}
+    const newY = originalRequestY - (originalMouseY - (lastMouseEvent.clientY + scroller.scroll_top));
     if (newY != currentDraggingY) {
       currentDraggingY = newY;
-      var newIndex = Math.floor((newY + Sizing.requestSize * 0.3) / Sizing.requestSize);
-      if (newIndex >= songs.length) newIndex = songs.length - 1;
-      if (newIndex < 0) newIndex = 0;
+      let newIndex = Math.floor((newY + Sizing.requestSize * 0.3) / Sizing.requestSize);
+      if (newIndex >= songs.length) {newIndex = songs.length - 1;}
+      if (newIndex < 0) {newIndex = 0;}
       if (newIndex != draggingIndex) {
         songs.splice(draggingIndex, 1);
         songs.splice(newIndex, 0, draggingSong);
@@ -217,7 +219,7 @@ var SongList = function () {
         draggingIndex = newIndex;
         orderChanged = true;
       }
-      draggingSong.el.style[Fx.transform] = 'translateY(' + newY + 'px)';
+      draggingSong.el.style[Fx.transform] = `translateY(${  newY  }px)`;
     }
 
     if (lastMouseEvent.clientY < upperFold && scroller.scroll_top > 0) {
@@ -244,7 +246,7 @@ var SongList = function () {
     requestAnimationFrame(continueDrag);
   };
 
-  var stopDrag = function () {
+  const stopDrag = function () {
     container.classList.remove('dragging');
     draggingSong.el.classList.remove('dragging');
     document.body.classList.remove('unselectable');
@@ -266,17 +268,17 @@ var SongList = function () {
       return;
     }
 
-    var songId = e.target._song_id || e.target.parentNode._song_id;
+    const songId = e.target._song_id || e.target.parentNode._song_id;
     if (songId) {
-      for (var i = 0; i < songs.length; i++) {
+      for (let i = 0; i < songs.length; i++) {
         if (songId == songs[i].id) {
           draggingSong = songs[i];
           draggingIndex = i;
           break;
         }
       }
-      if (!draggingSong) return;
-      if (draggingSong._deleted) return;
+      if (!draggingSong) {return;}
+      if (draggingSong._deleted) {return;}
       lastMouseEvent = e;
       originalMouseY = e.clientY + scroller.scroll_top;
       originalRequestY = draggingSong._request_y;
@@ -303,7 +305,7 @@ var SongList = function () {
   };
 
   var startTouchDrag = function (e) {
-    var fakeEvent = {
+    const fakeEvent = {
       which: 1,
       clientY: e.touches[0].pageY,
       target: e.target,
@@ -316,15 +318,15 @@ var SongList = function () {
   return list;
 };
 
-var Requests = (function () {
-  var list = SongList();
+const Requests = (function () {
+  const list = SongList();
 
-  var link;
-  var linkText;
-  var header;
-  var indicator;
-  var indicator2;
-  var rootContainer;
+  let link;
+  let linkText;
+  let header;
+  let indicator;
+  let indicator2;
+  let rootContainer;
 
   INIT_TASKS.on_draw.push(function () {
     list.onDraw();
@@ -332,7 +334,7 @@ var Requests = (function () {
   });
 
   INIT_TASKS.on_init.push(function (rootTemplate) {
-    var $t = RWTemplates.requests();
+    const $t = RWTemplates.requests();
     list.onInit($t, rootTemplate);
 
     header = $t.request_header;
@@ -382,10 +384,10 @@ var Requests = (function () {
   };
 
   list.updateHeader = function () {
-    var goodRequests = 0;
-    var songs = list.getSongs();
-    var allBad = songs.length > 0;
-    for (var i = 0; i < songs.length; i++) {
+    let goodRequests = 0;
+    const songs = list.getSongs();
+    let allBad = songs.length > 0;
+    for (let i = 0; i < songs.length; i++) {
       if (songs[i].valid) {
         allBad = false;
         goodRequests++;
@@ -465,7 +467,7 @@ var Requests = (function () {
   };
 
   list.remove = function (songId) {
-    var foundSong = list.findSongToRemove(songId);
+    const foundSong = list.findSongToRemove(songId);
     if (!foundSong) {
       return;
     }
@@ -475,8 +477,8 @@ var Requests = (function () {
     });
   };
 
-  var clicked = function () {
-    if (!this._request_song_id) return;
+  const clicked = function () {
+    if (!this._request_song_id) {return;}
     if (User.id === 1) {
       ErrorHandler.tooltipError(ErrorHandler.makeError('must_login_and_tune_in_to_request', 400));
     }
@@ -489,10 +491,10 @@ var Requests = (function () {
   };
 
   list.onOrderChanged = function () {
-    var songs = list.getSongs();
-    var songOrder = '';
-    for (var i = 0; i < songs.length; i++) {
-      if (i !== 0) songOrder += ',';
+    const songs = list.getSongs();
+    let songOrder = '';
+    for (let i = 0; i < songs.length; i++) {
+      if (i !== 0) {songOrder += ',';}
       songOrder += songs[i].id;
     }
     API.async_get('order_requests', { order: songOrder });

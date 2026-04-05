@@ -15,22 +15,22 @@ function cooldown(seconds: number): string {
   let humantime = '';
   let detail = 0;
   if (seconds >= 604800) {
-    humantime += Math.floor(seconds / 604800) + timeFormatWeek + ' ';
+    humantime += `${Math.floor(seconds / 604800) + timeFormatWeek  } `;
     seconds = seconds % 604800;
     detail++;
   }
   if (seconds >= 86400) {
-    humantime += Math.floor(seconds / 86400) + timeFormatDay + ' ';
+    humantime += `${Math.floor(seconds / 86400) + timeFormatDay  } `;
     seconds = seconds % 86400;
     detail++;
   }
   if (seconds >= 3600) {
-    humantime += Math.floor(seconds / 3600) + timeFormatHour + ' ';
+    humantime += `${Math.floor(seconds / 3600) + timeFormatHour  } `;
     seconds = seconds % 3600;
     detail++;
   }
   if (seconds >= 60 && detail < 3) {
-    humantime += Math.floor(seconds / 60) + timeFormatMinute + ' ';
+    humantime += `${Math.floor(seconds / 60) + timeFormatMinute  } `;
     seconds = seconds % 60;
   }
 

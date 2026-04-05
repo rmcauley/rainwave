@@ -3,6 +3,7 @@
   "version": "5.0.0",
   "description": "rainwave.cc",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "npm run check:styles && vite build",
     "check:styles": "node ./scripts/check-scss.mjs",

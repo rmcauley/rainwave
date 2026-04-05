@@ -6,27 +6,28 @@ INIT_TASKS.on_draw happens after the measurement - please do not cause reflows.
 
 */
 
-var User;
-var Stations = [];
-var API;
-var RWAudio;
-var rainwaveInitialized = false;
-var LOCALE = 'en_CA';
-var lang;
-var INIT_TASKS = {
+let User;
+const Stations = [];
+let API;
+let RWAudio;
+let rainwaveInitialized = false;
+let LOCALE = 'en_CA';
+let lang;
+const INIT_TASKS = {
   on_init: [],
   on_measure: [],
   on_draw: [],
 };
-var MOBILE =
+const MOBILE =
   navigator.userAgent.toLowerCase().includes('mobile') ||
   navigator.userAgent.toLowerCase().includes('android');
-var Prefs;
+let Prefs;
 
 function rainwaveInit() {
   if (!document.body) {
     document.addEventListener('load', rainwaveInit);
-    return;
+    
+return;
   }
   if (rainwaveInitialized || !window.BOOTSTRAP || !window.ALL_LANG || !window.RWTemplates) {
     return;
@@ -36,7 +37,7 @@ function rainwaveInit() {
 
   Prefs = PrefsInit(BOOTSTRAP.locales, BOOTSTRAP.cookie_domain);
 
-  var potentialLang = (docCookies.getItem('rw_lang') || navigator.language).replace('-', '_');
+  const potentialLang = (docCookies.getItem('rw_lang') || navigator.language).replace('-', '_');
   Object.entries(ALL_LANG).forEach(function (entry) {
     if (entry[0].toLowerCase() == potentialLang.toLowerCase()) {
       LOCALE = entry[0];
@@ -57,7 +58,7 @@ function rainwaveInit() {
 
   User = BOOTSTRAP.user;
 
-  var template;
+  let template;
 
   // this global API variable name and the function renaming
   // was required after the API changed to something useable
@@ -77,8 +78,8 @@ function rainwaveInit() {
   });
   API.on('wserror', function (json) {
     if (json.tl_key === 'auth_failed') {
-      var template = Modal($l('auth_required'), 'modal_auth_failure', {}, true);
-      if (!template) return;
+      const template = Modal($l('auth_required'), 'modal_auth_failure', {}, true);
+      if (!template) {return;}
       template._root.parentNode.classList.add('error');
     }
   });
@@ -126,8 +127,8 @@ function rainwaveInit() {
   // 	5: { "album": "All Test Album", "event_name": null, "art": "/static/baked/art/1_155", "event_type": "Election", "title": "All Test Song" },
   // };
 
-  var order = [5, 1, 4, 2, 3, 6];
-  var colors = {
+  const order = [5, 1, 4, 2, 3, 6];
+  const colors = {
     1: '#1f95e5', // Rainwave blue
     2: '#de641b', // OCR Orange
     3: '#b7000f', // Red
@@ -138,8 +139,8 @@ function rainwaveInit() {
   for (var i = 0; i < order.length; i++) {
     if (BOOTSTRAP.station_list[order[i]]) {
       Stations.push(BOOTSTRAP.station_list[order[i]]);
-      Stations[Stations.length - 1].name = $l('station_name_' + order[i]);
-      var stationUrl = new URL(Stations[Stations.length - 1].url);
+      Stations[Stations.length - 1].name = $l(`station_name_${  order[i]}`);
+      const stationUrl = new URL(Stations[Stations.length - 1].url);
       if (order[i] == BOOTSTRAP.user.sid) {
         if (window.location.pathname == '/' && window.location.hostname == stationUrl.hostname) {
           window.history.replaceState(null, '', stationUrl.pathname + window.location.search);
@@ -154,7 +155,7 @@ function rainwaveInit() {
 
   if (window.location.href.indexOf('beta') !== -1) {
     for (i = 0; i < Stations.length; i++) {
-      if (Stations[i].url) Stations[i].url = '/beta/?sid=' + Stations[i].id;
+      if (Stations[i].url) {Stations[i].url = `/beta/?sid=${  Stations[i].id}`;}
     }
   }
   BOOTSTRAP.station_list = Stations;
@@ -191,7 +192,7 @@ function rainwaveInit() {
   }
 
   // Safari has CSS and font rendering issues :/
-  var ua = navigator.userAgent.toLowerCase();
+  const ua = navigator.userAgent.toLowerCase();
   if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
     document.body.classList.add('safari');
   }

@@ -1,49 +1,51 @@
 // this special sorting fixes how Postgres ignores spaces while sorting
 // the discrepency in sorting is small, but does exist, since
 // many other places on the page do sorting.
-var SongsTableAlbumSort = function (a, b) {
-  if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-  else if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-  return 0;
+const SongsTableAlbumSort = function (a, b) {
+  if (a.name.toLowerCase() < b.name.toLowerCase()) {return -1;}
+  else if (a.name.toLowerCase() > b.name.toLowerCase()) {return 1;}
+  
+return 0;
 };
 
-var SongsTableSorting = function (a, b) {
+const SongsTableSorting = function (a, b) {
   if (Prefs.get("p_songsort")) {
     if (Prefs.get("p_fav1") && Prefs.get("p_favup") && a.fave !== b.fave) {
-      if (a.fave) return -1;
-      else return 1;
+      if (a.fave) {return -1;}
+      else {return 1;}
     }
 
     if (Prefs.get("p_avup") && a.cool !== b.cool) {
-      if (a.cool === false) return -1;
-      else return 1;
+      if (a.cool === false) {return -1;}
+      else {return 1;}
     }
 
     if (!Prefs.get("p_fav1") && Prefs.get("p_favup") && a.fave !== b.fave) {
-      if (a.fave) return -1;
-      else return 1;
+      if (a.fave) {return -1;}
+      else {return 1;}
     }
 
     if (Prefs.get("p_null1")) {
-      if (!a.rating_user && b.rating_user) return -1;
-      if (a.rating_user && !b.rating_user) return 1;
+      if (!a.rating_user && b.rating_user) {return -1;}
+      if (a.rating_user && !b.rating_user) {return 1;}
     }
 
     if (Prefs.get("p_sort") === "rt") {
-      if (a.rating_user < b.rating_user) return 1;
-      if (a.rating_user > b.rating_user) return -1;
+      if (a.rating_user < b.rating_user) {return 1;}
+      if (a.rating_user > b.rating_user) {return -1;}
     }
   }
 
-  if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
-  else if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
-  return 0;
+  if (a.title.toLowerCase() < b.title.toLowerCase()) {return -1;}
+  else if (a.title.toLowerCase() > b.title.toLowerCase()) {return 1;}
+  
+return 0;
 };
 
-var SongsTableDetailDraw = function (song, details) {
+const SongsTableDetailDraw = function (song, details) {
   // song has the $t from the songs table
   // details contains all the song data
-  if (!details) return;
+  if (!details) {return;}
   if (details.rating_rank_percentile >= 50) {
     details.rating_percentile_message = $l("rating_percentile_top", {
       rating: details.rating,
@@ -68,11 +70,11 @@ var SongsTableDetailDraw = function (song, details) {
     });
   }
 
-  var template = RWTemplates.detail.song_detail(details, song.$t.row);
+  const template = RWTemplates.detail.song_detail(details, song.$t.row);
   song.$t.details = details.$t.details;
 
   if (template.graph_placement) {
-    var chart = RatingChart(details);
+    const chart = RatingChart(details);
     if (chart) {
       template.graph_placement.parentNode.replaceChild(
         chart,
@@ -85,11 +87,11 @@ var SongsTableDetailDraw = function (song, details) {
   Router.recalculateScroll();
 };
 
-var SongsTableDetail = function (song, scrollOnOpen, sid) {
+const SongsTableDetail = function (song, scrollOnOpen, sid) {
   if (!song.$t.detail_icon) {
     return;
   }
-  var triggered = false;
+  let triggered = false;
   song.$t.detailIconClick = function (e) {
     if (song.$t.details) {
       if (song.$t.details.parentNode) {
@@ -102,7 +104,7 @@ var SongsTableDetail = function (song, scrollOnOpen, sid) {
         Router.scrollABit();
       }
     } else {
-      if (triggered) return;
+      if (triggered) {return;}
       triggered = true;
       API.async_get(
         "song",
@@ -119,23 +121,23 @@ var SongsTableDetail = function (song, scrollOnOpen, sid) {
   song.$t.detail_icon.addEventListener("click", song.$t.detailIconClick);
 };
 
-var MultiAlbumKeyNav = function (template, albums) {
-  if (Sizing.simple) return;
+const MultiAlbumKeyNav = function (template, albums) {
+  if (Sizing.simple) {return;}
 
-  var totalSongs = 0;
-  for (var i = 0; i < albums.length; i++) {
+  let totalSongs = 0;
+  for (let i = 0; i < albums.length; i++) {
     totalSongs += albums[i].songs.length;
   }
 
   // keyboard nav i, keyboard nav album i
-  var kni = false;
-  var knai = 0;
-  var keyNavMove = function (jump) {
-    var step = jump < 0 ? -1 : 1;
+  let kni = false;
+  let knai = 0;
+  const keyNavMove = function (jump) {
+    const step = jump < 0 ? -1 : 1;
     jump = Math.abs(jump);
-    var newI = kni;
-    var newAlbumI = knai;
-    if (kni === false) {
+    let newI = kni;
+    let newAlbumI = knai;
+    if (!kni) {
       newI = 0;
       newAlbumI = 0;
     } else {
@@ -163,9 +165,9 @@ var MultiAlbumKeyNav = function (template, albums) {
         }
       }
     }
-    if (newI === kni && newAlbumI === knai) return;
+    if (newI === kni && newAlbumI === knai) {return;}
 
-    if (kni !== false) {
+    if (kni) {
       albums[knai].songs[kni].$t.row.classList.remove("hover");
     }
     albums[newAlbumI].songs[newI].$t.row.classList.add("hover");
@@ -179,8 +181,8 @@ var MultiAlbumKeyNav = function (template, albums) {
   };
 
   var scrollToKni = function () {
-    var kniY = albums[knai].songs[kni].$t.row.offsetTop;
-    var nowY = template._scroll.scroll_top;
+    const kniY = albums[knai].songs[kni].$t.row.offsetTop;
+    const nowY = template._scroll.scroll_top;
     if (kniY > nowY + template._scroll.offset_height - 90) {
       template._scroll.scroll_to(kniY - template._scroll.offset_height + 90);
     } else if (kniY < nowY + 60) {
@@ -204,7 +206,7 @@ var MultiAlbumKeyNav = function (template, albums) {
     if (!knai) {
       return false;
     }
-    if (kni !== false) {
+    if (kni) {
       albums[knai].songs[kni].$t.row.classList.remove("hover");
     }
     knai = Math.max(0, knai - 1);
@@ -212,13 +214,14 @@ var MultiAlbumKeyNav = function (template, albums) {
     albums[knai].songs[kni].$t.row.classList.add("hover");
 
     scrollToKni();
-    return true;
+    
+return true;
   };
   template.keyNavPageDown = function () {
     if (knai == albums.length - 1) {
       return;
     }
-    if (kni !== false) {
+    if (kni) {
       albums[knai].songs[kni].$t.row.classList.remove("hover");
     }
     knai = Math.min(albums.length - 1, knai + 1);
@@ -226,7 +229,8 @@ var MultiAlbumKeyNav = function (template, albums) {
     albums[knai].songs[kni].$t.row.classList.add("hover");
 
     scrollToKni();
-    return true;
+    
+return true;
   };
 
   template.keyNavLeft = function () {
@@ -237,28 +241,30 @@ var MultiAlbumKeyNav = function (template, albums) {
   };
 
   template.keyNavEnter = function () {
-    if (kni !== false && albums[knai].songs[kni]) {
+    if (kni && albums[knai].songs[kni]) {
       Requests.add(albums[knai].songs[kni].id);
-      return true;
+      
+return true;
     }
   };
 
   template.keyNavAddCharacter = function (chr) {
-    if (kni !== false && albums[knai].songs[kni]) {
+    if (kni && albums[knai].songs[kni]) {
       if (chr == "i" && albums[knai].songs[kni].$t.detailIconClick) {
         albums[knai].songs[kni].$t.detailIconClick();
       } else if (parseInt(chr) >= 1 && parseInt(chr) <= 5) {
         Rating.doRating(parseInt(chr), albums[knai].songs[kni]);
-      } else if (chr == "q") Rating.doRating(1.5, albums[knai].songs[kni]);
-      else if (chr == "w") Rating.doRating(2.5, albums[knai].songs[kni]);
-      else if (chr == "e") Rating.doRating(3.5, albums[knai].songs[kni]);
-      else if (chr == "r") Rating.doRating(4.5, albums[knai].songs[kni]);
+      } else if (chr == "q") {Rating.doRating(1.5, albums[knai].songs[kni]);}
+      else if (chr == "w") {Rating.doRating(2.5, albums[knai].songs[kni]);}
+      else if (chr == "e") {Rating.doRating(3.5, albums[knai].songs[kni]);}
+      else if (chr == "r") {Rating.doRating(4.5, albums[knai].songs[kni]);}
       else if (chr == "f" && User.id > 1) {
-        var e = document.createEvent("Events");
+        const e = document.createEvent("Events");
         e.initEvent("click", true, false);
         albums[knai].songs[kni].$t.fave.dispatchEvent(e);
       }
-      return true;
+      
+return true;
     }
   };
   template.keyNavBackspace = function () {
@@ -267,7 +273,7 @@ var MultiAlbumKeyNav = function (template, albums) {
 
   template.keyNavEscape = function () {
     if (
-      kni !== false &&
+      kni &&
       albums[knai].songs[kni] &&
       albums[knai].songs[kni].$t.detailIconClick
     ) {
@@ -278,7 +284,7 @@ var MultiAlbumKeyNav = function (template, albums) {
   };
 
   template.keyNavFocus = function () {
-    if (kni === false) {
+    if (!kni) {
       keyNavMove(1);
     } else {
       albums[knai].songs[kni].$t.row.classList.add("hover");
@@ -286,7 +292,7 @@ var MultiAlbumKeyNav = function (template, albums) {
   };
 
   template.keyNavBlur = function () {
-    if (kni !== false) {
+    if (kni) {
       albums[knai].songs[kni].$t.row.classList.remove("hover");
     }
   };

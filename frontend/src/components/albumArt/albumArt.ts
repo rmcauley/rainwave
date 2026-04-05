@@ -1,13 +1,13 @@
 function expandArt(e) {
   e.stopPropagation();
 
-  var tgt = this;
+  const tgt = this;
 
   if (this._reset_router && Sizing.simple) {
     Router.change();
   }
 
-  var songEl = this.parentNode.parentNode;
+  const songEl = this.parentNode.parentNode;
   if (songEl && songEl.classList.contains('song')) {
     if (songEl._art_timeout) {
       clearTimeout(songEl._art_timeout);
@@ -18,7 +18,7 @@ function expandArt(e) {
       songEl.style.opacity = 1;
     }
 
-    var evtEl = songEl.parentNode && songEl.parentNode.parentNode;
+    const evtEl = songEl.parentNode && songEl.parentNode.parentNode;
     if (evtEl && evtEl.classList.contains('timeline-event')) {
       if (evtEl._art_timeout) {
         clearTimeout(evtEl._art_timeout);
@@ -28,16 +28,17 @@ function expandArt(e) {
     }
   }
 
-  if (!tgt.classList.contains('art-container')) return;
+  if (!tgt.classList.contains('art-container')) {return;}
   if (tgt.classList.contains('art-expanded')) {
     normalizeArt({ target: this });
-    return;
+    
+return;
   }
 
-  var x = e.pageX
+  const x = e.pageX
     ? e.pageX
     : e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-  var y = e.pageY
+  const y = e.pageY
     ? e.pageY
     : e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 
@@ -54,17 +55,17 @@ function expandArt(e) {
   }
 
   if ('_album_art' in tgt && tgt._album_art) {
-    var fullRes = document.createElement('img');
+    const fullRes = document.createElement('img');
     fullRes.onload = function () {
-      var fs = document.createElement('div');
+      const fs = document.createElement('div');
       fs.className = 'art-full-size';
-      fs.style.backgroundImage = 'url(' + fullRes.getAttribute('src') + ')';
+      fs.style.backgroundImage = `url(${  fullRes.getAttribute('src')  })`;
       tgt.appendChild(fs);
       requestNextAnimationFrame(function () {
         fs.classList.add('loaded');
       });
     };
-    fullRes.setAttribute('src', tgt._album_art + '_320.jpg');
+    fullRes.setAttribute('src', `${tgt._album_art  }_320.jpg`);
     tgt._album_art = null;
   }
 }
@@ -77,14 +78,14 @@ function normalizeArt(e) {
   e.target.classList.remove('art-expand-down');
   e.target.classList.remove('art-expand-up');
 
-  var songEl = e.target.parentNode.parentNode;
+  const songEl = e.target.parentNode.parentNode;
   if (songEl && songEl.classList.contains('song')) {
     songEl.style.zIndex = 5;
     songEl.style.opacity = null;
     songEl._art_timeout = setTimeout(function () {
       songEl.style.zIndex = songEl._zIndex;
     }, 350);
-    var evtEl = songEl.parentNode && songEl.parentNode.parentNode;
+    const evtEl = songEl.parentNode && songEl.parentNode.parentNode;
     if (evtEl && evtEl.classList.contains('timeline-event')) {
       songEl.style.zIndex = 5;
       evtEl._art_timeout = setTimeout(function () {
@@ -98,7 +99,7 @@ function albumArt(artUrl, element, noExpand) {
   if (!artUrl || artUrl.length === 0) {
     element.style.backgroundImage = 'url(/static/images4/noart_1.jpg)';
   } else {
-    element.style.backgroundImage = 'url(' + artUrl + '_320.jpg)';
+    element.style.backgroundImage = `url(${  artUrl  }_320.jpg)`;
     element._album_art = artUrl;
     if (!MOBILE && !noExpand) {
       element.classList.add('art-expandable');

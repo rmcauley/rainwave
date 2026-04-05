@@ -13,14 +13,18 @@ function searchResults(context: searchResultsContext) {
     const v2 = document.createElement('h2');
     v2.appendChild(document.createTextNode($l('Artists')));
     v1.appendChild(v2);
+
     const v3 = context.artists.map((context) => {
       const v4 = document.createDocumentFragment();
+
       const v5 = document.createElement('div');
       v5.className = style['row row-artist'];
       v4.appendChild(v5);
+
       const v6 = document.createElement('div');
       v6.className = style.title;
       v5.appendChild(v6);
+
       const v7 = document.createElement('a');
       v7.appendChild(document.createTextNode(context.name));
       v7.href = `#!/artist/` + context.id;
@@ -40,8 +44,10 @@ return { title: v7, $root: v4 };
     const v9 = document.createElement('h2');
     v9.appendChild(document.createTextNode($l('Albums')));
     v1.appendChild(v9);
+
     const v10 = context.albums.map((context) => {
       const v11 = document.createDocumentFragment();
+
       const v12 = document.createElement('div');
       v12.setAttribute(
         'data-old-class',
@@ -53,9 +59,11 @@ return { title: v7, $root: v4 };
       v11.appendChild(v12);
       v12.appendChild(rating(context).$root);
       v12.appendChild(fave(context).$root);
+
       const v13 = document.createElement('div');
       v13.className = style.title;
       v12.appendChild(v13);
+
       const v14 = document.createElement('a');
       v14.appendChild(document.createTextNode(context.name));
       v14.href = `#!/album/` + context.id;

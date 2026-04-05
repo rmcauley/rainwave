@@ -1,8 +1,8 @@
-var Indicator = function (indicator, indicatorStartCount, indicator2) {
-  var indicatorTimeout;
-  var currentCount = indicatorStartCount;
+const Indicator = function (indicator, indicatorStartCount, indicator2) {
+  let indicatorTimeout;
+  let currentCount = indicatorStartCount;
 
-  var blankIndicator = function () {
+  const blankIndicator = function () {
     indicatorTimeout = null;
     indicator.textContent = "";
     if (indicator2) {
@@ -10,7 +10,7 @@ var Indicator = function (indicator, indicatorStartCount, indicator2) {
     }
   };
 
-  var unindicate = function () {
+  const unindicate = function () {
     indicator.classList.remove("show");
     if (indicator2) {
       indicator2.classList.remove("show");
@@ -19,14 +19,15 @@ var Indicator = function (indicator, indicatorStartCount, indicator2) {
     indicatorStartCount = currentCount;
   };
 
-  var indicate = function (newCount) {
+  const indicate = function (newCount) {
     if (
       document.body.classList.contains("loading") ||
       (!indicatorTimeout && newCount == indicatorStartCount)
     ) {
       currentCount = newCount;
       indicatorStartCount = newCount;
-      return;
+      
+return;
     }
     if (indicatorTimeout) {
       clearTimeout(indicatorTimeout);
@@ -38,9 +39,9 @@ var Indicator = function (indicator, indicatorStartCount, indicator2) {
       indicator.classList.add("positive");
       indicator.classList.remove("negative");
       indicator.classList.remove("equal");
-      indicator.textContent = "+" + newCount;
+      indicator.textContent = `+${  newCount}`;
       if (indicator2) {
-        indicator2.textContent = "+" + newCount;
+        indicator2.textContent = `+${  newCount}`;
       }
     } else if (newCount < 0) {
       indicator.classList.remove("positive");

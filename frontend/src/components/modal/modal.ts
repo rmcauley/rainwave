@@ -23,8 +23,8 @@ function closeModal(e, chaining) {
     return;
   }
   document.body.classList.remove("modal-active");
-  var toClose = document.body.querySelectorAll("div.modal-container");
-  for (var i = 0; i < toClose.length; i++) {
+  const toClose = document.body.querySelectorAll("div.modal-container");
+  for (let i = 0; i < toClose.length; i++) {
     doClose(toClose[i]);
   }
   if (!chaining) {
@@ -49,12 +49,12 @@ function modalClass(title, templateName, templateObject, noClose) {
   if (noClose) {
     stopAll = true;
   }
-  var mt = RWTemplates.modal({ closeable: !noClose, title: title });
+  const mt = RWTemplates.modal({ closeable: !noClose, title: title });
   templateObject = templateObject || {};
   if (mt.close) {
     mt.close.addEventListener("click", closeModal);
   }
-  var ct = RWTemplates[templateName](templateObject, mt.content);
+  const ct = RWTemplates[templateName](templateObject, mt.content);
   mt.container.addEventListener("click", function (e) {
     e.stopPropagation();
   });
@@ -68,7 +68,8 @@ function modalClass(title, templateName, templateObject, noClose) {
       mt.container.classList.add("full-open");
     }, 300);
   });
-  return ct;
+  
+return ct;
 }
 
 blocker.addEventListener("click", closeModal);

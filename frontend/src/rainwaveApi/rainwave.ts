@@ -1,4 +1,9 @@
-import { RainwaveError, RainwaveSDKDisconnectedError, RainwaveSDKUsageError } from './errors';
+import {
+  RainwaveError,
+  RainwaveSDKDisconnectedError,
+  RainwaveSDKInternalError,
+  RainwaveSDKUsageError,
+} from './errors';
 import { RainwaveEventListener } from './eventListener';
 
 import type { RainwaveSDKInvalidRatingError } from './errors';
@@ -202,7 +207,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   }
 
   private _retryStartWebSocketSync(): void {
-    this.startWebSocketSync().catch((error) => {
+    this.startWebSocketSync().catch((error: unknown) => {
       if (error instanceof RainwaveSDKUsageError) {
         setTimeout(() => {
           this._retryStartWebSocketSync();
@@ -393,7 +398,10 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
     // The way RequestWithKey is built, there'll always
     // be 1 and only 1 value we can extract that safely.
-    const request = Object.values(requestWithKey)[0]!;
+    const request = Object.values(requestWithKey)[0];
+    if (!request) {
+      throw new RainwaveSDKInternalError('Matching request for a request ID was not found.');
+    }
 
     request.messageId = this._getNextRequestId();
     if (this._sentRequests.length > MAX_QUEUED_REQUESTS) {
