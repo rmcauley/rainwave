@@ -70,7 +70,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
   }
 
   resetCache();
-  API.add_callback('wsthrottle', resetCache);
+  api.addEventListener('wsthrottle', resetCache);
 
   el = rootTemplate.detail;
   detailHeader = rootTemplate.detail_header;
@@ -125,7 +125,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
     }
   });
 
-  API.add_callback('_SYNC_SCHEDULE_COMPLETE', function () {
+  api.addEventListener('_SYNC_SCHEDULE_COMPLETE', function () {
     if (requestInFlight) {
       resetCacheOnNextRequest = true;
     } else {

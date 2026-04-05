@@ -1,78 +1,99 @@
-let albumCallback = null;
+import { api } from '../../rainwaveApi';
 
-INIT_TASKS.on_init.push(function () {
-  API.add_callback("fave_song_result", songFaveUpdate);
-  API.add_callback("fave_album_result", albumFaveUpdate);
-  API.add_callback("fave_all_songs_result", songFaveAllUpdate);
-});
+import type { components } from '../../rainwaveApi/rainwave-openapi';
+import type { RainwaveCallback } from '../../rainwaveApi/types';
 
-function changeFave(elName, json, favetype) {
-  if (!json.success) return;
+type FaveElement = HTMLElement & { _faveId?: number };
 
-  var faves = document.getElementsByName(elName);
-  var funcn = json.fave ? "add" : "remove";
-  for (var i = 0; i < faves.length; i++) {
-    faves[i].classList[funcn]("is-fave");
-    faves[i].classList.remove("fave-clicked");
-    if (faves[i].parentNode)
-      faves[i].parentNode.classList[funcn](favetype + "-fave-highlight");
-    if (faves[i]._go_one_up)
-      faves[i].parentNode.parentNode.classList[funcn](
-        favetype + "-fave-highlight",
-      );
+let albumCallback: ((result: components['schemas']['fave_album_result']) => void) | undefined =
+  undefined;
+function setAlbumCallback(callback: NonNullable<typeof albumCallback>): void {
+  albumCallback = callback;
+}
+
+function rerenderFave(success: boolean, isFave: boolean, elName: string): void {
+  if (!success) {
+    return;
   }
 
-  if (favetype == "album" && albumCallback) albumCallback(json);
+  const highlightClassName = elName.startsWith('a')
+    ? 'album-fave-highlight'
+    : 'song-fave-highlight';
+  const funcn = isFave ? 'add' : 'remove';
+  document.getElementsByName(elName).forEach((el) => {
+    el.classList[funcn]('is-fave');
+    el.classList.remove('fave-clicked');
+    if (el.parentNode instanceof HTMLElement) {
+      el.parentNode.classList[funcn](highlightClassName);
+    }
+  });
 }
 
-function songFaveUpdate(json) {
-  changeFave("sfave_" + json.id, json, "song");
-}
+const songFaveUpdate: RainwaveCallback<'fave_song_result'> = (result) => {
+  rerenderFave(result.success, result.fave, `sfave_${result.id}`);
+};
 
-function songFaveAllUpdate(json) {
-  for (var i = 0; i < json.song_ids.length; i++) {
-    changeFave("sfave_" + json.song_ids[i], json, "song");
-  }
-}
+const songFaveAllUpdate: RainwaveCallback<'fave_all_songs_result'> = (result) => {
+  result.song_ids.forEach((songId) => {
+    rerenderFave(result.success, result.fave, `sfave_${songId}`);
+  });
+};
 
-function albumFaveUpdate(json) {
-  changeFave("afave_" + json.id, json, "album");
+const albumFaveUpdate: RainwaveCallback<'fave_album_result'> = (result) => {
+  rerenderFave(result.success, result.fave, `afave_${result.id}`);
+
   if (albumCallback) {
-    albumCallback(json);
+    albumCallback(result);
   }
-}
+};
 
-function doFave(e) {
-  if (!this._fave_id) return;
-  if (e && e.stopPropagation) e.stopPropagation();
-  var setTo = !this.classList.contains("is-fave");
-  if (
-    this.getAttribute("name") &&
-    this.getAttribute("name").substring(0, 5) == "sfave"
-  ) {
-    API.async_get("fave_song", { fave: setTo, song_id: this._fave_id });
+function doFave(this: FaveElement, evt: PointerEvent): void {
+  const faveId = this._faveId;
+  const faveData = this.dataset.fave;
+  if (!faveId || !faveData) {
+    return;
+  }
+
+  evt.stopPropagation();
+
+  const setTo = !this.classList.contains('is-fave');
+  if (faveData.startsWith('s')) {
+    api.voidFetch('fave_song', { fave: setTo, song_id: faveId });
   } else {
-    API.async_get("fave_album", { fave: setTo, album_id: this._fave_id });
+    api.voidFetch('fave_album', { fave: setTo, album_id: faveId });
   }
-  this.classList.add("fave-clicked");
+  this.classList.add('fave-clicked');
 }
 
-function register(json, isAlbum) {
-  if (User.id <= 1) return;
-  if (json.fave) {
-    json.$t.fave.classList.add("is-fave");
-    if (json.$t.fave.parentNode) {
-      if (isAlbum)
-        json.$t.fave.parentNode.classList.add("album-fave-highlight");
-      else json.$t.fave.parentNode.classList.add("song-fave-highlight");
+function registerFaveRender(
+  binds: { fave: FaveElement },
+  albumId: number | undefined,
+  songId: number | undefined,
+  isFave: boolean,
+): void {
+  if (api.user.id <= 1) {
+    return;
+  }
+
+  if (isFave) {
+    binds.fave.classList.add('is-fave');
+    if (binds.fave.parentNode instanceof HTMLElement) {
+      if (albumId) {
+        binds.fave.parentNode.classList.add('album-fave-highlight');
+      } else {
+        binds.fave.parentNode.classList.add('song-fave-highlight');
+      }
     }
   }
-  json.$t.fave.setAttribute(
-    "name",
-    isAlbum ? "afave_" + json.id : "sfave_" + json.id,
-  );
-  json.$t.fave._fave_id = json.id;
-  json.$t.fave.addEventListener("click", doFave);
+  binds.fave.dataset.fave = albumId ? `afave_${albumId}` : `sfave_${songId}`;
+  binds.fave._faveId = albumId || songId;
+  binds.fave.addEventListener('click', doFave);
 }
 
-export { albumCallback, doFave, register };
+function registerFaveApiListeners(): void {
+  api.addEventListener('fave_song_result', songFaveUpdate);
+  api.addEventListener('fave_album_result', albumFaveUpdate);
+  api.addEventListener('fave_all_songs_result', songFaveAllUpdate);
+}
+
+export { registerFaveApiListeners, registerFaveRender, setAlbumCallback };

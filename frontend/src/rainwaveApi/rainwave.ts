@@ -463,6 +463,15 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   // API calls ***********************************************************************************************
 
+  voidFetch<T extends RainwaveAction>(action: T, params: RainwaveParams<T>): void {
+    this._request(
+      action,
+      params,
+      () => null,
+      () => null,
+    );
+  }
+
   fetch<T extends RainwaveAction>(
     action: T,
     params: RainwaveParams<T>,

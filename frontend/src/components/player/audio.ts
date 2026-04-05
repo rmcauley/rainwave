@@ -61,8 +61,8 @@ var RWAudioConstructor = function () {
     }
     player.useStation(User.sid, streamQuery);
 
-    API.add_callback('user', userTuneinCheck);
-    API.add_callback('sched_current', function (np) {
+    api.addEventListener('user', userTuneinCheck);
+    api.addEventListener('sched_current', function (np) {
       nowPlaying = np;
       if (msUpdateMetadata) {
         msUpdateMetadata();

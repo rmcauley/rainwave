@@ -120,7 +120,7 @@ INIT_TASKS.on_init.push(function (rootTemplate) {
   }
 
   if (!MOBILE) {
-    API.add_callback('all_stations_info', updateStationInfo);
+    api.addEventListener('all_stations_info', updateStationInfo);
   }
 });
 

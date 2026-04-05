@@ -11,7 +11,7 @@ var Stations = [];
 var API;
 var RWAudio;
 var rainwaveInitialized = false;
-var LOCALE = "en_CA";
+var LOCALE = 'en_CA';
 var lang;
 var INIT_TASKS = {
   on_init: [],
@@ -19,21 +19,16 @@ var INIT_TASKS = {
   on_draw: [],
 };
 var MOBILE =
-  navigator.userAgent.toLowerCase().includes("mobile") ||
-  navigator.userAgent.toLowerCase().includes("android");
+  navigator.userAgent.toLowerCase().includes('mobile') ||
+  navigator.userAgent.toLowerCase().includes('android');
 var Prefs;
 
 function rainwaveInit() {
   if (!document.body) {
-    document.addEventListener("load", rainwaveInit);
+    document.addEventListener('load', rainwaveInit);
     return;
   }
-  if (
-    rainwaveInitialized ||
-    !window.BOOTSTRAP ||
-    !window.ALL_LANG ||
-    !window.RWTemplates
-  ) {
+  if (rainwaveInitialized || !window.BOOTSTRAP || !window.ALL_LANG || !window.RWTemplates) {
     return;
   }
 
@@ -41,9 +36,7 @@ function rainwaveInit() {
 
   Prefs = PrefsInit(BOOTSTRAP.locales, BOOTSTRAP.cookie_domain);
 
-  var potentialLang = (
-    docCookies.getItem("rw_lang") || navigator.language
-  ).replace("-", "_");
+  var potentialLang = (docCookies.getItem('rw_lang') || navigator.language).replace('-', '_');
   Object.entries(ALL_LANG).forEach(function (entry) {
     if (entry[0].toLowerCase() == potentialLang.toLowerCase()) {
       LOCALE = entry[0];
@@ -52,10 +45,7 @@ function rainwaveInit() {
   });
   if (!lang) {
     Object.entries(ALL_LANG).forEach(function (entry) {
-      if (
-        entry[0].slice(0, 2).toLowerCase() ==
-        potentialLang.slice(0, 2).toLowerCase()
-      ) {
+      if (entry[0].slice(0, 2).toLowerCase() == potentialLang.slice(0, 2).toLowerCase()) {
         LOCALE = entry[0];
         lang = entry[1];
       }
@@ -78,46 +68,46 @@ function rainwaveInit() {
   API.onErrorRemove = ErrorHandler.removePermanentError;
   API.onUnsuccessful = ErrorHandler.tooltipError;
   API.onRequestError = ErrorHandler.tooltipError;
-  API.add_callback = API.addEventListener;
+  api.addEventListener = API.addEventListener;
   API.async_get = API.request;
   API.force_sync = API.forceReconnect;
   API.sync_stop = API.closePermanently;
-  API.on("wsthrottle", function (json) {
+  API.on('wsthrottle', function (json) {
     API.onUnsuccessful(json);
   });
-  API.on("wserror", function (json) {
-    if (json.tl_key === "auth_failed") {
-      var template = Modal($l("auth_required"), "modal_auth_failure", {}, true);
+  API.on('wserror', function (json) {
+    if (json.tl_key === 'auth_failed') {
+      var template = Modal($l('auth_required'), 'modal_auth_failure', {}, true);
       if (!template) return;
-      template._root.parentNode.classList.add("error");
+      template._root.parentNode.classList.add('error');
     }
   });
   // for local development and debugging
-  if (window.location.hostname === "localhost") {
+  if (window.location.hostname === 'localhost') {
     API.forceSecure = false;
   }
 
   RWAudio = RWAudioConstructor();
 
-  Prefs.define("pwr");
-  if (Prefs.get("pwr")) {
+  Prefs.define('pwr');
+  if (Prefs.get('pwr')) {
     Sizing.simple = false;
   }
 
-  Prefs.define("roboto", [true, false]);
-  Prefs.define("f_norm", [true, false], true);
-  Prefs.add_callback("roboto", function (nv) {
+  Prefs.define('roboto', [true, false]);
+  Prefs.define('f_norm', [true, false], true);
+  Prefs.add_callback('roboto', function (nv) {
     if (!nv) {
-      document.body.classList.add("nofont");
+      document.body.classList.add('nofont');
     } else {
-      document.body.classList.remove("nofont");
+      document.body.classList.remove('nofont');
     }
   });
-  Prefs.add_callback("f_norm", function (nv) {
+  Prefs.add_callback('f_norm', function (nv) {
     if (!nv) {
-      document.body.classList.add("nofontsize");
+      document.body.classList.add('nofontsize');
     } else {
-      document.body.classList.remove("nofontsize");
+      document.body.classList.remove('nofontsize');
     }
   });
 
@@ -138,28 +128,21 @@ function rainwaveInit() {
 
   var order = [5, 1, 4, 2, 3, 6];
   var colors = {
-    1: "#1f95e5", // Rainwave blue
-    2: "#de641b", // OCR Orange
-    3: "#b7000f", // Red
-    4: "#6e439d", // Indigo
-    5: "#a8cb2b", // greenish
-    6: "#186E75"
+    1: '#1f95e5', // Rainwave blue
+    2: '#de641b', // OCR Orange
+    3: '#b7000f', // Red
+    4: '#6e439d', // Indigo
+    5: '#a8cb2b', // greenish
+    6: '#186E75',
   };
   for (var i = 0; i < order.length; i++) {
     if (BOOTSTRAP.station_list[order[i]]) {
       Stations.push(BOOTSTRAP.station_list[order[i]]);
-      Stations[Stations.length - 1].name = $l("station_name_" + order[i]);
+      Stations[Stations.length - 1].name = $l('station_name_' + order[i]);
       var stationUrl = new URL(Stations[Stations.length - 1].url);
       if (order[i] == BOOTSTRAP.user.sid) {
-        if (
-          window.location.pathname == "/" &&
-          window.location.hostname == stationUrl.hostname
-        ) {
-          window.history.replaceState(
-            null,
-            "",
-            stationUrl.pathname + window.location.search,
-          );
+        if (window.location.pathname == '/' && window.location.hostname == stationUrl.hostname) {
+          window.history.replaceState(null, '', stationUrl.pathname + window.location.search);
         }
         Stations[Stations.length - 1].url = null;
       }
@@ -169,16 +152,16 @@ function rainwaveInit() {
     }
   }
 
-  if (window.location.href.indexOf("beta") !== -1) {
+  if (window.location.href.indexOf('beta') !== -1) {
     for (i = 0; i < Stations.length; i++) {
-      if (Stations[i].url) Stations[i].url = "/beta/?sid=" + Stations[i].id;
+      if (Stations[i].url) Stations[i].url = '/beta/?sid=' + Stations[i].id;
     }
   }
   BOOTSTRAP.station_list = Stations;
 
   template = RWTemplates.index({ stations: Stations });
 
-  API.add_callback("user", function (json) {
+  api.addEventListener('user', function (json) {
     User = json;
   });
 
@@ -191,26 +174,26 @@ function rainwaveInit() {
   // var draw = function() {
   // 	var i;
   if (User.id > 1) {
-    document.body.classList.add("logged-in");
+    document.body.classList.add('logged-in');
   }
-  if (Prefs.get("pwr")) {
-    document.body.classList.add("full");
-    document.body.classList.remove("simple");
+  if (Prefs.get('pwr')) {
+    document.body.classList.add('full');
+    document.body.classList.remove('simple');
   }
-  if (!Prefs.get("roboto")) {
-    document.body.classList.add("nofont");
+  if (!Prefs.get('roboto')) {
+    document.body.classList.add('nofont');
   }
-  if (!Prefs.get("f_norm")) {
-    document.body.classList.add("nofontsize");
+  if (!Prefs.get('f_norm')) {
+    document.body.classList.add('nofontsize');
   }
-  if (Prefs.get("l_displose")) {
-    document.body.classList.add("displose");
+  if (Prefs.get('l_displose')) {
+    document.body.classList.add('displose');
   }
 
   // Safari has CSS and font rendering issues :/
   var ua = navigator.userAgent.toLowerCase();
-  if (ua.indexOf("safari") !== -1 && ua.indexOf("chrome") === -1) {
-    document.body.classList.add("safari");
+  if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
+    document.body.classList.add('safari');
   }
 
   document.body.appendChild(template._root);
@@ -236,14 +219,14 @@ function rainwaveInit() {
   Sizing.triggerResize();
 
   if (!Router.detectUrlChange()) {
-    if (!Sizing.simple && docCookies.getItem("r5_list")) {
-      Router.change(docCookies.getItem("r5_list"));
+    if (!Sizing.simple && docCookies.getItem('r5_list')) {
+      Router.change(docCookies.getItem('r5_list'));
     } else if (Sizing.simple) {
-      docCookies.removeItem("r5_list", "/", BOOTSTRAP.cookie_domain);
+      docCookies.removeItem('r5_list', '/', BOOTSTRAP.cookie_domain);
     }
   }
 
-  document.body.classList.remove("loading");
+  document.body.classList.remove('loading');
 
   BOOTSTRAP = null;
 }

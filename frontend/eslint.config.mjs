@@ -4,12 +4,14 @@ import pluginImport from 'eslint-plugin-import';
 import pluginNode from 'eslint-plugin-n';
 import pluginUnusedImports from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
+import stylistic from '@stylistic/eslint-plugin';
 
 const jsRules = defineConfig({
   files: ['**/*.{js,jsx,mjs,ts,tsx,mts}'],
   plugins: {
     'unused-imports': pluginUnusedImports,
     'n': pluginNode,
+    '@stylistic': stylistic,
   },
   extends: [pluginImport.flatConfigs.recommended, pluginImport.flatConfigs.typescript],
   rules: {
@@ -40,6 +42,15 @@ const jsRules = defineConfig({
     'sort-imports': 'off',
     'unused-imports/no-unused-imports': 'error',
     'curly': ['error', 'all'],
+
+    '@stylistic/padding-line-between-statements': [
+      'error',
+      { blankLine: 'always', prev: 'import', next: 'function' },
+      { blankLine: 'always', prev: 'function', next: 'function' },
+      { blankLine: 'always', prev: 'import', next: 'class' },
+      { blankLine: 'always', prev: 'import', next: 'let' },
+      { blankLine: 'always', prev: 'import', next: 'const' },
+    ],
 
     'import/no-extraneous-dependencies': [
       'error',
@@ -101,21 +112,6 @@ const jsRules = defineConfig({
 
         'pathGroups': [
           {
-            pattern: 'react',
-            group: 'builtin',
-            position: 'before',
-          },
-          {
-            pattern: 'react-dom',
-            group: 'builtin',
-            position: 'before',
-          },
-          {
-            pattern: 'react-dom/client',
-            group: 'builtin',
-            position: 'before',
-          },
-          {
             pattern: './**/*.scss',
             group: 'type',
             position: 'after',
@@ -126,8 +122,6 @@ const jsRules = defineConfig({
             position: 'after',
           },
         ],
-
-        'pathGroupsExcludedImportTypes': ['react'],
 
         'alphabetize': {
           order: 'asc',
@@ -204,6 +198,31 @@ export default defineConfig([
     files: ['**/*.template.ts'],
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^context$',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+
+      '@stylistic/padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: 'import', next: 'function' },
+        { blankLine: 'always', prev: 'function', next: 'function' },
+        { blankLine: 'always', prev: 'import', next: 'class' },
+        { blankLine: 'always', prev: 'import', next: 'let' },
+        { blankLine: 'always', prev: 'import', next: 'const' },
+        { blankLine: 'always', prev: '*', next: 'const' },
+      ],
+    },
+  },
+
+  {
+    files: ['**/*.context.ts'],
+    rules: {
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },

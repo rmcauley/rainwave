@@ -2,7 +2,8 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "stylelint.vscode-stylelint"
+    "stylelint.vscode-stylelint",
+    "mrmlnc.vscode-scss"
   ],
   "unwantedRecommendations": ["ms-python.mypy-type-checker"]
 }

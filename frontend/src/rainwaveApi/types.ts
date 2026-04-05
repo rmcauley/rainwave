@@ -29,6 +29,10 @@ type TimelineSong = components['schemas']['_timeline_song'];
 type RainwaveUser = components['schemas']['user'];
 type RainwaveSchemas = components['schemas'];
 
+type RainwaveCallback<T extends keyof components['schemas']> = (
+  result: components['schemas'][T],
+) => void;
+
 interface RainwaveBootstrap {
   all_stations_info: RainwaveSchemas['all_stations_info'];
   already_voted: RainwaveSchemas['already_voted'];
@@ -60,4 +64,5 @@ export type {
   RainwaveBootstrap,
   TimelineSong,
   RainwaveUser,
+  RainwaveCallback,
 };

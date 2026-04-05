@@ -26,25 +26,25 @@ INIT_TASKS.on_init.push(function (rootTmpl) {
     reflow(true);
   });
 
-  API.add_callback('sched_current', function (json) {
+  api.addEventListener('sched_current', function (json) {
     schedCurrent = json;
   });
-  API.add_callback('sched_next', function (json) {
+  api.addEventListener('sched_next', function (json) {
     schedNext = json;
   });
-  API.add_callback('sched_history', function (json) {
+  api.addEventListener('sched_history', function (json) {
     schedHistory = json;
   });
-  API.add_callback('_SYNC_SCHEDULE_COMPLETE', update);
-  API.add_callback('_SYNC_SCHEDULE_COMPLETE', reflow);
-  API.add_callback('already_voted', handleAlreadyVoted);
-  API.add_callback('all_stations_info', checkForEvents);
-  API.add_callback('user', votingAllowedCheck);
-  API.add_callback('user', lockCheck);
+  api.addEventListener('_SYNC_SCHEDULE_COMPLETE', update);
+  api.addEventListener('_SYNC_SCHEDULE_COMPLETE', reflow);
+  api.addEventListener('already_voted', handleAlreadyVoted);
+  api.addEventListener('all_stations_info', checkForEvents);
+  api.addEventListener('user', votingAllowedCheck);
+  api.addEventListener('user', lockCheck);
   if (!MOBILE) {
-    API.add_callback('live_voting', liveVoting);
+    api.addEventListener('live_voting', liveVoting);
   }
-  API.add_callback('vote_result', function (json) {
+  api.addEventListener('vote_result', function (json) {
     if (json.success) {
       registerVote(json.elec_id, json.entry_id);
     }
@@ -276,10 +276,7 @@ var reflow = function (reflowEverything) {
 
   historyBar.style[Fx.transform] = 'translateY(' + runningY + 'px)';
 
-  var hiddenEvents = Math.min(
-    schedHistory.length,
-    Math.max(0, schedHistory.length - historySize),
-  );
+  var hiddenEvents = Math.min(schedHistory.length, Math.max(0, schedHistory.length - historySize));
   for (i = 0; i < hiddenEvents && i < schedHistory.length; i++) {
     events[i].el.style[Fx.transform] =
       'translateY(' + -(((hiddenEvents - i - 1) * 5 + 1) * Sizing.songSize + 1) + 'px)';
@@ -406,12 +403,7 @@ var doEvent = function (json, sid) {
       sname = Stations[i].name;
     }
   }
-  var msg = addMessage(
-    'event_' + sid,
-    $l('special_event_alert', { station: sname }),
-    false,
-    true,
-  );
+  var msg = addMessage('event_' + sid, $l('special_event_alert', { station: sname }), false, true);
   // duplicate message
   if (!msg) return;
   var xmsg = document.createElement('span');

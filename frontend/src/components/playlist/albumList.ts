@@ -1,85 +1,81 @@
 var AlbumList = function (el) {
   var list = SearchList(el);
-  list.$t.list.classList.add("album-list-core");
+  list.$t.list.classList.add('album-list-core');
 
   var loading = false;
 
-  Prefs.define("p_sort", ["az", "rt"], true);
-  Prefs.define("p_null1", [false, true], true);
-  Prefs.define("p_favup", null, true);
-  Prefs.define("p_avup", [false, true], true);
-  Prefs.define("p_fav1", [false, true], true);
-  Prefs.define("p_songsort", [false, true], true);
+  Prefs.define('p_sort', ['az', 'rt'], true);
+  Prefs.define('p_null1', [false, true], true);
+  Prefs.define('p_favup', null, true);
+  Prefs.define('p_avup', [false, true], true);
+  Prefs.define('p_fav1', [false, true], true);
+  Prefs.define('p_songsort', [false, true], true);
 
-  var sortUnratedFirst = Prefs.get("p_null1");
-  var sortFavesFirst = Prefs.get("p_favup");
-  var sortAvailableFirst = Prefs.get("p_avup");
-  var prioritizeFaves = Prefs.get("p_fav1");
-  var songsortSameAsAlbum = Prefs.get("p_songsort");
+  var sortUnratedFirst = Prefs.get('p_null1');
+  var sortFavesFirst = Prefs.get('p_favup');
+  var sortAvailableFirst = Prefs.get('p_avup');
+  var prioritizeFaves = Prefs.get('p_fav1');
+  var songsortSameAsAlbum = Prefs.get('p_songsort');
 
   var prefsUpdate = function (unused_arg, unused_arg2, no_redraw) {
-    sortUnratedFirst = Prefs.get("p_null1");
-    sortFavesFirst = Prefs.get("p_favup");
-    sortAvailableFirst = Prefs.get("p_avup");
-    prioritizeFaves = Prefs.get("p_fav1");
+    sortUnratedFirst = Prefs.get('p_null1');
+    sortFavesFirst = Prefs.get('p_favup');
+    sortAvailableFirst = Prefs.get('p_avup');
+    prioritizeFaves = Prefs.get('p_fav1');
 
-    var nv = Prefs.get("p_sort");
-    if (["az", "rt"].indexOf(nv) == -1) {
-      Prefs.change("sort", "az");
+    var nv = Prefs.get('p_sort');
+    if (['az', 'rt'].indexOf(nv) == -1) {
+      Prefs.change('sort', 'az');
     }
-    if (nv == "rt") list.sortFunction = list.sortByRatingUser;
+    if (nv == 'rt') list.sortFunction = list.sortByRatingUser;
     else list.sortFunction = list.sortByAlpha;
 
     if (sortUnratedFirst) {
-      Prefs.change("r_incmplt", true);
+      Prefs.change('r_incmplt', true);
     }
 
     var redrawAlbum = false;
     if (!no_redraw && list.loaded && !loading) {
       list.update([]);
       list.redrawCurrentPosition();
-      redrawAlbum = Prefs.get("p_songsort");
+      redrawAlbum = Prefs.get('p_songsort');
     }
 
-    if (
-      redrawAlbum ||
-      (!no_redraw && songsortSameAsAlbum !== Prefs.get("p_songsort"))
-    ) {
-      songsortSameAsAlbum = Prefs.get("p_songsort");
+    if (redrawAlbum || (!no_redraw && songsortSameAsAlbum !== Prefs.get('p_songsort'))) {
+      songsortSameAsAlbum = Prefs.get('p_songsort');
       Router.resetEverything();
       list.setNewOpen(null);
     }
   };
-  Prefs.add_callback("p_null1", prefsUpdate);
-  Prefs.add_callback("p_sort", prefsUpdate);
-  Prefs.add_callback("p_favup", prefsUpdate);
-  Prefs.add_callback("p_avup", prefsUpdate);
-  Prefs.add_callback("p_fav1", prefsUpdate);
-  Prefs.add_callback("p_songsort", prefsUpdate);
-  Prefs.add_callback("r_incmplt", prefsUpdate);
+  Prefs.add_callback('p_null1', prefsUpdate);
+  Prefs.add_callback('p_sort', prefsUpdate);
+  Prefs.add_callback('p_favup', prefsUpdate);
+  Prefs.add_callback('p_avup', prefsUpdate);
+  Prefs.add_callback('p_fav1', prefsUpdate);
+  Prefs.add_callback('p_songsort', prefsUpdate);
+  Prefs.add_callback('r_incmplt', prefsUpdate);
 
-  API.add_callback("all_albums_paginated", function (json) {
+  api.addEventListener('all_albums_paginated', function (json) {
     if (json.has_more) {
-      API.async_get("all_albums_paginated", { after: json.next });
+      API.async_get('all_albums_paginated', { after: json.next });
     }
     json.data.forEach(function (album) {
       album.nameSearchable = Formatting.make_searchable_string(album.name);
     });
     list.update(json.data);
-    list.$t.loadingBar.style.transform =
-      "scaleX(" + ((json.progress * 0.8) / 100 + 0.2) + ")";
+    list.$t.loadingBar.style.transform = 'scaleX(' + ((json.progress * 0.8) / 100 + 0.2) + ')';
     if (!json.has_more) {
       loading = false;
       list.loaded = true;
       list.scrollAfterLoad();
-      list.$t.loadingBar.style.opacity = "0";
+      list.$t.loadingBar.style.opacity = '0';
       setTimeout(function () {
-        list.$t.loadingBar.style.display = "none";
+        list.$t.loadingBar.style.display = 'none';
       }, 500);
     }
   });
 
-  API.add_callback("album_diff", function (json) {
+  api.addEventListener('album_diff', function (json) {
     if (list.loaded) {
       json.forEach(function (album) {
         album.nameSearchable = Formatting.make_searchable_string(album.name);
@@ -88,12 +84,12 @@ var AlbumList = function (el) {
     }
   });
 
-  API.add_callback("outdated_data_warning", function () {
+  api.addEventListener('outdated_data_warning', function () {
     if (!list.loaded || loading) {
       return;
     }
 
-    if (Sizing.simple && !document.body.classList.contains("playlist-album")) {
+    if (Sizing.simple && !document.body.classList.contains('playlist-album')) {
       list.unload();
     } else {
       list.load();
@@ -102,14 +98,14 @@ var AlbumList = function (el) {
 
   list.load = function () {
     if (!list.loaded && !loading) {
-      list.$t.loadingBar.style.display = "block";
-      list.$t.loadingBar.style.opacity = "1";
-      list.$t.loadingBar.style.transform = "scaleX(0)";
+      list.$t.loadingBar.style.display = 'block';
+      list.$t.loadingBar.style.opacity = '1';
+      list.$t.loadingBar.style.transform = 'scaleX(0)';
       requestNextAnimationFrame(function () {
-        list.$t.loadingBar.style.transform = "scaleX(0.2)";
+        list.$t.loadingBar.style.transform = 'scaleX(0.2)';
       });
       loading = true;
-      API.async_get("all_albums_paginated");
+      API.async_get('all_albums_paginated');
     }
   };
 
@@ -123,9 +119,8 @@ var AlbumList = function (el) {
     for (var i = 0; i < json.length; i++) {
       albumId = json[i].id;
       if (albumId in list.data) {
-        if ("rating" in json[i]) list.data[albumId].rating = json[i].rating;
-        if ("rating_user" in json[i])
-          list.data[albumId].rating_user = json[i].rating_user;
+        if ('rating' in json[i]) list.data[albumId].rating = json[i].rating;
+        if ('rating_user' in json[i]) list.data[albumId].rating_user = json[i].rating_user;
         if (json[i].rating_complete !== null)
           list.data[albumId].rating_complete = json[i].rating_complete;
         list.updateItemElement(list.data[albumId]);
@@ -143,7 +138,7 @@ var AlbumList = function (el) {
   Fave.album_callback = updateFave;
 
   list.openId = function (id) {
-    Router.change("album", id);
+    Router.change('album', id);
   };
 
   var hasNewThreshold;
@@ -162,33 +157,33 @@ var AlbumList = function (el) {
   hasNewishThreshold -= 86400 * 30;
 
   list.drawEntry = function (item) {
-    item._el = document.createElement("div");
+    item._el = document.createElement('div');
     item._el.className =
-      "item" +
+      'item' +
       (item.newest_song_time > hasNewThreshold
-        ? " has_new"
+        ? ' has_new'
         : item.newest_song_time > hasNewishThreshold
-          ? " has_newish"
-          : "");
+          ? ' has_newish'
+          : '');
     item._el._id = item.id;
 
     // could do this using RWTemplates.fave but... speed.  want to inline here as much as possible.
-    item._el_fave = document.createElement("div");
-    item._el_fave.className = "fave";
+    item._el_fave = document.createElement('div');
+    item._el_fave.className = 'fave';
     item._el.appendChild(item._el_fave);
-    var faveLined = document.createElement("img");
-    faveLined.className = "fave-lined";
-    faveLined.src = "/static/images4/heart_lined.png";
+    var faveLined = document.createElement('img');
+    faveLined.className = 'fave-lined';
+    faveLined.src = '/static/images4/heart_lined.png';
     item._el_fave.appendChild(faveLined);
-    var faveSolid = document.createElement("img");
-    faveSolid.className = "fave-solid";
-    faveSolid.src = "/static/images4/heart_solid_gold.png";
+    var faveSolid = document.createElement('img');
+    faveSolid.className = 'fave-solid';
+    faveSolid.src = '/static/images4/heart_solid_gold.png';
     item._el_fave.appendChild(faveSolid);
     item._el_fave._fave_id = item.id;
-    item._el_fave.addEventListener("click", Fave.doFave);
+    item._el_fave.addEventListener('click', Fave.doFave);
 
-    var span = document.createElement("span");
-    span.className = "name";
+    var span = document.createElement('span');
+    span.className = 'name';
     span.textContent = item.name;
     item._el.appendChild(span);
 
@@ -199,51 +194,47 @@ var AlbumList = function (el) {
   list.updateCool = function (item) {
     if (!item._el) return;
     if (item.cool && item.cool_lowest > Clock.now) {
-      item._el.classList.add("cool");
+      item._el.classList.add('cool');
     } else {
-      item._el.classList.remove("cool");
+      item._el.classList.remove('cool');
     }
   };
 
   list.updateItemElement = function (item) {
     if (!item._el) return;
 
-    item._el_fave.classList.remove("fave-clicked");
+    item._el_fave.classList.remove('fave-clicked');
     if (item.fave) {
-      item._el.classList.add("album-fave-highlight");
-      item._el_fave.classList.add("is-fave");
+      item._el.classList.add('album-fave-highlight');
+      item._el_fave.classList.add('is-fave');
     } else {
-      item._el.classList.remove("album-fave-highlight");
-      item._el_fave.classList.remove("is-fave");
+      item._el.classList.remove('album-fave-highlight');
+      item._el_fave.classList.remove('is-fave');
     }
 
     if (item.rating_complete) {
-      item._el.classList.remove("rating-incomplete");
+      item._el.classList.remove('rating-incomplete');
     } else {
-      item._el.classList.add("rating-incomplete");
+      item._el.classList.add('rating-incomplete');
     }
 
     if (item.rating_user) {
-      item._el.classList.add("rating-user");
+      item._el.classList.add('rating-user');
       // R4
       // item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round(item.rating_user * 10) / 2)) * 30) + 6) + "px";
       // R5
       item._el.style.backgroundPosition =
-        "right " +
-        (-(Math.round(Math.round(item.rating_user * 10) / 2) * 28) + 6) +
-        "px";
+        'right ' + (-(Math.round(Math.round(item.rating_user * 10) / 2) * 28) + 6) + 'px';
     } else {
-      item._el.classList.remove("rating-user");
+      item._el.classList.remove('rating-user');
       // R4
       // item._el.style.backgroundPosition = "right " + (-(Math.round((Math.round((item.rating || 0) * 10) / 2)) * 30) + 6) + "px";
       // R5
-      if (Prefs.get("r_noglbl") || !item.rating) {
-        item._el.style.backgroundPosition = "right 6px";
+      if (Prefs.get('r_noglbl') || !item.rating) {
+        item._el.style.backgroundPosition = 'right 6px';
       } else {
         item._el.style.backgroundPosition =
-          "right " +
-          (-(Math.round(Math.round(item.rating * 10) / 2) * 28) + 6) +
-          "px";
+          'right ' + (-(Math.round(Math.round(item.rating * 10) / 2) * 28) + 6) + 'px';
       }
     }
   };
@@ -257,11 +248,7 @@ var AlbumList = function (el) {
       return 0;
     }
 
-    if (
-      prioritizeFaves &&
-      sortFavesFirst &&
-      list.data[a].fave !== list.data[b].fave
-    ) {
+    if (prioritizeFaves && sortFavesFirst && list.data[a].fave !== list.data[b].fave) {
       if (list.data[a].fave) return -1;
       else return 1;
     }
@@ -271,11 +258,7 @@ var AlbumList = function (el) {
       else return 1;
     }
 
-    if (
-      !prioritizeFaves &&
-      sortFavesFirst &&
-      list.data[a].fave !== list.data[b].fave
-    ) {
+    if (!prioritizeFaves && sortFavesFirst && list.data[a].fave !== list.data[b].fave) {
       if (list.data[a].fave) return -1;
       else return 1;
     }
@@ -284,21 +267,15 @@ var AlbumList = function (el) {
       if (!list.data[a].rating_user && list.data[b].rating_user) return -1;
       if (list.data[a].rating_user && !list.data[b].rating_user) return 1;
 
-      if (!list.data[a].rating_complete && list.data[b].rating_complete)
-        return -1;
-      if (list.data[a].rating_complete && !list.data[b].rating_complete)
-        return 1;
+      if (!list.data[a].rating_complete && list.data[b].rating_complete) return -1;
+      if (list.data[a].rating_complete && !list.data[b].rating_complete) return 1;
     }
 
     return list.data[a].name.localeCompare(list.data[b].name);
   };
 
   list.sortByRatingUser = function (a, b) {
-    if (
-      prioritizeFaves &&
-      sortFavesFirst &&
-      list.data[a].fave !== list.data[b].fave
-    ) {
+    if (prioritizeFaves && sortFavesFirst && list.data[a].fave !== list.data[b].fave) {
       if (list.data[a].fave) return -1;
       else return 1;
     }
@@ -308,11 +285,7 @@ var AlbumList = function (el) {
       else return 1;
     }
 
-    if (
-      !prioritizeFaves &&
-      sortFavesFirst &&
-      list.data[a].fave !== list.data[b].fave
-    ) {
+    if (!prioritizeFaves && sortFavesFirst && list.data[a].fave !== list.data[b].fave) {
       if (list.data[a].fave) return -1;
       else return 1;
     }
@@ -321,10 +294,8 @@ var AlbumList = function (el) {
       if (!list.data[a].rating_user && list.data[b].rating_user) return -1;
       if (list.data[a].rating_user && !list.data[b].rating_user) return 1;
 
-      if (!list.data[a].rating_complete && list.data[b].rating_complete)
-        return -1;
-      if (list.data[a].rating_complete && !list.data[b].rating_complete)
-        return 1;
+      if (!list.data[a].rating_complete && list.data[b].rating_complete) return -1;
+      if (list.data[a].rating_complete && !list.data[b].rating_complete) return 1;
     }
 
     if (list.data[a].rating_user < list.data[b].rating_user) return 1;

@@ -53,7 +53,7 @@ var SongList = function () {
     // 	});
     // }
 
-    scroller.scrollblock.parentNode.addEventListener("click", function (e) {
+    scroller.scrollblock.parentNode.addEventListener('click', function (e) {
       e.stopPropagation();
     });
   };
@@ -62,7 +62,7 @@ var SongList = function () {
     el = $t.song_list;
     container = $t.song_list_container;
 
-    $t.panel_close.addEventListener("click", list.close);
+    $t.panel_close.addEventListener('click', list.close);
 
     padder = $t.last_song_padder;
   };
@@ -105,11 +105,11 @@ var SongList = function () {
       if (!found) {
         n = Song(json[i]);
         n.$t.request_drag._song_id = n.id;
-        n.$t.request_drag.addEventListener("mousedown", startDrag);
-        n.$t.request_drag.addEventListener("touchstart", startTouchDrag);
+        n.$t.request_drag.addEventListener('mousedown', startDrag);
+        n.$t.request_drag.addEventListener('touchstart', startTouchDrag);
         n.$t.cancel._song_id = n.id;
-        n.$t.cancel.addEventListener("click", list.removeEvent);
-        n.el.style[Fx.transform] = "translateY(" + Sizing.height + "px)";
+        n.$t.cancel.addEventListener('click', list.removeEvent);
+        n.el.style[Fx.transform] = 'translateY(' + Sizing.height + 'px)';
         newSongs.unshift(n);
         el.appendChild(n.el);
       }
@@ -150,7 +150,7 @@ var SongList = function () {
     for (var i = 0; i < songs.length; i++) {
       songs[i]._request_y = runningHeight;
       songs[i].el.style[Fx.transform] =
-        "translateY(" + (runningHeight + Sizing.height * (i + 1)) + "px)";
+        'translateY(' + (runningHeight + Sizing.height * (i + 1)) + 'px)';
       runningHeight += Sizing.requestSize;
     }
     list.reflow = list.realReflow;
@@ -163,13 +163,11 @@ var SongList = function () {
     for (var i = 0; i < songs.length; i++) {
       if (draggingSong != songs[i]) {
         songs[i]._request_y = runningHeight;
-        songs[i].el.style[Fx.transform] =
-          "translateY(" + runningHeight + "px)";
+        songs[i].el.style[Fx.transform] = 'translateY(' + runningHeight + 'px)';
       }
       runningHeight += Sizing.requestSize;
     }
-    padder.style[Fx.transform] =
-      "translateY(" + (runningHeight - Sizing.requestSize) + "px)";
+    padder.style[Fx.transform] = 'translateY(' + (runningHeight - Sizing.requestSize) + 'px)';
     scroller.set_height(runningHeight);
   };
 
@@ -187,7 +185,7 @@ var SongList = function () {
       return;
     }
     foundSong._deleted = true;
-    foundSong.el.classList.add("deleted");
+    foundSong.el.classList.add('deleted');
     return foundSong;
   };
 
@@ -206,14 +204,10 @@ var SongList = function () {
 
   var continueDrag = function () {
     if (!draggingSong) return;
-    var newY =
-      originalRequestY -
-      (originalMouseY - (lastMouseEvent.clientY + scroller.scroll_top));
+    var newY = originalRequestY - (originalMouseY - (lastMouseEvent.clientY + scroller.scroll_top));
     if (newY != currentDraggingY) {
       currentDraggingY = newY;
-      var newIndex = Math.floor(
-        (newY + Sizing.requestSize * 0.3) / Sizing.requestSize,
-      );
+      var newIndex = Math.floor((newY + Sizing.requestSize * 0.3) / Sizing.requestSize);
       if (newIndex >= songs.length) newIndex = songs.length - 1;
       if (newIndex < 0) newIndex = 0;
       if (newIndex != draggingIndex) {
@@ -223,13 +217,12 @@ var SongList = function () {
         draggingIndex = newIndex;
         orderChanged = true;
       }
-      draggingSong.el.style[Fx.transform] = "translateY(" + newY + "px)";
+      draggingSong.el.style[Fx.transform] = 'translateY(' + newY + 'px)';
     }
 
     if (lastMouseEvent.clientY < upperFold && scroller.scroll_top > 0) {
       scroller.scroll_to(
-        scroller.scroll_top -
-          (25 - Math.floor((lastMouseEvent.clientY / upperFold) * 25)),
+        scroller.scroll_top - (25 - Math.floor((lastMouseEvent.clientY / upperFold) * 25)),
       );
     } else if (
       lastMouseEvent.clientY > Sizing.height - lowerFold &&
@@ -237,16 +230,9 @@ var SongList = function () {
     ) {
       scroller.scroll_to(
         scroller.scroll_top +
-          Math.floor(
-            ((lowerFold - (Sizing.height - lastMouseEvent.clientY)) /
-              lowerFold) *
-              20,
-          ),
+          Math.floor(((lowerFold - (Sizing.height - lastMouseEvent.clientY)) / lowerFold) * 20),
       );
-    } else if (
-      upperFold != upperNormalFold &&
-      lastMouseEvent.clientY > upperNormalFold + 30
-    ) {
+    } else if (upperFold != upperNormalFold && lastMouseEvent.clientY > upperNormalFold + 30) {
       upperFold = upperNormalFold;
     } else if (
       lowerFold != lowerNormalFold &&
@@ -259,13 +245,13 @@ var SongList = function () {
   };
 
   var stopDrag = function () {
-    container.classList.remove("dragging");
-    draggingSong.el.classList.remove("dragging");
-    document.body.classList.remove("unselectable");
-    window.removeEventListener("mousemove", continueDrag);
-    window.removeEventListener("mouseup", stopDrag);
-    window.removeEventListener("touchmove", captureTouchMove);
-    window.removeEventListener("touchend", stopDrag);
+    container.classList.remove('dragging');
+    draggingSong.el.classList.remove('dragging');
+    document.body.classList.remove('unselectable');
+    window.removeEventListener('mousemove', continueDrag);
+    window.removeEventListener('mouseup', stopDrag);
+    window.removeEventListener('touchmove', captureTouchMove);
+    window.removeEventListener('touchend', stopDrag);
     draggingSong = null;
     list.reflow();
 
@@ -299,17 +285,15 @@ var SongList = function () {
         Sizing.menuHeight +
         Math.ceil(Math.max(Sizing.songSize, Math.min(Sizing.height / 5, 200)));
       upperFold = Math.min(e.clientY, upperNormalFold);
-      lowerNormalFold = Math.ceil(
-        Math.max(Sizing.songSize, Math.min(Sizing.height / 5, 200)),
-      );
+      lowerNormalFold = Math.ceil(Math.max(Sizing.songSize, Math.min(Sizing.height / 5, 200)));
       lowerFold = Math.min(Sizing.height - e.clientY, lowerNormalFold);
-      container.classList.add("dragging");
-      draggingSong.el.classList.add("dragging");
-      document.body.classList.add("unselectable");
-      window.addEventListener("mousemove", captureMouseMove);
-      window.addEventListener("mouseup", stopDrag);
-      window.addEventListener("touchmove", captureTouchMove);
-      window.addEventListener("touchend", stopDrag);
+      container.classList.add('dragging');
+      draggingSong.el.classList.add('dragging');
+      document.body.classList.add('unselectable');
+      window.addEventListener('mousemove', captureMouseMove);
+      window.addEventListener('mouseup', stopDrag);
+      window.addEventListener('touchmove', captureTouchMove);
+      window.addEventListener('touchend', stopDrag);
       requestAnimationFrame(continueDrag);
       if (e.preventDefault) {
         e.preventDefault();
@@ -344,7 +328,7 @@ var Requests = (function () {
 
   INIT_TASKS.on_draw.push(function () {
     list.onDraw();
-    list.getScroller().scrollblock.classList.add("request-scrollblock");
+    list.getScroller().scrollblock.classList.add('request-scrollblock');
   });
 
   INIT_TASKS.on_init.push(function (rootTemplate) {
@@ -355,27 +339,27 @@ var Requests = (function () {
     link = rootTemplate.request_link;
     linkText = rootTemplate.request_link_text;
     indicator = rootTemplate.request_indicator;
-    if (Prefs.get("pwr") && $t.request_indicator2) {
+    if (Prefs.get('pwr') && $t.request_indicator2) {
       indicator2 = $t.request_indicator2;
     }
     rootContainer = rootTemplate.requests_container;
 
-    list.helpmsg = document.createElement("div");
-    list.helpmsg.className = "blank-request-message";
-    list.helpmsg.textContent = $l("make_a_request");
+    list.helpmsg = document.createElement('div');
+    list.helpmsg.className = 'blank-request-message';
+    list.helpmsg.textContent = $l('make_a_request');
 
-    API.add_callback("requests", list.update);
-    API.add_callback("user", list.showQueuePaused);
+    api.addEventListener('requests', list.update);
+    api.addEventListener('user', list.showQueuePaused);
 
-    $t.requests_pause.addEventListener("click", list.pauseQueue);
-    $t.requests_play.addEventListener("click", list.pauseQueue);
-    $t.requests_clear.addEventListener("click", list.clearRequests);
-    $t.requests_unrated.addEventListener("click", list.fillWithUnrated);
-    $t.requests_favfill.addEventListener("click", list.fillWithFaves);
+    $t.requests_pause.addEventListener('click', list.pauseQueue);
+    $t.requests_play.addEventListener('click', list.pauseQueue);
+    $t.requests_clear.addEventListener('click', list.clearRequests);
+    $t.requests_unrated.addEventListener('click', list.fillWithUnrated);
+    $t.requests_favfill.addEventListener('click', list.fillWithFaves);
 
-    link.addEventListener("click", function () {
-      if (!document.body.classList.contains("requests")) {
-        Router.change("requests");
+    link.addEventListener('click', function () {
+      if (!document.body.classList.contains('requests')) {
+        Router.change('requests');
       } else {
         Router.change();
       }
@@ -388,11 +372,11 @@ var Requests = (function () {
 
   list.showQueuePaused = function () {
     if (User.requests_paused) {
-      rootContainer.classList.add("paused");
-      link.classList.add("paused");
+      rootContainer.classList.add('paused');
+      link.classList.add('paused');
     } else {
-      rootContainer.classList.remove("paused");
-      link.classList.remove("paused");
+      rootContainer.classList.remove('paused');
+      link.classList.remove('paused');
     }
     list.updateHeader();
   };
@@ -408,76 +392,76 @@ var Requests = (function () {
       }
     }
 
-    rootContainer.classList.remove("warning");
-    link.classList.remove("warning");
-    header.removeAttribute("href");
-    header.classList.add("no-pointer");
+    rootContainer.classList.remove('warning');
+    link.classList.remove('warning');
+    header.removeAttribute('href');
+    header.classList.add('no-pointer');
 
     if (User.tuned_in) {
       if (!User.requests_paused) {
         if (link && goodRequests) {
           if (!Sizing.simple) {
-            linkText.textContent = $l("#_requests", {
+            linkText.textContent = $l('#_requests', {
               num_requests: goodRequests,
             });
           } else {
-            linkText.textContent = $l("#_requests", {
+            linkText.textContent = $l('#_requests', {
               num_requests: songs.length,
             });
           }
         } else if (link) {
-          linkText.textContent = $l("Requests");
+          linkText.textContent = $l('Requests');
         }
 
         if (allBad) {
-          header.textContent = $l("requests_all_on_cooldown");
-          rootContainer.classList.add("warning");
-          link.classList.add("warning");
+          header.textContent = $l('requests_all_on_cooldown');
+          rootContainer.classList.add('warning');
+          link.classList.add('warning');
         } else if (User.request_position) {
-          header.textContent = $l("request_you_are_x_in_line", {
+          header.textContent = $l('request_you_are_x_in_line', {
             position: User.request_position,
           });
-          header.setAttribute("href", "#!/request_line");
-          header.classList.remove("no-pointer");
+          header.setAttribute('href', '#!/request_line');
+          header.classList.remove('no-pointer');
         } else {
-          header.textContent = $l("Requests");
+          header.textContent = $l('Requests');
         }
       } else {
-        header.textContent = $l("request_grab_tag__paused");
+        header.textContent = $l('request_grab_tag__paused');
         if (link) {
-          linkText.textContent = $l("request_grab_tag__paused");
+          linkText.textContent = $l('request_grab_tag__paused');
         }
       }
     } else {
-      header.textContent = $l("Requests");
+      header.textContent = $l('Requests');
       if (link) {
-        linkText.textContent = $l("Requests");
+        linkText.textContent = $l('Requests');
       }
     }
   };
 
   list.pauseQueue = function () {
     if (User.requests_paused) {
-      API.async_get("unpause_request_queue");
+      API.async_get('unpause_request_queue');
     } else {
-      API.async_get("pause_request_queue");
+      API.async_get('pause_request_queue');
     }
   };
 
   list.clearRequests = function () {
-    API.async_get("clear_requests");
+    API.async_get('clear_requests');
   };
 
   list.fillWithUnrated = function () {
-    API.async_get("request_unrated_songs");
+    API.async_get('request_unrated_songs');
   };
 
   list.fillWithFaves = function () {
-    API.async_get("request_favorited_songs");
+    API.async_get('request_favorited_songs');
   };
 
   list.add = function (songId) {
-    API.async_get("request", { song_id: songId });
+    API.async_get('request', { song_id: songId });
   };
 
   list.remove = function (songId) {
@@ -485,35 +469,33 @@ var Requests = (function () {
     if (!foundSong) {
       return;
     }
-    API.async_get("delete_request", { song_id: songId }, null, function () {
+    API.async_get('delete_request', { song_id: songId }, null, function () {
       foundSong._deleted = false;
-      foundSong.el.classList.remove("deleted");
+      foundSong.el.classList.remove('deleted');
     });
   };
 
   var clicked = function () {
     if (!this._request_song_id) return;
     if (User.id === 1) {
-      ErrorHandler.tooltipError(
-        ErrorHandler.makeError("must_login_and_tune_in_to_request", 400),
-      );
+      ErrorHandler.tooltipError(ErrorHandler.makeError('must_login_and_tune_in_to_request', 400));
     }
     list.add(this._request_song_id);
   };
 
   list.makeClickable = function (el, songId) {
     el._request_song_id = songId;
-    el.addEventListener("click", clicked);
+    el.addEventListener('click', clicked);
   };
 
   list.onOrderChanged = function () {
     var songs = list.getSongs();
-    var songOrder = "";
+    var songOrder = '';
     for (var i = 0; i < songs.length; i++) {
-      if (i !== 0) songOrder += ",";
+      if (i !== 0) songOrder += ',';
       songOrder += songs[i].id;
     }
-    API.async_get("order_requests", { order: songOrder });
+    API.async_get('order_requests', { order: songOrder });
   };
 
   return list;

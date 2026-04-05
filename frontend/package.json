@@ -19,6 +19,7 @@
   "license": "GPL-2.0-only",
   "homepage": "https://github.com/rmcauley/rainwave#readme",
   "devDependencies": {
+    "@stylistic/eslint-plugin": "5.10.0",
     "@types/node": "20.19.30",
     "eslint": "9.39.4",
     "eslint-plugin-import": "2.32.0",
