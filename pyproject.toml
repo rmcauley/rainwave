@@ -17,7 +17,7 @@ dependencies = [
     "psycopg[binary]==3.3.2",
     "pydantic==2.12.5",
     "pyicu==2.16.2",
-    "pyinotify==0.9.6",
+    "watchfiles==1.1.1",
     "pyright==1.1.408",
     "pytest-cov==7.1.0",
     "python-dotenv==1.2.1",

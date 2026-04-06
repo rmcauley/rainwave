@@ -1,5 +1,6 @@
-import { correctCurrentUrlForStation } from './helpers/stations';
 import { preferences } from './preferences';
+
+import './index.module.scss';
 
 function rainwaveInit(): void {
   // api.addEventListener('error', showTooltipError)
@@ -17,7 +18,7 @@ function rainwaveInit(): void {
   //   }
   // });
 
-  RWAudio = RWAudioConstructor();
+  // RWAudio = RWAudioConstructor();
 
   if (preferences.powerUserMode) {
     document.body.classList.add('power');
@@ -25,7 +26,7 @@ function rainwaveInit(): void {
     document.body.classList.add('simple');
   }
 
-  correctCurrentUrlForStation();
+  // correctCurrentUrlForStation();
 }
 
 if (!window.bootstrap) {

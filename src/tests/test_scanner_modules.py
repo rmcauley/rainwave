@@ -3,54 +3,36 @@
 import asyncio
 import sys
 from contextlib import asynccontextmanager
+from enum import IntEnum
 from types import ModuleType
 from types import SimpleNamespace
 from typing import Any
-from unittest.mock import AsyncMock, Mock, mock_open, patch
+from unittest.mock import AsyncMock, mock_open, patch
 
 
-def _install_pyinotify_stub() -> None:
-    pyinotify: Any = ModuleType("pyinotify")
+def _install_watchfiles_stub() -> None:
+    watchfiles: Any = ModuleType("watchfiles")
 
-    class ProcessEvent:
-        def __init__(self, pevent: object = None, **kwargs: object) -> None:
-            super().__init__()
+    class Change(IntEnum):
+        added = 1
+        modified = 2
+        deleted = 3
 
-    class WatchManager:
-        def add_watch(self, *args: object, **kwargs: object) -> None:
-            pass
+    async def awatch(*args: object, **kwargs: object):
+        if False:
+            yield set()
 
-        def close(self) -> None:
-            pass
-
-    class Notifier:
-        def __init__(self, wm: object, handler: object) -> None:
-            super().__init__()
-            self.wm = wm
-            self.handler = handler
-
-        def loop(self) -> None:
-            pass
-
-    pyinotify.ProcessEvent = ProcessEvent
-    pyinotify.WatchManager = WatchManager
-    pyinotify.Notifier = Notifier
-    pyinotify.IN_DELETE = 1
-    pyinotify.IN_MOVED_FROM = 2
-    pyinotify.IN_ATTRIB = 4
-    pyinotify.IN_CREATE = 8
-    pyinotify.IN_CLOSE_WRITE = 16
-    pyinotify.IN_MOVED_TO = 32
-    pyinotify.IN_MOVE_SELF = 64
-    pyinotify.IN_EXCL_UNLINK = 128
-    sys.modules["pyinotify"] = pyinotify
+    watchfiles.Change = Change
+    watchfiles.awatch = awatch
+    sys.modules["watchfiles"] = watchfiles
 
 
-_install_pyinotify_stub()
+_install_watchfiles_stub()
 
-from scanner.exceptions import DeletedDirectoryException, NewDirectoryException
+from watchfiles import Change
+
 from scanner.exceptions import NonFatalScannerError
-from scanner.file_monitor.file_event_handler import DELETE_OPERATION, FileEventHandler
+from scanner.file_monitor.file_event_handler import process_change, process_path
 from scanner.file_monitor.file_monitor import file_monitor
 from scanner.full_art_scan import full_art_update
 from scanner.full_scan import full_scan
@@ -191,182 +173,133 @@ def test_load_tag_from_file_missing_tags_artist_and_album_raise() -> None:
             raise AssertionError("MissingID3TagError was not raised")
 
 
-def test_file_monitor_restarts_and_closes_watch_managers() -> None:
-    wm1 = Mock()
-    wm2 = Mock()
-    wm3 = Mock()
-    notifier = Mock()
-    notifier.loop.side_effect = [
-        NewDirectoryException(),
-        DeletedDirectoryException(),
-        None,
-    ]
+def test_file_monitor_processes_changes_from_watchfiles() -> None:
+    process_change_mock = AsyncMock()
+
+    async def _fake_awatch(*args: object, **kwargs: object):
+        yield {
+            (Change.added, "/music/station/newdir"),
+            (Change.modified, "/music/station/song.mp3"),
+        }
 
     with (
+        patch("scanner.file_monitor.file_monitor.awatch", _fake_awatch),
         patch(
-            "scanner.file_monitor.file_monitor.pyinotify.WatchManager",
-            side_effect=[wm1, wm2, wm3],
+            "scanner.file_monitor.file_monitor.process_change",
+            new=process_change_mock,
         ),
         patch(
-            "scanner.file_monitor.file_monitor.pyinotify.Notifier",
-            return_value=notifier,
-        ),
-        patch("scanner.file_monitor.file_monitor.FileEventHandler"),
-        patch(
-            "scanner.file_monitor.file_monitor.asyncio.get_running_loop",
-            return_value=Mock(),
+            "scanner.file_monitor.file_monitor._load_known_directories",
+            return_value={"/music/station"},
         ),
     ):
         asyncio.run(file_monitor())
 
-    assert wm1.add_watch.called
-    assert wm2.add_watch.called
-    assert wm3.add_watch.called
-    assert wm1.close.called
-    assert wm2.close.called
-    assert wm3.close.called
+    assert process_change_mock.await_count == 2
 
 
-def test_file_monitor_ignores_watch_manager_close_errors() -> None:
-    wm = Mock()
-    wm.close.side_effect = RuntimeError("close failed")
-    notifier = Mock()
-    notifier.loop.return_value = None
+def test_file_monitor_logs_shutdown_on_errors() -> None:
+    process_change_mock = AsyncMock()
+
+    async def _fake_awatch(*args: object, **kwargs: object):
+        yield {(Change.modified, "/music/station/song.mp3")}
+        raise RuntimeError("watch failed")
+
+    with (
+        patch("scanner.file_monitor.file_monitor.awatch", _fake_awatch),
+        patch(
+            "scanner.file_monitor.file_monitor.process_change",
+            new=process_change_mock,
+        ),
+        patch(
+            "scanner.file_monitor.file_monitor._load_known_directories",
+            return_value={"/music/station"},
+        ),
+        patch("scanner.file_monitor.file_monitor.log.info") as info_log,
+    ):
+        try:
+            asyncio.run(file_monitor())
+        except RuntimeError as exc:
+            assert str(exc) == "watch failed"
+        else:
+            raise AssertionError("RuntimeError was not raised")
+
+    assert info_log.call_args_list[0].args == ("scan", "File monitor started.")
+    assert info_log.call_args_list[-1].args == ("scan", "File monitor shutdown.")
+
+
+def test_file_event_handler_process_change_branches() -> None:
+    known_directories = {"/music/station/olddir"}
 
     with (
         patch(
-            "scanner.file_monitor.file_monitor.pyinotify.WatchManager", return_value=wm
+            "scanner.file_monitor.file_event_handler.os.path.isdir", return_value=True
         ),
         patch(
-            "scanner.file_monitor.file_monitor.pyinotify.Notifier",
-            return_value=notifier,
-        ),
-        patch("scanner.file_monitor.file_monitor.FileEventHandler"),
+            "scanner.file_monitor.file_event_handler.remember_directory_tree"
+        ) as remember_mock,
         patch(
-            "scanner.file_monitor.file_monitor.asyncio.get_running_loop",
-            return_value=Mock(),
+            "scanner.file_monitor.file_event_handler.process_path", new=AsyncMock()
+        ) as process_mock,
+    ):
+        asyncio.run(
+            process_change(Change.added, "/music/station/newdir", known_directories)
+        )
+    remember_mock.assert_called_once_with("/music/station/newdir", known_directories)
+    process_mock.assert_awaited_once_with(
+        Change.added, "/music/station/newdir", is_directory=True
+    )
+
+    with (
+        patch(
+            "scanner.file_monitor.file_event_handler.os.path.isdir", return_value=False
         ),
+        patch(
+            "scanner.file_monitor.file_event_handler.forget_directory_tree"
+        ) as forget_mock,
+        patch(
+            "scanner.file_monitor.file_event_handler.process_path", new=AsyncMock()
+        ) as process_mock,
     ):
-        asyncio.run(file_monitor())
+        asyncio.run(
+            process_change(Change.deleted, "/music/station/olddir", known_directories)
+        )
+    forget_mock.assert_called_once_with("/music/station/olddir", known_directories)
+    process_mock.assert_awaited_once_with(
+        Change.deleted, "/music/station/olddir", is_directory=True
+    )
 
-    wm.close.assert_called_once()
-
-
-def test_file_event_handler_sync_event_branches() -> None:
-    handler = FileEventHandler(asyncio.new_event_loop())
-    file_event = SimpleNamespace(pathname="/music/station/song.mp3", dir=False)
-    dir_event = SimpleNamespace(pathname="/music/station/newdir", dir=True)
-    filepart_event = SimpleNamespace(pathname="/music/station/song.filepart", dir=False)
-    text_event = SimpleNamespace(pathname="/music/station/readme.txt", dir=False)
-
-    with patch.object(handler, "_process") as process_mock:
-        handler.process_IN_ATTRIB(dir_event)
-        process_mock.assert_not_called()
-        handler.process_IN_ATTRIB(file_event)
-        process_mock.assert_called_once_with(file_event)
-
-    with patch.object(handler, "_process") as process_mock:
-        handler.process_IN_CREATE(file_event)
-        process_mock.assert_not_called()
-        handler.process_IN_CREATE(dir_event)
-        process_mock.assert_called_once_with(dir_event)
-
-    with patch.object(handler, "_process") as process_mock:
-        handler.process_IN_CLOSE_WRITE(dir_event)
-        process_mock.assert_not_called()
-        handler.process_IN_CLOSE_WRITE(file_event)
-        process_mock.assert_called_once_with(file_event)
-
-    with patch.object(handler, "_process") as process_mock:
-        handler.process_IN_DELETE(filepart_event)
-        process_mock.assert_not_called()
-
-    with patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=False):
-        with patch.object(handler, "_process") as process_mock:
-            handler.process_IN_DELETE(text_event)
-            process_mock.assert_not_called()
-
-    with patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=True):
-        with patch.object(handler, "_process") as process_mock:
-            handler.process_IN_DELETE(file_event)
-            process_mock.assert_called_once_with(file_event)
-
-    try:
-        handler.process_IN_DELETE(dir_event)
-    except DeletedDirectoryException:
-        pass
-    else:
-        raise AssertionError("DeletedDirectoryException was not raised")
-
-    with patch.object(handler, "_process") as process_mock:
-        handler.process_IN_MOVED_TO(file_event)
-        process_mock.assert_called_once_with(file_event)
-
-    with patch.object(handler, "_process") as process_mock:
-        try:
-            handler.process_IN_MOVED_TO(dir_event)
-        except NewDirectoryException:
-            pass
-        else:
-            raise AssertionError("NewDirectoryException was not raised")
-        process_mock.assert_called_once_with(dir_event)
-
-    with patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=False):
-        with patch.object(handler, "_process") as process_mock:
-            handler.process_IN_MOVED_FROM(text_event)
-            process_mock.assert_not_called()
-
-    with patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=True):
-        with patch.object(handler, "_process") as process_mock:
-            handler.process_IN_MOVED_FROM(file_event)
-            process_mock.assert_called_once_with(file_event)
-
-    with patch.object(handler, "_process") as process_mock:
-        handler.process_IN_MOVED_FROM(dir_event)
-        process_mock.assert_called_once_with(dir_event)
-
-    try:
-        handler.process_IN_MOVED_SELF(dir_event)
-    except DeletedDirectoryException:
-        pass
-    else:
-        raise AssertionError("DeletedDirectoryException was not raised")
-
-
-def test_file_event_handler_process_cancels_on_timeout() -> None:
-    handler = FileEventHandler(asyncio.new_event_loop())
-    event = SimpleNamespace(pathname="/music/station/song.mp3")
-    future = Mock()
-    future.result.side_effect = TimeoutError()
-
-    def _fake_run_coroutine_threadsafe(coroutine: object, loop: object) -> object:
-        cast_coroutine = coroutine
-        if hasattr(cast_coroutine, "close"):
-            cast_coroutine.close()
-        return future
-
-    with patch(
-        "scanner.file_monitor.file_event_handler.asyncio.run_coroutine_threadsafe",
-        side_effect=_fake_run_coroutine_threadsafe,
+    with (
+        patch(
+            "scanner.file_monitor.file_event_handler.os.path.isdir", return_value=False
+        ),
+        patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=False),
+        patch(
+            "scanner.file_monitor.file_event_handler.process_path", new=AsyncMock()
+        ) as process_mock,
     ):
-        try:
-            handler._process(event)
-        except TimeoutError:
-            pass
-        else:
-            raise AssertionError("TimeoutError was not raised")
+        asyncio.run(process_change(Change.deleted, "/music/station/readme.txt", set()))
+    process_mock.assert_not_called()
 
-    future.cancel.assert_called_once()
+    with (
+        patch(
+            "scanner.file_monitor.file_event_handler.os.path.isdir", return_value=False
+        ),
+        patch("scanner.file_monitor.file_event_handler.is_mp3", return_value=True),
+        patch(
+            "scanner.file_monitor.file_event_handler.process_path", new=AsyncMock()
+        ) as process_mock,
+    ):
+        asyncio.run(process_change(Change.modified, "/music/station/song.mp3", set()))
+    process_mock.assert_awaited_once_with(
+        Change.modified, "/music/station/song.mp3", is_directory=False
+    )
 
 
 def test_file_event_handler_process_async_routes_delete_and_scan() -> None:
     cursor = AsyncMock()
-    event = SimpleNamespace(
-        pathname="/music/station/song.mp3",
-        maskname="IN_DELETE",
-        mask=DELETE_OPERATION[0],
-        dir=False,
-    )
+    change = Change.deleted
+    path = "/music/station/song.mp3"
     with (
         patch(
             "scanner.file_monitor.file_event_handler.should_ignore_file",
@@ -393,11 +326,9 @@ def test_file_event_handler_process_async_routes_delete_and_scan() -> None:
             {"/music/station/": [1]},
         ),
     ):
-        asyncio.run(
-            getattr(FileEventHandler(asyncio.new_event_loop()), "_process_async")(event)
-        )
+        asyncio.run(process_path(change, path, is_directory=False))
 
-    disable_file_mock.assert_awaited_once_with(cursor, event.pathname)
+    disable_file_mock.assert_awaited_once_with(cursor, path)
     scan_file_mock.assert_not_called()
     scan_directory_mock.assert_not_called()
     add_scan_error_mock.assert_not_called()
@@ -405,12 +336,7 @@ def test_file_event_handler_process_async_routes_delete_and_scan() -> None:
 
 def test_file_event_handler_process_async_scans_directory_and_ignores() -> None:
     cursor = AsyncMock()
-    event = SimpleNamespace(
-        pathname="/music/station/newdir",
-        maskname="IN_CREATE",
-        mask=0,
-        dir=True,
-    )
+    path = "/music/station/newdir"
     with (
         patch(
             "scanner.file_monitor.file_event_handler.should_ignore_file",
@@ -437,23 +363,16 @@ def test_file_event_handler_process_async_scans_directory_and_ignores() -> None:
             {"/music/station/": [1]},
         ),
     ):
-        asyncio.run(
-            getattr(FileEventHandler(asyncio.new_event_loop()), "_process_async")(event)
-        )
+        asyncio.run(process_path(Change.added, path, is_directory=True))
 
-    scan_directory_mock.assert_awaited_once_with(cursor, event.pathname, [1])
+    scan_directory_mock.assert_awaited_once_with(cursor, path, [1])
     disable_file_mock.assert_not_called()
     scan_file_mock.assert_not_called()
 
 
 def test_file_event_handler_process_async_logs_song_dir_and_scan_errors() -> None:
     cursor = AsyncMock()
-    event = SimpleNamespace(
-        pathname="/music/station/song.mp3",
-        maskname="IN_CLOSE_WRITE",
-        mask=0,
-        dir=False,
-    )
+    path = "/music/station/song.mp3"
     with (
         patch(
             "scanner.file_monitor.file_event_handler.should_ignore_file",
@@ -481,23 +400,16 @@ def test_file_event_handler_process_async_logs_song_dir_and_scan_errors() -> Non
             _BrokenSongDirs(),
         ),
     ):
-        asyncio.run(
-            getattr(FileEventHandler(asyncio.new_event_loop()), "_process_async")(event)
-        )
+        asyncio.run(process_path(Change.modified, path, is_directory=False))
 
-    disable_file_mock.assert_awaited_once_with(cursor, event.pathname)
+    disable_file_mock.assert_awaited_once_with(cursor, path)
     scan_directory_mock.assert_not_called()
     assert add_scan_error_mock.await_count == 1
 
 
 def test_file_event_handler_process_async_reports_scan_failure() -> None:
     cursor = AsyncMock()
-    event = SimpleNamespace(
-        pathname="/music/station/song.mp3",
-        maskname="IN_CLOSE_WRITE",
-        mask=0,
-        dir=False,
-    )
+    path = "/music/station/song.mp3"
     with (
         patch(
             "scanner.file_monitor.file_event_handler.should_ignore_file",
@@ -525,9 +437,7 @@ def test_file_event_handler_process_async_reports_scan_failure() -> None:
             {"/music/station/": [1]},
         ),
     ):
-        asyncio.run(
-            getattr(FileEventHandler(asyncio.new_event_loop()), "_process_async")(event)
-        )
+        asyncio.run(process_path(Change.modified, path, is_directory=False))
 
     disable_file_mock.assert_not_called()
     add_scan_error_mock.assert_awaited_once()

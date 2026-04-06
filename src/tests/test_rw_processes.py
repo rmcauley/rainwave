@@ -3,6 +3,7 @@ import importlib
 import sys
 from argparse import Namespace
 from contextlib import asynccontextmanager
+from enum import IntEnum
 from types import ModuleType
 from typing import Any
 from unittest.mock import AsyncMock, patch
@@ -11,45 +12,25 @@ import rw_backend
 from common import config
 
 
-def _install_pyinotify_stub() -> None:
-    pyinotify: Any = ModuleType("pyinotify")
+def _install_watchfiles_stub() -> None:
+    watchfiles: Any = ModuleType("watchfiles")
 
-    class ProcessEvent:
-        def __init__(self, pevent: object = None, **kwargs: object) -> None:
-            super().__init__()
+    class Change(IntEnum):
+        added = 1
+        modified = 2
+        deleted = 3
 
-    class WatchManager:
-        def add_watch(self, *args: object, **kwargs: object) -> None:
-            pass
+    async def awatch(*args: object, **kwargs: object):
+        if False:
+            yield set()
 
-        def close(self) -> None:
-            pass
-
-    class Notifier:
-        def __init__(self, wm: object, handler: object) -> None:
-            super().__init__()
-            self.wm = wm
-            self.handler = handler
-
-        def loop(self) -> None:
-            pass
-
-    pyinotify.ProcessEvent = ProcessEvent
-    pyinotify.WatchManager = WatchManager
-    pyinotify.Notifier = Notifier
-    pyinotify.IN_DELETE = 1
-    pyinotify.IN_MOVED_FROM = 2
-    pyinotify.IN_ATTRIB = 4
-    pyinotify.IN_CREATE = 8
-    pyinotify.IN_CLOSE_WRITE = 16
-    pyinotify.IN_MOVED_TO = 32
-    pyinotify.IN_MOVE_SELF = 64
-    pyinotify.IN_EXCL_UNLINK = 128
-    sys.modules["pyinotify"] = pyinotify
+    watchfiles.Change = Change
+    watchfiles.awatch = awatch
+    sys.modules["watchfiles"] = watchfiles
 
 
 def _import_rw_scanner():
-    _install_pyinotify_stub()
+    _install_watchfiles_stub()
     sys.modules.pop("rw_scanner", None)
     return importlib.import_module("rw_scanner")
 

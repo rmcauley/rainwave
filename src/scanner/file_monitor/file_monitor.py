@@ -1,41 +1,30 @@
-import asyncio
+import os
 
-import pyinotify
+from watchfiles import awatch  # pyright: ignore[reportUnknownVariableType]
 
 from common import config, log
-from scanner.exceptions import DeletedDirectoryException, NewDirectoryException
-from scanner.file_monitor.file_event_handler import FileEventHandler
+from scanner.file_monitor.file_event_handler import process_change
 
 
 async def file_monitor() -> None:
-    mask = (
-        pyinotify.IN_ATTRIB
-        | pyinotify.IN_CREATE
-        | pyinotify.IN_CLOSE_WRITE
-        | pyinotify.IN_DELETE
-        | pyinotify.IN_MOVED_TO
-        | pyinotify.IN_MOVED_FROM
-        | pyinotify.IN_MOVE_SELF
-        | pyinotify.IN_EXCL_UNLINK
-    )
+    log.info("scan", "File monitor started.")
+    known_directories = _load_known_directories(config.monitor_dir)
 
-    go = True
-    wm: pyinotify.WatchManager | None = None
-    while go:
-        try:
-            log.info("scan", "File monitor started.")
-            wm = pyinotify.WatchManager()
-            wm.add_watch(config.monitor_dir, mask, rec=True, auto_add=True)
-            pyinotify.Notifier(wm, FileEventHandler(asyncio.get_running_loop())).loop()
-            go = False
-        except NewDirectoryException:
-            log.debug("scan", "New directory added, restarting watch.")
-        except DeletedDirectoryException:
-            log.debug("scan", "Directory was deleted, restarting watch.")
-        finally:
-            try:
-                if wm:
-                    wm.close()
-            except:
-                pass
-            log.info("scan", "File monitor shutdown.")
+    try:
+        async for changes in awatch(config.monitor_dir, recursive=True):
+            for change, path in changes:
+                await process_change(change, path, known_directories)
+    finally:
+        log.info("scan", "File monitor shutdown.")
+
+
+def _load_known_directories(root: str) -> set[str]:
+    known_directories: set[str] = set()
+    normalized_root = os.path.normpath(root)
+    if os.path.isdir(normalized_root):
+        known_directories.add(normalized_root)
+        for current_root, _subdirs, _files in os.walk(
+            normalized_root, followlinks=True
+        ):
+            known_directories.add(os.path.normpath(current_root))
+    return known_directories

@@ -1,6 +1,6 @@
-@import "cssFunctions";
-@import "styles/theme";
-@import "styles/stationSelect";
+@use './cssFunctions' as css;
+@use './theme' as theme;
+@use './components/menu/stationSelect.module';
 
 /* latin */
 @font-face {
@@ -9,7 +9,9 @@
   font-weight: 400;
   font-display: swap;
   src: url('/static/fonts/roboto.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* latin */
@@ -19,7 +21,9 @@
   font-weight: 700;
   font-display: swap;
   src: url('/static/fonts/roboto.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 // CORE CONTENT **********************************************************************************************
@@ -45,19 +49,19 @@ div {
 
 body {
   height: 100%;
-  color: $text;
+  color: theme.$text;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: $bkg;
-  font-family: "Roboto Condensed", "Helvetica Neue", sans-serif;
+  background: theme.$bkg;
+  font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
 
-  html[lang="ko_KO"] & {
-    font-family: "KoPub Dotum", "Roboto Condensed", "Helvetica Neue", sans-serif;
+  html[lang='ko_KO'] & {
+    font-family: 'KoPub Dotum', 'Roboto Condensed', 'Helvetica Neue', sans-serif;
   }
 
-  html[lang="ja_JA"] & {
-    font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  html[lang='ja_JA'] & {
+    font-family: 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
   }
 
   &.nofont {
@@ -81,14 +85,20 @@ body {
       font-family: 'KoPub Dotum';
       font-style: normal;
       font-weight: 400;
-      src: local('KoPub Dotum'), local('KoPub Dotum-Medium'), url('/static/fonts/KoPubDotum-Medium.min.woff') format('woff');
+      src:
+        local('KoPub Dotum'),
+        local('KoPub Dotum-Medium'),
+        url('/static/fonts/KoPubDotum-Medium.min.woff') format('woff');
     }
 
     @font-face {
       font-family: 'KoPub Dotum';
       font-style: normal;
       font-weight: 700;
-      src: local('KoPub Dotum'), local('KoPub Dotum-Medium'), url('/static/fonts/KoPubDotum-Bold.min.woff') format('woff');
+      src:
+        local('KoPub Dotum'),
+        local('KoPub Dotum-Medium'),
+        url('/static/fonts/KoPubDotum-Bold.min.woff') format('woff');
     }
   }
 }
@@ -107,8 +117,8 @@ body {
   left: 100%;
   margin-left: -600px;
   text-align: left;
-  background: $text-ddd;
-  border: solid 1px $text-dd;
+  background: theme.$text-ddd;
+  border: solid 1px theme.$text-dd;
 }
 
 .measure-box {
@@ -123,15 +133,15 @@ a:visited,
 .link {
   cursor: pointer;
   text-decoration: none;
-  color: $text;
+  color: theme.$text;
 
-  @include transition(LINKCOLOR);
+  @include css.transition(LINKCOLOR);
 
   &.obvious {
-    color: $link !important;
+    color: theme.$link !important;
 
     .desktop &:hover {
-      color: $link-h !important;
+      color: theme.$link-h !important;
     }
   }
 
@@ -140,7 +150,7 @@ a:visited,
   }
 
   .desktop &:hover {
-    color: $link-h !important;
+    color: theme.$link-h !important;
   }
 }
 
@@ -156,35 +166,14 @@ body {
   display: none;
 }
 
-@media ($pc-media) {
+@media (css.$pc-media) {
   .phoneonly {
     display: none !important;
   }
 }
 
-@media ($phone-media) {
+@media (css.$phone-media) {
   .pconly {
     display: none !important;
   }
 }
-
-/* stylelint-disable no-invalid-position-at-import-rule */
-@import "modals";
-@import "errors";
-@import "menu";
-@import "station_select";
-@import "player";
-@import "timeline";
-@import "playlist";
-@import "detail";
-@import "requests";
-@import "search";
-@import "listener";
-@import "album_art";
-@import "song";
-@import "rating";
-@import "chart";
-@import "settings";
-@import "hotkey";
-@import "timeline_sizing";
-/* stylelint-enable no-invalid-position-at-import-rule */

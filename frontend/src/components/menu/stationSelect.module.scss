@@ -1,4 +1,6 @@
 @use "sass:math";
+@use '../../cssFunctions' as css;
+@use '../../theme' as theme;
 
 $station-height: 70px;
 $station-select-width: 270px;
@@ -9,29 +11,29 @@ $station-select-width: 270px;
   z-index: 20000;
   float: left;
   width: $station-select-width;
-  border-right: 1px solid $stasel-b;
-  height: $menu-height;
+  border-right: 1px solid theme.$stasel-b;
+  height: theme.$menu-height;
   overflow: hidden;
-  background: $stasel-bkg;
+  background: theme.$stasel-bkg;
   transition: width 350ms, background-color 350ms, height 700ms;
-  transition-timing-function: $menu-transfunc;
+  transition-timing-function: theme.$menu-transfunc;
 
-  @media ($mobile-media) {
+  @media (css.$mobile-media) {
     width: 220px;
   }
 
-  @media ($phone-media) {
+  @media (css.$phone-media) {
     width: 120px;
-    height: $phone-menu-height;
+    height: theme.$phone-menu-height;
   }
 
   &.open {
     width: $station-select-width * 1.8;
-    height: ($station-height * 6) + $menu-height;
+    height: ($station-height * 6) + theme.$menu-height;
 
-    @media ($phone-media) {
+    @media (css.$phone-media) {
       width: 150px;
-      height: ($phone-menu-height * 6) + $phone-menu-height;
+      height: (theme.$phone-menu-height * 6) + theme.$phone-menu-height;
     }
   }
 
@@ -42,46 +44,46 @@ $station-select-width: 270px;
     position: relative;
     z-index: 50;
     margin-right: 15px;
-    top: math.div($menu-height, 2);
+    top: math.div(theme.$menu-height, 2);
 
-    @include transition-wtime(350ms, transform);
-    @include transform(translateY(-50%) rotate(0deg));
+    @include css.transition-wtime(350ms, transform);
+    @include css.transform(translateY(-50%) rotate(0deg));
 
     transform-origin: center center;
-    transition-timing-function: $menu-transfunc;
+    transition-timing-function: theme.$menu-transfunc;
   }
 
   &.openable .pulldown-arrow {
     display: block;
 
-    @media ($phone-media) {
+    @media (css.$phone-media) {
       display: none;
     }
   }
 
   &.open .pulldown-arrow {
-    @include transform(translateY(-50%) rotate(180deg));
+    @include css.transform(translateY(-50%) rotate(180deg));
   }
 
   #station-select-header {
     position: absolute;
-    background: $menu-bkg;
+    background: theme.$menu-bkg;
     z-index: 41;
-    height: $menu-height;
+    height: theme.$menu-height;
     font-size: 0.6em;
 
-    @include transform(translateY(-100%));
+    @include css.transform(translateY(-100%));
 
-    @media ($phone-media) {
-      height: $phone-menu-height;
+    @media (css.$phone-media) {
+      height: theme.$phone-menu-height;
     }
   }
 
   &.open #station-select-header {
-    @include transform(none);
+    @include css.transform(none);
 
     .station-details {
-      @include transform(translateY(-50%));
+      @include css.transform(translateY(-50%));
     }
   }
 
@@ -103,35 +105,35 @@ $station-select-width: 270px;
     cursor: default;
     padding: 0 0 0 20px;
 
-    @include transform(translateY(-15px));
+    @include css.transform(translateY(-15px));
 
-    transition: -webkit-transform 700ms $menu-transfunc,
-      background 350ms $transfunc, color 350ms $transfunc;
-    transition: transform 700ms $menu-transfunc, background 350ms $transfunc,
-      color 350ms $transfunc;
+    transition: -webkit-transform 700ms theme.$menu-transfunc,
+      background 350ms css.$transfunc, color 350ms css.$transfunc;
+    transition: transform 700ms theme.$menu-transfunc, background 350ms css.$transfunc,
+      color 350ms css.$transfunc;
 
-    @media ($phone-media) {
+    @media (css.$phone-media) {
       padding-left: 5px;
-      height: $phone-menu-height;
+      height: theme.$phone-menu-height;
 
-      @include transform(none);
+      @include css.transform(none);
     }
 
     .desktop &:hover,
     .mobile &:active {
-      background: $stasel-h-bkg;
-      color: $text !important;
+      background: theme.$stasel-h-bkg;
+      color: theme.$text !important;
     }
 
     &.selected-station {
-      background: $menu-bkg;
-      color: $menu;
+      background: theme.$menu-bkg;
+      color: theme.$menu;
       z-index: 40 !important;
 
-      @include transform(translateY(-13px));
+      @include css.transform(translateY(-13px));
 
-      @media ($phone-media) {
-        @include transform(none);
+      @media (css.$phone-media) {
+        @include css.transform(none);
       }
     }
 
@@ -145,10 +147,10 @@ $station-select-width: 270px;
       font-weight: 400;
       font-size: 2em;
 
-      @include transform(translateY(-50%));
-      @include transition-wtime(350ms, transform);
+      @include css.transform(translateY(-50%));
+      @include css.transition-wtime(350ms, transform);
 
-      @media ($phone-media) {
+      @media (css.$phone-media) {
         font-size: 1.3em;
       }
     }
@@ -160,10 +162,10 @@ $station-select-width: 270px;
       position: absolute;
       opacity: 0;
 
-      @include transition-wtime(300ms, transform, opacity);
-      @include transform(translateX(1em));
+      @include css.transition-wtime(300ms, transform, opacity);
+      @include css.transform(translateX(1em));
 
-      @media ($phone-media) {
+      @media (css.$phone-media) {
         display: none;
       }
     }
@@ -177,14 +179,14 @@ $station-select-width: 270px;
       font-size: smaller;
       opacity: 0;
 
-      @include transform(translateX(100%) translateY(-50%));
+      @include css.transform(translateX(100%) translateY(-50%));
 
-      transition: -webkit-transform 700ms $menu-transfunc,
-        opacity 300ms $transfunc, visibility 700ms $menu-transfunc;
-      transition: transform 700ms $menu-transfunc, opacity 300ms $transfunc,
-        visibility 700ms $menu-transfunc;
+      transition: -webkit-transform 700ms theme.$menu-transfunc,
+        opacity 300ms css.$transfunc, visibility 700ms theme.$menu-transfunc;
+      transition: transform 700ms theme.$menu-transfunc, opacity 300ms css.$transfunc,
+        visibility 700ms theme.$menu-transfunc;
 
-      @media ($phone-media) {
+      @media (css.$phone-media) {
         display: none;
       }
 
@@ -216,13 +218,13 @@ $station-select-width: 270px;
     }
 
     .station-details {
-      @include transform(translateY(-72%));
+      @include css.transform(translateY(-72%));
     }
 
     .station-description {
       opacity: 0.7;
 
-      @include transform(translateX(0));
+      @include css.transform(translateX(0));
 
       transition-delay: 400ms;
     }
@@ -235,8 +237,8 @@ $station-select-width: 270px;
       &:nth-of-type(#{$i}) {
         z-index: 6 - $i;
 
-        @include transform(
-          translateY($menu-height + ($station-height * ($i - 2)))
+        @include css.transform(
+          translateY(theme.$menu-height + ($station-height * ($i - 2)))
         );
       }
     }
@@ -245,9 +247,9 @@ $station-select-width: 270px;
       visibility: visible;
       opacity: 0.7;
 
-      @include transform(translateX(0%) translateY(-50%));
+      @include css.transform(translateX(0%) translateY(-50%));
 
-      @media ($mobile-media) {
+      @media (css.$mobile-media) {
         display: none;
       }
     }
@@ -259,11 +261,11 @@ $station-select-width: 270px;
       }
     }
 
-    @media ($phone-media) {
+    @media (css.$phone-media) {
       @for $i from 2 through 7 {
         &:nth-of-type(#{$i}) {
-          @include transform(
-            translateY($phone-menu-height + ($phone-menu-height * ($i - 2)))
+          @include css.transform(
+            translateY(theme.$phone-menu-height + (theme.$phone-menu-height * ($i - 2)))
           );
         }
       }

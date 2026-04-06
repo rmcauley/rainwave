@@ -5,7 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite",
     "build": "npm run check:styles && vite build",
+    "preview": "vite preview",
     "check:styles": "node ./scripts/check-scss.mjs",
     "lint": "eslint . && stylelint \"src/**/*.scss\" && prettier --check .",
     "lint:styles": "stylelint \"src/**/*.scss\"",

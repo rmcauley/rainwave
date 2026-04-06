@@ -4,7 +4,8 @@ import { cwd } from 'process';
 import { defineConfig } from 'vite';
 import { checker } from 'vite-plugin-checker';
 
-const entryPath = resolve(cwd(), 'src/index.js');
+const backendOrigin = process.env.VITE_BACKEND_ORIGIN ?? 'http://localhost';
+
 const scssLoadPaths = [
   resolve(cwd(), 'src'),
   resolve(cwd(), 'src/components'),
@@ -34,16 +35,30 @@ export default defineConfig({
       },
     }),
   ],
-  build: {
-    lib: {
-      entry: entryPath,
-      name: 'Rainwave',
+  server: {
+    proxy: {
+      '/api4': {
+        target: backendOrigin,
+        changeOrigin: true,
+        ws: true,
+      },
+      '/oauth': {
+        target: backendOrigin,
+        changeOrigin: true,
+      },
+      '/pages': {
+        target: backendOrigin,
+        changeOrigin: true,
+      },
     },
+  },
+  build: {
     outDir: 'dist',
+    cssCodeSplit: false,
     rollupOptions: {
-      input: {
-        main: entryPath,
-        styles: resolve(cwd(), 'src/index.scss'),
+      output: {
+        inlineDynamicImports: true,
+        manualChunks: undefined,
       },
     },
   },
