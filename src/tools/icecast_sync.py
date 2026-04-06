@@ -4,6 +4,7 @@ import aiohttp
 from xml.etree import ElementTree
 
 from common import config, log, stations
+from common.config_types import RelayConfig
 from common.db.cursor import get_cursor
 
 
@@ -11,7 +12,7 @@ class IcecastSyncCall:
     def __init__(
         self,
         relay_name: str,
-        relay_info: config.RelayConfig,
+        relay_info: RelayConfig,
         file_extension: str,
         sid: int,
     ) -> None:

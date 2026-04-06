@@ -1,56 +1,7 @@
 import os
-from typing import Literal, TypedDict, TypeAlias
+from typing import Literal
 
-
-class StationConfig(TypedDict):
-    name: str
-    description: str
-    stream_filename: str
-    num_planned_elections: int
-    songs_in_election: int
-    request_interval: int
-    request_sequence_scale: int
-    request_tunein_timeout: int
-    request_numsong_timeout: int
-    song_lookup_length_delta: int
-    cooldown_percentage: float
-    cooldown_highest_rating_multiplier: float
-    cooldown_size_min_multiplier: float
-    cooldown_size_max_multiplier: float
-    cooldown_size_slope: float
-    cooldown_size_slope_start: int
-    cooldown_song_min_multiplier: float
-    cooldown_song_max_multiplier: float
-    cooldown_request_only_period: int
-    stream_suffix: str
-    tunein_partner_key: str | None
-    tunein_partner_id: str | None
-    tunein_id: str | None
-
-
-StationsConfig: TypeAlias = dict[int, StationConfig]
-
-
-class RelayConfig(TypedDict):
-    hostname: str
-    ip_address: str
-    protocol: str
-    port: int
-    listclients_url: str
-    admin_username: str
-    admin_password: str
-    source_password: str
-    sids: list[int]
-
-
-RelaysConfig: TypeAlias = dict[str, RelayConfig]
-
-
-class PublicRelayConfig(TypedDict):
-    name: str
-    protocol: str
-    hostname: str
-    port: int
+from common.config_types import RelaysConfig, StationsConfig
 
 
 # Enable Tornado's module auto-reloading, and enable local-only test URLs to allow you to assume user roles.
@@ -83,16 +34,16 @@ api_external_url_prefix = f"//localhost:{api_base_port}/api4/"
 # any sort of CDN (e.g. CloudFlare) , enter a host here.
 # If you're not using a CDN, leave as None.
 # An example would be 'websockets.mydomain.com'
-websocket_host: str = ""
+websocket_host: str = "127.0.0.1"
 
 # What domains/IP addresses should WebSocket connections be allowed from?
 # Set to * to allow from anywhere.
-websocket_allow_from = "localhost"
+websocket_allow_from = "*"
 
 
 # Base URL of your site.
-hostname = "localhost"
-base_site_url = "http://localhost/"
+hostname = "127.0.0.1"
+base_site_url = "http://127.0.0.1/"
 # Set cookie_domain to blank for localhost.
 cookie_domain = ""
 enforce_ssl = False
@@ -101,11 +52,11 @@ enforce_ssl = False
 backend_port = int(os.getenv("RW_TEST_BACKEND_PORT", "21000"))
 
 # Database configuration
-db_host = os.getenv("RW_TEST_DB_HOST", None)
-db_port = os.getenv("RW_TEST_DB_PORT", None)
-db_user = os.getenv("RW_TEST_DB_USER", None)
-db_password = os.getenv("RW_TEST_DB_PASSWORD", None)
-db_name = os.getenv("RW_TEST_DB_NAME", "rainwave_test")
+db_host: str | None = os.getenv("RW_TEST_DB_HOST", None)
+db_port: str | None = os.getenv("RW_TEST_DB_PORT", None)
+db_user: str | None = os.getenv("RW_TEST_DB_USER", None)
+db_password: str | None = os.getenv("RW_TEST_DB_PASSWORD", None)
+db_name: str = os.getenv("RW_TEST_DB_NAME", "rainwave_test")
 
 # What ports to use internally for messaging.
 # You don't need to install anything or setup a server
@@ -276,3 +227,15 @@ monitor_dir = "/home/rainwave/music"
 
 discord_client_id = ""
 discord_client_secret = ""
+
+
+if os.getenv("RW_DISABLE_CONFIG_LOCAL") != "1":
+    try:
+        from common import config_local as _config_local
+    except ModuleNotFoundError as exc:
+        if exc.name != "common.config_local":
+            raise
+    else:
+        for _name in dir(_config_local):
+            if not _name.startswith("_"):
+                globals()[_name] = getattr(_config_local, _name)

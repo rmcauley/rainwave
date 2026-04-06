@@ -64,3 +64,4 @@ logs
 .coverage.*
 coverage.xml
 htmlcov
+src/common/config_local.py

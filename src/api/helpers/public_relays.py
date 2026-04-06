@@ -1,5 +1,5 @@
 from common import config, stations
-from common.config import PublicRelayConfig
+from common.config_types import PublicRelayConfig
 
 public_relays: dict[int, list[PublicRelayConfig]] = {}
 

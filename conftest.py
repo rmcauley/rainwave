@@ -9,9 +9,17 @@ from pathlib import Path
 from typing import TextIO
 
 import pytest
+from dotenv import load_dotenv
 from psycopg import connect, sql
 from testcontainers.postgres import PostgresContainer
-from dotenv import load_dotenv
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+SRC_ROOT = PROJECT_ROOT / "src"
+if str(SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(SRC_ROOT))
+
+load_dotenv(PROJECT_ROOT / ".env.test")
+os.environ["RW_DISABLE_CONFIG_LOCAL"] = "1"
 
 from api.helpers.cached_all_artists import update_all_artists_cache
 from api.helpers.cached_all_groups import update_all_groups_cache
@@ -29,14 +37,7 @@ from common.schedule.advance_timeline import (
 from common.schedule.timeline import load_timeline
 from tests.seed_data import populate_test_data
 
-PROJECT_ROOT = Path(__file__).resolve().parent
-SRC_ROOT = PROJECT_ROOT / "src"
-if str(SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(SRC_ROOT))
-
 from common.cache import cache
-
-load_dotenv(PROJECT_ROOT / ".env.test")
 
 _postgres_container: PostgresContainer | None = None
 _exit_stack: AsyncExitStack | None = None
