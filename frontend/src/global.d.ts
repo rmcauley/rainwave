@@ -1,7 +1,10 @@
 import type { RainwaveBootstrap } from './rainwaveApi/types';
 
 declare global {
-  const bootstrap: RainwaveBootstrap;
+  interface Window {
+    bootstrap?: RainwaveBootstrap;
+    rainwaveInit?: () => void;
+  }
 }
 
 export {};

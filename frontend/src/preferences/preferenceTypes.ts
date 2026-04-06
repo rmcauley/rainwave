@@ -2,7 +2,6 @@ interface Preferences {
   volume: number;
   powerUserMode: boolean;
   useRobotoFont: boolean;
-  shrinkFontWithScreenWidth: boolean;
   enableNotifications: boolean;
   indicateIncompleteAlbums: boolean;
   hideGlobalRatings: boolean;
@@ -15,10 +14,8 @@ interface Preferences {
   playlistAvailableFirst: boolean;
   playlistFavesAboveAvailable: boolean;
   playlistSortSongsLikeAlbums: boolean;
-  hotkeyLayout: 'QWER' | 'AZER' | 'DVOR';
   showPreviousElections: boolean;
   showHowManyPreviousElections: number;
-  showSongsThatLostElection: boolean;
 }
 
 interface PreferenceChange<K extends keyof Preferences = keyof Preferences> {
@@ -28,7 +25,6 @@ interface PreferenceChange<K extends keyof Preferences = keyof Preferences> {
 }
 
 const POWER_MODE_ONLY_PREFERENCES: Array<keyof Preferences> = [
-  'shrinkFontWithScreenWidth',
   'indicateIncompleteAlbums',
   'hideGlobalRatings',
   'showDeleteRatingButton',
@@ -38,7 +34,6 @@ const POWER_MODE_ONLY_PREFERENCES: Array<keyof Preferences> = [
   'playlistAvailableFirst',
   'playlistFavesAboveAvailable',
   'playlistSortSongsLikeAlbums',
-  'hotkeyLayout',
   'showPreviousElections',
   'showHowManyPreviousElections',
 ];

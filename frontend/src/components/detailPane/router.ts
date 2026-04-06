@@ -23,6 +23,14 @@ let requestInFlight = false;
 const tabOrder = ['album', 'artist', 'group', 'request_line'];
 let forceCloseDetail = false;
 
+// if (!Router.detectUrlChange()) {
+//   if (!Sizing.simple && docCookies.getItem('r5_list')) {
+//     Router.change(docCookies.getItem('r5_list'));
+//   } else if (Sizing.simple) {
+//     docCookies.removeItem('r5_list', '/', BOOTSTRAP.cookie_domain);
+//   }
+// }
+
 const resetCache = function () {
   // console.log("Cache reset.");
   cache.album = {};
@@ -210,7 +218,7 @@ var detectUrlChange = function () {
         document.body.classList.remove('requests');
         document.body.classList.remove('detail');
         for (const i in tabs) {
-          document.body.classList.remove(`playlist-${  i}`);
+          document.body.classList.remove(`playlist-${i}`);
         }
       }
       if (activeList && activeList._keyHandle) {
@@ -429,7 +437,7 @@ var openRoute = function (typ, id) {
 
   if (Sizing.simple || lists[typ]) {
     for (const i in tabs) {
-      document.body.classList.remove(`playlist-${  i}`);
+      document.body.classList.remove(`playlist-${i}`);
     }
   }
   let closeDetail = true;
@@ -438,7 +446,7 @@ var openRoute = function (typ, id) {
     lastOpen = typ;
     lastOpenId = id;
     document.body.classList.add('playlist');
-    document.body.classList.add(`playlist-${  typ}`);
+    document.body.classList.add(`playlist-${typ}`);
     if (activeList && activeList._keyHandle) {
       activeList.keyNavBlur();
     }
@@ -501,9 +509,9 @@ var change = function () {
   }
   let newUrl = decodeURI(location.href);
   if (newUrl.indexOf('#') >= 0) {
-    newUrl = `${newUrl.substring(0, newUrl.indexOf('#'))  }#!/${  r}`;
+    newUrl = `${newUrl.substring(0, newUrl.indexOf('#'))}#!/${r}`;
   } else {
-    newUrl = `${newUrl  }#!/${  r}`;
+    newUrl = `${newUrl}#!/${r}`;
   }
   if (oldUrl == newUrl) {
     oldUrl = null;
@@ -520,9 +528,9 @@ const openLast = function () {
 
 const openLastId = function () {
   if (!lastOpenId) {
-    openLast(); 
+    openLast();
 
-return;
+    return;
   } else {
     change(lastOpen, lastOpenId);
   }

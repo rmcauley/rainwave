@@ -1711,13 +1711,6 @@ export interface components {
         };
         songs: components["schemas"]["_search_song"][];
         station_list: {
-            1: components["schemas"]["_station_list_station"];
-            2: components["schemas"]["_station_list_station"];
-            3: components["schemas"]["_station_list_station"];
-            4: components["schemas"]["_station_list_station"];
-            5: components["schemas"]["_station_list_station"];
-            6: components["schemas"]["_station_list_station"];
-        } & {
             [key: string]: components["schemas"]["_station_list_station"];
         };
         station_song_count: {

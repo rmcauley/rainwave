@@ -1,255 +1,247 @@
-import { isProbablyMobileBrowser } from '../../helpers/isProbablyMobile';
+import { RainwaveAudioBackend } from './playerBackend';
 
-type RainwavePlayerEventName =
-  | 'playing'
-  | 'stop'
-  | 'change'
-  | 'volumeChange'
-  | 'loading'
-  | 'stall'
-  | 'error';
+const registerPlayerRender = function () {
+  const audioBackend = new RainwaveAudioBackend(
+    'https://relay.rainwave.cc/all',
+    document.createElement('div'),
+  );
 
-const SUPPORTED_EVENTS = new Set<RainwavePlayerEventName>([
-  'playing',
-  'stop',
-  'change',
-  'volumeChange',
-  'loading',
-  'stall',
-  'error',
-]);
+  let el;
+  let volumeEl;
+  let volumeRect;
+  let volumeContainer;
+  let muteEl;
+  const offsetWidth = 54; // taken straight from the CSS for #audio_volume
+  let offsetLeft;
+  let lastUserTuneinCheck = 0;
+  let nowPlaying;
+  
+    player.audioElDest = rootTemplate.measure_box;
 
-class RainwaveAudioBackend extends EventTarget {
-  debug = false;
-  type: 'mp3' | 'ogg' = 'mp3';
-  audioElDest: HTMLElement | false = false;
-  isPlaying = false;
-  volume = 1.0;
-  isMuted = false;
-  mimetype = 'audio/mp3';
+    rootTemplate.volume_container = document.getElementById('audio_volume_container');
+    rootTemplate.volume = document.getElementById('audio_volume');
+    rootTemplate.volume_indicator = document.getElementById('audio_volume_indicator');
+    rootTemplate.volume.style.display = '';
+    rootTemplate.mute.parentNode.appendChild(rootTemplate.volume_container);
 
-  private readonly stallDelay = 2000;
-  private audioEl: HTMLAudioElement;
-  private stallTimeout: ReturnType<typeof setTimeout> | null = null;
-  private stallActive = false;
-  private streamURL: string = 'https://relay.rainwave.cc/all.mp3';
-  private isResettingAudio = false;
+    rootTemplate.volume.addEventListener('mousedown', volumeControlMousedown);
+    rootTemplate.mute.addEventListener('click', player.toggleMute);
+    rootTemplate.play.addEventListener('click', player.playToggle);
+    rootTemplate.play2.addEventListener('click', player.play);
+    rootTemplate.stop.addEventListener('click', player.stop);
 
-  constructor(parentElement: HTMLElement = document.body) {
-    super();
-    this.audioEl = this.createAudioElement(parentElement);
-    this.detectSupport();
-  }
+    el = rootTemplate.player;
+    volumeEl = rootTemplate.volume;
+    volumeRect = rootTemplate.volume_indicator;
+    volumeContainer = rootTemplate.volume_container;
 
-  playToggle = async (): Promise<void> => {
-    if (this.isPlaying) {
-      this.stop();
+    let streamQuery = '';
+    if (User && User.listen_key) {
+      streamQuery += `?${User.id}:${User.listen_key}`;
+    }
+    player.useStation(User.sid, streamQuery);
+
+    api.addEventListener('user', userTuneinCheck);
+    api.addEventListener('sched_current', function (np) {
+      nowPlaying = np;
+      if (msUpdateMetadata) {
+        msUpdateMetadata();
+      }
+    });
+
+    Prefs.define('vol', [1.0]);
+    drawVolume(Prefs.get('vol'));
+  });
+
+  var userTuneinCheck = function (json) {
+    if (json.tuned_in) {
+      document.body.classList.add('tuned-in');
     } else {
-      await this.play();
+      document.body.classList.remove('tuned-in');
     }
-  };
-
-  play = async (): Promise<void> => {
-    if (this.isPlaying) {
+    if (!player.isPlaying) {
       return;
     }
-
-    this.stopAudioConnectError();
-
-    if (this.audioEl.src !== this.streamURL) {
-      this.audioEl.src = this.streamURL;
-      this.audioEl.load();
+    if (lastUserTuneinCheck < Clock.now - 300) {
+      lastUserTuneinCheck = parseInt(Clock.now);
+      if (!json.tuned_in) {
+        ErrorHandler.removePermanentError('audio_connect_error_reattempting');
+        ErrorHandler.removePermanentError('chrome_mobile_takes_time');
+        player.stop();
+        setTimeout(player.play, 300);
+      }
     }
 
-    this.emit('loading');
-    this.emit('change');
-
-    try {
-      await this.audioEl.play();
-      this.isPlaying = true;
-    } catch (error) {
-      this.isPlaying = false;
-      this.emit('change');
-      this.emit('error');
-      throw error;
+    if (json.tuned_in) {
+      clearAudioErrors();
     }
   };
 
-  stop = (): void => {
-    this.stopAudioConnectError();
+  var clearAudioErrors = function () {
+    ErrorHandler.removePermanentError('m3u_hijack_right_click');
+    ErrorHandler.removePermanentError('audio_error');
+    ErrorHandler.removePermanentError('audio_connect_error');
+    el.classList.remove('working');
+  };
 
-    if (!this.isPlaying && !this.audioEl.getAttribute('src')) {
+  if (!Prefs.get('vol') || Prefs.get('vol') > 1 || Prefs.get('vol') < 0) {
+    player.setVolume(0.85);
+  } else {
+    player.setVolume(Prefs.get('vol'));
+  }
+  player.addEventListener('volumeChange', function () {
+    if (player.isMuted) {
+      el.classList.add('muted');
+    } else {
+      el.classList.remove('muted');
+    }
+    Prefs.change('vol', player.volume);
+    drawVolume(player.volume);
+  });
+
+  player.addEventListener('stop', function () {
+    el.classList.remove('playing');
+    clearAudioErrors();
+    ErrorHandler.removePermanentError('chrome_mobile_takes_time');
+  });
+
+  player.addEventListener('loading', function () {
+    el.classList.add('working');
+  });
+
+  player.addEventListener('playing', function () {
+    el.classList.add('playing');
+    el.classList.remove('working');
+    ErrorHandler.removePermanentError('chrome_mobile_takes_time');
+    clearAudioErrors();
+  });
+
+  player.addEventListener('stall', function () {
+    el.classList.add('working');
+    // var append;
+    // if (evt.detail) {
+    // 	append = document.createElement("span");
+    // 	append.textContent = evt.detail;
+    // }
+    ErrorHandler.permanentError(ErrorHandler.makeError('audio_connect_error', 500)); // , append);
+  });
+
+  player.addEventListener('error', function () {
+    player.stop();
+    const a = document.createElement('a');
+    a.setAttribute('href', `/tune_in/${User.sid}.mp3`);
+    a.className = 'link obvious';
+    a.textContent = $l('try_external_player');
+    a.addEventListener('click', function () {
+      clearAudioErrors();
+    });
+    ErrorHandler.nonpermanentError(ErrorHandler.makeError('audio_error', 500), a);
+  });
+
+  var volumeControlMousedown = function (evt) {
+    if (evt.button !== 0) {
       return;
     }
+    let node = volumeContainer;
+    offsetLeft = node.offsetLeft;
+    while ((node = node.parentNode)) {
+      if (node.offsetLeft) {
+        offsetLeft += node.offsetLeft;
+      }
+    }
+    changeVolumeFromMouse(evt);
+    if (player.isMuted) {
+      player.toggleMute();
+    }
+    volumeEl.addEventListener('mousemove', changeVolumeFromMouse);
+    document.addEventListener('mouseup', volumeControlMouseup);
+  };
 
-    this.isResettingAudio = true;
-    this.audioEl.pause();
-    this.audioEl.removeAttribute('src');
+  var volumeControlMouseup = function () {
+    volumeEl.removeEventListener('mousemove', changeVolumeFromMouse);
+    document.removeEventListener('mouseup', volumeControlMouseup);
+  };
 
-    try {
-      this.audioEl.load();
-    } catch {
-      // Browsers can throw here while the element is being reset.
+  var changeVolumeFromMouse = function (evt) {
+    let x = evt.pageX ? evt.pageX : evt.clientX;
+    x = x - 5;
+    let hPos = Math.min(Math.max((x - offsetLeft) / offsetWidth, 0), 1);
+    if (hPos < 0.05) {
+      hPos = 0;
+    }
+    if (hPos > 0.95) {
+      hPos = 1;
+    }
+    if (!hPos || isNaN(hPos)) {
+      hPos = 0;
+    }
+    player.setVolume(Math.pow(hPos, 4));
+  };
+
+  var drawVolume = function (v) {
+    volumeRect.setAttribute('width', 100 * Math.sqrt(v, 4));
+  };
+
+  player.detectHijack = function () {
+    if (navigator.plugins && navigator.plugins.length > 0) {
+      for (let i = 0; i < navigator.plugins.length; i++) {
+        if (navigator.plugins[i]) {
+          for (let j = 0; j < navigator.plugins[i].length; j++) {
+            if (navigator.plugins[i][j].type) {
+              if (navigator.plugins[i][j].type == 'audio/x-mpegurl') {
+                return navigator.plugins[i][j].enabledPlugin.name;
+              }
+            }
+          }
+        }
+      }
     }
 
-    this.isResettingAudio = false;
-    this.isPlaying = false;
-    this.emit('stop');
-    this.emit('change');
+    return false;
   };
 
-  toggleMute = (): void => {
-    this.isMuted = !this.isMuted;
-    this.audioEl.volume = this.isMuted ? 0 : this.volume;
-    this.emit('volumeChange');
-  };
+  if (navigator.mediaSession) {
+    const msPlay = function () {
+      const promise = player.play();
+      if (promise && promise.then) {
+        promise.then(msUpdateMetadata);
+      }
+    };
 
-  setVolume(newVolume: number): void {
-    this.volume = newVolume;
+    var msUpdateMetadata = function () {
+      const song = nowPlaying.songs[0];
+      const artExists = song.albums[0].art ? true : false;
+      const artUrl = `https://rainwave.cc${nowPlaying.songs[0].albums[0].art || 'static/images4/noart_1.jpg'}`;
+      const artwork = [
+        {
+          src: artUrl + (artExists ? '_320.jpg' : ''),
+          sizes: '320x320',
+          type: 'image/jpeg',
+        },
+      ];
 
-    if (!this.isMuted) {
-      this.audioEl.volume = newVolume;
-    }
+      const artists = [];
+      for (let i = 0; i < song.artists.length; i++) {
+        artists.push(song.artists[i].name);
+      }
 
-    this.emit('volumeChange');
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: song.title,
+        artist: artists.join(', '),
+        album: song.albums[0].name,
+        artwork: artwork,
+      });
+    };
+
+    navigator.mediaSession.setActionHandler('play', msPlay);
+    navigator.mediaSession.setActionHandler('pause', player.stop);
+    navigator.mediaSession.setActionHandler('previoustrack', msPlay);
+    navigator.mediaSession.setActionHandler('nexttrack', msPlay);
+    navigator.mediaSession.setActionHandler('seekbackward', function () {});
+    navigator.mediaSession.setActionHandler('seekforward', function () {});
   }
 
-  override addEventListener(
-    type: string,
-    callback: EventListenerOrEventListenerObject | null,
-    options?: boolean | AddEventListenerOptions,
-  ): void {
-    if (!this.isSupportedEvent(type)) {
-      throw new Error(`${type} is not a supported event for the Rainwave Player.`);
+  return player;
+};
 
-      return;
-    }
-
-    super.addEventListener(type, callback, options);
-  }
-
-  override removeEventListener(
-    type: string,
-    callback: EventListenerOrEventListenerObject | null,
-    options?: boolean | EventListenerOptions,
-  ): void {
-    if (!this.isSupportedEvent(type)) {
-      return;
-    }
-
-    super.removeEventListener(type, callback, options);
-  }
-
-  private detectSupport(): void {
-    if (
-      !isProbablyMobileBrowser() &&
-      this.audioEl.canPlayType('audio/ogg; codecs="vorbis"') !== ''
-    ) {
-      this.mimetype = 'audio/ogg';
-      this.type = 'ogg';
-    }
-  }
-
-  private createAudioElement(parentElement: HTMLElement): HTMLAudioElement {
-    const audioEl = document.createElement('audio');
-    audioEl.preload = 'none';
-    audioEl.setAttribute('playsinline', '');
-    audioEl.volume = this.isMuted ? 0 : this.volume;
-    audioEl.addEventListener('abort', this.onAbort);
-    audioEl.addEventListener('ended', this.onEnded);
-    audioEl.addEventListener('playing', this.onPlaying);
-    audioEl.addEventListener('stalled', this.onStall);
-    audioEl.addEventListener('suspend', this.onSuspend);
-    audioEl.addEventListener('waiting', this.onWaiting);
-    audioEl.addEventListener('timeupdate', this.onTimeUpdate);
-    audioEl.addEventListener('error', this.onError);
-
-    parentElement.appendChild(audioEl);
-
-    return audioEl;
-  }
-
-  private emit(type: RainwavePlayerEventName, detail?: string): void {
-    const event = detail === undefined ? new Event(type) : new CustomEvent(type, { detail });
-    super.dispatchEvent(event);
-  }
-
-  private isSupportedEvent(type: string): type is RainwavePlayerEventName {
-    return SUPPORTED_EVENTS.has(type as RainwavePlayerEventName);
-  }
-
-  private stopAudioConnectError(): void {
-    if (this.stallTimeout) {
-      clearTimeout(this.stallTimeout);
-      this.stallTimeout = null;
-    }
-
-    this.stallActive = false;
-  }
-
-  private doAudioConnectError(detail?: string): void {
-    if (this.stallActive || this.stallTimeout) {
-      return;
-    }
-
-    this.stallTimeout = setTimeout(this.dispatchStall.bind(this, detail), this.stallDelay);
-  }
-
-  private dispatchStall(detail?: string): void {
-    this.emit('stall', detail);
-    this.stallTimeout = null;
-    this.stallActive = true;
-  }
-
-  private onTimeUpdate = (): void => {
-    this.stopAudioConnectError();
-  };
-
-  private onPlaying = (): void => {
-    this.isPlaying = true;
-    this.stopAudioConnectError();
-    this.emit('playing');
-    this.emit('change');
-  };
-
-  private onWaiting = (): void => {
-    this.doAudioConnectError();
-    this.emit('loading');
-  };
-
-  private onEnded = (): void => {
-    this.isPlaying = false;
-    this.emit('stop');
-    this.emit('change');
-    void this.play();
-  };
-
-  private onAbort = (): void => {
-    if (this.isResettingAudio) {
-      return;
-    }
-
-    this.stop();
-  };
-
-  private onSuspend = (): void => {
-    this.onStall();
-  };
-
-  private onStall = (): void => {
-    this.doAudioConnectError();
-  };
-
-  private onError = (): void => {
-    if (this.isResettingAudio) {
-      return;
-    }
-
-    this.stopAudioConnectError();
-    this.isPlaying = false;
-    this.emit('error');
-    this.emit('change');
-  };
-}
-
-export { RainwaveAudioBackend };
+export { RWAudioConstructor };

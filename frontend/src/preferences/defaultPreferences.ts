@@ -4,7 +4,6 @@ const DEFAULT_PREFERENCES: Preferences = {
   volume: 1,
   powerUserMode: false,
   useRobotoFont: true,
-  shrinkFontWithScreenWidth: false,
   enableNotifications: false,
   indicateIncompleteAlbums: false,
   hideGlobalRatings: false,
@@ -17,10 +16,8 @@ const DEFAULT_PREFERENCES: Preferences = {
   playlistAvailableFirst: false,
   playlistFavesAboveAvailable: false,
   playlistSortSongsLikeAlbums: false,
-  hotkeyLayout: 'QWER',
   showPreviousElections: false,
   showHowManyPreviousElections: 5,
-  showSongsThatLostElection: false,
 };
 
 export { DEFAULT_PREFERENCES };

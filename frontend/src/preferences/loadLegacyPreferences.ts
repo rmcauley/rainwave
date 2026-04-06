@@ -8,7 +8,6 @@ const translateR5: Record<string, keyof Preferences> = {
   vol: 'volume',
   pwr: 'powerUserMode',
   robot: 'useRobotoFont',
-  f_norm: 'shrinkFontWithScreenWidth',
   notify: 'enableNotifications',
   r_incmplt: 'indicateIncompleteAlbums',
   r_noglbl: 'hideGlobalRatings',
@@ -21,10 +20,8 @@ const translateR5: Record<string, keyof Preferences> = {
   p_avup: 'playlistAvailableFirst',
   p_fav1: 'playlistFavesAboveAvailable',
   p_songsort: 'playlistSortSongsLikeAlbums',
-  hkm: 'hotkeyLayout',
   l_stk: 'showPreviousElections',
   l_stksz: 'showHowManyPreviousElections',
-  l_displose: 'showSongsThatLostElection',
 };
 
 let legacyPreferences: Preferences;
@@ -50,12 +47,6 @@ if (legacyPrefsCookie) {
             legacyPreferences.volume = parseFloat(value);
           } else if (mappedKey === 'playlistSort') {
             legacyPreferences.playlistSort = value === 'rt' ? 'rating' : 'alphabetical';
-          } else if (mappedKey === 'hotkeyLayout' && value === 'AZER') {
-            legacyPreferences.hotkeyLayout = 'AZER';
-          } else if (mappedKey === 'hotkeyLayout' && value === 'DVOR') {
-            legacyPreferences.hotkeyLayout = 'DVOR';
-          } else if (mappedKey === 'hotkeyLayout') {
-            legacyPreferences.hotkeyLayout = 'QWER';
           } else if (mappedKey === 'showHowManyPreviousElections') {
             legacyPreferences.showHowManyPreviousElections = parseInt(value);
           } else if (mappedKey === 'showClockInTitle') {

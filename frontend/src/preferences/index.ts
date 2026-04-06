@@ -20,7 +20,7 @@ try {
 } catch (e) {
   // Allow console logging this for debugging.
   // eslint-disable-next-line no-console
-  console.error('Preferences could not be loaded from storage.  Preferences reset.', e);
+  console.warn('Preferences could not be loaded from storage.  Preferences reset.', e);
   // Don't throw though, we don't want these gunking up our reports.
 }
 

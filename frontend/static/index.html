@@ -3,70 +3,184 @@
   <head>
     <title>Rainwave</title>
     <meta charset="UTF-8" />
-    <meta name="description" content="Listen, rate, and request your favourite video game music!" />
+    <meta name="description" content="Listen, rate, and request your favourite video game music." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link href="/static/baked/style.css" type="text/css" as="style" rel="preload" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background: #000;
+        color: #fff;
+      }
+    </style>
+
+    <link href="/static/baked/style.css" rel="stylesheet" />
 
     <script src="/static/baked/rainwave.js" async></script>
     <script src="/api4/bootstrap" async></script>
 
     <link rel="shortcut icon" href="/static/favicon.ico" />
-    <link rel="icon" sizes="16x16 32x32 48x48 256x256" href="/static/favicon.ico" />
+    <link rel="icon" href="/static/favicon.ico" />
 
+    <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#1978B7" />
     <meta name="msapplication-navbutton-color" content="#1978B7" />
     <meta name="apple-mobile-web-app-status-bar-style" content="#1978B7" />
-
-    <link rel="manifest" href="/manifest.json" />
 
     <meta property="og:title" content="Rainwave" />
     <meta property="og:site_name" content="Rainwave" />
     <meta property="og:type" content="website" />
     <meta
       property="og:description"
-      content="Listen, rate, and request your favourite video game music!"
+      content="Listen, rate, and request your favourite video game music."
     />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:locale_alternative" content="en_US" />
     <meta property="og:url" content="https://rainwave.cc" />
-    <meta property="og:image" content="https://rainwave.cc/static/images4/android/256.png" />
   </head>
 
-  <body class="simple loading normal">
-    <div id="audio_volume_container">
-      <svg
-        class="unselectable audio_volume"
-        id="audio_volume"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        style="display: none"
-      >
-        <clipPath id="volume_bars">
-          <rect x="0" y="80" width="17" height="20"></rect>
-          <rect x="20" y="60" width="17" height="40"></rect>
-          <rect x="40" y="40" width="17" height="60"></rect>
-          <rect x="60" y="20" width="17" height="80"></rect>
-          <rect x="80" y="0" width="17" height="100"></rect>
-        </clipPath>
-        <rect
-          id="audio_volume_indicator_background"
-          x="0"
-          y="0"
-          width="100"
-          height="100"
-          clip-path="url(#volume_bars)"
-          style="opacity: 0.3"
-        ></rect>
-        <rect
-          id="audio_volume_indicator"
-          x="0"
-          y="0"
-          width="100"
-          height="100"
-          clip-path="url(#volume_bars)"
-        ></rect>
-      </svg>
+  <body>
+    <div id="measure-box">
+      <div class="list measure-list"><div class="item" id="measure-list-item">Reference</div></div>
+    </div>
+
+    <div id="header" class="unselectable">
+      <div id="menu">
+        <div id="station-select" class="closed">
+          <!-- TODO: Put station pulldown SVG in here -->
+          <svg id="station-pulldown"></svg>
+          <a id="station-select-header" bind="station_select_header" class="station">
+            <div class="station-details">
+              <div class="station-name">{{ $l("station_select_header") }}</div>
+            </div>
+          </a>
+          <for each="stations" bind="stations">
+            <a bind="menu_link" class="station">
+              <if condition="^context.id != User.sid && !MOBILE">
+                <div bind="menu_np" class="station-song-container">
+                  <div bind="menu_np_art" class="ss-art"></div>
+                  <div bind="menu_np_song" class="ss-title"></div>
+                  <div bind="menu_np_album" class="ss-album"></div>
+                </div>
+              </if>
+              <div class="station-details">
+                <div class="station-name">{{ name }}</div>
+                <div class="station-description">
+                  {{ $l("station_menu_description_id_" + context.id) }}
+                </div>
+              </div>
+            </a>
+          </for>
+        </div>
+
+        <ul class="menu hamburger-container" id="hamburger_container">
+          <li class="hamburger-icon-li">
+            <template use="hamburgerMenu" />
+            <a class="link" bind="burger_button">
+              <div class="hamburger-icon"></div>
+            </a>
+          </li>
+        </ul>
+
+        <ul class="menu user-status">
+          <if condition="^User.id > 1">
+            <li bind="user_link" class="user-info">
+              <a href="#!/listener/{{ ^User.id }}">
+                <span>{{ ^User.name }}</span>
+                <img class="avatar" src="{{ ^User.avatar }}" />
+              </a>
+            </li>
+          </if>
+          <else>
+            <li class="login-link">
+              <a bind="login" class="link" href="/oauth/login"> {{ $l("login") }} </a>
+            </li>
+
+            <li class="signup-link">
+              <a href="/oauth/discord"> {{ $l("signup") }} </a>
+            </li>
+          </else>
+        </ul>
+
+        <ul class="menu main-menu" bind="main_menu_ul">
+          <li class="requests-link">
+            <div bind="request_indicator" class="plusminus"></div>
+            <a bind="request_link">
+              <svg class="menu-icon menu-icon-requests" use="requests"></svg>
+              <span bind="request_link_text">{{ $l("Requests")}}</span>
+            </a>
+          </li>
+
+          <li class="playlist-link">
+            <a bind="playlist_link">
+              <svg class="menu-icon menu-icon-library" use="library"></svg>
+              <span>{{ $l("library") }}</span>
+            </a>
+          </li>
+
+          <li class="search-link">
+            <a bind="search_link">
+              <img class="menu-icon menu-icon-search" src="/static/images4/search.png" />
+              <span>{{ $l("search") }}</span>
+            </a>
+          </li>
+        </ul>
+
+        <div id="r4-audio-player" bind="player" class="unselectable">
+          <div class="load-indicator"></div>
+          <div class="tuned-in-indicator"></div>
+          <div class="m3u menu-dropdown menu-hover-dropdown pconly">
+            <a bind="play2" class="link"> {{ $l("listen_via_browser") }} </a>
+            <a href="/tune_in/{{ ^User.sid }}.mp3.m3u" target="_blank">
+              {{ $l("listen_via_mp3") }}
+            </a>
+            <a href="/tune_in/{{ ^User.sid }}.ogg.m3u" target="_blank">
+              {{ $l("listen_via_ogg") }}
+            </a>
+          </div>
+          <div class="background">
+            <svg bind="play" class="audio-icon audio-icon-play" use="play"></svg>
+            <svg bind="stop" class="audio-icon audio-icon-stop pconly" use="stop"></svg>
+            <svg bind="mute" class="audio-icon audio-icon-mute pconly" use="mute"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div bind="sizeable_area" class="sizeable">
+      <div bind="timeline"></div>
+      <div class="requests panel songlist-panel" bind="requests_container"></div>
+      <div class="search-panel panel" bind="search_container">
+        <template use="search" />
+      </div>
+      <div bind="lists" class="lists panel">
+        <div class="close" bind="list_close">
+          <img src="/static/images4/cancel.png" alt="X" />
+        </div>
+        <ul class="panel-header">
+          <a href="#!/album"><li class="album-tab">{{ $l("Albums") }}</li></a>
+          <a href="#!/artist"><li class="artist-tab">{{ $l("Artists") }}</li></a>
+          <a href="#!/group"><li class="group-tab">{{ $l("groups_tab_title") }}</li></a>
+          <a href="#!/request_line"><li class="listener-tab">{{ $l("RequestLine") }}</li></a>
+        </ul>
+        <div bind="album_list" class="list album-list"></div>
+        <div bind="artist_list" class="list artist-list"></div>
+        <div bind="group_list" class="list group-list"></div>
+        <div bind="listener_list" class="list listener-list"></div>
+      </div>
+      <div bind="detail_container" class="detail panel">
+        <div class="close" bind="detail_close">
+          <img src="/static/images4/cancel.png" alt="X" />
+        </div>
+        <ul class="panel-header selectable" bind="detail_header_container">
+          <li class="open">
+            <span bind="detail_header"></span>
+          </li>
+        </ul>
+        <div bind="detail"></div>
+      </div>
     </div>
   </body>
 </html>
