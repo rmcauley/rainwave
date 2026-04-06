@@ -53,6 +53,7 @@ async def reconcile_album_art(cursor: RainwaveCursor, album_id: int) -> None:
 
 async def process_album_art(cursor: RainwaveCursor, filename: str, sid: int) -> None:
     try:
+        log.debug("album_art", filename)
         directory = os.path.dirname(filename) + os.sep
         album_ids = await cursor.fetch_list(
             "SELECT DISTINCT album_id FROM r4_songs WHERE song_filename LIKE %s || '%%'",
@@ -61,6 +62,8 @@ async def process_album_art(cursor: RainwaveCursor, filename: str, sid: int) -> 
         )
         if not album_ids or len(album_ids) == 0:
             unmatched_art.append(AlbumArt(filename, sid))
+            return
+
         with Image.open(filename) as imgfile:
             img: Image.Image | ImageFile.ImageFile = imgfile
             if img.mode != "RGB":
@@ -83,9 +86,9 @@ async def process_album_art(cursor: RainwaveCursor, filename: str, sid: int) -> 
                 img.save(get_album_art_path(sid, album_id))
                 await reconcile_album_art(cursor, album_id)
 
-            log.debug(
-                "album_art", "Scanned %s for album ID %s." % (filename, album_ids)
-            )
+                log.debug(
+                    "album_art", "Scanned %s for album ID %s." % (filename, album_ids)
+                )
     except (IOError, OSError) as err:
         await add_scan_error(
             filename,

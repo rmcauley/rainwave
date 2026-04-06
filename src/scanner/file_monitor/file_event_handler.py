@@ -4,6 +4,7 @@ from watchfiles import Change
 
 from common import config, log
 from common.db.cursor import get_cursor
+from scanner.album_art import process_unmatched_art
 from scanner.disable_file import disable_file
 from scanner.is_mp3 import is_mp3
 from scanner.scan_directory import scan_directory
@@ -59,6 +60,8 @@ async def process_path(change: Change, path: str, *, is_directory: bool) -> None
         except Exception as xception:
             await add_scan_error(path, xception)
 
+        await process_unmatched_art(cursor)
+
 
 def remember_directory_tree(directory: str, known_directories: set[str]) -> None:
     for root, _subdirs, _files in os.walk(directory, followlinks=True):
@@ -69,5 +72,7 @@ def forget_directory_tree(directory: str, known_directories: set[str]) -> None:
     normalized_directory = os.path.normpath(directory)
     prefix = normalized_directory + os.sep
     for known_directory in tuple(known_directories):
-        if known_directory == normalized_directory or known_directory.startswith(prefix):
+        if known_directory == normalized_directory or known_directory.startswith(
+            prefix
+        ):
             known_directories.discard(known_directory)

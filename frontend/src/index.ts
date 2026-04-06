@@ -1,6 +1,7 @@
 import { preferences } from './preferences';
 
-import './index.module.scss';
+import './index.scss';
+import './components/menu/menu.scss';
 
 function rainwaveInit(): void {
   // api.addEventListener('error', showTooltipError)

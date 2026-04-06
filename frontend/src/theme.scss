@@ -1,4 +1,4 @@
-@use "sass:color";
+@use 'sass:color';
 
 // COLOR DEFINITIONS *****************************************************************************************
 
@@ -32,6 +32,7 @@ $station-ocr: #de641b; // OCR Orange
 $station-covers: #b7000f; // Red
 $station-chip: #6e439d; // Indigo
 $station-all: #a8cb2b; // greenish
+$station-chill: #186e75; // coolish
 
 // Error colors
 $error-b: #f00;
@@ -169,14 +170,15 @@ $audio-icon-active-fill: #ffb224;
   border: 1px solid $error-b;
   background: $error-bkg;
   background: linear-gradient(180deg, $error-bkg, $error-bkg-bright);
-  background: -webkit-gradient(
-    linear,
-    0% 0%,
-    0% 100%,
-    from($error-bkg-bright),
-    to($error-bkg)
-  );
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from($error-bkg-bright), to($error-bkg));
 }
+
+$site-rating: url('/static/images4/rating_bar5/site_gradient.png');
+$user-rating: url('/static/images4/rating_bar5/user_gradient.png');
+$incomplete-rating: url('/static/images4/rating_bar5/incomplete_gradient.png');
+$fav-rating: url('/static/images4/rating_bar5/user_favourite_gradient.png');
+$touch-rating: url('/static/images4/rating_bar5/touch.png');
+$hidden-rating: url('/static/images4/rating_bar5/hidden_global.png');
 
 // SIZE DEFINITIONS  *****************************************************************************************
 
@@ -193,10 +195,4 @@ $simple-art-hover-size: 120px;
 $simple-np-size: 140px;
 $rating-height: 18px;
 $rating-width: 58px;
-$site-rating: url("/static/images4/rating_bar5/site_gradient.png");
-$user-rating: url("/static/images4/rating_bar5/user_gradient.png");
-$incomplete-rating: url("/static/images4/rating_bar5/incomplete_gradient.png");
-$fav-rating: url("/static/images4/rating_bar5/user_favourite_gradient.png");
-$touch-rating: url("/static/images4/rating_bar5/touch.png");
-$hidden-rating: url("/static/images4/rating_bar5/hidden_global.png");
 $rating-bkg-size: 60px 728px;
