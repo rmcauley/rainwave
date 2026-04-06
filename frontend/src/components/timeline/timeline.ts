@@ -97,7 +97,9 @@ var update = function () {
     schedHistory[i].changeToHistory();
     schedHistory[i].hideHeader();
     newEvents.push(schedHistory[i]);
-    if (i === 0) {schedHistory[i].height += 8;}
+    if (i === 0) {
+      schedHistory[i].height += 8;
+    }
   }
 
   schedCurrent = findAndUpdateEvent(schedCurrent);
@@ -126,10 +128,9 @@ var update = function () {
 
   for (i = 0; i < events.length; i++) {
     if (events[i]._pending_delete) {
-      events[i].el.style[Fx.transform] =
-        `translateY(-${ 
-        Sizing.songSizeNp + (Sizing.songSize * events[i].songs.length - 1) 
-        }px)`;
+      events[i].el.style[Fx.transform] = `translateY(-${
+        Sizing.songSizeNp + (Sizing.songSize * events[i].songs.length - 1)
+      }px)`;
       Fx.removeElement(events[i].el);
     }
   }
@@ -146,7 +147,7 @@ var update = function () {
 
   // The now playing bar
   Clock.setPageTitle(
-    `${schedCurrent.songs[0].albums[0].name  } - ${  schedCurrent.songs[0].title}`,
+    `${schedCurrent.songs[0].albums[0].name} - ${schedCurrent.songs[0].title}`,
     schedCurrent.end,
   );
 };
@@ -168,8 +169,8 @@ const findEvent = function (id) {
       return events[i];
     }
   }
-  
-return null;
+
+  return null;
 };
 
 var findAndUpdateEvent = function (eventJson) {
@@ -179,8 +180,8 @@ var findAndUpdateEvent = function (eventJson) {
   } else {
     evt.update(eventJson);
     evt._pending_delete = false;
-    
-return evt;
+
+    return evt;
   }
 };
 
@@ -210,8 +211,8 @@ const addMessage = function (id, text, notCloseable, noReflow) {
   if (!noReflow) {
     reflow();
   }
-  
-return msg;
+
+  return msg;
 };
 
 var closeMessage = function (id) {
@@ -249,7 +250,9 @@ const removeMessage = function (id) {
 };
 
 var reflow = function (reflowEverything) {
-  if (!events.length) {return;}
+  if (!events.length) {
+    return;
+  }
 
   let i;
   if (reflowEverything) {
@@ -263,12 +266,12 @@ var reflow = function (reflowEverything) {
 
   for (i = 0; i < messages.length; i++) {
     if (!messages[i].closed) {
-      messages[i].$t.el.style[Fx.transform] = `translateY(${  runningY  }px)`;
+      messages[i].$t.el.style[Fx.transform] = `translateY(${runningY}px)`;
       runningY += Sizing.timelineMessageSize + 5;
     }
   }
 
-  template.history_header.style[Fx.transform] = `translateY(${  runningY  }px)`;
+  template.history_header.style[Fx.transform] = `translateY(${runningY}px)`;
 
   const historySize = Prefs.get('l_stk') ? schedHistory.length : Prefs.get('l_stksz') || 0;
   if (historySize == schedHistory.length) {
@@ -277,12 +280,15 @@ var reflow = function (reflowEverything) {
     template.history_header.classList.add('history-expandable');
   }
 
-  historyBar.style[Fx.transform] = `translateY(${  runningY  }px)`;
+  historyBar.style[Fx.transform] = `translateY(${runningY}px)`;
 
-  const hiddenEvents = Math.min(schedHistory.length, Math.max(0, schedHistory.length - historySize));
+  const hiddenEvents = Math.min(
+    schedHistory.length,
+    Math.max(0, schedHistory.length - historySize),
+  );
   for (i = 0; i < hiddenEvents && i < schedHistory.length; i++) {
     events[i].el.style[Fx.transform] =
-      `translateY(${  -(((hiddenEvents - i - 1) * 5 + 1) * Sizing.songSize + 1)  }px)`;
+      `translateY(${-(((hiddenEvents - i - 1) * 5 + 1) * Sizing.songSize + 1)}px)`;
     events[i].el.classList.add('sched-history-hidden');
   }
 
@@ -293,7 +299,7 @@ var reflow = function (reflowEverything) {
       events[i].el.classList.remove('sched-history-hidden');
     } else if (!historyGap) {
       historyGap = true;
-      historyBar.style[Fx.transform] = `translateY(${  runningY + 9  }px)`;
+      historyBar.style[Fx.transform] = `translateY(${runningY + 9}px)`;
       runningY += 19;
     }
     if (events[i].el.classList.contains('no-progress')) {
@@ -304,23 +310,29 @@ var reflow = function (reflowEverything) {
     // 	runningY -= Sizing.timeline_header_size;
     // 	runningY += 16;
     // }
-    events[i].el.style[Fx.transform] = `translateY(${  runningY  }px)`;
+    events[i].el.style[Fx.transform] = `translateY(${runningY}px)`;
     runningY += events[i].height;
-    if (Sizing.simple && !events[i].history) {runningY += 4;}
+    if (Sizing.simple && !events[i].history) {
+      runningY += 4;
+    }
   }
 
   scroller.set_height(runningY);
 };
 
 var handleAlreadyVoted = function (json) {
-  if (!events) {return;}
+  if (!events) {
+    return;
+  }
   for (let i = 0; i < json.length; i++) {
     registerVote(json[i][0], json[i][1]);
   }
 };
 
 var registerVote = function (eventId, entryId) {
-  if (!events) {return;}
+  if (!events) {
+    return;
+  }
   let i, j;
   for (i = 0; i < events.length; i++) {
     if (events[i].id == eventId) {
@@ -370,8 +382,12 @@ const vote = function (whichElection, songPosition) {
 };
 
 var votingAllowedCheck = function () {
-  if (!schedNext) {return;}
-  if (!schedNext.length) {return;}
+  if (!schedNext) {
+    return;
+  }
+  if (!schedNext.length) {
+    return;
+  }
   for (let i = 0; i < schedNext.length; i++) {
     if (!schedNext[i].disableVoting) {
       // we haven't finished loading everything yet, short-circuit
@@ -394,8 +410,8 @@ const getCurrentSongRating = function () {
   if (schedCurrent && schedCurrent.songs && schedCurrent.songs.length > 0) {
     return schedCurrent.songs[0].rating_user;
   }
-  
-return null;
+
+  return null;
 };
 
 const doEvent = function (json, sid) {
@@ -407,9 +423,16 @@ const doEvent = function (json, sid) {
       sname = Stations[i].name;
     }
   }
-  const msg = addMessage(`event_${  sid}`, $l('special_event_alert', { station: sname }), false, true);
+  const msg = addMessage(
+    `event_${sid}`,
+    $l('special_event_alert', { station: sname }),
+    false,
+    true,
+  );
   // duplicate message
-  if (!msg) {return;}
+  if (!msg) {
+    return;
+  }
   const xmsg = document.createElement('span');
   xmsg.textContent = Formatting.eventName(json.event_type, json.event_name);
   msg.$t.message.appendChild(xmsg);
@@ -417,8 +440,8 @@ const doEvent = function (json, sid) {
     window.location.href = url;
   });
   msg.$t.el.style.cursor = 'pointer';
-  
-return msg;
+
+  return msg;
 };
 
 var checkForEvents = function (json) {
@@ -427,7 +450,7 @@ var checkForEvents = function (json) {
     if (json[sid] && json[sid].event_name && sid != User.sid) {
       doEvent(json[sid], sid);
     } else if (!json[sid] || !json[sid].event_name) {
-      closeMessage(`event_${  sid}`);
+      closeMessage(`event_${sid}`);
     }
   }
 };
@@ -472,8 +495,8 @@ var liveVotingVisibilityChange = function () {
 var liveVoting = function (json) {
   if (document.hidden) {
     lastLiveVote = json;
-    
-return;
+
+    return;
   }
   lastLiveVote = null;
   for (let i = 0; i < events.length; i++) {
@@ -483,17 +506,4 @@ return;
   }
 };
 
-export {
-  update,
-  addMessage,
-  closeMessage,
-  removeMessage,
-  reflow,
-  handleAlreadyVoted,
-  registerVote,
-  rateCurrentSong,
-  favCurrent,
-  vote,
-  votingAllowedCheck,
-  getCurrentSongRating,
-};
+export {};

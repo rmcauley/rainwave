@@ -40,6 +40,7 @@ interface RainwaveOptions {
   userId: number;
   apiKey: string;
   sid: components['schemas']['_station_id'];
+  initialUserState?: RainwaveUser;
   url?: string;
   debug?: typeof console.log;
   onSocketError?: (evt: Event) => void;
@@ -72,7 +73,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   private _user: RainwaveUser | undefined;
 
-  constructor(options: RainwaveOptions, initialUserState?: RainwaveUser) {
+  constructor(options: RainwaveOptions) {
     super();
 
     this._userId = options.userId;
@@ -81,7 +82,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this._url = options.url || 'wss://core.rainwave.cc/api4/websocket/';
     this._debug = options?.debug || ((): void => {});
     this._externalOnSocketError = options?.onSocketError || ((): void => {});
-    this._user = initialUserState;
+    this._user = options.initialUserState;
 
     this.addEventListener('sched_current', (current) => {
       this._currentScheduleId = current.id;

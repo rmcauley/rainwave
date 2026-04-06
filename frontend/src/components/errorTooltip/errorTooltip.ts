@@ -24,8 +24,8 @@ function showTooltipError(json: RainwaveSchemas['error']): void {
   } else if (x > Sizing.width - 40) {
     x = Sizing.width - 40;
   }
-  err.style.left = `${x  }px`;
-  err.style.top = `${y  }px`;
+  err.style.left = `${x}px`;
+  err.style.top = `${y}px`;
 
   document.body.appendChild(err);
   requestNextAnimationFrame(function () {
@@ -35,3 +35,5 @@ function showTooltipError(json: RainwaveSchemas['error']): void {
     removeElement(err);
   }, 5000);
 }
+
+export { showTooltipError };

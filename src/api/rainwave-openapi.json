@@ -5057,25 +5057,8 @@
         "type": "array"
       },
       "station_list": {
-        "properties": {
-          "1": {
-            "$ref": "#/components/schemas/_station_list_station"
-          },
-          "2": {
-            "$ref": "#/components/schemas/_station_list_station"
-          },
-          "3": {
-            "$ref": "#/components/schemas/_station_list_station"
-          },
-          "4": {
-            "$ref": "#/components/schemas/_station_list_station"
-          },
-          "5": {
-            "$ref": "#/components/schemas/_station_list_station"
-          },
-          "6": {
-            "$ref": "#/components/schemas/_station_list_station"
-          }
+        "additionalProperties": {
+          "$ref": "#/components/schemas/_station_list_station"
         },
         "type": "object"
       },

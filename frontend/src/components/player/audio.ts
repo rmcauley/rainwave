@@ -6,7 +6,6 @@ const RWAudioConstructor = function () {
 
   const player = RainwavePlayer;
   player.debug = true;
-  player.shuffleURLs = true;
   if (!player.isSupported) {return;}
 
   let el;
@@ -30,8 +29,8 @@ const RWAudioConstructor = function () {
       window.webkit.messageHandlers.rainwaveStop.postMessage(User.sid);
     };
 
-    player.useStreamURLs = function (streamURLs) {
-      window.webkit.messageHandlers.rainwaveUseStreamURLs.postMessage(streamURLs);
+    player.useStreamURL = function (streamURL) {
+      window.webkit.messageHandlers.rainwaveUseStreamURLs.postMessage(streamURL);
     };
   }
 

@@ -1,5 +1,3 @@
-from typing import Literal, cast
-
 import orjson
 
 from api import rainwave_typeddicts
@@ -9,7 +7,7 @@ from common import config
 station_list: rainwave_typeddicts.StationList = {}
 station_mounts: dict[str, int] = {}
 for station_id, station in config.stations.items():
-    station_list[cast(Literal["1", "2", "3", "4", "5", "6"], str(station_id))] = {
+    station_list[str(station_id)] = {
         "id": station_id,
         # "name": config.station_id_friendly[station_id],
         "url": "{}{}/".format(
