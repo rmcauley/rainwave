@@ -51,7 +51,9 @@ async def reconcile_album_art(cursor: RainwaveCursor, album_id: int) -> None:
                 break
 
 
-async def process_album_art(cursor: RainwaveCursor, filename: str, sid: int) -> None:
+async def process_album_art(
+    cursor: RainwaveCursor, filename: str, sid: int, add_to_unmatched: bool
+) -> None:
     try:
         log.debug("album_art", filename)
         directory = os.path.dirname(filename) + os.sep
@@ -61,7 +63,8 @@ async def process_album_art(cursor: RainwaveCursor, filename: str, sid: int) -> 
             row_type=int,
         )
         if not album_ids or len(album_ids) == 0:
-            unmatched_art.append(AlbumArt(filename, sid))
+            if add_to_unmatched:
+                unmatched_art.append(AlbumArt(filename, sid))
             return
 
         with Image.open(filename) as imgfile:
@@ -102,4 +105,4 @@ async def process_album_art(cursor: RainwaveCursor, filename: str, sid: int) -> 
 
 async def process_unmatched_art(cursor: RainwaveCursor) -> None:
     for art in unmatched_art:
-        await process_album_art(cursor, art.filename, art.sid)
+        await process_album_art(cursor, art.filename, art.sid, False)

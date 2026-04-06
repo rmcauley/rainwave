@@ -12,7 +12,7 @@ from scanner.scan_errors import add_scan_error
 
 async def scan_file(cursor: RainwaveCursor, filename: str, sids: list[int]) -> None:
     if is_image(filename):
-        await process_album_art(cursor, filename, sids[0])
+        await process_album_art(cursor, filename, sids[0], True)
         return
 
     if not is_mp3(filename):

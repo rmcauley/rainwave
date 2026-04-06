@@ -722,7 +722,7 @@ def test_process_album_art_success_and_error_paths() -> None:
             "scanner.album_art.add_scan_error", new=AsyncMock()
         ) as add_scan_error_mock,
     ):
-        asyncio.run(process_album_art(cursor, "/music/station/cover.png", 1))
+        asyncio.run(process_album_art(cursor, "/music/station/cover.png", 1, True))
 
     reconcile_mock.assert_awaited_once_with(cursor, 9)
     add_scan_error_mock.assert_awaited_once()
@@ -753,7 +753,7 @@ def test_process_album_art_success_and_error_paths() -> None:
             "scanner.album_art.add_scan_error", new=AsyncMock()
         ) as add_scan_error_mock,
     ):
-        asyncio.run(process_album_art(cursor, "/music/station/exact.png", 1))
+        asyncio.run(process_album_art(cursor, "/music/station/exact.png", 1, True))
     reconcile_mock.assert_awaited_once_with(cursor, 5)
     add_scan_error_mock.assert_not_called()
 
@@ -765,7 +765,7 @@ def test_process_album_art_success_and_error_paths() -> None:
             "scanner.album_art.add_scan_error", new=AsyncMock()
         ) as add_scan_error_mock,
     ):
-        asyncio.run(process_album_art(cursor, "/music/station/bad.png", 1))
+        asyncio.run(process_album_art(cursor, "/music/station/bad.png", 1, True))
     add_scan_error_mock.assert_awaited_once()
     assert unmatched_art and unmatched_art[0].filename == "/music/station/bad.png"
 
@@ -778,7 +778,7 @@ def test_process_album_art_success_and_error_paths() -> None:
             "scanner.album_art.add_scan_error", new=AsyncMock()
         ) as add_scan_error_mock,
     ):
-        asyncio.run(process_album_art(cursor, "/music/station/fail.png", 1))
+        asyncio.run(process_album_art(cursor, "/music/station/fail.png", 1, True))
     add_scan_error_mock.assert_awaited_once()
 
 

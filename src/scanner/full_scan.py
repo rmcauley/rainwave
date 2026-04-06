@@ -1,11 +1,11 @@
-from common.db.cursor import get_tx_cursor
+from common.db.cursor import get_cursor
 from common.playlist.song.disable_song import disable_song
 from scanner.album_art import process_unmatched_art, write_unmatched_art_log
 from scanner.scan_all_directories import scan_all_directories
 
 
 async def full_scan(full_reset: bool) -> None:
-    async with get_tx_cursor() as cursor:
+    async with get_cursor() as cursor:
         if full_reset:
             await cursor.update("UPDATE r4_songs SET song_file_mtime = 0")
 
