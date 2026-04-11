@@ -1,26 +1,23 @@
 @use './cssFunctions' as css;
 @use './theme' as theme;
-@use './components/menu/stationSelect.module';
 
-/* latin */
 @font-face {
   font-family: 'Roboto Condensed';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/static/fonts/roboto.woff2') format('woff2');
+  src: url('/static/roboto.woff2') format('woff2');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* latin */
 @font-face {
   font-family: 'Roboto Condensed';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/static/fonts/roboto.woff2') format('woff2');
+  src: url('/static/roboto.woff2') format('woff2');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -28,82 +25,19 @@
 
 // CORE CONTENT **********************************************************************************************
 
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  display: none;
-}
-
-::-webkit-scrollbar-thumb {
-  border-width: 1px;
-  border-style: solid;
-  border-color: #555;
+body {
+  font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
+  user-select: none;
 }
 
 div {
+  scroll-margin: 0;
+  scroll-padding: 0;
   scrollbar-width: 8px;
-  scrollbar-color: #555;
+  scrollbar-color: #555 #000;
 }
 
-body {
-  height: 100%;
-  color: theme.$text;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: theme.$bkg;
-  font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
-
-  html[lang='ko_KO'] & {
-    font-family: 'KoPub Dotum', 'Roboto Condensed', 'Helvetica Neue', sans-serif;
-  }
-
-  html[lang='ja_JA'] & {
-    font-family: 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
-  }
-
-  &.nofont {
-    font-family: sans-serif !important;
-  }
-
-  &.loading {
-    // visibility: hidden;
-
-    * {
-      transition: none !important;
-    }
-  }
-
-  &.safari {
-    -webkit-font-smoothing: antialiased;
-  }
-
-  &:lang(ko) {
-    @font-face {
-      font-family: 'KoPub Dotum';
-      font-style: normal;
-      font-weight: 400;
-      src:
-        local('KoPub Dotum'),
-        local('KoPub Dotum-Medium'),
-        url('/static/fonts/KoPubDotum-Medium.min.woff') format('woff');
-    }
-
-    @font-face {
-      font-family: 'KoPub Dotum';
-      font-style: normal;
-      font-weight: 700;
-      src:
-        local('KoPub Dotum'),
-        local('KoPub Dotum-Medium'),
-        url('/static/fonts/KoPubDotum-Bold.min.woff') format('woff');
-    }
-  }
-}
-
-.measure-box {
+#measure-box {
   top: -300px;
   position: absolute;
   visibility: hidden;
@@ -136,26 +70,6 @@ a:visited,
   }
 }
 
-body {
-  user-select: none;
-}
-
-.phoneonly {
-  display: inline-block;
-}
-
 .simple .power-only {
   display: none;
-}
-
-@media (css.$pc-media) {
-  .phoneonly {
-    display: none !important;
-  }
-}
-
-@media (css.$phone-media) {
-  .pconly {
-    display: none !important;
-  }
 }

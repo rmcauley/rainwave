@@ -45,9 +45,12 @@ class RainwaveResponse(TypedDict, total=False):
     album: rainwave_typeddicts.Album
     album_diff: rainwave_typeddicts.AlbumDiff
     albums: rainwave_typeddicts.Albums
+    all_albums: rainwave_typeddicts.AllAlbums
     all_albums_paginated: rainwave_typeddicts.AllAlbumsPaginated
+    all_artists: rainwave_typeddicts.AllArtists
     all_artists_paginated: rainwave_typeddicts.AllArtistsPaginated
     all_faves: rainwave_typeddicts.AllFaves
+    all_groups: rainwave_typeddicts.AllGroups
     all_groups_paginated: rainwave_typeddicts.AllGroupsPaginated
     all_songs: rainwave_typeddicts.AllSongs
     all_stations_info: rainwave_typeddicts.AllStationsInfo
@@ -118,9 +121,12 @@ RainwaveResponseKey = Literal[
     "album",
     "album_diff",
     "albums",
+    "all_albums",
     "all_albums_paginated",
+    "all_artists",
     "all_artists_paginated",
     "all_faves",
+    "all_groups",
     "all_groups_paginated",
     "all_songs",
     "all_stations_info",

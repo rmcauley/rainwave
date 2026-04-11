@@ -35,10 +35,25 @@ class TestAllAlbums(RequestClassesTestCase):
         response = await self.post_form("/api4/all_albums_paginated", auth(after=0))
         return self.payload(response)["all_albums_paginated"]
 
+    async def _all_albums(self, anonymous: bool = False) -> Any:
+        auth = self._anon_auth_data if anonymous else self._auth_data
+        response = await self.post_form("/api4/all_albums", auth())
+        return self.payload(response)["all_albums"]
+
+    async def _all_artists(self, anonymous: bool = False) -> Any:
+        auth = self._anon_auth_data if anonymous else self._auth_data
+        response = await self.post_form("/api4/all_artists", auth())
+        return self.payload(response)["all_artists"]
+
     async def _all_artists_paginated(self, anonymous: bool = False) -> Any:
         auth = self._anon_auth_data if anonymous else self._auth_data
         response = await self.post_form("/api4/all_artists_paginated", auth(after=0))
         return self.payload(response)["all_artists_paginated"]
+
+    async def _all_groups(self, anonymous: bool = False) -> Any:
+        auth = self._anon_auth_data if anonymous else self._auth_data
+        response = await self.post_form("/api4/all_groups", auth())
+        return self.payload(response)["all_groups"]
 
     async def _all_groups_paginated(self, anonymous: bool = False) -> Any:
         auth = self._anon_auth_data if anonymous else self._auth_data
@@ -46,12 +61,32 @@ class TestAllAlbums(RequestClassesTestCase):
         return self.payload(response)["all_groups_paginated"]
 
     @gen_test
+    async def test_all_albums(self) -> None:
+        result = await self._all_albums()
+        assert len(result) == 100
+        assert {"id", "name", "rating", "cool", "cool_lowest"}.issubset(
+            result[0].keys()
+        )
+
+    @gen_test
+    async def test_all_albums_anonymous(self) -> None:
+        result = await self._all_albums(anonymous=True)
+        assert len(result) == 100
+
+    @gen_test
+    async def test_all_albums_matches_paginated_data(self) -> None:
+        result = await self._all_albums()
+        paginated = await self._all_albums_paginated()
+        assert result == sorted(result, key=lambda album: album["name"])
+        assert sorted(result, key=lambda album: album["id"]) == paginated["data"]
+
+    @gen_test
     async def test_all_albums_paginated(self) -> None:
         result = await self._all_albums_paginated()
         assert len(result["data"]) == 100
         assert result["has_more"] is False
         assert result["progress"] == 100
-        assert result["next"] == 1000
+        assert result["next"] == 100
 
     @gen_test
     async def test_all_albums_paginated_anonymous(self) -> None:
@@ -59,13 +94,27 @@ class TestAllAlbums(RequestClassesTestCase):
         assert len(result["data"]) == 100
         assert result["has_more"] is False
         assert result["progress"] == 100
-        assert result["next"] == 1000
+        assert result["next"] == 100
 
     @gen_test
     async def test_all_albums_paginated_sorted_by_id(self) -> None:
         result = await self._all_albums_paginated()
         ids = [album["id"] for album in result["data"]]
         assert ids == sorted(ids)
+
+    @gen_test
+    async def test_all_albums_paginated_uses_cursor_after_id(self) -> None:
+        result = await self._all_albums_paginated()
+        last_id = result["next"]
+        response = await self.post_form(
+            "/api4/all_albums_paginated",
+            self._auth_data(after=last_id),
+        )
+        next_page = self.payload(response)["all_albums_paginated"]
+        assert next_page["data"] == []
+        assert next_page["has_more"] is False
+        assert next_page["next"] == last_id
+        assert next_page["progress"] == 100
 
     @gen_test
     async def test_all_albums_paginated_schema_fields(self) -> None:
@@ -83,6 +132,23 @@ class TestAllAlbums(RequestClassesTestCase):
             "newest_song_time",
         }
         assert expected_keys.issubset(album.keys())
+
+    @gen_test
+    async def test_all_artists(self) -> None:
+        result = await self._all_artists()
+        assert len(result) == 100
+        assert {"id", "name", "song_count"}.issubset(result[0].keys())
+
+    @gen_test
+    async def test_all_artists_anonymous(self) -> None:
+        result = await self._all_artists(anonymous=True)
+        assert len(result) == 100
+
+    @gen_test
+    async def test_all_artists_matches_paginated_data(self) -> None:
+        result = await self._all_artists()
+        paginated = await self._all_artists_paginated()
+        assert result == paginated["data"]
 
     @gen_test
     async def test_all_artists_paginated(self) -> None:
@@ -107,6 +173,23 @@ class TestAllAlbums(RequestClassesTestCase):
         result = await self._all_artists_paginated()
         ids = [artist["id"] for artist in result["data"]]
         assert ids == sorted(ids)
+
+    @gen_test
+    async def test_all_groups(self) -> None:
+        result = await self._all_groups()
+        assert len(result) == 10
+        assert {"id", "name"}.issubset(result[0].keys())
+
+    @gen_test
+    async def test_all_groups_anonymous(self) -> None:
+        result = await self._all_groups(anonymous=True)
+        assert len(result) == 10
+
+    @gen_test
+    async def test_all_groups_matches_paginated_data(self) -> None:
+        result = await self._all_groups()
+        paginated = await self._all_groups_paginated()
+        assert result == paginated["data"]
 
     @gen_test
     async def test_all_groups_paginated(self) -> None:

@@ -1366,6 +1366,31 @@
         "tags": ["Core"]
       }
     },
+    "/api4/all_albums": {
+      "post": {
+        "description": "Returns all albums on the station, sorted by album name.",
+        "operationId": "getAllAlbums",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "all_albums": {
+                      "$ref": "#/components/schemas/all_albums"
+                    }
+                  },
+                  "required": ["all_albums"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Core"]
+      }
+    },
     "/api4/all_albums_paginated": {
       "post": {
         "description": "Returns all albums on the station, sorted by album ID.",
@@ -1396,6 +1421,30 @@
                     }
                   },
                   "required": ["all_albums_paginated"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Core"]
+      }
+    },
+    "/api4/all_artists": {
+      "post": {
+        "operationId": "getAllArtists",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "all_artists": {
+                      "$ref": "#/components/schemas/all_artists"
+                    }
+                  },
+                  "required": ["all_artists"],
                   "type": "object"
                 }
               }
@@ -1477,6 +1526,46 @@
                     }
                   },
                   "required": ["all_faves"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Core"]
+      }
+    },
+    "/api4/all_groups": {
+      "post": {
+        "operationId": "getAllGroups",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "after": {
+                    "type": "integer"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "all_groups": {
+                      "$ref": "#/components/schemas/all_groups"
+                    }
+                  },
+                  "required": ["all_groups"],
                   "type": "object"
                 }
               }
@@ -4149,6 +4238,12 @@
         },
         "type": "array"
       },
+      "all_albums": {
+        "items": {
+          "$ref": "#/components/schemas/_album_in_list"
+        },
+        "type": "array"
+      },
       "all_albums_paginated": {
         "properties": {
           "data": {
@@ -4169,6 +4264,12 @@
         },
         "required": ["data", "has_more", "next", "progress"],
         "type": "object"
+      },
+      "all_artists": {
+        "items": {
+          "$ref": "#/components/schemas/_artist_in_list"
+        },
+        "type": "array"
       },
       "all_artists_paginated": {
         "properties": {
@@ -4218,6 +4319,12 @@
           },
           "required": ["album_id", "album_name", "fave", "id", "rating", "rating_user", "title"],
           "type": "object"
+        },
+        "type": "array"
+      },
+      "all_groups": {
+        "items": {
+          "$ref": "#/components/schemas/_song_group"
         },
         "type": "array"
       },

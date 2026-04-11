@@ -1,4 +1,3 @@
-from psycopg import sql
 import math
 
 from api import rainwave_dto
@@ -76,32 +75,27 @@ class AllAlbumsPaginatedHandler(APIHandler):
         async with get_cursor() as cursor:
             user_id = self.optional_user.id if self.optional_user else 1
             base_sql = get_all_albums_list_sql(user_id)
-            offset = input.after or 0
-            albums = await cursor.fetch_all(
+            albums_with_sentinel = await cursor.fetch_all(
                 sql.SQL(
-                    "{query} ORDER BY id LIMIT {page_limit} OFFSET {offset}"
+                    "{query} AND r4_albums.album_id > {after} ORDER BY id LIMIT {page_limit}"
                 ).format(
                     query=base_sql,
-                    page_limit=sql.Literal(DEFAULT_COLLECTION_PAGE_LIMIT),
-                    offset=sql.Placeholder(name="offset"),
+                    after=sql.Placeholder(name="after"),
+                    page_limit=sql.Literal(DEFAULT_COLLECTION_PAGE_LIMIT + 1),
                 ),
-                {"sid": self.sid, "user_id": user_id, "offset": offset},
+                {"sid": self.sid, "user_id": user_id, "after": input.after or 0},
                 row_type=rainwave_typeddicts.AlbumInList,
             )
+            has_more = len(albums_with_sentinel) > DEFAULT_COLLECTION_PAGE_LIMIT
+            albums = albums_with_sentinel[:DEFAULT_COLLECTION_PAGE_LIMIT]
+            next_cursor = albums[-1]["id"] if albums else input.after or 0
+            total_albums = object_counts.num_albums[self.sid]
             self.response["all_albums_paginated"] = {
                 "data": albums,
-                "has_more": (
-                    True
-                    if albums and len(albums) == DEFAULT_COLLECTION_PAGE_LIMIT
-                    else False
-                ),
+                "has_more": has_more,
                 "progress": min(
-                    math.ceil(
-                        (offset + len(albums))
-                        / object_counts.num_albums[self.sid]
-                        * 100
-                    ),
+                    math.ceil(next_cursor / total_albums * 100) if total_albums > 0 else 100,
                     100,
                 ),
-                "next": offset + DEFAULT_COLLECTION_PAGE_LIMIT,
+                "next": next_cursor,
             }

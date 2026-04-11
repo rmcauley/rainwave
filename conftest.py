@@ -278,11 +278,13 @@ def pytest_sessionstart(session: pytest.Session) -> None:
         _progress("using already running local postgres")
         _recreate_local_test_database()
     else:
+        postgres_username = config.db_user or "test"
+        postgres_password = config.db_password or "test"
         _progress("starting postgres test container")
         _postgres_container = PostgresContainer(
-            "postgres:16-alpine",
-            username=config.db_user,
-            password=config.db_password,
+            "postgres:17.9-trixie",
+            username=postgres_username,
+            password=postgres_password,
             dbname=config.db_name,
             driver=None,
         )
@@ -290,6 +292,8 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
         config.db_host = _postgres_container.get_container_host_ip()
         config.db_port = str(_postgres_container.get_exposed_port(5432))
+        config.db_user = postgres_username
+        config.db_password = postgres_password
 
     _progress(
         f"postgres ready on {config.db_host}:{config.db_port} db={config.db_name}"

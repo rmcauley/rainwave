@@ -500,6 +500,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api4/all_albums": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Returns all albums on the station, sorted by album name. */
+        post: operations["getAllAlbums"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api4/all_albums_paginated": {
         parameters: {
             query?: never;
@@ -511,6 +528,22 @@ export interface paths {
         put?: never;
         /** @description Returns all albums on the station, sorted by album ID. */
         post: operations["getAllAlbumsPaginated"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api4/all_artists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getAllArtists"];
         delete?: never;
         options?: never;
         head?: never;
@@ -543,6 +576,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["getAllFaves"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api4/all_groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getAllGroups"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1480,12 +1529,14 @@ export interface components {
             newest_song_time?: components["schemas"]["_time"];
         }[];
         albums: components["schemas"]["_search_album"][];
+        all_albums: components["schemas"]["_album_in_list"][];
         all_albums_paginated: {
             data: components["schemas"]["_album_in_list"][];
             has_more: boolean;
             next: number;
             progress: number;
         };
+        all_artists: components["schemas"]["_artist_in_list"][];
         all_artists_paginated: {
             data: components["schemas"]["_artist_in_list"][];
             has_more: boolean;
@@ -1501,6 +1552,7 @@ export interface components {
             rating_user: components["schemas"]["_rating_user"];
             title: string;
         }[];
+        all_groups: components["schemas"]["_song_group"][];
         all_groups_paginated: {
             data: components["schemas"]["_song_group"][];
             has_more: boolean;
@@ -2724,6 +2776,27 @@ export interface operations {
             };
         };
     };
+    getAllAlbums: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        all_albums: components["schemas"]["all_albums"];
+                    };
+                };
+            };
+        };
+    };
     getAllAlbumsPaginated: {
         parameters: {
             query?: never;
@@ -2746,6 +2819,27 @@ export interface operations {
                 content: {
                     "application/json": {
                         all_albums_paginated: components["schemas"]["all_albums_paginated"];
+                    };
+                };
+            };
+        };
+    };
+    getAllArtists: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        all_artists: components["schemas"]["all_artists"];
                     };
                 };
             };
@@ -2801,6 +2895,33 @@ export interface operations {
                 content: {
                     "application/json": {
                         all_faves: components["schemas"]["all_faves"];
+                    };
+                };
+            };
+        };
+    };
+    getAllGroups: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    after?: number;
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        all_groups: components["schemas"]["all_groups"];
                     };
                 };
             };
