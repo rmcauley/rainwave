@@ -6,7 +6,7 @@ import sys
 import time
 from contextlib import AsyncExitStack
 from pathlib import Path
-from typing import TextIO
+from typing import MutableMapping, TextIO
 
 import pytest
 from dotenv import load_dotenv
@@ -51,6 +51,26 @@ _test_backend_port: int | None = None
 
 def _progress(message: str) -> None:
     print(f"[pytest setup] {message}", flush=True)
+
+
+def _apply_db_env(env: MutableMapping[str, str]) -> None:
+    if config.db_host is not None:
+        env["RW_TEST_DB_HOST"] = config.db_host
+    else:
+        env.pop("RW_TEST_DB_HOST", None)
+    if config.db_port is not None:
+        env["RW_TEST_DB_PORT"] = config.db_port
+    else:
+        env.pop("RW_TEST_DB_PORT", None)
+    if config.db_user is not None:
+        env["RW_TEST_DB_USER"] = config.db_user
+    else:
+        env.pop("RW_TEST_DB_USER", None)
+    if config.db_password is not None:
+        env["RW_TEST_DB_PASSWORD"] = config.db_password
+    else:
+        env.pop("RW_TEST_DB_PASSWORD", None)
+    env["RW_TEST_DB_NAME"] = config.db_name
 
 
 def _cleanup_coverage_files() -> None:
@@ -170,6 +190,7 @@ def _start_test_api_server() -> None:
     global _api_server_log
 
     env = os.environ.copy()
+    _apply_db_env(env)
     env["RW_TEST_API_PORT"] = str(_get_test_api_port())
     env["RW_TEST_API_BASE_URL"] = f"http://127.0.0.1:{_get_test_api_port()}"
     api_server_log_path = Path("/tmp") / "rainwave-test-api-server.log"
@@ -221,6 +242,7 @@ def _start_test_backend_server() -> None:
     global _backend_server_log
 
     env = os.environ.copy()
+    _apply_db_env(env)
     env["RW_TEST_BACKEND_PORT"] = str(_get_test_backend_port())
     env["RW_TEST_BACKEND_BASE_URL"] = f"http://127.0.0.1:{_get_test_backend_port() + 1}"
     backend_server_log_path = Path("/tmp") / "rainwave-test-backend-server.log"
@@ -298,6 +320,7 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     _progress(
         f"postgres ready on {config.db_host}:{config.db_port} db={config.db_name}"
     )
+    _apply_db_env(os.environ)
 
     _exit_stack = AsyncExitStack()
     asyncio.run(_setup_rainwave_state())

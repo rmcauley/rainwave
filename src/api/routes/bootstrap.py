@@ -70,7 +70,7 @@ class Bootstrap(RainwaveHandler):
 
     async def get(self):
         self.set_header("Content-Type", "text/javascript")
-        self.write("var bootstrap=")
+        self.write("var BOOTSTRAP=")
         await self._make_payload()
         self.write(orjson.dumps(self.response))
         self.write(";if(window.rainwaveInit){window.rainwaveInit()}")
