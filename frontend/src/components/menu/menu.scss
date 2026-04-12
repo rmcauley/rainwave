@@ -1,8 +1,4 @@
-@use 'sass:string';
-@use '../../cssFunctions' as css;
 @use '../../theme' as theme;
-
-$menu-icon-only-media: string.unquote('max-width: 650px');
 
 #header {
   background: theme.$menu-pad-bkg;
@@ -10,7 +6,7 @@ $menu-icon-only-media: string.unquote('max-width: 650px');
   width: 100%;
   padding: 0;
 
-  @media (css.$phone-media) {
+  @media (theme.$phone-media) {
     height: theme.$phone-menu-height;
   }
 }

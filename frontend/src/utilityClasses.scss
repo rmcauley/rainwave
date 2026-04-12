@@ -1,0 +1,22 @@
+@use './theme' as theme;
+
+.touchable {
+  transition-timing-function: theme.$transition-timing-function;
+  transition-duration: theme.$transition-duration-instant;
+  transition-property: transform;
+
+  @media (hover: none) and (pointer: coarse) {
+    transform: scale(0.97);
+  }
+}
+
+.scrollable {
+  scroll-margin: 0;
+  scroll-padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #000;
+}
+
+.simple .power-only {
+  display: none;
+}

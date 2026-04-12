@@ -1,25 +1,22 @@
-@use '../../theme' as *;
-@use '../../cssFunctions' as *;
+@use '../../theme' as theme;
 
 @keyframes bar-loader {
   0% {
-    @include transform(translateX(-50%) scaleX(0));
+    transform: translateX(-50%) scaleX(0);
   }
 
   50% {
-    @include transform(translateX(0%) scaleX(0.45));
+    transform: translateX(0%) scaleX(0.45);
   }
 
   100% {
-    @include transform(translateX(50%) scaleX(0));
+    transform: translateX(50%) scaleX(0);
   }
 }
 
 #player {
   height: 100%;
   flex-shrink: 0;
-  will-change: opacity;
-  opacity: 0;
   position: relative;
 }
 
@@ -37,12 +34,13 @@
   fill: theme.$text;
   opacity: 0.3;
   cursor: pointer;
-
-  @include transition-wtime(300ms, fill, opacity);
+  transition-timing-function: theme.$transition-timing-function;
+  transition-duration: theme.$transition-duration;
+  transition-property: fill, opacity;
 
   &:hover {
     opacity: 0.6;
-    fill: $link-h;
+    fill: theme.$link-h;
   }
 }
 
@@ -53,8 +51,9 @@
   opacity: 0.3;
   aspect-ratio: 2/1;
   position: relative;
-
-  @include transition-wtime(300ms, opacity);
+  transition-timing-function: theme.$transition-timing-function;
+  transition-duration: theme.$transition-duration;
+  transition-property: opacity;
 }
 
 #player-body-play {
@@ -64,7 +63,7 @@
 
 #player.playing {
   #player-body-play {
-    fill: $audio-icon-active-fill;
+    fill: theme.$audio-icon-active-fill;
   }
 
   .audio-icon,
@@ -76,11 +75,11 @@
 #player.muted {
   #player-body-mute {
     opacity: 1;
-    fill: $audio-icon-active-fill;
+    fill: theme.$audio-icon-active-fill;
   }
 }
 
-@media ($mobile-media) {
+@media (theme.$mobile-media) {
   #player-body-mute,
   #player-body-stop,
   #player-body-volume {
@@ -95,10 +94,10 @@
   width: 100%;
   height: 2px;
   opacity: 0;
-  will-change: opacity, transform;
-  background: $text;
-
-  @include transition-wtime(300ms, opacity, transform);
+  background: theme.$text;
+  transition-timing-function: theme.$transition-timing-function;
+  transition-duration: theme.$transition-duration;
+  transition-property: opacity, transform;
 }
 
 #player-load-indicator {

@@ -1,273 +1,187 @@
-@use "sass:math";
-@use '../../cssFunctions' as css;
 @use '../../theme' as theme;
 
-$station-height: 70px;
-$station-select-width: 270px;
-
-#station-select {
+.station {
   box-sizing: border-box;
+  display: block;
+  background: transparent;
   position: absolute;
-  z-index: 20000;
-  float: left;
-  width: $station-select-width;
-  border-right: 1px solid theme.$stasel-b;
-  height: theme.$menu-height;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 100%;
   overflow: hidden;
-  background: theme.$stasel-bkg;
-  transition: width 350ms, background-color 350ms, height 700ms;
-  transition-timing-function: theme.$menu-transfunc;
+  height: $station-height;
+  cursor: default;
+  padding: 0 0 0 20px;
 
-  @media (css.$mobile-media) {
-    width: 220px;
-  }
+  @include css.transform(translateY(-15px));
+
+  transition:
+    -webkit-transform 700ms theme.$menu-transfunc,
+    background 350ms css.$transfunc,
+    color 350ms css.$transfunc;
+  transition:
+    transform 700ms theme.$menu-transfunc,
+    background 350ms css.$transfunc,
+    color 350ms css.$transfunc;
 
   @media (css.$phone-media) {
-    width: 120px;
+    padding-left: 5px;
     height: theme.$phone-menu-height;
+
+    @include css.transform(none);
   }
 
-  &.open {
-    width: $station-select-width * 1.8;
-    height: ($station-height * 6) + theme.$menu-height;
+  .desktop &:hover,
+  .mobile &:active {
+    background: theme.$stasel-h-bkg;
+    color: theme.$text !important;
+  }
+
+  &.selected-station {
+    background: theme.$menu-bkg;
+    color: theme.$menu;
+    z-index: 40 !important;
+
+    @include css.transform(translateY(-13px));
 
     @media (css.$phone-media) {
-      width: 150px;
-      height: (theme.$phone-menu-height * 6) + theme.$phone-menu-height;
+      @include css.transform(none);
     }
   }
 
-  .pulldown-arrow {
-    display: none;
-    float: right;
-    cursor: pointer;
-    position: relative;
-    z-index: 50;
-    margin-right: 15px;
-    top: math.div(theme.$menu-height, 2);
-
-    @include css.transition-wtime(350ms, transform);
-    @include css.transform(translateY(-50%) rotate(0deg));
-
-    transform-origin: center center;
-    transition-timing-function: theme.$menu-transfunc;
+  .station-name {
+    text-transform: uppercase;
   }
 
-  &.openable .pulldown-arrow {
-    display: block;
+  .station-details {
+    position: relative;
+    top: 50%;
+    font-weight: 400;
+    font-size: 2em;
+
+    @include css.transform(translateY(-50%));
+    @include css.transition-wtime(350ms, transform);
+
+    @media (css.$phone-media) {
+      font-size: 1.3em;
+    }
+  }
+
+  .station-description {
+    text-transform: uppercase;
+    font-weight: 400;
+    font-size: 0.4em;
+    position: absolute;
+    opacity: 0;
+
+    @include css.transition-wtime(300ms, transform, opacity);
+    @include css.transform(translateX(1em));
 
     @media (css.$phone-media) {
       display: none;
     }
   }
 
-  &.open .pulldown-arrow {
-    @include css.transform(translateY(-50%) rotate(180deg));
-  }
+  .station-song-container {
+    visibility: hidden;
+    position: relative;
+    width: 160px;
+    float: right;
+    top: 50%;
+    font-size: smaller;
+    opacity: 0;
 
-  #station-select-header {
-    position: absolute;
-    background: theme.$menu-bkg;
-    z-index: 41;
-    height: theme.$menu-height;
-    font-size: 0.6em;
+    @include css.transform(translateX(100%) translateY(-50%));
 
-    @include css.transform(translateY(-100%));
+    transition:
+      -webkit-transform 700ms theme.$menu-transfunc,
+      opacity 300ms css.$transfunc,
+      visibility 700ms theme.$menu-transfunc;
+    transition:
+      transform 700ms theme.$menu-transfunc,
+      opacity 300ms css.$transfunc,
+      visibility 700ms theme.$menu-transfunc;
 
     @media (css.$phone-media) {
-      height: theme.$phone-menu-height;
+      display: none;
+    }
+
+    div {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ss-title {
+      margin-top: 7px;
+    }
+
+    .ss-art {
+      float: left;
+      height: $station-height - 20;
+      width: $station-height - 20;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      margin-right: 5px;
     }
   }
+}
 
-  &.open #station-select-header {
-    @include css.transform(none);
-
-    .station-details {
-      @include css.transform(translateY(-50%));
-    }
-  }
-
-  &.openable .station {
-    cursor: pointer;
-  }
-
-  .station {
-    box-sizing: border-box;
-    display: block;
-    background: transparent;
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 1;
-    width: 100%;
-    overflow: hidden;
-    height: $station-height;
+.open .station {
+  &.selected-station {
     cursor: default;
-    padding: 0 0 0 20px;
+  }
 
-    @include css.transform(translateY(-15px));
+  .station-details {
+    @include css.transform(translateY(-72%));
+  }
 
-    transition: -webkit-transform 700ms theme.$menu-transfunc,
-      background 350ms css.$transfunc, color 350ms css.$transfunc;
-    transition: transform 700ms theme.$menu-transfunc, background 350ms css.$transfunc,
-      color 350ms css.$transfunc;
+  .station-description {
+    opacity: 0.7;
 
-    @media (css.$phone-media) {
-      padding-left: 5px;
-      height: theme.$phone-menu-height;
+    @include css.transform(translateX(0));
 
-      @include css.transform(none);
-    }
+    transition-delay: 400ms;
+  }
 
-    .desktop &:hover,
-    .mobile &:active {
-      background: theme.$stasel-h-bkg;
-      color: theme.$text !important;
-    }
+  &:nth-of-type(2) {
+    border-top: 1px solid rgb(0 0 0 / 10%);
+  }
 
-    &.selected-station {
-      background: theme.$menu-bkg;
-      color: theme.$menu;
-      z-index: 40 !important;
+  @for $i from 2 through 7 {
+    &:nth-of-type(#{$i}) {
+      z-index: 6 - $i;
 
-      @include css.transform(translateY(-13px));
-
-      @media (css.$phone-media) {
-        @include css.transform(none);
-      }
-    }
-
-    .station-name {
-      text-transform: uppercase;
-    }
-
-    .station-details {
-      position: relative;
-      top: 50%;
-      font-weight: 400;
-      font-size: 2em;
-
-      @include css.transform(translateY(-50%));
-      @include css.transition-wtime(350ms, transform);
-
-      @media (css.$phone-media) {
-        font-size: 1.3em;
-      }
-    }
-
-    .station-description {
-      text-transform: uppercase;
-      font-weight: 400;
-      font-size: 0.4em;
-      position: absolute;
-      opacity: 0;
-
-      @include css.transition-wtime(300ms, transform, opacity);
-      @include css.transform(translateX(1em));
-
-      @media (css.$phone-media) {
-        display: none;
-      }
-    }
-
-    .station-song-container {
-      visibility: hidden;
-      position: relative;
-      width: 160px;
-      float: right;
-      top: 50%;
-      font-size: smaller;
-      opacity: 0;
-
-      @include css.transform(translateX(100%) translateY(-50%));
-
-      transition: -webkit-transform 700ms theme.$menu-transfunc,
-        opacity 300ms css.$transfunc, visibility 700ms theme.$menu-transfunc;
-      transition: transform 700ms theme.$menu-transfunc, opacity 300ms css.$transfunc,
-        visibility 700ms theme.$menu-transfunc;
-
-      @media (css.$phone-media) {
-        display: none;
-      }
-
-      div {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .ss-title {
-        margin-top: 7px;
-      }
-
-      .ss-art {
-        float: left;
-        height: $station-height - 20;
-        width: $station-height - 20;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        margin-right: 5px;
-      }
+      @include css.transform(translateY(theme.$menu-height + ($station-height * ($i - 2))));
     }
   }
 
-  &.open .station {
-    &.selected-station {
-      cursor: default;
+  .station-song-container {
+    visibility: visible;
+    opacity: 0.7;
+
+    @include css.transform(translateX(0%) translateY(-50%));
+
+    @media (css.$mobile-media) {
+      display: none;
     }
+  }
 
-    .station-details {
-      @include css.transform(translateY(-72%));
+  .desktop &:hover,
+  .mobile &:active {
+    .station-song-container {
+      opacity: 1;
     }
+  }
 
-    .station-description {
-      opacity: 0.7;
-
-      @include css.transform(translateX(0));
-
-      transition-delay: 400ms;
-    }
-
-    &:nth-of-type(2) {
-      border-top: 1px solid rgb(0 0 0 / 10%);
-    }
-
+  @media (css.$phone-media) {
     @for $i from 2 through 7 {
       &:nth-of-type(#{$i}) {
-        z-index: 6 - $i;
-
         @include css.transform(
-          translateY(theme.$menu-height + ($station-height * ($i - 2)))
+          translateY(theme.$phone-menu-height + (theme.$phone-menu-height * ($i - 2)))
         );
-      }
-    }
-
-    .station-song-container {
-      visibility: visible;
-      opacity: 0.7;
-
-      @include css.transform(translateX(0%) translateY(-50%));
-
-      @media (css.$mobile-media) {
-        display: none;
-      }
-    }
-
-    .desktop &:hover,
-    .mobile &:active {
-      .station-song-container {
-        opacity: 1;
-      }
-    }
-
-    @media (css.$phone-media) {
-      @for $i from 2 through 7 {
-        &:nth-of-type(#{$i}) {
-          @include css.transform(
-            translateY(theme.$phone-menu-height + (theme.$phone-menu-height * ($i - 2)))
-          );
-        }
       }
     }
   }

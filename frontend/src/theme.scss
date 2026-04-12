@@ -1,3 +1,4 @@
+@use 'sass:string';
 @use 'sass:color';
 
 // COLOR DEFINITIONS *****************************************************************************************
@@ -170,8 +171,9 @@ $audio-icon-active-fill: #ffb224;
   border: 1px solid $error-b;
   background: $error-bkg;
   background: linear-gradient(180deg, $error-bkg, $error-bkg-bright);
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from($error-bkg-bright), to($error-bkg));
 }
+
+// IMAGES ****************************************************************************************************
 
 $site-rating: url('/static/images4/rating_bar5/site_gradient.png');
 $user-rating: url('/static/images4/rating_bar5/user_gradient.png');
@@ -182,7 +184,6 @@ $hidden-rating: url('/static/images4/rating_bar5/hidden_global.png');
 
 // SIZE DEFINITIONS  *****************************************************************************************
 
-$menu-transfunc: cubic-bezier(0.77, 0, 0.175, 1);
 $menu-height: 45px;
 $phone-menu-height: 40px;
 $station-select-width: 270px;
@@ -197,3 +198,18 @@ $simple-np-size: 140px;
 $rating-height: 18px;
 $rating-width: 58px;
 $rating-bkg-size: 60px 728px;
+
+// MEDIA QUERIES ********************************************************************************************
+
+$pc-media: string.unquote('min-width: 1050px');
+$mobile-media: string.unquote('max-width: 1049px');
+$tablet-media: string.unquote('min-width: 600px and max-width: 1049px');
+$phone-media: string.unquote('max-width: 599px');
+
+// ANIMATION RELATED ****************************************************************************************
+
+/* easeOutQuart */
+$transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+$transition-duration-instant: 125ms;
+$transition-duration: 250ms;
+$transition-duration-long: 500ms;

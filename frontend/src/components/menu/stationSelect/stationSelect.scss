@@ -1,3 +1,5 @@
+@use '../../theme' as theme;
+
 #station-select {
   display: flex;
   justify-content: space-between;
@@ -17,5 +19,8 @@
 
 #station-pulldown-icon {
   width: 20px;
-  fill: #fff;
+  fill: theme.$text;
+  transition-timing-function: theme.$transition-timing-function;
+  transition-duration: theme.$transition-duration;
+  transform-origin: center center;
 }

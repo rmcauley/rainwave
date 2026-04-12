@@ -1,4 +1,3 @@
-@use './cssFunctions' as css;
 @use './theme' as theme;
 
 @font-face {
@@ -30,21 +29,14 @@ body {
   user-select: none;
 }
 
-.scrollable {
-  scroll-margin: 0;
-  scroll-padding: 0;
-  scrollbar-width: thin;
-  scrollbar-color: #555 #000;
-}
-
 a,
 a:visited,
 .link {
   cursor: pointer;
   text-decoration: none;
   color: theme.$text;
-
-  @include css.transition(LINKCOLOR);
+  transition-timing-function: theme.$transition-timing-function;
+  transform: color;
 
   &.obvious {
     color: theme.$link !important;
@@ -57,10 +49,6 @@ a:visited,
   .desktop &:hover {
     color: theme.$link-h !important;
   }
-}
-
-.simple .power-only {
-  display: none;
 }
 
 #rainwave {
