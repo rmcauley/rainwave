@@ -47,11 +47,11 @@ function timeline(context: timelineContext) {
 return {
     $root: v1,
     timeline: v2,
-    timeline_sizer: v3,
-    history_header: v4,
-    history_header_link: v5,
-    history_bar: v8,
-    progress_history_inside: v10,
+    timelineSizer: v3,
+    historyHeader: v4,
+    historyHeaderLink: v5,
+    historyBar: v8,
+    progressHistoryInside: v10,
   };
 }
 export { timeline };

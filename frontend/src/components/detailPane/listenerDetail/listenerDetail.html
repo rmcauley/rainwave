@@ -29,7 +29,7 @@
 
 <if condition="^context.top_albums.length">
   <h2>{{ $l("top_rated_albums") }}</h2>
-  <for each="top_albums" bind="top_albums">
+  <for each="top_albums" bind="topAlbums">
     <div class="row">
       <template use="rating" />
       <!--<div class="rating-site">
@@ -42,7 +42,7 @@
 
 <if condition="^context.top_request_albums">
   <h2>{{ $l("top_requested_albums") }}</h2>
-  <for each="top_request_albums" bind="top_request_albums">
+  <for each="top_request_albums" bind="topRequestAlbums">
     <div class="row">
       <div class="request-count">{{ request_count_listener }}</div>
       <div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
@@ -50,4 +50,4 @@
   </for>
 </if>
 
-<div bind="user_detail_container" class="user-detail-container"></div>
+<div bind="userDetailContainer" class="user-detail-container"></div>

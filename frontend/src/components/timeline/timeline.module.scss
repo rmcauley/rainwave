@@ -1,3 +1,6 @@
+@use '../../theme' as *;
+@use '../../cssFunctions' as *;
+
 .timeline.scrollable {
   overflow-y: hidden;
 }

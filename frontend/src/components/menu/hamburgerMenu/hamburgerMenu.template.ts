@@ -1,4 +1,4 @@
-import { $l } from '../../language';
+import { $l } from '../../../language';
 
 import type { hamburgerMenuContext } from './hamburgerMenu.context';
 
@@ -85,6 +85,6 @@ function hamburgerMenu(context: hamburgerMenuContext) {
     v15.appendChild(v16);
   }
   
-return { $root: v1, settings_link: v16 };
+return { $root: v1, settingsLink: v16 };
 }
 export { hamburgerMenu };

@@ -104,16 +104,16 @@ function requestsPanel(context: requestsPanelContext) {
   
 return {
     $root: v1,
-    panel_close: v2,
-    request_header: v6,
-    request_indicator2: v7,
-    requests_pause: v9,
-    requests_play: v12,
-    requests_favfill: v15,
-    requests_unrated: v18,
-    requests_clear: v21,
-    song_list: v24,
-    last_song_padder: v25,
+    panelClose: v2,
+    requestHeader: v6,
+    requestIndicator2: v7,
+    requestsPause: v9,
+    requestsPlay: v12,
+    requestsFavfill: v15,
+    requestsUnrated: v18,
+    requestsClear: v21,
+    songList: v24,
+    lastSongPadder: v25,
   };
 }
 export { requestsPanel };

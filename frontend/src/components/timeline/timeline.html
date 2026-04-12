@@ -1,14 +1,14 @@
 <div class="timeline" bind="timeline">
-  <div class="timeline-sizer" bind="timeline_sizer">
-    <div class="history-header history-expandable unselectable" bind="history_header">
-      <div bind="history_header_link">
+  <div class="timeline-sizer" bind="timelineSizer">
+    <div class="history-header history-expandable unselectable" bind="historyHeader">
+      <div bind="historyHeaderLink">
         <span class="history-header-header"> {{ $l("previouslyplayed") }} </span>
         <svg class="history-pulldown-arrow" use="pulldown"></svg>
       </div>
     </div>
-    <div bind="history_bar" class="progress history-bar">
+    <div bind="historyBar" class="progress history-bar">
       <div class="progress-bkg">
-        <div bind="progress_history_inside" class="progress-inside"></div>
+        <div bind="progressHistoryInside" class="progress-inside"></div>
       </div>
     </div>
   </div>

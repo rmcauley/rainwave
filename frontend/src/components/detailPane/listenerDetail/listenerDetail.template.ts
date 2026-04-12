@@ -132,6 +132,6 @@ return { $root: v23 };
   v28.className = style['user-detail-container'];
   v1.appendChild(v28);
   
-return { $root: v1, top_albums: v16, top_request_albums: v22, user_detail_container: v28 };
+return { $root: v1, topAlbums: v16, topRequestAlbums: v22, userDetailContainer: v28 };
 }
 export { listenerDetail };

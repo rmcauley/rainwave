@@ -1,10 +1,10 @@
 import { timelineSong } from '../timelineSong/timelineSong.template';
 
-import type { eventContext } from './timelineEntry.context';
+import type { timelineEntryContext } from './timelineEntry.context';
 
-import style from './event.module.scss';
+import style from './timelineEntry.module.scss';
 
-function event(context: eventContext) {
+function timelineEntry(context: timelineEntryContext) {
   const v1 = document.createDocumentFragment();
 
   const v2 = document.createElement('div');
@@ -50,20 +50,20 @@ function event(context: eventContext) {
     const v12 = document.createDocumentFragment();
     v12.appendChild(timelineSong(context).$root);
     v3.appendChild(v12);
-
-    return { $root: v12 };
+    
+return { $root: v12 };
   });
-
-  return {
+  
+return {
     $root: v1,
     el: v2,
-    header_container: v4,
+    headerContainer: v4,
     clock: v5,
-    header_anchor: v6,
-    header_span: v7,
+    headerAnchor: v6,
+    headerSpan: v7,
     progress: v8,
-    progress_inside: v10,
+    progressInside: v10,
     songs: v11,
   };
 }
-export { event };
+export { timelineEntry };

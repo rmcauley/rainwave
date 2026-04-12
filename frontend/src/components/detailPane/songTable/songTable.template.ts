@@ -115,7 +115,7 @@ return { $root: v14 };
     v4.appendChild(v20);
     v1.appendChild(v3);
     
-return { row: v4, rating_clear: v10, artists: v13, detail_icon: v18, title: v20, $root: v3 };
+return { row: v4, ratingClear: v10, artists: v13, detailIcon: v18, title: v20, $root: v3 };
   });
   
 return { $root: v1, songs: v2 };

@@ -20,6 +20,6 @@ function errorModal(context: errorModalContext) {
   v4.setAttribute('onclick', `window.location.reload()`);
   v3.appendChild(v4);
   
-return { $root: v1, sending_report: v2 };
+return { $root: v1, sendingReport: v2 };
 }
 export { errorModal };

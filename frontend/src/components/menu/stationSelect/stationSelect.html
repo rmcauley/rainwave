@@ -1,0 +1,14 @@
+<for each="stations" bind="stations">
+  <a class="station">
+      <div bind="menuNp" class="station-song-container">
+        <div bind="menuNpArt" class="ss-art"></div>
+        <div bind="menuNpSong" class="ss-title"></div>
+        <div bind="menuNpAlbum" class="ss-album"></div>
+      </div>
+    </if>
+    <div class="station-details">
+      <div class="station-name">{{ name }}</div>
+      <div class="station-description">{{ description }}</div>
+    </div>
+  </a>
+</for>

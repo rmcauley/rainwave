@@ -91,6 +91,6 @@ return { $root: v11 };
     v2.appendChild(v17);
   }
   
-return { $root: v1, details: v2, artists: v5, groups: v10, graph_placement: v16 };
+return { $root: v1, details: v2, artists: v5, groups: v10, graphPlacement: v16 };
 }
 export { songDetail };

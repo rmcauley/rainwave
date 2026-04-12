@@ -1,8 +1,8 @@
-<div class="searchbox-container" bind="box_container">
-  <div class="searchlist-loading-bar" bind="loading_bar"></div>
+<div class="searchbox-container" bind="boxContainer">
+  <div class="searchlist-loading-bar" bind="loadingBar"></div>
   <input
     type="text"
-    bind="search_box"
+    bind="searchBox"
     placeholder="{{ $l('Loading...') }}"
     autocomplete="off"
     autocorrect="off"
@@ -15,8 +15,8 @@
   <img src="/static/images4/search_clear.png" class="cancel" bind="cancel" />
 </div>
 
-<div class="no-result-message" bind="no_result_message">{{ $l("empty_list") }}</div>
-<div class="no-result-message while-search-active" bind="no_result_search_active_message">
+<div class="no-result-message" bind="noResultMessage">{{ $l("empty_list") }}</div>
+<div class="no-result-message while-search-active" bind="noResultSearchActiveMessage">
   {{ $l("no_search_results") }}
 </div>
 

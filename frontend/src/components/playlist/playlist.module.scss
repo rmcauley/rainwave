@@ -1,3 +1,6 @@
+@use '../../theme' as *;
+@use '../../cssFunctions' as *;
+
 .panel-header {
   height: 25px;
   padding-left: 0;

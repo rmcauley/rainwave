@@ -7,6 +7,7 @@ import type { searchResultsContext } from './searchResults.context';
 
 import style from './searchResults.module.scss';
 
+
 function searchResults(context: searchResultsContext) {
   const v1 = document.createDocumentFragment();
   if (context.artists.length) {

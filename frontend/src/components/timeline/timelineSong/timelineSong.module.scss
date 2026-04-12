@@ -1,3 +1,6 @@
+@use '../../../theme' as *;
+@use '../../../cssFunctions' as *;
+
 $song-transitions: opacity $transtime, transform $transtime,
   background-position 250ms linear, visibility $transtime;
 $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,

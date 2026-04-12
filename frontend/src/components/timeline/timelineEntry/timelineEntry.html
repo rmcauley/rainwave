@@ -1,18 +1,18 @@
 <div bind="el" class="timeline-event timeline-{{ type }}">
   <div class="timeline-event-animator">
-    <div class="timeline-header" bind="header_container">
+    <div class="timeline-header" bind="headerContainer">
       <span class="timeline-header-clock" bind="clock"></span>
       <if condition="url">
-        <a class="header-text" href="{{ url }}" target="_blank" bind="header_anchor"></a>
+        <a class="header-text" href="{{ url }}" target="_blank" bind="headerAnchor"></a>
       </if>
       <else>
-        <span class="header-text" bind="header_span"></span>
+        <span class="header-text" bind="headerSpan"></span>
       </else>
     </div>
 
     <div bind="progress" class="progress">
       <div class="progress-bkg">
-        <div bind="progress_inside" class="progress-inside"></div>
+        <div bind="progressInside" class="progress-inside"></div>
       </div>
     </div>
 

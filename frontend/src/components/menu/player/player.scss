@@ -1,0 +1,122 @@
+@use '../../theme' as *;
+@use '../../cssFunctions' as *;
+
+@keyframes bar-loader {
+  0% {
+    @include transform(translateX(-50%) scaleX(0));
+  }
+
+  50% {
+    @include transform(translateX(0%) scaleX(0.45));
+  }
+
+  100% {
+    @include transform(translateX(50%) scaleX(0));
+  }
+}
+
+#player {
+  height: 100%;
+  flex-shrink: 0;
+  will-change: opacity;
+  opacity: 0;
+  position: relative;
+}
+
+#player-body {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  height: 100%;
+}
+
+.player-icon {
+  height: 60%;
+  flex-shrink: 0;
+  fill: theme.$text;
+  opacity: 0.3;
+  cursor: pointer;
+
+  @include transition-wtime(300ms, fill, opacity);
+
+  &:hover {
+    opacity: 0.6;
+    fill: $link-h;
+  }
+}
+
+#player-body-volume {
+  height: 60%;
+  flex-shrink: 0;
+  fill: theme.$text;
+  opacity: 0.3;
+  aspect-ratio: 2/1;
+  position: relative;
+
+  @include transition-wtime(300ms, opacity);
+}
+
+#player-body-play {
+  opacity: 1;
+  cursor: pointer;
+}
+
+#player.playing {
+  #player-body-play {
+    fill: $audio-icon-active-fill;
+  }
+
+  .audio-icon,
+  #player-body-volume {
+    opacity: 1;
+  }
+}
+
+#player.muted {
+  #player-body-mute {
+    opacity: 1;
+    fill: $audio-icon-active-fill;
+  }
+}
+
+@media ($mobile-media) {
+  #player-body-mute,
+  #player-body-stop,
+  #player-body-volume {
+    display: none;
+  }
+}
+
+.player-load-indicator,
+.player-tuned-in-indicator {
+  position: absolute;
+  top: calc(100% - 5px);
+  width: 100%;
+  height: 2px;
+  opacity: 0;
+  will-change: opacity, transform;
+  background: $text;
+
+  @include transition-wtime(300ms, opacity, transform);
+}
+
+#player-load-indicator {
+  animation: bar-loader 0.8s infinite linear;
+  animation-play-state: paused;
+
+  &.loading {
+    opacity: 1;
+    animation-play-state: running;
+  }
+}
+
+#player-tuned-in-indicator {
+  opacity: 0;
+  transform: scaleX(0);
+
+  &.tuned-in {
+    opacity: 0.6;
+    transform: scaleX(1);
+  }
+}

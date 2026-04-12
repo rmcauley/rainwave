@@ -1,19 +1,19 @@
 import { $l } from '../../language';
 
-import { settingsMultiOption } from './preferencesMultiOption.template';
-import { settingsYesNo } from './preferencesYesNo.template';
+import { preferencesMultiOption } from './preferencesMultiOption.template';
+import { preferencesYesNo } from './preferencesYesNo.template';
 
-import type { settingsContext } from './preferences.context';
+import type { preferencesContext } from './preferences.context';
 
-import style from './settings.module.scss';
+import style from './preferences.module.scss';
 
-function settings(context: settingsContext) {
+function preferences(context: preferencesContext) {
   const v1 = document.createDocumentFragment();
 
   const v2 = document.createElement('with');
   v2.setAttribute('context', `locales`);
   v1.appendChild(v2);
-  v2.appendChild(settingsMultiOption(context).$root);
+  v2.appendChild(preferencesMultiOption(context).$root);
 
   const v3 = document.createElement('div');
   v3.className = style['power-only'];
@@ -22,12 +22,12 @@ function settings(context: settingsContext) {
   const v4 = document.createElement('with');
   v4.setAttribute('context', `hkm`);
   v3.appendChild(v4);
-  v4.appendChild(settingsMultiOption(context).$root);
+  v4.appendChild(preferencesMultiOption(context).$root);
   if (context.notify) {
     const v5 = document.createElement('with');
     v5.setAttribute('context', `notify`);
     v1.appendChild(v5);
-    v5.appendChild(settingsYesNo(context).$root);
+    v5.appendChild(preferencesYesNo(context).$root);
   }
 
   const v6 = document.createElement('div');
@@ -38,7 +38,7 @@ function settings(context: settingsContext) {
   const v7 = document.createElement('with');
   v7.setAttribute('context', `pwr`);
   v1.appendChild(v7);
-  v7.appendChild(settingsYesNo(context).$root);
+  v7.appendChild(preferencesYesNo(context).$root);
 
   const v8 = document.createElement('div');
   v8.appendChild(document.createTextNode($l('tab_title_preferences')));
@@ -48,17 +48,17 @@ function settings(context: settingsContext) {
   const v9 = document.createElement('with');
   v9.setAttribute('context', `t_tl`);
   v1.appendChild(v9);
-  v9.appendChild(settingsYesNo(context).$root);
+  v9.appendChild(preferencesYesNo(context).$root);
 
   const v10 = document.createElement('with');
   v10.setAttribute('context', `t_clk`);
   v1.appendChild(v10);
-  v10.appendChild(settingsYesNo(context).$root);
+  v10.appendChild(preferencesYesNo(context).$root);
 
   const v11 = document.createElement('with');
   v11.setAttribute('context', `t_rt`);
   v1.appendChild(v11);
-  v11.appendChild(settingsYesNo(context).$root);
+  v11.appendChild(preferencesYesNo(context).$root);
 
   const v12 = document.createElement('div');
   v12.appendChild(document.createTextNode($l('font_options')));
@@ -68,7 +68,7 @@ function settings(context: settingsContext) {
   const v13 = document.createElement('with');
   v13.setAttribute('context', `roboto`);
   v1.appendChild(v13);
-  v13.appendChild(settingsYesNo(context).$root);
+  v13.appendChild(preferencesYesNo(context).$root);
 
   const v14 = document.createElement('div');
   v14.className = style['power-only'];
@@ -77,7 +77,7 @@ function settings(context: settingsContext) {
   const v15 = document.createElement('with');
   v15.setAttribute('context', `f_norm`);
   v14.appendChild(v15);
-  v15.appendChild(settingsYesNo(context).$root);
+  v15.appendChild(preferencesYesNo(context).$root);
 
   const v16 = document.createElement('div');
   v16.appendChild(document.createTextNode($l('timeline_preferences')));
@@ -87,7 +87,7 @@ function settings(context: settingsContext) {
   const v17 = document.createElement('with');
   v17.setAttribute('context', `l_displose`);
   v1.appendChild(v17);
-  v17.appendChild(settingsYesNo(context).$root);
+  v17.appendChild(preferencesYesNo(context).$root);
 
   const v18 = document.createElement('div');
   v18.className = style['power-only'];
@@ -96,7 +96,7 @@ function settings(context: settingsContext) {
   const v19 = document.createElement('with');
   v19.setAttribute('context', `l_stksz`);
   v18.appendChild(v19);
-  v19.appendChild(settingsMultiOption(context).$root);
+  v19.appendChild(preferencesMultiOption(context).$root);
 
   const v20 = document.createElement('div');
   v20.appendChild(document.createTextNode($l('playlist_preferences')));
@@ -106,32 +106,32 @@ function settings(context: settingsContext) {
   const v21 = document.createElement('with');
   v21.setAttribute('context', `p_sort`);
   v18.appendChild(v21);
-  v21.appendChild(settingsMultiOption(context).$root);
+  v21.appendChild(preferencesMultiOption(context).$root);
 
   const v22 = document.createElement('with');
   v22.setAttribute('context', `p_favup`);
   v18.appendChild(v22);
-  v22.appendChild(settingsYesNo(context).$root);
+  v22.appendChild(preferencesYesNo(context).$root);
 
   const v23 = document.createElement('with');
   v23.setAttribute('context', `p_fav1`);
   v18.appendChild(v23);
-  v23.appendChild(settingsYesNo(context).$root);
+  v23.appendChild(preferencesYesNo(context).$root);
 
   const v24 = document.createElement('with');
   v24.setAttribute('context', `p_avup`);
   v18.appendChild(v24);
-  v24.appendChild(settingsYesNo(context).$root);
+  v24.appendChild(preferencesYesNo(context).$root);
 
   const v25 = document.createElement('with');
   v25.setAttribute('context', `p_null1`);
   v18.appendChild(v25);
-  v25.appendChild(settingsYesNo(context).$root);
+  v25.appendChild(preferencesYesNo(context).$root);
 
   const v26 = document.createElement('with');
   v26.setAttribute('context', `p_songsort`);
   v18.appendChild(v26);
-  v26.appendChild(settingsYesNo(context).$root);
+  v26.appendChild(preferencesYesNo(context).$root);
 
   const v27 = document.createElement('div');
   v27.appendChild(document.createTextNode($l('rating_preferences')));
@@ -141,18 +141,18 @@ function settings(context: settingsContext) {
   const v28 = document.createElement('with');
   v28.setAttribute('context', `r_incmplt`);
   v18.appendChild(v28);
-  v28.appendChild(settingsYesNo(context).$root);
+  v28.appendChild(preferencesYesNo(context).$root);
 
   const v29 = document.createElement('with');
   v29.setAttribute('context', `r_noglbl`);
   v18.appendChild(v29);
-  v29.appendChild(settingsYesNo(context).$root);
+  v29.appendChild(preferencesYesNo(context).$root);
 
   const v30 = document.createElement('with');
   v30.setAttribute('context', `r_clear`);
   v18.appendChild(v30);
-  v30.appendChild(settingsYesNo(context).$root);
-
-  return { $root: v1 };
+  v30.appendChild(preferencesYesNo(context).$root);
+  
+return { $root: v1 };
 }
-export { settings };
+export { preferences };

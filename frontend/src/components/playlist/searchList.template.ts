@@ -49,15 +49,15 @@ function searchList(context: searchListContext) {
   const v9 = document.createElement('div');
   v9.className = style['list-contents'];
   v1.appendChild(v9);
-
-  return {
+  
+return {
     $root: v1,
-    box_container: v2,
-    loading_bar: v3,
-    search_box: v4,
+    boxContainer: v2,
+    loadingBar: v3,
+    searchBox: v4,
     cancel: v6,
-    no_result_message: v7,
-    no_result_search_active_message: v8,
+    noResultMessage: v7,
+    noResultSearchActiveMessage: v8,
     list: v9,
   };
 }

@@ -152,15 +152,15 @@ return { $root: v25 };
 return {
     $root: v1,
     art: v3,
-    detail_header: v4,
-    album_all_cooldown: v6,
-    album_has_cooldown: v9,
-    graph_placement: v16,
-    category_rollover: v22,
-    category_list: v23,
+    detailHeader: v4,
+    albumAllCooldown: v6,
+    albumHasCooldown: v9,
+    graphPlacement: v16,
+    categoryRollover: v22,
+    categoryList: v23,
     genres: v24,
-    fave_all_songs: v28,
-    unfave_all_songs: v30,
+    faveAllSongs: v28,
+    unfaveAllSongs: v30,
   };
 }
 export { albumDetail };

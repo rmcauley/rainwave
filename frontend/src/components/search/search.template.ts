@@ -73,15 +73,15 @@ function search(context: searchContext) {
   
 return {
     $root: v1,
-    search_close: v2,
-    search_header: v6,
-    search_box_container: v7,
-    search_form: v8,
-    search_button: v9,
+    searchClose: v2,
+    searchHeader: v6,
+    searchBoxContainer: v7,
+    searchForm: v8,
+    searchButton: v9,
     search: v11,
-    search_cancel: v13,
-    search_results_container: v14,
-    search_results: v15,
+    searchCancel: v13,
+    searchResultsContainer: v14,
+    searchResults: v15,
   };
 }
 export { search };

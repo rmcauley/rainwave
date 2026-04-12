@@ -4,338 +4,74 @@
 
 $menu-icon-only-media: string.unquote('max-width: 650px');
 
-.header {
-  transform: translate3d(0, 0, 0);
-  position: relative;
+#header {
   background: theme.$menu-pad-bkg;
   height: theme.$menu-height;
-  z-index: 2;
+  width: 100%;
+  padding: 0;
 
   @media (css.$phone-media) {
     height: theme.$phone-menu-height;
   }
 }
 
-.menu-wrapper {
-  position: relative;
-  color: theme.$menu;
-  background: theme.$menu-bkg;
+#menu {
+  background: theme.$blue;
   width: 1024px;
   max-width: 100%;
+  padding: 0;
   margin: 0 auto;
-  height: theme.$menu-height;
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  gap: 10px;
 
-  .full & {
+  .power & {
     width: 100%;
     margin: 0;
   }
+}
 
-  @media (css.$phone-media) {
-    height: theme.$phone-menu-height;
-  }
+#menu-right {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+  container-type: inline-size;
+  container-name: menu-right;
+  padding-right: 10px;
+}
+
+.menu-right-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 5px;
+  height: 1.8em;
+  padding: 0 10px;
 
   svg {
-    display: inline-block;
-    height: 20px;
-    width: 20px;
-    transform: translateZ(0);
-
-    &,
-    * {
-      fill: theme.$menu;
-
-      // @include transition-wtime(150ms, fill);
-    }
-
-    @media ($menu-icon-only-media) {
-      height: 25px;
-      width: 25px;
-    }
+    height: 1em;
   }
 
-  .menu-icon {
-    height: 15px;
-    width: 15px;
-
-    @include css.transform(translateY(4px));
+  &.open {
+    background: theme.$menu-link-open;
   }
 }
 
-/* ICONS AND LINKS */
-
-.menu {
-  margin: 0;
-  padding: 0;
-  float: right;
-  position: relative;
-  top: 50%;
-  z-index: 1;
-
-  @include css.transform(translateY(-50%));
-
-  background: theme.$menu-bkg;
-
-  svg,
-  .menu-icon {
-    display: none;
-  }
-
-  svg {
-    @include css.transform(translateY(2px));
-  }
-
-  .search-link img {
-    @include css.transform(translateY(1px));
-  }
-
-  &.main-menu {
-    z-index: 2;
-
-    @media ($menu-icon-only-media) {
-      span {
-        display: none;
-      }
-
-      svg,
-      .menu-icon {
-        display: block;
-      }
-
-      .menu-icon {
-        position: relative;
-        top: -2px;
-        height: 20px;
-        width: 20px;
-      }
-    }
-
-    @media (css.$phone-media) {
-      top: 0;
-      height: theme.$phone-menu-height;
-
-      @include css.transform(none);
-
-      li a {
-        box-sizing: border-box;
-        height: theme.$phone-menu-height;
-        padding: 8px 10px;
-      }
-
-      .search-link img {
-        top: 2px;
-
-        @include css.transform(none);
-      }
-    }
-
-    @media (width <= 370px) {
-      .search-link {
-        display: none;
-      }
-    }
-  }
-
-  &.hamburger-container {
-    margin-right: 10px;
-    margin-left: 5px;
-
-    @media (css.$phone-media) {
-      display: none;
-
-      // margin-right: 0;
-      // margin-left: 0;
-      // margin-top: 1px;
-    }
-  }
-
-  li {
-    margin: 0 2px;
-    padding: 0;
-    position: relative;
-    display: inline;
-
-    a {
-      padding: 4px 12px;
-      display: inline-block;
-    }
-
-    &.user-info {
-      box-sizing: border-box;
-      overflow: hidden;
-      white-space: nowrap;
-      padding-right: 20px;
-      max-width: 150px;
-
-      .avatar {
-        position: absolute;
-        top: 0;
-        left: 100%;
-        max-height: 20px;
-        max-width: 20px;
-        padding-right: 5px;
-
-        @include css.transform(translateX(-100%));
-      }
-
-      @media (css.$phone-media) {
-        max-width: 70px;
-        padding: 0;
-        margin: 0;
-
-        a {
-          padding: 4px 10px;
-
-          span {
-            display: none;
-          }
-        }
-
-        .avatar {
-          position: relative;
-          float: none;
-          max-height: 25px;
-          max-width: 25px;
-        }
-      }
-    }
-
-    .playlist &.playlist-link a,
-    .search-open &.search-link a {
-      background: theme.$menu-link-open;
-    }
-
-    &.requests-link {
-      display: none;
-
-      .logged-in & {
-        display: inline;
-      }
-
-      a {
-        &.paused {
-          background: theme.$requests-paused;
-        }
-
-        &.warning {
-          background: theme.$error-bkg;
-        }
-
-        .requests & {
-          background: theme.$menu-link-open;
-        }
-
-        .requests &.paused {
-          background: theme.$requests-paused;
-        }
-
-        .requests &.warning {
-          background: theme.$error-bkg;
-        }
-      }
-    }
-  }
-
-  .signup-link {
+@container menu-right (max-width: 500px) {
+  .menu-right-text {
     display: none;
   }
 }
 
-.menu-dropdown {
-  position: absolute;
-  z-index: 0;
-  top: 10px;
-  min-width: 100%;
-  background: theme.$menu-bkg;
-  opacity: 0;
-  visibility: hidden;
-  padding-top: 20px;
-  padding-bottom: 10px;
-
-  // @include css.transform(translateY(-theme.$menu-height + 10));
-  @include css.transition-wtime(300ms, opacity, transform, visibility);
-
-  a,
-  .menu li & a {
-    white-space: nowrap;
-    display: block;
-    background: theme.$menu-bkg;
-    z-index: 1;
-    position: relative;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    &,
-    .menu li & {
-      padding: 8px 20px 8px 5px;
-    }
+#requests-link {
+  &.paused {
+    background: theme.$requests-paused;
   }
 
-  *:hover > &.menu-hover-dropdown {
-    @include css.transform(none);
-
-    opacity: 1;
-    visibility: visible;
-  }
-
-  &.hamburgered {
-    min-width: 200px;
-    text-align: right;
-    margin-left: 45px;
-
-    // @include css.transform(translateX(-100%) translateY(-theme.$menu-height + 10));
-
-    .burger-open & {
-      opacity: 1;
-      visibility: visible;
-
-      @include css.transform(translateX(-100%));
-    }
-  }
-
-  .menu-group {
-    position: relative;
-    border-top: 1px solid theme.$submenu-separator;
-    z-index: 1;
-  }
-}
-
-.hamburger-icon {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-  position: relative;
-  display: inline-block;
-  height: 8px;
-  width: 0;
-  border-top: 2px solid theme.$menu;
-  border-bottom: 2px solid theme.$menu;
-  background: theme.$menu-bkg;
-  z-index: 2;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 0;
-    width: 100%;
-    border-top: 2px solid theme.$menu;
-    background: theme.$menu-bkg;
-  }
-
-  .desktop .hamburger-icon-li:hover & {
-    border-color: theme.$link-h;
-
-    &::before {
-      border-color: theme.$link-h;
-    }
-  }
-}
-
-.m3u a {
-  border-bottom: solid 1px theme.$submenu-separator;
-
-  &:last-child {
-    border-bottom: none;
+  &.warning {
+    background: theme.$error-bkg;
   }
 }

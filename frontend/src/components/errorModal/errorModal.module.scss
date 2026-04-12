@@ -1,3 +1,6 @@
+@use '../../theme' as *;
+@use '../../cssFunctions' as *;
+
 $modal-trans-time: 300ms;
 $initial-height: 0.2;
 

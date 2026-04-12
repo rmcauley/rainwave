@@ -18,7 +18,7 @@ function fave(context: faveContext) {
   v4.className = style['fave-solid'];
   v4.setAttribute('src', `/static/images4/heart_solid_gold.png`);
   v2.appendChild(v4);
-
-  return { $root: v1, fave: v2 };
+  
+return { $root: v1, fave: v2 };
 }
 export { fave };

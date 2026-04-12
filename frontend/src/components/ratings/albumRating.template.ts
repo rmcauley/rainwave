@@ -14,6 +14,6 @@ function albumRating(context: albumRatingContext) {
     v2.appendChild(v3);
   }
   
-return { $root: v1, rating: v2, rating_hover_number: v3 };
+return { $root: v1, rating: v2, ratingHoverNumber: v3 };
 }
 export { albumRating };

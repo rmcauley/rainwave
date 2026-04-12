@@ -1,10 +1,10 @@
 <div
-  bind="item_root"
+  bind="itemRoot"
   data-old-class="{{ ^'setting-group ' + (context.special ? 'setting-group-special' : '') + ' ' + (context.power_only ? 'power-only' : '') }}"
 >
   <div class="multi-select unselectable" bind="area">
     <div class="floating-highlight" bind="highlight"></div>
-    <for each="legal_values" bind="legal_values">
+    <for each="legal_values" bind="legalValues">
       <span class="link" bind="link"> {{ name }} </span>
     </for>
   </div>

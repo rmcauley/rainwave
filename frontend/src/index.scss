@@ -30,18 +30,11 @@ body {
   user-select: none;
 }
 
-div {
+.scrollable {
   scroll-margin: 0;
   scroll-padding: 0;
-  scrollbar-width: 8px;
+  scrollbar-width: thin;
   scrollbar-color: #555 #000;
-}
-
-#measure-box {
-  top: -300px;
-  position: absolute;
-  visibility: hidden;
-  width: 300px;
 }
 
 a,
@@ -61,10 +54,6 @@ a:visited,
     }
   }
 
-  &.no-pointer {
-    cursor: default;
-  }
-
   .desktop &:hover {
     color: theme.$link-h !important;
   }
@@ -72,4 +61,17 @@ a:visited,
 
 .simple .power-only {
   display: none;
+}
+
+#rainwave {
+  display: flex;
+  flex-direction: column;
+  place-content: stretch flex-start;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }

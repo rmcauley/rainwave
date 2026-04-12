@@ -200,6 +200,7 @@ export default defineConfig([
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-shadow': 'off',
       'prefer-template': 'off',
 
       '@typescript-eslint/no-unused-vars': [

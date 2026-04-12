@@ -1,8 +1,8 @@
-import type { settingsMultiOptionContext } from './preferencesMultiOption.context';
+import type { preferencesMultiOptionContext } from './preferencesMultiOption.context';
 
-import style from './settingsMultiOption.module.scss';
+import style from './preferencesMultiOption.module.scss';
 
-function settingsMultiOption(context: settingsMultiOptionContext) {
+function preferencesMultiOption(context: preferencesMultiOptionContext) {
   const v1 = document.createDocumentFragment();
 
   const v2 = document.createElement('div');
@@ -31,14 +31,14 @@ function settingsMultiOption(context: settingsMultiOptionContext) {
     v7.className = style.link;
     v6.appendChild(v7);
     v3.appendChild(v6);
-
-    return { link: v7, $root: v6 };
+    
+return { link: v7, $root: v6 };
   });
 
   const v8 = document.createElement('label');
   v8.appendChild(document.createTextNode(context.name));
   v2.appendChild(v8);
-
-  return { $root: v1, item_root: v2, area: v3, highlight: v4, legal_values: v5 };
+  
+return { $root: v1, itemRoot: v2, area: v3, highlight: v4, legalValues: v5 };
 }
-export { settingsMultiOption };
+export { preferencesMultiOption };

@@ -16,13 +16,13 @@
 
   <if condition="^context.entry_id && !MOBILE && Sizing.simple">
     <div class="vote-button">
-      <span class="vote-button-rotate" bind="vote_button_text">{{ $l("vote") }}</span>
+      <span class="vote-button-rotate" bind="voteButtonText">{{ $l("vote") }}</span>
     </div>
   </if>
 
   <div class="art-anchor">
     <if condition="request_id">
-      <div class="request-sort-grab" bind="request_drag">
+      <div class="request-sort-grab" bind="requestDrag">
         <img src="/static/images4/sort.svg" />
       </div>
     </if>
