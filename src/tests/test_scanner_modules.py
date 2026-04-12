@@ -7,7 +7,7 @@ from enum import IntEnum
 from types import ModuleType
 from types import SimpleNamespace
 from typing import Any
-from unittest.mock import AsyncMock, mock_open, patch
+from unittest.mock import AsyncMock, call, mock_open, patch
 
 
 def _install_watchfiles_stub() -> None:
@@ -634,6 +634,42 @@ def test_album_art_helpers_and_reconcile() -> None:
         asyncio.run(reconcile_album_art(cursor, 7))
 
     assert cursor.update.await_count == 2
+
+    cursor = AsyncMock()
+    cursor.fetch_list = AsyncMock(return_value=[2, 3, 5])
+    with (
+        patch(
+            "scanner.album_art.config.album_art_order",
+            {
+                2: [2, 4],
+                3: [3, 2],
+                5: [2, 4, 1, 3],
+            },
+        ),
+        patch(
+            "scanner.album_art.os.path.exists",
+            side_effect=lambda path: path.endswith("2_9_320.jpg")
+            or path.endswith("3_9_320.jpg"),
+        ),
+    ):
+        asyncio.run(reconcile_album_art(cursor, 9))
+
+    cursor.update.assert_has_awaits(
+        [
+            call(
+                "UPDATE r4_album_sid SET album_art_url = %s WHERE album_id = %s AND sid = %s",
+                ("2_9", 9, 2),
+            ),
+            call(
+                "UPDATE r4_album_sid SET album_art_url = %s WHERE album_id = %s AND sid = %s",
+                ("3_9", 9, 3),
+            ),
+            call(
+                "UPDATE r4_album_sid SET album_art_url = %s WHERE album_id = %s AND sid = %s",
+                ("2_9", 9, 5),
+            ),
+        ]
+    )
 
     cursor = AsyncMock()
     cursor.fetch_list = AsyncMock(return_value=[1])
