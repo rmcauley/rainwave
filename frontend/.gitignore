@@ -64,5 +64,6 @@ logs
 .coverage.*
 coverage.xml
 htmlcov
+**/*.module.d.scss.ts
 
 dist

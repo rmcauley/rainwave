@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "vite-plugin-sass-dts": "^1.3.37"
+  }
+}

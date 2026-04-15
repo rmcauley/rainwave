@@ -1,188 +1,205 @@
 @use '../../theme' as theme;
 
-.station {
-  box-sizing: border-box;
-  display: block;
-  background: transparent;
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  width: 100%;
-  overflow: hidden;
-  height: $station-height;
-  cursor: default;
-  padding: 0 0 0 20px;
-
-  @include css.transform(translateY(-15px));
-
-  transition:
-    -webkit-transform 700ms theme.$menu-transfunc,
-    background 350ms css.$transfunc,
-    color 350ms css.$transfunc;
-  transition:
-    transform 700ms theme.$menu-transfunc,
-    background 350ms css.$transfunc,
-    color 350ms css.$transfunc;
-
-  @media (css.$phone-media) {
-    padding-left: 5px;
-    height: theme.$phone-menu-height;
-
-    @include css.transform(none);
-  }
-
-  .desktop &:hover,
-  .mobile &:active {
-    background: theme.$stasel-h-bkg;
-    color: theme.$text !important;
-  }
-
-  &.selected-station {
-    background: theme.$menu-bkg;
-    color: theme.$menu;
-    z-index: 40 !important;
-
-    @include css.transform(translateY(-13px));
-
-    @media (css.$phone-media) {
-      @include css.transform(none);
+.station-select-station {
+  &-now-playing {
+    &-art,
+    &-title,
+    &-album {
+      display: block;
     }
   }
 
-  .station-name {
-    text-transform: uppercase;
-  }
-
-  .station-details {
-    position: relative;
-    top: 50%;
-    font-weight: 400;
-    font-size: 2em;
-
-    @include css.transform(translateY(-50%));
-    @include css.transition-wtime(350ms, transform);
-
-    @media (css.$phone-media) {
-      font-size: 1.3em;
-    }
-  }
-
-  .station-description {
-    text-transform: uppercase;
-    font-weight: 400;
-    font-size: 0.4em;
-    position: absolute;
-    opacity: 0;
-
-    @include css.transition-wtime(300ms, transform, opacity);
-    @include css.transform(translateX(1em));
-
-    @media (css.$phone-media) {
-      display: none;
-    }
-  }
-
-  .station-song-container {
-    visibility: hidden;
-    position: relative;
-    width: 160px;
-    float: right;
-    top: 50%;
-    font-size: smaller;
-    opacity: 0;
-
-    @include css.transform(translateX(100%) translateY(-50%));
-
-    transition:
-      -webkit-transform 700ms theme.$menu-transfunc,
-      opacity 300ms css.$transfunc,
-      visibility 700ms theme.$menu-transfunc;
-    transition:
-      transform 700ms theme.$menu-transfunc,
-      opacity 300ms css.$transfunc,
-      visibility 700ms theme.$menu-transfunc;
-
-    @media (css.$phone-media) {
-      display: none;
-    }
-
-    div {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .ss-title {
-      margin-top: 7px;
-    }
-
-    .ss-art {
-      float: left;
-      height: $station-height - 20;
-      width: $station-height - 20;
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-      margin-right: 5px;
+  &-details {
+    &-name,
+    &-description {
+      display: block;
     }
   }
 }
 
-.open .station {
-  &.selected-station {
-    cursor: default;
-  }
+// .station {
+//   box-sizing: border-box;
+//   display: block;
+//   background: transparent;
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+//   z-index: 1;
+//   width: 100%;
+//   overflow: hidden;
+//   height: $station-height;
+//   cursor: default;
+//   padding: 0 0 0 20px;
 
-  .station-details {
-    @include css.transform(translateY(-72%));
-  }
+//   @include css.transform(translateY(-15px));
 
-  .station-description {
-    opacity: 0.7;
+//   transition:
+//     -webkit-transform 700ms theme.$menu-transfunc,
+//     background 350ms css.$transfunc,
+//     color 350ms css.$transfunc;
+//   transition:
+//     transform 700ms theme.$menu-transfunc,
+//     background 350ms css.$transfunc,
+//     color 350ms css.$transfunc;
 
-    @include css.transform(translateX(0));
+//   @media (css.$phone-media) {
+//     padding-left: 5px;
+//     height: theme.$phone-menu-height;
 
-    transition-delay: 400ms;
-  }
+//     @include css.transform(none);
+//   }
 
-  &:nth-of-type(2) {
-    border-top: 1px solid rgb(0 0 0 / 10%);
-  }
+//   .desktop &:hover,
+//   .mobile &:active {
+//     background: theme.$stasel-h-bkg;
+//     color: theme.$text !important;
+//   }
 
-  @for $i from 2 through 7 {
-    &:nth-of-type(#{$i}) {
-      z-index: 6 - $i;
+//   &.selected-station {
+//     background: theme.$menu-bkg;
+//     color: theme.$menu;
+//     z-index: 40 !important;
 
-      @include css.transform(translateY(theme.$menu-height + ($station-height * ($i - 2))));
-    }
-  }
+//     @include css.transform(translateY(-13px));
 
-  .station-song-container {
-    visibility: visible;
-    opacity: 0.7;
+//     @media (css.$phone-media) {
+//       @include css.transform(none);
+//     }
+//   }
 
-    @include css.transform(translateX(0%) translateY(-50%));
+//   .station-name {
+//     text-transform: uppercase;
+//   }
 
-    @media (css.$mobile-media) {
-      display: none;
-    }
-  }
+//   .station-details {
+//     position: relative;
+//     top: 50%;
+//     font-weight: 400;
+//     font-size: 2em;
 
-  .desktop &:hover,
-  .mobile &:active {
-    .station-song-container {
-      opacity: 1;
-    }
-  }
+//     @include css.transform(translateY(-50%));
+//     @include css.transition-wtime(350ms, transform);
 
-  @media (css.$phone-media) {
-    @for $i from 2 through 7 {
-      &:nth-of-type(#{$i}) {
-        @include css.transform(
-          translateY(theme.$phone-menu-height + (theme.$phone-menu-height * ($i - 2)))
-        );
-      }
-    }
-  }
-}
+//     @media (css.$phone-media) {
+//       font-size: 1.3em;
+//     }
+//   }
+
+//   .station-description {
+//     text-transform: uppercase;
+//     font-weight: 400;
+//     font-size: 0.4em;
+//     position: absolute;
+//     opacity: 0;
+
+//     @include css.transition-wtime(300ms, transform, opacity);
+//     @include css.transform(translateX(1em));
+
+//     @media (css.$phone-media) {
+//       display: none;
+//     }
+//   }
+
+//   .station-song-container {
+//     visibility: hidden;
+//     position: relative;
+//     width: 160px;
+//     float: right;
+//     top: 50%;
+//     font-size: smaller;
+//     opacity: 0;
+
+//     @include css.transform(translateX(100%) translateY(-50%));
+
+//     transition:
+//       -webkit-transform 700ms theme.$menu-transfunc,
+//       opacity 300ms css.$transfunc,
+//       visibility 700ms theme.$menu-transfunc;
+//     transition:
+//       transform 700ms theme.$menu-transfunc,
+//       opacity 300ms css.$transfunc,
+//       visibility 700ms theme.$menu-transfunc;
+
+//     @media (css.$phone-media) {
+//       display: none;
+//     }
+
+//     div {
+//       white-space: nowrap;
+//       overflow: hidden;
+//       text-overflow: ellipsis;
+//     }
+
+//     .ss-title {
+//       margin-top: 7px;
+//     }
+
+//     .ss-art {
+//       float: left;
+//       height: $station-height - 20;
+//       width: $station-height - 20;
+//       background-size: contain;
+//       background-position: center;
+//       background-repeat: no-repeat;
+//       margin-right: 5px;
+//     }
+//   }
+// }
+
+// .open .station {
+//   &.selected-station {
+//     cursor: default;
+//   }
+
+//   .station-details {
+//     @include css.transform(translateY(-72%));
+//   }
+
+//   .station-description {
+//     opacity: 0.7;
+
+//     @include css.transform(translateX(0));
+
+//     transition-delay: 400ms;
+//   }
+
+//   &:nth-of-type(2) {
+//     border-top: 1px solid rgb(0 0 0 / 10%);
+//   }
+
+//   @for $i from 2 through 7 {
+//     &:nth-of-type(#{$i}) {
+//       z-index: 6 - $i;
+
+//       @include css.transform(translateY(theme.$menu-height + ($station-height * ($i - 2))));
+//     }
+//   }
+
+//   .station-song-container {
+//     visibility: visible;
+//     opacity: 0.7;
+
+//     @include css.transform(translateX(0%) translateY(-50%));
+
+//     @media (css.$mobile-media) {
+//       display: none;
+//     }
+//   }
+
+//   .desktop &:hover,
+//   .mobile &:active {
+//     .station-song-container {
+//       opacity: 1;
+//     }
+//   }
+
+//   @media (css.$phone-media) {
+//     @for $i from 2 through 7 {
+//       &:nth-of-type(#{$i}) {
+//         @include css.transform(
+//           translateY(theme.$phone-menu-height + (theme.$phone-menu-height * ($i - 2)))
+//         );
+//       }
+//     }
+//   }
+// }

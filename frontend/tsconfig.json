@@ -20,10 +20,7 @@
     "strict": true,
     "target": "es2023",
     "useDefineForClassFields": true,
-    "plugins": [
-      { "name": "typescript-eslint-language-service" },
-      { "name": "typescript-plugin-css-modules" }
-    ]
+    "plugins": [{ "name": "typescript-eslint-language-service" }]
   },
   "include": ["src", "../lang", "vite.config.ts", "vitest.config.ts"]
 }

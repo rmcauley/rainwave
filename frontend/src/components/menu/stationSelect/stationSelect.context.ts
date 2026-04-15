@@ -1,3 +1,4 @@
 export interface stationSelectContext {
-  station: { name: string; description: string };
+  name: string;
+  description: string;
 }

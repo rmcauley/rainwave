@@ -229,4 +229,11 @@ export default defineConfig([
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
+
+  {
+    files: ['vite*.ts'],
+    rules: {
+      'import/no-extraneous-dependencies': 'off',
+    },
+  },
 ]);

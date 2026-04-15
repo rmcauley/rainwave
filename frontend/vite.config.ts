@@ -3,6 +3,7 @@ import { cwd } from 'process';
 
 import { defineConfig } from 'vite';
 import { checker } from 'vite-plugin-checker';
+import sassDts from 'vite-plugin-sass-dts';
 
 const backendOrigin = process.env.VITE_BACKEND_ORIGIN ?? 'http://localhost';
 
@@ -34,6 +35,7 @@ export default defineConfig({
         lintCommand: 'stylelint "./src/**/*.scss"',
       },
     }),
+    sassDts(),
   ],
   server: {
     proxy: {
@@ -57,8 +59,7 @@ export default defineConfig({
     cssCodeSplit: false,
     rollupOptions: {
       output: {
-        inlineDynamicImports: true,
-        manualChunks: undefined,
+        codeSplitting: false,
       },
     },
   },

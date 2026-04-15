@@ -4,7 +4,7 @@ import './index.scss';
 import './utilityClasses.scss';
 import './components/menu/menu.scss';
 import './components/menu/stationSelect/stationSelect.scss';
-import './components/menu/player/player.scss';
+import '../src-old/player/player.scss';
 
 function rainwaveInit(): void {
   // api.addEventListener('error', showTooltipError)
