@@ -43,7 +43,7 @@ function modal(context: modalContext) {
   const v10 = document.createElement('div');
   v10.className = style['bottom-border'];
   v2.appendChild(v10);
-  
-return { $root: v1, container: v2, close: v6, content: v9 };
+
+  return { $root: v1, container: v2, close: v6, content: v9 };
 }
 export { modal };

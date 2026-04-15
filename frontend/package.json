@@ -23,6 +23,7 @@
   "homepage": "https://github.com/rmcauley/rainwave#readme",
   "devDependencies": {
     "@stylistic/eslint-plugin": "5.10.0",
+    "@thelabnyc/typed-scss-modules": "8.2.4",
     "@types/node": "20.19.30",
     "eslint": "9.39.4",
     "eslint-plugin-import": "2.32.0",

@@ -9,7 +9,7 @@ function timelineEntryTooltip(context: timelineEntryTooltipContext) {
   v2.appendChild(document.createTextNode(context.text));
   v2.className = style['error-tooltip'];
   v1.appendChild(v2);
-  
-return { $root: v1, el: v2 };
+
+  return { $root: v1, el: v2 };
 }
 export { timelineEntryTooltip };

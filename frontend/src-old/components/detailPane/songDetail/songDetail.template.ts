@@ -36,8 +36,8 @@ function songDetail(context: songDetailContext) {
       v7.href = `#!/artist/` + context.id;
       v6.appendChild(v7);
       v3.appendChild(v6);
-      
-return { $root: v6 };
+
+      return { $root: v6 };
     });
   }
   if (context.groups && context.groups.length && !MOBILE) {
@@ -57,8 +57,8 @@ return { $root: v6 };
       v12.href = `#!/group/` + context.id;
       v11.appendChild(v12);
       v8.appendChild(v11);
-      
-return { $root: v11 };
+
+      return { $root: v11 };
     });
   }
   if (context.rating_count) {
@@ -90,7 +90,7 @@ return { $root: v11 };
     v17.appendChild(document.createTextNode($l('song_has_no_ratings')));
     v2.appendChild(v17);
   }
-  
-return { $root: v1, details: v2, artists: v5, groups: v10, graphPlacement: v16 };
+
+  return { $root: v1, details: v2, artists: v5, groups: v10, graphPlacement: v16 };
 }
 export { songDetail };

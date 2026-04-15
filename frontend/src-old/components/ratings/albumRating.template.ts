@@ -13,7 +13,7 @@ function albumRating(context: albumRatingContext) {
     v3.className = style['rating-number rating-hover'];
     v2.appendChild(v3);
   }
-  
-return { $root: v1, rating: v2, ratingHoverNumber: v3 };
+
+  return { $root: v1, rating: v2, ratingHoverNumber: v3 };
 }
 export { albumRating };

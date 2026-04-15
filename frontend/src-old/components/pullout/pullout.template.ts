@@ -10,7 +10,7 @@ function pullout(context: pulloutContext) {
   const v3 = document.createElement('div');
   v3.setAttribute('id', `requests_grab_tag`);
   v2.appendChild(v3);
-  
-return { $root: v1, requestsPullout: v2 };
+
+  return { $root: v1, requestsPullout: v2 };
 }
 export { pullout };

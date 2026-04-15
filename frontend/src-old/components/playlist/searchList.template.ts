@@ -49,8 +49,8 @@ function searchList(context: searchListContext) {
   const v9 = document.createElement('div');
   v9.className = style['list-contents'];
   v1.appendChild(v9);
-  
-return {
+
+  return {
     $root: v1,
     boxContainer: v2,
     loadingBar: v3,

@@ -37,7 +37,7 @@ function authFailureModal(context: authFailureModalContext) {
   v8.className = style['link obvious'];
   v8.href = `https://discord.gg/fdb2cs7puS`;
   v7.appendChild(v8);
-  
-return { $root: v1 };
+
+  return { $root: v1 };
 }
 export { authFailureModal };

@@ -152,7 +152,7 @@ function preferences(context: preferencesContext) {
   v30.setAttribute('context', `r_clear`);
   v18.appendChild(v30);
   v30.appendChild(preferencesYesNo(context).$root);
-  
-return { $root: v1 };
+
+  return { $root: v1 };
 }
 export { preferences };

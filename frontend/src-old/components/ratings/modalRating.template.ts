@@ -47,7 +47,7 @@ function modalRating(context: modalRatingContext) {
   v10.appendChild(document.createTextNode(`1.0`));
   v10.setAttribute('id', `rating_window_1_0`);
   v1.appendChild(v10);
-  
-return { $root: v1 };
+
+  return { $root: v1 };
 }
 export { modalRating };

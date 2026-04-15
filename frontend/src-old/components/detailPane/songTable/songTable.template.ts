@@ -79,8 +79,8 @@ function songTable(context: songTableContext) {
         v15.href = `#!/artist/` + context.id;
         v14.appendChild(v15);
         v12.appendChild(v14);
-        
-return { $root: v14 };
+
+        return { $root: v14 };
       });
     }
     if (!MOBILE) {
@@ -114,10 +114,10 @@ return { $root: v14 };
     v20.setAttribute('title', context.title);
     v4.appendChild(v20);
     v1.appendChild(v3);
-    
-return { row: v4, ratingClear: v10, artists: v13, detailIcon: v18, title: v20, $root: v3 };
+
+    return { row: v4, ratingClear: v10, artists: v13, detailIcon: v18, title: v20, $root: v3 };
   });
-  
-return { $root: v1, songs: v2 };
+
+  return { $root: v1, songs: v2 };
 }
 export { songTable };

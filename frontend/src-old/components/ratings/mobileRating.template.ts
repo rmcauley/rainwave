@@ -16,7 +16,7 @@ function mobileRating(context: mobileRatingContext) {
   const v4 = document.createElement('div');
   v4.className = style.slider;
   v2.appendChild(v4);
-  
-return { $root: v1, el: v2, number: v3, slider: v4 };
+
+  return { $root: v1, el: v2, number: v3, slider: v4 };
 }
 export { mobileRating };

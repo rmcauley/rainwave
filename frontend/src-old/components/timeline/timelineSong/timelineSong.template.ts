@@ -158,8 +158,8 @@ function timelineSong(context: timelineSongContext) {
       v33.appendChild(document.createTextNode(`,`));
       v31.appendChild(v33);
       v29.appendChild(v31);
-      
-return { $root: v31 };
+
+      return { $root: v31 };
     });
     if (context.url) {
       const v34 = document.createElement('div');
@@ -174,8 +174,8 @@ return { $root: v31 };
       v34.appendChild(v35);
     }
   }
-  
-return {
+
+  return {
     $root: v1,
     root: v2,
     cancel: v3,

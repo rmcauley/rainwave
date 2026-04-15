@@ -84,7 +84,7 @@ function hamburgerMenu(context: hamburgerMenuContext) {
     v16.className = style.link;
     v15.appendChild(v16);
   }
-  
-return { $root: v1, settingsLink: v16 };
+
+  return { $root: v1, settingsLink: v16 };
 }
 export { hamburgerMenu };

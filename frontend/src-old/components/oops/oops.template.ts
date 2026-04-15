@@ -16,7 +16,7 @@ function oops(context: oopsContext) {
   const v4 = document.createElement('p');
   v4.appendChild(document.createTextNode($l('something_went_wrong')));
   v2.appendChild(v4);
-  
-return { $root: v1 };
+
+  return { $root: v1 };
 }
 export { oops };

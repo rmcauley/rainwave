@@ -93,8 +93,8 @@ function listenerDetail(context: listenerDetailContext) {
       v20.href = `#!/album/` + context.id;
       v19.appendChild(v20);
       v1.appendChild(v17);
-      
-return { $root: v17 };
+
+      return { $root: v17 };
     });
   }
   if (context.top_request_albums) {
@@ -123,15 +123,15 @@ return { $root: v17 };
       v27.href = `#!/album/` + context.id;
       v26.appendChild(v27);
       v1.appendChild(v23);
-      
-return { $root: v23 };
+
+      return { $root: v23 };
     });
   }
 
   const v28 = document.createElement('div');
   v28.className = style['user-detail-container'];
   v1.appendChild(v28);
-  
-return { $root: v1, topAlbums: v16, topRequestAlbums: v22, userDetailContainer: v28 };
+
+  return { $root: v1, topAlbums: v16, topRequestAlbums: v22, userDetailContainer: v28 };
 }
 export { listenerDetail };

@@ -43,8 +43,8 @@ function timeline(context: timelineContext) {
   const v10 = document.createElement('div');
   v10.className = style['progress-inside'];
   v9.appendChild(v10);
-  
-return {
+
+  return {
     $root: v1,
     timeline: v2,
     timelineSizer: v3,

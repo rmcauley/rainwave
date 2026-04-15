@@ -7,7 +7,6 @@ import type { searchResultsContext } from './searchResults.context';
 
 import style from './searchResults.module.scss';
 
-
 function searchResults(context: searchResultsContext) {
   const v1 = document.createDocumentFragment();
   if (context.artists.length) {
@@ -31,8 +30,8 @@ function searchResults(context: searchResultsContext) {
       v7.href = `#!/artist/` + context.id;
       v6.appendChild(v7);
       v1.appendChild(v4);
-      
-return { title: v7, $root: v4 };
+
+      return { title: v7, $root: v4 };
     });
     if (context.artists.length >= 50) {
       const v8 = document.createElement('div');
@@ -70,8 +69,8 @@ return { title: v7, $root: v4 };
       v14.href = `#!/album/` + context.id;
       v13.appendChild(v14);
       v1.appendChild(v11);
-      
-return { title: v14, $root: v11 };
+
+      return { title: v14, $root: v11 };
     });
     if (context.albums.length >= 50) {
       const v15 = document.createElement('div');
@@ -92,7 +91,7 @@ return { title: v14, $root: v11 };
       v1.appendChild(v17);
     }
   }
-  
-return { $root: v1, artists: v3, albums: v10 };
+
+  return { $root: v1, artists: v3, albums: v10 };
 }
 export { searchResults };

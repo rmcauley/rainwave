@@ -104,7 +104,7 @@ function whatIsCooldownModal(context: whatIsCooldownModalContext) {
   const v27 = document.createElement('td');
   v27.appendChild(document.createTextNode($l('cd_newer')));
   v25.appendChild(v27);
-  
-return { $root: v1 };
+
+  return { $root: v1 };
 }
 export { whatIsCooldownModal };

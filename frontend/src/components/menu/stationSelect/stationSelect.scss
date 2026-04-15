@@ -1,4 +1,4 @@
-@use '../../theme' as theme;
+@use '../../../theme' as theme;
 
 #station-select {
   display: flex;
@@ -23,4 +23,21 @@
   transition-timing-function: theme.$transition-timing-function;
   transition-duration: theme.$transition-duration;
   transform-origin: center center;
+}
+
+.station-select-station {
+  &-now-playing {
+    &-art,
+    &-title,
+    &-album {
+      display: block;
+    }
+  }
+
+  &-details {
+    &-name,
+    &-description {
+      display: block;
+    }
+  }
 }

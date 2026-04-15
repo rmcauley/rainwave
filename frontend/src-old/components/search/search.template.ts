@@ -70,8 +70,8 @@ function search(context: searchContext) {
   const v15 = document.createElement('div');
   v15.className = style['search-results'];
   v14.appendChild(v15);
-  
-return {
+
+  return {
     $root: v1,
     searchClose: v2,
     searchHeader: v6,

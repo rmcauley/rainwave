@@ -31,14 +31,14 @@ function preferencesMultiOption(context: preferencesMultiOptionContext) {
     v7.className = style.link;
     v6.appendChild(v7);
     v3.appendChild(v6);
-    
-return { link: v7, $root: v6 };
+
+    return { link: v7, $root: v6 };
   });
 
   const v8 = document.createElement('label');
   v8.appendChild(document.createTextNode(context.name));
   v2.appendChild(v8);
-  
-return { $root: v1, itemRoot: v2, area: v3, highlight: v4, legalValues: v5 };
+
+  return { $root: v1, itemRoot: v2, area: v3, highlight: v4, legalValues: v5 };
 }
 export { preferencesMultiOption };

@@ -22,10 +22,10 @@ function artistDetail(context: artistDetailContext) {
     }
     v3.appendChild(songTable(context).$root);
     v1.appendChild(v3);
-    
-return { $root: v3 };
+
+    return { $root: v3 };
   });
-  
-return { $root: v1, albums: v2 };
+
+  return { $root: v1, albums: v2 };
 }
 export { artistDetail };

@@ -125,8 +125,8 @@ function albumDetail(context: albumDetailContext) {
         v26.href = `#!/group/` + context.id;
         v25.appendChild(v26);
         v23.appendChild(v25);
-        
-return { $root: v25 };
+
+        return { $root: v25 };
       });
     }
   }
@@ -148,8 +148,8 @@ return { $root: v25 };
     v30.className = style['unfave-all-songs'];
     v27.appendChild(v30);
   }
-  
-return {
+
+  return {
     $root: v1,
     art: v3,
     detailHeader: v4,

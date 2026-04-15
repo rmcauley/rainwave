@@ -42,7 +42,7 @@ function preferencesYesNo(context: preferencesYesNoContext) {
   const v8 = document.createElement('label');
   v8.appendChild(document.createTextNode(context.name));
   v2.appendChild(v8);
-  
-return { $root: v1, itemRoot: v2, wrap: v3, yes: v4, no: v7, name: v8 };
+
+  return { $root: v1, itemRoot: v2, wrap: v3, yes: v4, no: v7, name: v8 };
 }
 export { preferencesYesNo };

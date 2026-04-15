@@ -236,4 +236,11 @@ export default defineConfig([
       'import/no-extraneous-dependencies': 'off',
     },
   },
+
+  {
+    files: ['**/*.scss.d.ts'],
+    rules: {
+      'import/exports-last': 'off',
+    },
+  },
 ]);

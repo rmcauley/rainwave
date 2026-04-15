@@ -1,22 +1,5 @@
 @use '../../theme' as theme;
 
-.station-select-station {
-  &-now-playing {
-    &-art,
-    &-title,
-    &-album {
-      display: block;
-    }
-  }
-
-  &-details {
-    &-name,
-    &-description {
-      display: block;
-    }
-  }
-}
-
 // .station {
 //   box-sizing: border-box;
 //   display: block;

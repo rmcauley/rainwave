@@ -101,8 +101,8 @@ function requestsPanel(context: requestsPanelContext) {
   v25.className = style.song;
   v25.setAttribute('style', `visibility: hidden; z-index: -1; transition: none`);
   v24.appendChild(v25);
-  
-return {
+
+  return {
     $root: v1,
     panelClose: v2,
     requestHeader: v6,

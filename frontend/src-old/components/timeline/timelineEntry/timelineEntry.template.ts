@@ -50,11 +50,11 @@ function timelineEntry(context: timelineEntryContext) {
     const v12 = document.createDocumentFragment();
     v12.appendChild(timelineSong(context).$root);
     v3.appendChild(v12);
-    
-return { $root: v12 };
+
+    return { $root: v12 };
   });
-  
-return {
+
+  return {
     $root: v1,
     el: v2,
     headerContainer: v4,
