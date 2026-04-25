@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from typing import AsyncIterator, Iterable
+from typing import AsyncGenerator, Iterable
 
 from common.cache import cache
 from common.db.cursor import RainwaveCursor
 
 
 @asynccontextmanager
-async def ensure_cache_connection() -> AsyncIterator[None]:
+async def ensure_cache_connection() -> AsyncGenerator[None]:
     if cache.client is not None:
         yield
         return

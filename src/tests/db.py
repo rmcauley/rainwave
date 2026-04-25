@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
+from typing import AsyncGenerator
 
 from psycopg import AsyncConnection
 from psycopg.rows import dict_row
@@ -22,7 +22,7 @@ def _conninfo() -> str:
 
 
 @asynccontextmanager
-async def get_test_cursor() -> AsyncIterator[RainwaveCursor]:
+async def get_test_cursor() -> AsyncGenerator[RainwaveCursor]:
     async with await AsyncConnection.connect(_conninfo(), autocommit=True) as conn:
         async with conn.cursor(row_factory=dict_row) as cursor:
             yield RainwaveCursor(cursor)
