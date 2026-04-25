@@ -17,7 +17,7 @@
   text-transform: uppercase;
 }
 
-#station-pulldown-icon {
+#station-select-pulldown-icon {
   width: 20px;
   fill: theme.$text;
   transition-timing-function: theme.$transition-timing-function;
@@ -26,7 +26,11 @@
 }
 
 .station-select-station {
+  display: block;
+
   &-now-playing {
+    display: block;
+
     &-art,
     &-title,
     &-album {
@@ -35,6 +39,8 @@
   }
 
   &-details {
+    display: block;
+
     &-name,
     &-description {
       display: block;

@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import { checker } from 'vite-plugin-checker';
-import sassDts from 'vite-plugin-sass-dts';
 
 const backendOrigin = process.env.VITE_BACKEND_ORIGIN ?? 'http://localhost';
 
@@ -10,9 +9,6 @@ export default defineConfig({
       stylelint: {
         lintCommand: 'stylelint "./src/**/*.scss"',
       },
-    }),
-    sassDts({
-      enabledMode: ['development', 'production'],
     }),
   ],
   server: {

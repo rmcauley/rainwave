@@ -1,14 +1,11 @@
+import { initMenu } from './components/menu/menu';
 import { preferences } from './preferences';
-
 import './index.scss';
-// import './utilityClasses.scss';
-// import './components/menu/menu.scss';
-// import './components/menu/stationSelect/stationSelect.scss';
-// import '../src-old/player/player.scss';
+import './utilityClasses.scss';
 
 function rainwaveInit(): void {
+  initMenu();
   // api.addEventListener('error', showTooltipError)
-  // TODO
   // api.addEventListener('wserror', showTooltipError)
   // api.addEventListener('sdk_exception', showTooltipError)
   // api.addEventListener('sdk_error_clear', showTooltipError)

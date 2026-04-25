@@ -8,6 +8,7 @@ import stylistic from '@stylistic/eslint-plugin';
 
 const jsRules = defineConfig({
   files: ['**/*.{js,jsx,mjs,ts,tsx,mts}'],
+  ignores: ['src-old/**/*'],
   plugins: {
     'unused-imports': pluginUnusedImports,
     'n': pluginNode,
@@ -138,6 +139,7 @@ const jsRules = defineConfig({
 const tsRules = defineConfig({
   extends: [tseslint.configs.strictTypeChecked],
   files: ['**/*.{ts,tsx,mts}'],
+  ignores: ['src-old/**/*'],
   plugins: {
     '@typescript-eslint': tseslint.plugin,
   },
@@ -180,6 +182,7 @@ const tsRules = defineConfig({
 export default defineConfig([
   {
     files: ['**/*.{ts,tsx,mts}'],
+    ignores: ['src-old/**/*'],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -189,7 +192,7 @@ export default defineConfig([
   },
 
   // Base ES Lint and TS ES Lint rules
-  eslint.configs.recommended,
+  { ...eslint.configs.recommended, ignores: ['src-old/**/*'] },
 
   // IAM Typescript rules for both FE and BE
   jsRules,
@@ -197,6 +200,7 @@ export default defineConfig([
 
   {
     files: ['**/*.template.ts'],
+    ignores: ['src-old/**/*'],
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
