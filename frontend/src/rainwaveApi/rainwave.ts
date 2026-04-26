@@ -40,7 +40,6 @@ interface RainwaveOptions {
   userId: number;
   apiKey: string;
   sid: components['schemas']['_station_id'];
-  initialUserState?: RainwaveUser;
   url?: string;
   debug?: typeof console.log;
   onSocketError?: (evt: Event) => void;
@@ -73,16 +72,15 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   private _user: RainwaveUser | undefined;
 
-  constructor(options: RainwaveOptions) {
+  constructor() {
     super();
 
-    this._userId = options.userId;
-    this._apiKey = options.apiKey;
-    this._sid = options.sid;
-    this._url = options.url || 'wss://core.rainwave.cc/api4/websocket/';
-    this._debug = options?.debug || ((): void => {});
-    this._externalOnSocketError = options?.onSocketError || ((): void => {});
-    this._user = options.initialUserState;
+    this._userId = 1;
+    this._apiKey = '';
+    this._sid = 5;
+    this._url = 'wss://core.rainwave.cc/api4/websocket/';
+    this._debug = (): void => {};
+    this._externalOnSocketError = (): void => {};
 
     this.addEventListener('sched_current', (current) => {
       this._currentScheduleId = current.id;
@@ -91,6 +89,15 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this.addEventListener('user', (user) => {
       this._user = user;
     });
+  }
+
+  setOptions(options: RainwaveOptions): void {
+    this._userId = options.userId;
+    this._apiKey = options.apiKey;
+    this._sid = options.sid;
+    this._url = options.url || 'wss://core.rainwave.cc/api4/websocket/';
+    this._debug = options?.debug || ((): void => {});
+    this._externalOnSocketError = options?.onSocketError || ((): void => {});
   }
 
   private _getNextRequestId(): number {
@@ -352,7 +359,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       }
     }
 
-    this._performCallbacks(json);
+    this.processPayload(json);
     this._nextRequest();
   }
 
@@ -437,7 +444,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   // Callback Handling *************************************************************************************
 
-  private _performCallbacks(json: Partial<components['schemas']>): void {
+  processPayload(json: Partial<components['schemas']>): void {
     // Make sure any vote results are registered after the schedule has been loaded.
     const alreadyVoted = json.already_voted;
     const liveVoting = json.live_voting;

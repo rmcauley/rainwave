@@ -5,7 +5,9 @@ const go: FrameRequestCallback = (time) => {
   const toExecute = queue.slice();
   queue = [];
   requested = false;
-  toExecute.forEach((fn) => { fn(time); });
+  toExecute.forEach((fn) => {
+    fn(time);
+  });
 };
 
 /* @deprecated */

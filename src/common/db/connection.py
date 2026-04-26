@@ -11,6 +11,7 @@ from common import log
 db_pool: AsyncConnectionPool | None = None
 
 db_connection_errors = (OperationalError, InterfaceError)
+DB_RECONNECT_RETRY_DELAY_SECONDS = 3
 
 
 def get_pool() -> AsyncConnectionPool:
@@ -61,7 +62,7 @@ async def db_connect(auto_retry: bool = True):
             except db_connection_errors as e:
                 log.exception("psycopg", "Psycopg connection error", e)
                 if auto_retry:
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(DB_RECONNECT_RETRY_DELAY_SECONDS)
                 else:
                     raise
     finally:

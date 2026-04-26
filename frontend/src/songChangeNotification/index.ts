@@ -1,6 +1,5 @@
 import { getAlbumArt } from '../helpers/albumArt';
 import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
-import { getUser } from '../helpers/user';
 import { preferences } from '../preferences';
 import { api } from '../rainwaveApi';
 
@@ -8,8 +7,8 @@ import { linuxNotifier } from './linuxNotifier';
 import { standardNotifier } from './standardNotifier';
 import { windowsFirefoxNotifier } from './windowsFirefoxNotifier';
 
-import type { Notifier } from './notifierType';
 import type { TimelineEntry } from '../rainwaveApi/types';
+import type { Notifier } from './notifierType';
 
 let enabled = false;
 const currentSongId: number | undefined | null = null;
@@ -42,7 +41,7 @@ function notify(schedCurrent: TimelineEntry): void {
   if (!currentSong || currentSong.id == currentSongId) {
     return;
   }
-  if (!getUser().tuned_in) {
+  if (!api.user.tuned_in) {
     return;
   }
 

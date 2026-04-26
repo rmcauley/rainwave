@@ -15,26 +15,26 @@ function cooldown(seconds: number): string {
   let humantime = '';
   let detail = 0;
   if (seconds >= 604800) {
-    humantime += `${Math.floor(seconds / 604800) + timeFormatWeek  } `;
+    humantime += `${Math.floor(seconds / 604800)}${timeFormatWeek} `;
     seconds = seconds % 604800;
     detail++;
   }
   if (seconds >= 86400) {
-    humantime += `${Math.floor(seconds / 86400) + timeFormatDay  } `;
+    humantime += `${Math.floor(seconds / 86400)}${timeFormatDay} `;
     seconds = seconds % 86400;
     detail++;
   }
   if (seconds >= 3600) {
-    humantime += `${Math.floor(seconds / 3600) + timeFormatHour  } `;
+    humantime += `${Math.floor(seconds / 3600)}${timeFormatHour} `;
     seconds = seconds % 3600;
     detail++;
   }
   if (seconds >= 60 && detail < 3) {
-    humantime += `${Math.floor(seconds / 60) + timeFormatMinute  } `;
+    humantime += `${Math.floor(seconds / 60)}${timeFormatMinute} `;
     seconds = seconds % 60;
   }
 
-  return humantime.substr(0, humantime.length - 1).trim();
+  return humantime.trim();
 }
 
 function cooldownGlance(seconds: number): string {
@@ -43,19 +43,19 @@ function cooldownGlance(seconds: number): string {
     return '';
   }
   if (seconds >= 604800) {
-    return Math.floor(seconds / 604800) + timeFormatWeek;
+    return `${Math.floor(seconds / 604800)}${timeFormatWeek}`;
   }
   if (seconds >= 86400) {
-    return Math.floor(seconds / 86400) + timeFormatDay;
+    return `${Math.floor(seconds / 86400)}${timeFormatDay}`;
   }
   if (seconds >= 3600) {
-    return Math.floor(seconds / 3600) + timeFormatHour;
+    return `${Math.floor(seconds / 3600)}${timeFormatHour}`;
   }
   if (seconds >= 60) {
-    return Math.floor(seconds / 60) + timeFormatMinute;
+    return `${Math.floor(seconds / 60)}${timeFormatMinute}`;
   }
 
-  return seconds + timeFormatSeconds;
+  return `${seconds}${timeFormatSeconds}`;
 }
 
 export { cooldown, cooldownGlance };

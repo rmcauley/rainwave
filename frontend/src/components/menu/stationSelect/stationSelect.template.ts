@@ -37,7 +37,7 @@ function stationSelect(context: stationSelectContext) {
   v9.appendChild(document.createTextNode(context.description));
   v9.className = 'station-select-station-details-description';
   v7.appendChild(v9);
-  
-return { $root: v1, menuNp: v3, menuNpArt: v4, menuNpSong: v5, menuNpAlbum: v6 };
+
+  return { $root: v1, menuNp: v3, menuNpArt: v4, menuNpSong: v5, menuNpAlbum: v6 };
 }
 export { stationSelect };

@@ -2,19 +2,19 @@ import { api } from '../rainwaveApi';
 
 import type { RainwaveSchemas } from '../rainwaveApi/types';
 
-function calculateTimeDiff(json: RainwaveSchemas['api_info']): number {
-  return json.time - Math.round(new Date().getTime() / 1000) + 2;
+function calculateTimeDiff(apiInfo: RainwaveSchemas['api_info']): number {
+  return apiInfo.time - Math.round(new Date().getTime() / 1000) + 2;
 }
 
 // Time difference to server
-let timeDiff = calculateTimeDiff(bootstrap.api_info);
+let timeDiff = 0;
 
 function getServerTime(): number {
   return Math.round(new Date().getTime() / 1000) + timeDiff;
 }
 
-function resync(json: RainwaveSchemas['api_info']): void {
-  timeDiff = calculateTimeDiff(json);
+function resync(apiInfo: RainwaveSchemas['api_info']): void {
+  timeDiff = calculateTimeDiff(apiInfo);
 }
 
 api.addEventListener('api_info', resync);

@@ -3,11 +3,11 @@ import { $l } from '../../../language';
 import { api } from '../../../rainwaveApi';
 
 import { stationSelect } from './stationSelect.template';
-import './stationSelect.scss';
 
 import type { RainwaveTranslationKey } from '../../../language/translations';
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+import './stationSelect.scss';
+
 const stationSelectMenu = document.getElementById('station-select-menu')!;
 
 function closeStationSelect(_evt: Event): void {
@@ -35,7 +35,6 @@ function toggleStationSelect(evt: Event): void {
 }
 
 function initStationSelect(): void {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.getElementById('station-select-header')!.addEventListener('click', toggleStationSelect);
 
   const stationLinks: Record<number, ReturnType<typeof stationSelect>> = {};

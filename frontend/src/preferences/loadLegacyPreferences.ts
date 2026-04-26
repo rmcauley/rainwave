@@ -7,7 +7,6 @@ const LEGACY_COOKIE_KEY = 'r5_prefs';
 const translateR5: Record<string, keyof Preferences> = {
   vol: 'volume',
   pwr: 'powerUserMode',
-  robot: 'useRobotoFont',
   notify: 'enableNotifications',
   r_incmplt: 'indicateIncompleteAlbums',
   r_noglbl: 'hideGlobalRatings',

@@ -69,7 +69,7 @@ def test_backend_server_start_enables_periodic_jobs_and_forks() -> None:
     init_proxy.assert_called_once()
     callback_one.start.assert_called_once()
     callback_two.start.assert_called_once()
-    fork_processes.assert_called_once_with(2)
+    fork_processes.assert_called_once_with(2, max_restarts=0)
     asyncio_run.assert_called_once()
 
 
@@ -92,7 +92,7 @@ def test_backend_server_start_skips_listen_when_no_task_id() -> None:
             initialize_proxy=False,
         )
 
-    fork_processes.assert_called_once_with(2)
+    fork_processes.assert_called_once_with(2, max_restarts=0)
     asyncio_run.assert_not_called()
 
 

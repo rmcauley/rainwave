@@ -2,8 +2,8 @@ import type { Preferences } from './preferenceTypes';
 
 const DEFAULT_PREFERENCES: Preferences = {
   volume: 1,
+  muted: false,
   powerUserMode: false,
-  useRobotoFont: true,
   enableNotifications: false,
   indicateIncompleteAlbums: false,
   hideGlobalRatings: false,

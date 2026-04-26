@@ -1,5 +1,7 @@
-import './menu.scss';
+import { initPlayer } from './player/player';
 import { initStationSelect } from './stationSelect/stationSelect';
+
+import './menu.scss';
 
 function initMenu(): void {
   // if (template.settings_link) {
@@ -25,6 +27,7 @@ function initMenu(): void {
   // if (template.user_link) {
   //   template.user_link.addEventListener('click', closeBurger);
   // }
+  initPlayer();
   initStationSelect();
 }
 

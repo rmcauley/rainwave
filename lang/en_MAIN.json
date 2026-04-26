@@ -184,11 +184,9 @@
   "audio_connect_error": "Currently having difficulties connecting to the radio server.",
   "audio_connect_error_reattempting": "You're losing your ability to vote because of connection issues.  We're trying to keep you connected properly.",
   "try_external_player": "Click here to try using an app to tune in.",
-  "m3u_hijack_right_click": "A plugin is trying to hijack your browser.  Please use the MP3 or Ogg M3U download links and an app to tune in.",
   "listen_via_browser": "Listen In Browser",
   "listen_via_mp3": "Listen with MP3",
   "listen_via_ogg": "Listen with Ogg",
-  "chrome_mobile_takes_time": "Android can take up to 20 seconds.  An orange icon means you're OK - please wait!",
   "api_docs": "API Docs",
   "github_repo": "GitHub",
 

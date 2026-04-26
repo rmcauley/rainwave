@@ -38,7 +38,9 @@ export class RainwaveEventListener<E> {
   protected emit<K extends keyof E>(event: K, data: E[K]): void {
     const eListeners = this._eventListeners[event];
     if (eListeners) {
-      eListeners.forEach((listener) => { listener(data); });
+      eListeners.forEach((listener) => {
+        listener(data);
+      });
     }
   }
 }

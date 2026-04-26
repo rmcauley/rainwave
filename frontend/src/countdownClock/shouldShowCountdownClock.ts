@@ -1,4 +1,4 @@
-import { preferences } from '../../preferences';
+import { preferences } from '../preferences';
 
 function shouldShowClockInTitle(): boolean {
   if (preferences.showClockInTitle === 'on') {

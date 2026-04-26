@@ -18,7 +18,13 @@
       }
     </style>
 
-    <link rel="preload" href="/static/roboto.woff2" as="font" type="font/woff2" />
+    <link
+      rel="preload"
+      href="/static/roboto.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
 
     <script vite-ignore src="/api4/bootstrap" async></script>
     <script type="module" src="/src/index.ts"></script>
@@ -53,14 +59,14 @@
           <div id="station-select">
             <div id="station-select-header">
               <div id="station-select-current-station">Game</div>
-              <svg id="station-select-pulldown-icon" viewBox="0 0 16 6">
+              <svg id="station-select-open-icon" viewBox="0 0 16 6">
                 <polygon points="8.3,5.1 1,1.9 1.6,0.5 8.3,3.5 15,0.5 15.6,1.9"></polygon>
               </svg>
             </div>
             <div id="station-select-menu"></div>
           </div>
 
-          <div id="player" style="">
+          <div id="player">
             <div id="player-load-indicator"></div>
             <div id="player-tuned-in-indicator"></div>
             <div id="player-body">
@@ -112,7 +118,7 @@
                   <rect x="80" y="0" width="17" height="100"></rect>
                 </clipPath>
                 <rect
-                  id="audio_volume_indicator_background"
+                  id="player-body-volume-background"
                   x="0"
                   y="0"
                   width="100"
@@ -121,7 +127,7 @@
                   style="will-change: opacity; opacity: 1.3"
                 ></rect>
                 <rect
-                  id="audio_volume_indicator"
+                  id="player-body-volume-bars"
                   x="0"
                   y="0"
                   width="100"

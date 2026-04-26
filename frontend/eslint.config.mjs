@@ -1,18 +1,24 @@
 import eslint from '@eslint/js';
+import stylistic from '@stylistic/eslint-plugin';
 import { defineConfig } from 'eslint/config';
 import pluginImport from 'eslint-plugin-import';
 import pluginNode from 'eslint-plugin-n';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import pluginUnusedImports from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
-import stylistic from '@stylistic/eslint-plugin';
 
 const jsRules = defineConfig({
   files: ['**/*.{js,jsx,mjs,ts,tsx,mts}'],
   ignores: ['src-old/**/*'],
+  languageOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
   plugins: {
     'unused-imports': pluginUnusedImports,
     'n': pluginNode,
     '@stylistic': stylistic,
+    'simple-import-sort': simpleImportSort,
   },
   extends: [pluginImport.flatConfigs.recommended, pluginImport.flatConfigs.typescript],
   rules: {
@@ -98,39 +104,18 @@ const jsRules = defineConfig({
       },
     ],
 
-    'import/order': [
+    'import/order': 'off',
+    'simple-import-sort/imports': [
       'error',
       {
-        'groups': [
-          'builtin',
-          'external',
-          'internal',
-          'index',
-          'parent',
-          'sibling',
-          'object',
-          'type',
+        groups: [
+          ['^\\u0000(?!.*\\.s?css$)'],
+          ['^node:', '^@?\\w'],
+          ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+          ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+          ['^.+\\u0000$'],
+          ['^\\u0000.*\\.s?css$'],
         ],
-
-        'pathGroups': [
-          {
-            pattern: './**/*.scss',
-            group: 'type',
-            position: 'after',
-          },
-          {
-            pattern: '**/*.scss',
-            group: 'type',
-            position: 'after',
-          },
-        ],
-
-        'alphabetize': {
-          order: 'asc',
-        },
-
-        'newlines-between': 'always',
-        'distinctGroup': true,
       },
     ],
   },
@@ -150,6 +135,7 @@ const tsRules = defineConfig({
     '@typescript-eslint/dot-notation': 'error',
     '@typescript-eslint/explicit-function-return-type': 'error',
     '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-redeclare': 'error',
     '@typescript-eslint/no-shadow': 'error',
     '@typescript-eslint/no-unsafe-enum-comparison': 'off',
@@ -181,12 +167,14 @@ const tsRules = defineConfig({
 
 export default defineConfig([
   {
+    ignores: ['dist/**', 'src-old/**'],
+  },
+
+  {
     files: ['**/*.{ts,tsx,mts}'],
-    ignores: ['src-old/**/*'],
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
@@ -200,7 +188,6 @@ export default defineConfig([
 
   {
     files: ['**/*.template.ts'],
-    ignores: ['src-old/**/*'],
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
@@ -242,9 +229,14 @@ export default defineConfig([
   },
 
   {
-    files: ['**/*.scss.d.ts'],
+    files: ['eslint.config.mjs'],
     rules: {
-      'import/exports-last': 'off',
+      'import/default': 'off',
+      'import/namespace': 'off',
+      'import/no-extraneous-dependencies': 'off',
+      'import/no-named-as-default': 'off',
+      'import/no-named-as-default-member': 'off',
+      'n/no-unpublished-import': 'off',
     },
   },
 ]);

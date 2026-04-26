@@ -1,4 +1,4 @@
-@use '../../theme' as theme;
+@use '../../../theme' as theme;
 
 @keyframes bar-loader {
   0% {
@@ -114,7 +114,7 @@
   opacity: 0;
   transform: scaleX(0);
 
-  &.tuned-in {
+  body.tuned-in & {
     opacity: 0.6;
     transform: scaleX(1);
   }

@@ -22,6 +22,9 @@ from common.playlist.cooldown_config import prepare_cooldown_algorithm
 from common.zeromq import zeromq
 
 
+BACKEND_CHILD_MAX_RESTARTS = 0
+
+
 class BackendServer:
     def start(
         self,
@@ -55,7 +58,9 @@ class BackendServer:
             )
             return
 
-        tornado.process.fork_processes(len(station_id_list))
+        tornado.process.fork_processes(
+            len(station_id_list), max_restarts=BACKEND_CHILD_MAX_RESTARTS
+        )
         task_id = tornado.process.task_id()
         if task_id is not None:
             asyncio.run(

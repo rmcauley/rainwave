@@ -1,7 +1,7 @@
 interface Preferences {
   volume: number;
+  muted: boolean;
   powerUserMode: boolean;
-  useRobotoFont: boolean;
   enableNotifications: boolean;
   indicateIncompleteAlbums: boolean;
   hideGlobalRatings: boolean;

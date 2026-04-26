@@ -1,15 +1,14 @@
 @use '../../../theme' as theme;
 
-#station-select {
+#station-select-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 230px;
   border-right: 1px solid #0b5c89;
-  will-change: opacity;
-  opacity: 1;
   flex-shrink: 0;
   padding: 0 20px;
+  height: 100%;
 }
 
 #station-select-current-station {
@@ -17,7 +16,7 @@
   text-transform: uppercase;
 }
 
-#station-select-pulldown-icon {
+#station-select-open-icon {
   width: 20px;
   fill: theme.$text;
   transition-timing-function: theme.$transition-timing-function;

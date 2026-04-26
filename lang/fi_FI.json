@@ -106,7 +106,6 @@
   "audio_connect_error": "Radiopalvelimelle yhdistäessä on juuri nyt ongelmia.",
   "audio_connect_error_reattempting": "Olet menettämässä äänestyskykysi yhteysongelmien vuoksi.  Yritämme pitää yhteytesi kunnossa.",
   "try_external_player": "Napsauta tästä yrittääksesi käyttää erillistä ohjelmaa kuunellaksesi asemaa.",
-  "m3u_hijack_right_click": "Liitännäinen yrittää kaapata M3U-soittolistan latauksen. Ole hyvä ja napsauta oikealla hiiren painikkeella ja valitse Tallenna nimellä kuunnellaksesi.",
   "coming_up": "Tulossa seuraavaksi",
   "vote_now": "Äänestä nyt",
   "now_playing": "Nyt soi",

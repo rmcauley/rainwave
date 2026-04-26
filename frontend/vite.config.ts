@@ -1,16 +1,8 @@
 import { defineConfig } from 'vite';
-import { checker } from 'vite-plugin-checker';
 
-const backendOrigin = process.env.VITE_BACKEND_ORIGIN ?? 'http://localhost';
+const backendOrigin = process.env.VITE_BACKEND_ORIGIN ?? 'http://localhost:24000';
 
 export default defineConfig({
-  plugins: [
-    checker({
-      stylelint: {
-        lintCommand: 'stylelint "./src/**/*.scss"',
-      },
-    }),
-  ],
   server: {
     proxy: {
       '/api4': {
