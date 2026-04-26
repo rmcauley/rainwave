@@ -39,7 +39,7 @@ function initStationSelect(): void {
 
   const stationLinks: Record<number, ReturnType<typeof stationSelect>> = {};
   stations.forEach((station): void => {
-    if (station.id !== window.bootstrap.user.sid) {
+    if (station.id !== api.user.sid) {
       stationLinks[station.id] = stationSelect({
         description: $l(`station_description_id_${station.id}` as RainwaveTranslationKey),
         name: station.name,
@@ -50,9 +50,12 @@ function initStationSelect(): void {
 
   api.addEventListener('all_stations_info', (data) => {
     Object.entries(stationLinks).forEach(([stationId, stationLink]) => {
-      stationLink.menuNpArt.style.backgroundImage = data[stationId as unknown as 1].art || '';
-      stationLink.menuNpAlbum.textContent = data[stationId as unknown as 1].album;
-      stationLink.menuNpSong.textContent = data[stationId as unknown as 1].title;
+      const stationData = data[stationId];
+      if (stationData) {
+        stationLink.menuNpArt.style.backgroundImage = stationData.art || '';
+        stationLink.menuNpAlbum.textContent = stationData.album;
+        stationLink.menuNpSong.textContent = stationData.title;
+      }
     });
   });
 }

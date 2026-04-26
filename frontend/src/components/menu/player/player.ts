@@ -19,13 +19,13 @@ function sanitizeVolume(newVolume: number): number {
 }
 
 function initPlayer(): void {
-  const relay = window.bootstrap.relays[0]!;
+  const relay = window.BOOTSTRAP.relays[0]!;
   const audioUrl = `${relay.protocol}://${relay.hostname}:${relay.port}/${stations[api.user.sid]!.url}?${api.user.id}:${api.user.listen_key}`;
   const player = new RainwaveAudioBackend(audioUrl, document.getElementById('measure-box')!);
 
   const el = document.getElementById('player')!;
   const volumeEl = document.getElementById('player-body-volume')!;
-  const volumeRect = document.getElementById('player-body-volume-bars')!;
+  const volumeRect = document.getElementById('player-body-volume-svg-bars')!;
   const loadingEl = document.getElementById('player-load-indicator')!;
   const playEl = document.getElementById('player-body-play')!;
   const stopEl = document.getElementById('player-body-stop')!;

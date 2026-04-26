@@ -1568,12 +1568,7 @@ export interface components {
             title: string;
         }[];
         all_stations_info: {
-            1: components["schemas"]["_station_info"];
-            2: components["schemas"]["_station_info"];
-            3: components["schemas"]["_station_info"];
-            4: components["schemas"]["_station_info"];
-            5: components["schemas"]["_station_info"];
-            6: components["schemas"]["_station_info"];
+            [key: string]: components["schemas"]["_station_info"];
         };
         /** @description An array of [timelineEntry.id, electionEntry.id] items. */
         already_voted: [

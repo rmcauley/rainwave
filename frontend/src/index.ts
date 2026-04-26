@@ -7,11 +7,11 @@ import './utilityClasses.scss';
 
 function rainwaveInit(): void {
   api.setOptions({
-    apiKey: window.bootstrap.user.api_key,
-    sid: window.bootstrap.user.sid,
-    userId: window.bootstrap.user.id,
+    apiKey: window.BOOTSTRAP.user.api_key,
+    sid: window.BOOTSTRAP.user.sid,
+    userId: window.BOOTSTRAP.user.id,
   });
-  api.processPayload({ user: window.bootstrap.user });
+  api.processPayload({ user: window.BOOTSTRAP.user });
 
   initMenu();
   // api.addEventListener('error', showTooltipError)
@@ -38,9 +38,11 @@ function rainwaveInit(): void {
 
   // correctCurrentUrlForStation();
 
-  api.processPayload(window.bootstrap);
+  api.processPayload(window.BOOTSTRAP);
 }
 
-if (!window.bootstrap) {
+if (window.BOOTSTRAP) {
+  rainwaveInit();
+} else {
   window.rainwaveInit = rainwaveInit;
 }

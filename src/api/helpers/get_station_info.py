@@ -214,7 +214,7 @@ async def get_station_info(
             if user_vote_cache:
                 response["already_voted"] = user_vote_cache
 
-    response["all_stations_info"] = all_station_info
+    response["all_stations_info"] = all_station_info or {}
     response["album_diff"] = album_diff
 
     if include_live_voting:

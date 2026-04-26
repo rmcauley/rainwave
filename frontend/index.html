@@ -109,32 +109,33 @@
                   d="M46.121,17.134c-2.872,2.163-5.744,4.325-8.617,6.487  c-1.585,1.193-0.805,1.707,0.599,3.11c4.504,4.506,9.009,9.011,13.514,13.516c1.004,1.016,1.297,0.896,1.297-0.191v-20.8  C52.914,15.147,49.269,14.766,46.121,17.134z"
                 ></path>
               </svg>
-              <svg id="player-body-volume" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <clipPath id="volume_bars">
-                  <rect x="0" y="80" width="17" height="20"></rect>
-                  <rect x="20" y="60" width="17" height="40"></rect>
-                  <rect x="40" y="40" width="17" height="60"></rect>
-                  <rect x="60" y="20" width="17" height="80"></rect>
-                  <rect x="80" y="0" width="17" height="100"></rect>
-                </clipPath>
-                <rect
-                  id="player-body-volume-background"
-                  x="0"
-                  y="0"
-                  width="100"
-                  height="100"
-                  clip-path="url(#volume_bars)"
-                  style="will-change: opacity; opacity: 1.3"
-                ></rect>
-                <rect
-                  id="player-body-volume-bars"
-                  x="0"
-                  y="0"
-                  width="100"
-                  height="100"
-                  clip-path="url(#volume_bars)"
-                ></rect>
-              </svg>
+              <div id="player-body-volume">
+                <svg id="player-body-volume-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <clipPath id="player-body-volume-svg-clip-bars">
+                    <rect x="0" y="80" width="17" height="20"></rect>
+                    <rect x="20" y="60" width="17" height="40"></rect>
+                    <rect x="40" y="40" width="17" height="60"></rect>
+                    <rect x="60" y="20" width="17" height="80"></rect>
+                    <rect x="80" y="0" width="17" height="100"></rect>
+                  </clipPath>
+                  <rect
+                    id="player-body-volume-svg-background"
+                    x="0"
+                    y="0"
+                    width="100"
+                    height="100"
+                    clip-path="url(#player-body-volume-svg-clip-bars)"
+                  ></rect>
+                  <rect
+                    id="player-body-volume-svg-bars"
+                    x="0"
+                    y="0"
+                    width="100"
+                    height="100"
+                    clip-path="url(#player-body-volume-svg-clip-bars)"
+                  ></rect>
+                </svg>
+              </div>
             </div>
           </div>
 

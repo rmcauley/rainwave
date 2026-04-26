@@ -2,7 +2,7 @@ import type { RainwaveBootstrap } from './rainwaveApi/types';
 
 declare global {
   interface Window {
-    bootstrap: RainwaveBootstrap;
+    BOOTSTRAP: RainwaveBootstrap;
     rainwaveInit?: () => void;
   }
 }

@@ -73,7 +73,7 @@ class Bootstrap(RainwaveHandler):
         self.write("var BOOTSTRAP=")
         await self._make_payload()
         self.write(orjson.dumps(self.response))
-        self.write(";if(window.rainwaveInit){window.rainwaveInit()}")
+        self.write(";if(window.rainwaveInit){window.rainwaveInit();}")
 
     async def post(self):
         self.set_header("Content-Type", "application/json")

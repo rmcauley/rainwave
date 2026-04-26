@@ -46,14 +46,26 @@
 
 #player-body-volume {
   height: 60%;
+}
+
+#player-body-volume-svg {
+  cursor: pointer;
+  height: 100%;
   flex-shrink: 0;
   fill: theme.$text;
-  opacity: 0.3;
   aspect-ratio: 2/1;
   position: relative;
-  transition-timing-function: theme.$transition-timing-function;
-  transition-duration: theme.$transition-duration;
-  transition-property: opacity;
+
+  &-background {
+    opacity: 0.3;
+    transition-timing-function: theme.$transition-timing-function;
+    transition-duration: theme.$transition-duration;
+    transition-property: opacity;
+  }
+
+  &-bars {
+    opacity: 1;
+  }
 }
 
 #player-body-play {
@@ -66,8 +78,7 @@
     fill: theme.$audio-icon-active-fill;
   }
 
-  .audio-icon,
-  #player-body-volume {
+  .audio-icon {
     opacity: 1;
   }
 }

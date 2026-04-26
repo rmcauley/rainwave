@@ -4377,27 +4377,9 @@
         "type": "array"
       },
       "all_stations_info": {
-        "properties": {
-          "1": {
-            "$ref": "#/components/schemas/_station_info"
-          },
-          "2": {
-            "$ref": "#/components/schemas/_station_info"
-          },
-          "3": {
-            "$ref": "#/components/schemas/_station_info"
-          },
-          "4": {
-            "$ref": "#/components/schemas/_station_info"
-          },
-          "5": {
-            "$ref": "#/components/schemas/_station_info"
-          },
-          "6": {
-            "$ref": "#/components/schemas/_station_info"
-          }
+        "additionalProperties": {
+          "$ref": "#/components/schemas/_station_info"
         },
-        "required": ["1", "2", "3", "4", "5", "6"],
         "type": "object"
       },
       "already_voted": {
