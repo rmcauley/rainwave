@@ -3,7 +3,6 @@ from datetime import timedelta
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
-import tornado.process
 
 from backend.backend_requests.advance_station import AdvanceScheduleRequest
 from backend.periodic_callbacks.api_key_pruning import api_key_pruning
@@ -19,60 +18,66 @@ from common.cache.station_cache import cache_set_station
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
 from common.playlist.cooldown_config import prepare_cooldown_algorithm
-from common.zeromq import zeromq
+from common.processes.supervisor import ProcessSpec, run_forked_processes
 
 
-BACKEND_CHILD_MAX_RESTARTS = 0
+def _run_backend_child(
+    sid: int,
+    *,
+    per_station_logging: bool,
+    enable_periodic_jobs: bool,
+    enable_global_periodic_jobs: bool,
+) -> None:
+    asyncio.run(
+        BackendServer().listen(
+            sid,
+            per_station_logging=per_station_logging,
+            enable_periodic_jobs=enable_periodic_jobs,
+            enable_global_periodic_jobs=enable_global_periodic_jobs,
+        )
+    )
 
 
 class BackendServer:
+    async def _prepare_cooldown_algorithms(self, station_id_list: list[int]) -> None:
+        async with db_connect(auto_retry=True), get_cursor() as cursor:
+            for sid in station_id_list:
+                await prepare_cooldown_algorithm(cursor, sid)
+
     def start(
         self,
         *,
         per_station_logging: bool,
         station_id_list: list[int],
         enable_periodic_jobs: bool,
-        initialize_proxy: bool,
     ) -> None:
-        if initialize_proxy:
-            zeromq.init_proxy()
+        asyncio.run(self._prepare_cooldown_algorithms(station_id_list))
 
-        if enable_periodic_jobs:
-            key_pruning = tornado.ioloop.PeriodicCallback(
-                api_key_pruning, timedelta(hours=6)
-            )
-            key_pruning.start()
-
-            user_inactive_marking = tornado.ioloop.PeriodicCallback(
-                mark_users_radio_inactive, timedelta(hours=6)
-            )
-            user_inactive_marking.start()
-
-        if len(station_id_list) == 1:
-            asyncio.run(
-                self._listen(
-                    station_id_list[0],
-                    per_station_logging=per_station_logging,
-                    enable_periodic_jobs=enable_periodic_jobs,
+        run_forked_processes(
+            [
+                ProcessSpec(
+                    name=f"rainwave-backend-{sid}",
+                    target=_run_backend_child,
+                    kwargs={
+                        "sid": sid,
+                        "per_station_logging": per_station_logging,
+                        "enable_periodic_jobs": enable_periodic_jobs,
+                        "enable_global_periodic_jobs": (
+                            enable_periodic_jobs and task_id == 0
+                        ),
+                    },
                 )
-            )
-            return
-
-        tornado.process.fork_processes(
-            len(station_id_list), max_restarts=BACKEND_CHILD_MAX_RESTARTS
+                for task_id, sid in enumerate(station_id_list)
+            ]
         )
-        task_id = tornado.process.task_id()
-        if task_id is not None:
-            asyncio.run(
-                self._listen(
-                    station_id_list[task_id],
-                    per_station_logging=per_station_logging,
-                    enable_periodic_jobs=enable_periodic_jobs,
-                )
-            )
 
-    async def _listen(
-        self, sid: int, *, per_station_logging: bool, enable_periodic_jobs: bool
+    async def listen(
+        self,
+        sid: int,
+        *,
+        per_station_logging: bool,
+        enable_periodic_jobs: bool,
+        enable_global_periodic_jobs: bool,
     ) -> None:
         async with db_connect(auto_retry=True), cache_connect():
             if per_station_logging:
@@ -85,6 +90,10 @@ class BackendServer:
                     config.log_level,
                 )
 
+            from common.zeromq import zeromq
+
+            zeromq.connect_publisher()
+
             app = tornado.web.Application(
                 [
                     (r"/advance/([0-9]+)", AdvanceScheduleRequest),
@@ -96,8 +105,6 @@ class BackendServer:
             server = tornado.httpserver.HTTPServer(app)
             server.listen(port, address="127.0.0.1")
 
-            async with get_cursor() as cursor:
-                await prepare_cooldown_algorithm(cursor, sid)
             await cache_set_station(sid, "backend_ok", True)
 
             if enable_periodic_jobs:
@@ -106,6 +113,17 @@ class BackendServer:
                     timedelta(hours=1),
                 )
                 cooldown_algo_updating.start()
+
+            if enable_global_periodic_jobs:
+                key_pruning = tornado.ioloop.PeriodicCallback(
+                    api_key_pruning, timedelta(hours=6)
+                )
+                key_pruning.start()
+
+                user_inactive_marking = tornado.ioloop.PeriodicCallback(
+                    mark_users_radio_inactive, timedelta(hours=6)
+                )
+                user_inactive_marking.start()
 
             log.debug(
                 "start",

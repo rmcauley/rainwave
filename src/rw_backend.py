@@ -35,7 +35,6 @@ def main() -> None:
         per_station_logging=per_station_logging,
         station_id_list=station_id_list,
         enable_periodic_jobs=enable_periodic_jobs,
-        initialize_proxy=True,
     )
 
 

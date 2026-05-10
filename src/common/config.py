@@ -4,6 +4,13 @@ from typing import Literal
 from common.config_types import RelaysConfig, StationsConfig
 
 
+def _get_tcp_url(env_name: str, default: str) -> str:
+    url = os.getenv(env_name, default)
+    if not url.startswith("tcp://"):
+        raise ValueError("%s must be a tcp:// URL." % env_name)
+    return url
+
+
 # Enable Tornado's module auto-reloading, and enable local-only test URLs to allow you to assume user roles.
 developer_mode = False
 
@@ -58,13 +65,12 @@ db_user: str | None = os.getenv("RW_TEST_DB_USER", None)
 db_password: str | None = os.getenv("RW_TEST_DB_PASSWORD", None)
 db_name: str = os.getenv("RW_TEST_DB_NAME", "rainwave_test")
 
-# What ports to use internally for messaging.
-# You don't need to install anything or setup a server
-# but these ports do need to be open for Rainwave to use.
-# If you're running everything on 1 server, leave these alone.
-# If you're splitting Rainwave across multiple servers, change IP address to *.
-zeromq_pub = "tcp://127.0.0.1:19998"
-zeromq_sub = "tcp://127.0.0.1:19999"
+# What URLs to use internally for messaging.
+# The ZMQ proxy binds both URLs. Rainwave processes connect their publisher
+# sockets to zeromq_publish_url and their subscriber sockets to
+# zeromq_subscribe_url. Only tcp:// URLs are supported.
+zeromq_publish_url = _get_tcp_url("RW_ZEROMQ_PUBLISH_URL", "tcp://127.0.0.1:19998")
+zeromq_subscribe_url = _get_tcp_url("RW_ZEROMQ_SUBSCRIBE_URL", "tcp://127.0.0.1:19999")
 
 memcache_host = "127.0.0.1"
 memcache_port = 11211

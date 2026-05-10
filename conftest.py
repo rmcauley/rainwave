@@ -45,8 +45,12 @@ _api_server_process: subprocess.Popen[str] | None = None
 _api_server_log: TextIO | None = None
 _backend_server_process: subprocess.Popen[str] | None = None
 _backend_server_log: TextIO | None = None
+_zmq_proxy_process: subprocess.Popen[str] | None = None
+_zmq_proxy_log: TextIO | None = None
 _test_api_port: int | None = None
 _test_backend_port: int | None = None
+_test_zmq_publish_port: int | None = None
+_test_zmq_subscribe_port: int | None = None
 
 
 def _progress(message: str) -> None:
@@ -109,6 +113,43 @@ def _get_test_backend_port() -> int:
 
     assert _test_backend_port is not None
     return _test_backend_port
+
+
+def _get_free_tcp_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
+
+
+def _get_test_zmq_publish_url() -> str:
+    global _test_zmq_publish_port
+
+    configured_url = os.getenv("RW_ZEROMQ_PUBLISH_URL")
+    if configured_url is not None:
+        return configured_url
+
+    if _test_zmq_publish_port is None:
+        _test_zmq_publish_port = _get_free_tcp_port()
+
+    return f"tcp://127.0.0.1:{_test_zmq_publish_port}"
+
+
+def _get_test_zmq_subscribe_url() -> str:
+    global _test_zmq_subscribe_port
+
+    configured_url = os.getenv("RW_ZEROMQ_SUBSCRIBE_URL")
+    if configured_url is not None:
+        return configured_url
+
+    if _test_zmq_subscribe_port is None:
+        _test_zmq_subscribe_port = _get_free_tcp_port()
+
+    return f"tcp://127.0.0.1:{_test_zmq_subscribe_port}"
+
+
+def _apply_zmq_env(env: MutableMapping[str, str]) -> None:
+    env["RW_ZEROMQ_PUBLISH_URL"] = _get_test_zmq_publish_url()
+    env["RW_ZEROMQ_SUBSCRIBE_URL"] = _get_test_zmq_subscribe_url()
 
 
 def _configure_local_postgres() -> None:
@@ -191,6 +232,7 @@ def _start_test_api_server() -> None:
 
     env = os.environ.copy()
     _apply_db_env(env)
+    _apply_zmq_env(env)
     env["RW_TEST_API_PORT"] = str(_get_test_api_port())
     env["RW_TEST_API_BASE_URL"] = f"http://127.0.0.1:{_get_test_api_port()}"
     api_server_log_path = Path("/tmp") / "rainwave-test-api-server.log"
@@ -243,6 +285,7 @@ def _start_test_backend_server() -> None:
 
     env = os.environ.copy()
     _apply_db_env(env)
+    _apply_zmq_env(env)
     env["RW_TEST_BACKEND_PORT"] = str(_get_test_backend_port())
     env["RW_TEST_BACKEND_BASE_URL"] = f"http://127.0.0.1:{_get_test_backend_port() + 1}"
     backend_server_log_path = Path("/tmp") / "rainwave-test-backend-server.log"
@@ -288,6 +331,58 @@ def _start_test_backend_server() -> None:
     )
 
 
+def _start_test_zmq_proxy() -> None:
+    global _zmq_proxy_process
+    global _zmq_proxy_log
+
+    env = os.environ.copy()
+    _apply_zmq_env(env)
+    zmq_proxy_log_path = Path("/tmp") / "rainwave-test-zmq-proxy.log"
+
+    _progress(
+        "starting ZMQ proxy on %s and %s"
+        % (_get_test_zmq_publish_url(), _get_test_zmq_subscribe_url())
+    )
+    _zmq_proxy_log = zmq_proxy_log_path.open("w", encoding="utf-8")
+    _zmq_proxy_process = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "run",
+            "--parallel-mode",
+            "src/rw_zmq_proxy.py",
+        ],
+        cwd=PROJECT_ROOT,
+        env=env,
+        stdout=_zmq_proxy_log,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+
+    publish_port = int(_get_test_zmq_publish_url().rsplit(":", 1)[1])
+    subscribe_port = int(_get_test_zmq_subscribe_url().rsplit(":", 1)[1])
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        if _zmq_proxy_process.poll() is not None:
+            break
+        try:
+            with socket.create_connection(("127.0.0.1", publish_port), timeout=1):
+                pass
+            with socket.create_connection(("127.0.0.1", subscribe_port), timeout=1):
+                _progress("ZMQ proxy ready")
+                return
+        except OSError:
+            time.sleep(0.2)
+
+    _zmq_proxy_log.flush()
+    log_output = zmq_proxy_log_path.read_text(encoding="utf-8")
+    raise RuntimeError(
+        "Test ZMQ proxy failed to become ready.\n"
+        + f"Log output from {zmq_proxy_log_path}:\n{log_output}"
+    )
+
+
 def pytest_sessionstart(session: pytest.Session) -> None:
     global _postgres_container
     global _exit_stack
@@ -321,9 +416,13 @@ def pytest_sessionstart(session: pytest.Session) -> None:
         f"postgres ready on {config.db_host}:{config.db_port} db={config.db_name}"
     )
     _apply_db_env(os.environ)
+    _apply_zmq_env(os.environ)
+    config.zeromq_publish_url = _get_test_zmq_publish_url()
+    config.zeromq_subscribe_url = _get_test_zmq_subscribe_url()
 
     _exit_stack = AsyncExitStack()
     asyncio.run(_setup_rainwave_state())
+    _start_test_zmq_proxy()
     _start_test_backend_server()
     _start_test_api_server()
     _progress("global test setup complete")
@@ -334,6 +433,8 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     global _api_server_log
     global _backend_server_process
     global _backend_server_log
+    global _zmq_proxy_process
+    global _zmq_proxy_log
     global _postgres_container
     global _exit_stack
 
@@ -367,6 +468,19 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     if _backend_server_log is not None:
         _backend_server_log.close()
         _backend_server_log = None
+
+    if _zmq_proxy_process is not None:
+        _progress("stopping ZMQ proxy")
+        _zmq_proxy_process.terminate()
+        try:
+            _zmq_proxy_process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            _zmq_proxy_process.kill()
+            _zmq_proxy_process.wait(timeout=5)
+        _zmq_proxy_process = None
+    if _zmq_proxy_log is not None:
+        _zmq_proxy_log.close()
+        _zmq_proxy_log = None
 
     if _postgres_container is not None:
         _progress("stopping postgres test container")

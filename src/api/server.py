@@ -6,7 +6,6 @@ import resource
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
-import tornado.process
 
 from api.handle_url import request_classes
 from api.handler_classes.html404 import HTMLError404Handler
@@ -18,8 +17,21 @@ from common import config, log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.playlist.object_counts import update_playlist_object_counts
+from common.processes.supervisor import ProcessSpec, run_forked_processes
 
 app: tornado.web.Application | None = None
+
+
+def _run_api_child(
+    task_id: int, *, per_port_logging: bool, enable_periodic_jobs: bool
+) -> None:
+    asyncio.run(
+        APIServer().listen(
+            task_id,
+            per_port_logging=per_port_logging,
+            enable_periodic_jobs=enable_periodic_jobs,
+        )
+    )
 
 
 class APIServer:
@@ -60,7 +72,7 @@ class APIServer:
         )
         update_all_groups_cache_job.start()
 
-    async def _listen(
+    async def listen(
         self, task_id: int, per_port_logging: bool, enable_periodic_jobs: bool
     ) -> None:
         global app
@@ -107,18 +119,17 @@ class APIServer:
     def start(
         self, per_port_logging: bool, api_num_processes: int, enable_periodic_jobs: bool
     ) -> None:
-        # Bypass Tornado's forking processes if num_processes is set to 1
-        if api_num_processes == 1:
-            asyncio.run(self._listen(0, per_port_logging, enable_periodic_jobs))
-        else:
-            # The way this works, is that the parent PID is hijacked away from us and everything after this
-            # is a child process.  As of Tornado 6.3, fork() is used, which means we do have a complete
-            # copy of all execution in memory up until this point and we will have complete separation of
-            # processes from here on out.  Tornado handles child cleanup and zombification.
-            tornado.process.fork_processes(api_num_processes)
-
-            task_id = tornado.process.task_id()
-            if task_id != None:
-                asyncio.run(
-                    self._listen(task_id, per_port_logging, enable_periodic_jobs)
+        run_forked_processes(
+            [
+                ProcessSpec(
+                    name=f"rainwave-api-{task_id}",
+                    target=_run_api_child,
+                    kwargs={
+                        "task_id": task_id,
+                        "per_port_logging": per_port_logging,
+                        "enable_periodic_jobs": enable_periodic_jobs,
+                    },
                 )
+                for task_id in range(api_num_processes)
+            ]
+        )

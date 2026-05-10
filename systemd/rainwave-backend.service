@@ -1,7 +1,8 @@
 [Unit]
 Description=Rainwave Internet Radio Song Change API
 Wants=network.target
-Requires=postgresql.service memcached.service memcached_ratings.service
+Requires=postgresql.service memcached.service memcached_ratings.service rainwave-zmq-proxy.service
+After=rainwave-zmq-proxy.service
 
 [Service]
 Type=simple

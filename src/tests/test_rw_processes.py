@@ -57,7 +57,6 @@ def test_rw_backend_main_default_mode() -> None:
         per_station_logging=True,
         station_id_list=list(config.stations.keys()),
         enable_periodic_jobs=True,
-        initialize_proxy=True,
     )
 
 
@@ -78,7 +77,6 @@ def test_rw_backend_main_testmode() -> None:
         per_station_logging=False,
         station_id_list=[config.default_station],
         enable_periodic_jobs=False,
-        initialize_proxy=True,
     )
 
 
