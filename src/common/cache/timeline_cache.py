@@ -22,6 +22,9 @@ async def update_timeline_api_cache(
 ) -> None:
     await cache_set_station(sid, "timeline", timeline)
 
+    if timeline.current is None:
+        raise ValueError("Cannot cache a timeline with no current entry.")
+
     sched_current = await timeline.current.to_api(cursor)
     sched_next: list[rainwave_typeddicts.TimelineEntry] = []
     for timeline_entry in timeline.upnext:

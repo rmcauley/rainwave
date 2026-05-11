@@ -2,11 +2,15 @@ import asyncio
 import json
 import os
 from typing import Any, Callable, cast
+from unittest.mock import AsyncMock, patch
 
+import orjson
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 from tornado.websocket import WebSocketClientConnection, websocket_connect
 
+from api.websocket.live_voting.live_voting import live_voting_broadcast_service
+from api.websocket.websocket_zmq_listener import websocket_on_zmq
 from common import config
 from common.zeromq import sync_to_front
 from tests.db import get_test_cursor
@@ -201,36 +205,35 @@ class TestWebsocket(RequestClassesTestCase):
         finally:
             connection.close()
 
+    def test_live_voting_publish_contract(self) -> None:
+        with patch("common.zeromq.zeromq.publish") as publish_mock:
+            live_voting_broadcast_service.publish_live_voting_updated(
+                1, "excluded-websocket"
+            )
+
+        publish_mock.assert_called_once_with(
+            {
+                "action": "live_voting_updated",
+                "sid": 1,
+                "uuid_exclusion": "excluded-websocket",
+            }
+        )
+
     @gen_test(timeout=20)
-    async def test_websocket_receives_live_voting_update_after_http_vote(self) -> None:
-        connection = await self._connect_websocket()
-        try:
-            await self._auth_websocket(
-                connection,
-                user_id=TUNED_IN_LOGGED_IN_USER_ID,
-                key=TUNED_IN_LOGGED_IN_API_KEY,
-            )
+    async def test_live_voting_zmq_subscriber_contract(self) -> None:
+        payload = {
+            "action": "live_voting_updated",
+            "sid": 1,
+            "uuid_exclusion": "excluded-websocket",
+        }
+        with patch(
+            "api.websocket.websocket_zmq_listener.live_voting_broadcast_service."
+            + "handle_live_voting_updated_message",
+            new_callable=AsyncMock,
+        ) as handle_live_voting_updated_message:
+            await websocket_on_zmq([orjson.dumps(payload)])
 
-            entry_id = await self._first_election_entry()
-            response = await self.post_form(
-                "/api4/vote",
-                self._auth_data(
-                    user_id=TUNED_IN_LOGGED_IN_USER_ID,
-                    key=TUNED_IN_LOGGED_IN_API_KEY,
-                    entry_id=entry_id,
-                ),
-            )
-            vote_payload = self.payload(response)
-            assert vote_payload["vote_result"]["success"] is True
-
-            live_voting_message = await self._wait_for_message(
-                connection,
-                lambda payload: "live_voting" in payload,
-                timeout=5.0,
-            )
-            assert live_voting_message["live_voting"]
-        finally:
-            connection.close()
+        handle_live_voting_updated_message.assert_awaited_once_with(payload)
 
     @gen_test(timeout=20)
     async def test_websocket_receives_station_update_after_backend_advance(

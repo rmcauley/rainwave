@@ -27,13 +27,13 @@ from api.helpers.cached_all_groups import update_all_groups_cache
 from api.routes import load_all_routes
 from common import config, log
 from common.db.connection import db_connect
-from common.db.cursor import get_cursor
+from common.db.cursor import get_cursor, get_tx_cursor
 from common.db.schema import create_tables
 from common.playlist.cooldown_config import prepare_cooldown_algorithm
 from common.playlist.object_counts import update_playlist_object_counts
 from common.schedule.advance_timeline import (
     advance_timeline,
-    advance_timeline_post_process,
+    process_timeline_advance,
 )
 from common.schedule.timeline import load_timeline
 from tests.seed_data import populate_test_data
@@ -220,8 +220,10 @@ async def _setup_rainwave_state() -> None:
         await prepare_cooldown_algorithm(cursor, 1)
         _progress("building timeline state")
         await load_timeline(cursor, 1)
-        await advance_timeline(1, trigger_post_process=False)
-        await advance_timeline_post_process(1)
+        async with get_tx_cursor() as advance_cursor:
+            await advance_timeline(advance_cursor, 1)
+        async with get_tx_cursor() as process_cursor:
+            await process_timeline_advance(process_cursor, 1)
         _progress("warming API caches")
         await update_all_artists_cache()
         await update_all_groups_cache()

@@ -6,5 +6,5 @@ from common.schedule.schedule_models.timeline_entry_base import TimelineEntryBas
 @dataclass
 class TimelineOnStation:
     history: list[TimelineEntryBase]
-    current: TimelineEntryBase
+    current: TimelineEntryBase | None
     upnext: list[TimelineEntryBase]

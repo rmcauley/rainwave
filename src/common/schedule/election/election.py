@@ -95,7 +95,12 @@ class Election(TimelineEntryBase):
 
         entries: list[ElectionEntry] = []
         for entry_row in await cursor.fetch_all(
-            "SELECT * FROM r4_election_entries WHERE elec_id = %s",
+            """
+            SELECT *
+            FROM r4_election_entries
+            WHERE elec_id = %s
+            ORDER BY entry_position NULLS LAST, entry_id
+            """,
             (elec_id,),
             row_type=ElectionEntryRow,
         ):

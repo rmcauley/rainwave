@@ -15,7 +15,7 @@ async def trim_schedule(cursor: RainwaveCursor, sid: int) -> None:
         (current_time - config.trim_election_age,),
     )
     max_history_id = await cursor.fetch_guaranteed(
-        "SELECT MAX(songhist_id) FROM r4_song_history",
+        "SELECT COALESCE(MAX(songhist_id), 0) FROM r4_song_history",
         params=None,
         default=0,
         var_type=int,

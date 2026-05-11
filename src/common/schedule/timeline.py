@@ -28,17 +28,27 @@ async def load_timeline(cursor: RainwaveCursor, sid: int) -> TimelineOnStation:
             cursor
         )
     if not currently_playing:
-        currently_playing = await Election.create(
-            cursor,
-            {"elec_type": "Election", "sched_id": None, "sid": sid},
-            sched_name=None,
-            sched_url=None,
+        unscheduled_elec_id = await cursor.fetch_var(
+            """
+            SELECT elec_id
+            FROM r4_elections
+            WHERE sid = %s
+                AND sched_id IS NULL
+                AND elec_in_progress = TRUE
+            ORDER BY elec_start_actual DESC, elec_id DESC
+            LIMIT 1
+            """,
+            (sid,),
+            var_type=int,
         )
-        await currently_playing.fill(cursor, [], None)
-        await currently_playing.start(cursor)
+        if unscheduled_elec_id:
+            currently_playing = await Election.load_by_id(
+                cursor, unscheduled_elec_id, sched_name=None, sched_url=None
+            )
 
+    currently_playing_length = currently_playing.length() if currently_playing else 0
     upnext_schedule_entry = await get_schedule_entry_at_time(
-        cursor, sid, int(timestamp()) + currently_playing.length()
+        cursor, sid, int(timestamp()) + currently_playing_length
     )
     upnext: list[TimelineEntryBase] = []
     if upnext_schedule_entry:

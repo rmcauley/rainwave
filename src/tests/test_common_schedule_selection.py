@@ -487,6 +487,7 @@ def test_load_timeline_uses_current_and_upnext_schedule_entries() -> None:
                 assert future_entry is not None
 
                 timeline = await load_timeline(cursor, TEMP_TIMELINE_SID)
+                assert timeline.current is not None
                 assert (
                     timeline.current.get_song_on_station_to_play().id
                     == current_entry.get_song_on_station_to_play().id

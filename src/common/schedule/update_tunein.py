@@ -19,6 +19,8 @@ async def _send_tunein_update(url: str) -> None:
 
 
 def update_tunein(sid: int, timeline: TimelineOnStation) -> None:
+    if timeline.current is None:
+        return
     tunein_partner_key = config.stations[sid].get("tunein_partner_key")
     tunein_partner_id = config.stations[sid].get("tunein_partner_id")
     tunein_id = config.stations[sid].get("tunein_id")
