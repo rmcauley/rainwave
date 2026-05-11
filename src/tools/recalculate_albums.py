@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import TypedDict
 
 from common import log, stations
@@ -58,5 +59,5 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    log.init()
+    log.init(log_stdout_level=logging.DEBUG)
     asyncio.run(main())

@@ -21,7 +21,7 @@ def main() -> None:
     from api.server import APIServer
     from common import config, log
 
-    startup_log = "logs/rw_api_startup.log"
+    startup_log = "rw_api_startup.log"
     per_port_logging = True
     api_num_processes = config.api_num_processes
     enable_periodic_jobs = True
@@ -32,7 +32,11 @@ def main() -> None:
         api_num_processes = 1
         enable_periodic_jobs = False
 
-    log.init(startup_log, config.log_level)
+    log.init(
+        startup_log,
+        log_file_level=config.log_file_level,
+        log_stdout_level=config.log_stdout_level,
+    )
 
     if not args.testmode:
         log.info("csp", csp_header.csp_header)

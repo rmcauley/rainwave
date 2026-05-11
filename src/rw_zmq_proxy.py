@@ -3,7 +3,11 @@ from common.zeromq import zeromq
 
 
 def main() -> None:
-    log.init(f"{config.log_dir}/rw_zmq_proxy.log", config.log_level)
+    log.init(
+        "rw_zmq_proxy.log",
+        log_file_level=config.log_file_level,
+        log_stdout_level=config.log_stdout_level,
+    )
     log.info(
         "start",
         "ZMQ proxy binding publisher URL %s and subscriber URL %s."

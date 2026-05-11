@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import logging
 
 from common.cache import cache
 from common.db.connection import db_connect
@@ -20,7 +21,8 @@ async def main() -> None:
 
     log.init(
         None if on_screen else "rw_scanner.log",
-        "debug" if on_screen else config.log_level,
+        log_file_level=config.log_file_level,
+        log_stdout_level=logging.DEBUG if on_screen else config.log_stdout_level,
     )
 
     async with db_connect(), cache.cache_connect():

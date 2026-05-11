@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import logging
 
 from common import log
 from common.cache.cache import cache_connect
@@ -14,7 +15,7 @@ async def main() -> None:
     )
     parser.add_argument("--sid", type=int)
     args = parser.parse_args()
-    log.init()
+    log.init(log_stdout_level=logging.DEBUG)
     async with db_connect(auto_retry=False), cache_connect(), get_cursor() as cursor:
         await remove_all_locks(cursor, args.sid)
     print()

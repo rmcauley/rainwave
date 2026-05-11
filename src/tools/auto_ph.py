@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import TypedDict
 from pytz import timezone
 
-from common import config, log
+from common import log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import RainwaveCursor, get_tx_cursor
@@ -194,8 +194,7 @@ async def make_auto_power_hours(
 
 
 async def main() -> None:
-    log_file = "%s/rw_auto_ph.log" % (config.log_dir,)
-    log.init(log_file, "debug")
+    log.init("rw_auto_ph.log")
 
     day_of_week = datetime.now().weekday()
     if day_of_week not in ALLOWED_DAYS_OF_WEEK:

@@ -18,7 +18,7 @@ def main() -> None:
 
     from common import config, log
 
-    startup_log = f"{config.log_dir}/rw_backend_startup.log"
+    startup_log = "rw_backend_startup.log"
     per_station_logging = True
     station_id_list = list(config.stations.keys())
     enable_periodic_jobs = True
@@ -29,7 +29,11 @@ def main() -> None:
         station_id_list = [config.default_station]
         enable_periodic_jobs = False
 
-    log.init(startup_log, config.log_level)
+    log.init(
+        startup_log,
+        log_file_level=config.log_file_level,
+        log_stdout_level=config.log_stdout_level,
+    )
 
     BackendServer().start(
         per_station_logging=per_station_logging,

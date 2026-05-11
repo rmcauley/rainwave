@@ -1,5 +1,5 @@
 import os
-from typing import Literal
+import logging
 
 from common.config_types import RelaysConfig, StationsConfig
 
@@ -15,8 +15,9 @@ def _get_tcp_url(env_name: str, default: str) -> str:
 developer_mode = False
 
 log_dir: str | None = None
-# Levels: "debug" "info" "warn" "error" "critical"
-log_level: Literal["critical"] = "critical"
+# Levels: logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
+log_file_level = logging.DEBUG
+log_stdout_level = logging.WARNING
 
 # What host the API resides on relative to the song change API.
 # Used internally for the song change api to talk to the API.

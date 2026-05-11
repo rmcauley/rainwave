@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import socket
 import subprocess
@@ -202,7 +203,7 @@ async def _setup_rainwave_state() -> None:
     global _exit_stack
     assert _exit_stack is not None
 
-    log.init(loglevel="critical")
+    log.init(log_stdout_level=logging.CRITICAL)
     load_all_routes()
     _progress("opening database and cache connections")
     await _exit_stack.enter_async_context(db_connect(auto_retry=False))

@@ -2,7 +2,7 @@ from os import path
 import logging
 import logging.handlers
 import datetime
-from typing import Any, Literal, TextIO
+from typing import Any
 from common import config
 
 log: logging.Logger | None = None
@@ -22,50 +22,44 @@ class RWFormatter(logging.Formatter):
         )
 
 
-LOG_LEVELS = Literal["critical", "error", "info", "debug", "warning", "print"]
-
-
-def init(logfile: str | None = None, loglevel: LOG_LEVELS = "warning") -> None:
+def init(
+    log_file: str | None = None,
+    log_file_level: int = logging.DEBUG,
+    log_stdout_level: int = logging.WARNING,
+) -> None:
     global log
     logging.getLogger().setLevel(logging.DEBUG)
     logging.getLogger("tornado.access").setLevel(logging.CRITICAL)
 
-    handler: (
-        logging.handlers.RotatingFileHandler | logging.StreamHandler[TextIO] | None
-    ) = None
-    if logfile and config.log_dir:
-        handler = logging.handlers.RotatingFileHandler(
-            path.join(config.log_dir, logfile), maxBytes=10000000, backupCount=1
-        )
-        handler.setFormatter(RWFormatter())
+    formatter = RWFormatter()
+    handlers: list[logging.Handler] = []
 
-    print_handler = logging.StreamHandler()
-    print_handler.setFormatter(RWFormatter())
-    print_handler.setLevel(logging.DEBUG)
-
-    if not handler:
-        loglevel = "print"
-        handler = print_handler
-
-    logging.getLogger("tornado.general").addHandler(handler)
     log = logging.getLogger("tornado.application")
-    log.addHandler(handler)
 
-    if loglevel == "print":
-        log.addHandler(print_handler)
+    log_file_path: str | None = None
+    if log_file:
+        if path.isabs(log_file):
+            log_file_path = log_file
+        elif config.log_dir:
+            log_file_path = path.join(config.log_dir, log_file)
 
-        logging.getLogger("tornado.general").addHandler(print_handler)
+    if log_file_path:
+        file_handler = logging.handlers.RotatingFileHandler(
+            log_file_path, maxBytes=10000000, backupCount=1
+        )
+        file_handler.setFormatter(formatter)
+        file_handler.setLevel(log_file_level)
+        handlers.append(file_handler)
 
-    if loglevel == "critical":
-        handler.setLevel(logging.CRITICAL)
-    elif loglevel == "error":
-        handler.setLevel(logging.ERROR)
-    elif loglevel == "info":
-        handler.setLevel(logging.INFO)
-    elif loglevel == "debug" or loglevel == "print":
-        handler.setLevel(logging.DEBUG)
-    else:
-        handler.setLevel(logging.WARNING)
+    stdout_handler = logging.StreamHandler()
+    stdout_handler.setFormatter(formatter)
+    stdout_handler.setLevel(log_stdout_level)
+    handlers.append(stdout_handler)
+
+    for handler in handlers:
+        logging.getLogger("tornado.general").addHandler(handler)
+        log.addHandler(handler)
+
     debug("test", "Debug test.")
     info("test", "Info test.")
     warn("test", "Warn test.")

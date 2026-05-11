@@ -1,11 +1,12 @@
 import argparse
 import asyncio
+import logging
 import shutil
 import os
 import errno
 from typing import TypedDict
 
-from common import config, log
+from common import log
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
@@ -25,8 +26,7 @@ class AutoRemoveRow(TypedDict):
 
 
 async def main(moveto: str, execute: bool) -> None:
-    log_file = "%s/rw_auto_clean.log" % (config.log_dir,)
-    log.init(log_file, "print")
+    log.init("rw_auto_clean.log", log_stdout_level=logging.DEBUG)
 
     async with db_connect(auto_retry=False), cache_connect(), get_cursor() as cursor:
         remove_songs = await cursor.fetch_all(

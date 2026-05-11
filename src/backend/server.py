@@ -82,12 +82,9 @@ class BackendServer:
         async with db_connect(auto_retry=True), cache_connect():
             if per_station_logging:
                 log.init(
-                    "%s/rw_%s.log"
-                    % (
-                        config.log_dir,
-                        stations.station_id_friendly[sid].lower(),
-                    ),
-                    config.log_level,
+                    "rw_%s.log" % stations.station_id_friendly[sid].lower(),
+                    log_file_level=config.log_file_level,
+                    log_stdout_level=config.log_stdout_level,
                 )
 
             from common.zeromq import zeromq

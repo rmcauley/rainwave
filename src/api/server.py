@@ -83,8 +83,12 @@ class APIServer:
         if per_port_logging:
             # Log according to configured directory and port # we're operating on.
             # Otherwise, the logging that has already been initialized will be used.
-            log_file = f"logs/rw_api{port_no}.log"
-            log.init(log_file, config.log_level)
+            log_file = f"rw_api{port_no}.log"
+            log.init(
+                log_file,
+                log_file_level=config.log_file_level,
+                log_stdout_level=config.log_stdout_level,
+            )
             log.debug("start", "Server booting, port %s." % port_no)
 
         async with db_connect(auto_retry=True), cache_connect():

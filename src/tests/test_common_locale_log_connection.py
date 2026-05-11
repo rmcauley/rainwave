@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from pathlib import Path
 
 import pytest
@@ -59,7 +60,7 @@ def test_log_init_shutdown_and_connection_cache_guards(tmp_path: Path) -> None:
         old_log_dir = config.log_dir
         try:
             config.log_dir = str(tmp_path)
-            log.init(logfile="unit.log", loglevel="info")
+            log.init(log_file="unit.log", log_file_level=logging.INFO)
             log.info("unit", "hello")
             log.shutdown()
 
@@ -74,7 +75,7 @@ def test_log_init_shutdown_and_connection_cache_guards(tmp_path: Path) -> None:
         finally:
             config.log_dir = old_log_dir
             log.shutdown()
-            log.init(loglevel="critical")
+            log.init(log_stdout_level=logging.CRITICAL)
 
         if cache.client is None:
             with pytest.raises(APIException, match="No memcache connection"):

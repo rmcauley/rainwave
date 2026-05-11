@@ -4,7 +4,7 @@ from typing import cast
 from pytz import timezone
 from pytz.tzinfo import DstTzInfo
 
-from common import config, log, stations
+from common import log, stations
 from common.cache.cache import cache_connect
 from common.db.connection import db_connect
 from common.db.cursor import get_cursor
@@ -53,8 +53,7 @@ def get_auto_pvp_schedule_entry(
 
 
 async def main() -> None:
-    log_file = "%s/rw_auto_pvp.log" % (config.log_dir,)
-    log.init(log_file, "debug")
+    log.init("rw_auto_pvp.log")
     async with db_connect(auto_retry=False), cache_connect():
         timezones: list[tuple[DstTzInfo, tuple[int, ...]]] = [
             (cast(DstTzInfo, timezone("US/Pacific")), station_for_day_of_week_america),
