@@ -18,6 +18,7 @@ log_dir: str | None = None
 # Levels: logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
 log_file_level = logging.DEBUG
 log_stdout_level = logging.WARNING
+log_stdout_color = False
 
 # What host the API resides on relative to the song change API.
 # Used internally for the song change api to talk to the API.

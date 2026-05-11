@@ -62,7 +62,6 @@ def test_log_init_shutdown_and_connection_cache_guards(tmp_path: Path) -> None:
             config.log_dir = str(tmp_path)
             log.init(log_file="unit.log", log_file_level=logging.INFO)
             log.info("unit", "hello")
-            log.shutdown()
 
             log_path = tmp_path / "unit.log"
             assert log_path.exists()
@@ -70,11 +69,9 @@ def test_log_init_shutdown_and_connection_cache_guards(tmp_path: Path) -> None:
             assert "Info test." in contents
             assert "hello" in contents
 
-            with pytest.raises(log.LogNotInitializedError):
-                log.debug("unit", "after shutdown")
+            log.debug("unit", "after shutdown")
         finally:
             config.log_dir = old_log_dir
-            log.shutdown()
             log.init(log_stdout_level=logging.CRITICAL)
 
         if cache.client is None:

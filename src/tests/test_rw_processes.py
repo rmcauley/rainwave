@@ -46,13 +46,11 @@ def test_rw_backend_main_default_mode() -> None:
             "argparse.ArgumentParser.parse_args", return_value=Namespace(testmode=False)
         ),
         patch("rw_backend.load_dotenv") as load_dotenv,
-        patch("common.log.init") as log_init,
         patch("rw_backend.BackendServer.start") as backend_start,
     ):
         rw_backend.main()
 
     load_dotenv.assert_not_called()
-    log_init.assert_called_once()
     backend_start.assert_called_once_with(
         per_station_logging=True,
         station_id_list=list(config.stations.keys()),
@@ -66,13 +64,11 @@ def test_rw_backend_main_testmode() -> None:
             "argparse.ArgumentParser.parse_args", return_value=Namespace(testmode=True)
         ),
         patch("rw_backend.load_dotenv") as load_dotenv,
-        patch("common.log.init") as log_init,
         patch("rw_backend.BackendServer.start") as backend_start,
     ):
         rw_backend.main()
 
     load_dotenv.assert_called_once()
-    log_init.assert_called_once()
     backend_start.assert_called_once_with(
         per_station_logging=False,
         station_id_list=[config.default_station],
@@ -96,7 +92,7 @@ def test_rw_scanner_main_art_mode() -> None:
     ):
         asyncio.run(rw_scanner.main())
 
-    log_init.assert_called_once_with(None, "debug")
+    log_init.assert_called_once_with(None, log_file_level=10, log_stdout_level=10)
     full_art_update.assert_awaited_once()
     full_scan.assert_not_called()
     file_monitor.assert_not_called()
@@ -118,7 +114,7 @@ def test_rw_scanner_main_full_reset_mode() -> None:
     ):
         asyncio.run(rw_scanner.main())
 
-    log_init.assert_called_once_with(None, "debug")
+    log_init.assert_called_once_with(None, log_file_level=10, log_stdout_level=10)
     full_art_update.assert_not_called()
     full_scan.assert_awaited_once_with(True)
     file_monitor.assert_not_called()

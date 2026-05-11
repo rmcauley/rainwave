@@ -1,5 +1,4 @@
 from pathlib import Path
-import sys
 
 import orjson
 import tornado.escape
@@ -22,10 +21,7 @@ def get_translation_file(filename: str) -> RainwaveTranslationFile:
 
 
 def report_locale_error(message: str, error: Exception) -> None:
-    try:
-        log.exception("locale", message, error)
-    except log.LogNotInitializedError:
-        print(f"{message}: {error}", file=sys.stderr)
+    log.exception("locale", message, error)
 
 
 en_main = get_translation_file(BASE_TRANSLATION_FILENAME)

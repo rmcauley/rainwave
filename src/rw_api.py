@@ -45,9 +45,6 @@ def main() -> None:
     server = APIServer()
     asyncio.run(server.warmup())
 
-    if per_port_logging:
-        log.shutdown()
-
     server.start(
         per_port_logging=per_port_logging,
         api_num_processes=api_num_processes,

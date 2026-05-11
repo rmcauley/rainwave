@@ -1,6 +1,5 @@
 import argparse
 from pathlib import Path
-import tempfile
 
 from dotenv import load_dotenv
 
@@ -16,24 +15,16 @@ def main() -> None:
         repo_root = Path(__file__).resolve().parents[1]
         load_dotenv(repo_root / ".env.test")
 
-    from common import config, log
+    from common import config
 
-    startup_log = "rw_backend_startup.log"
     per_station_logging = True
     station_id_list = list(config.stations.keys())
     enable_periodic_jobs = True
 
     if args.testmode:
-        startup_log = str(Path(tempfile.gettempdir()) / "rw_test_backend.log")
         per_station_logging = False
         station_id_list = [config.default_station]
         enable_periodic_jobs = False
-
-    log.init(
-        startup_log,
-        log_file_level=config.log_file_level,
-        log_stdout_level=config.log_stdout_level,
-    )
 
     BackendServer().start(
         per_station_logging=per_station_logging,
