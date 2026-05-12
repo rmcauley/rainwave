@@ -24,25 +24,58 @@
   transform-origin: center center;
 }
 
+#station-select-mouse-area {
+  position: absolute;
+  padding: 10px;
+  transform: translate(-10px, -10px);
+}
+
+#station-select-menu {
+  min-width: 100%;
+  max-width: 550px;
+  overflow: hidden;
+  background-color: theme.$station-select-background;
+}
+
 .station-select-station {
-  display: block;
+  display: flex;
+  box-sizing: border-box;
+  place-content: center space-between;
+  width: 100%;
+  overflow: hidden;
+  height: 70px;
+  padding: 10px;
 
   &-now-playing {
-    display: block;
+    display: flex;
+    place-content: center space-between;
+    width: 160px;
+    font-size: smaller;
+    gap: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
-    &-art,
-    &-title,
-    &-album {
-      display: block;
+    &-art {
+      height: 50px;
+      width: 50px;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
     }
   }
 
   &-details {
-    display: block;
+    text-transform: uppercase;
 
-    &-name,
+    &-name {
+      font-weight: 400;
+      font-size: 1.5em;
+    }
+
     &-description {
-      display: block;
+      opacity: 0.7;
+      font-size: 0.7em;
     }
   }
 }

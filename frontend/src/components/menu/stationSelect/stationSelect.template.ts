@@ -9,35 +9,38 @@ function stationSelect(context: stationSelectContext) {
   v1.appendChild(v2);
 
   const v3 = document.createElement('div');
-  v3.className = 'station-select-station-now-playing';
+  v3.className = 'station-select-station-details';
   v2.appendChild(v3);
 
   const v4 = document.createElement('div');
-  v4.className = 'station-select-station-now-playing-art';
+  v4.appendChild(document.createTextNode(context.name));
+  v4.className = 'station-select-station-details-name';
   v3.appendChild(v4);
 
   const v5 = document.createElement('div');
-  v5.className = 'station-select-station-now-playing-title';
+  v5.appendChild(document.createTextNode(context.description));
+  v5.className = 'station-select-station-details-description';
   v3.appendChild(v5);
 
   const v6 = document.createElement('div');
-  v6.className = 'station-select-station-now-playing-album';
-  v3.appendChild(v6);
+  v6.className = 'station-select-station-now-playing';
+  v2.appendChild(v6);
 
   const v7 = document.createElement('div');
-  v7.className = 'station-select-station-details';
-  v2.appendChild(v7);
+  v7.className = 'station-select-station-now-playing-art';
+  v6.appendChild(v7);
 
   const v8 = document.createElement('div');
-  v8.appendChild(document.createTextNode(context.name));
-  v8.className = 'station-select-station-details-name';
-  v7.appendChild(v8);
+  v6.appendChild(v8);
 
   const v9 = document.createElement('div');
-  v9.appendChild(document.createTextNode(context.description));
-  v9.className = 'station-select-station-details-description';
-  v7.appendChild(v9);
+  v9.className = 'station-select-station-now-playing-title';
+  v8.appendChild(v9);
 
-  return { $root: v1, menuNp: v3, menuNpArt: v4, menuNpSong: v5, menuNpAlbum: v6 };
+  const v10 = document.createElement('div');
+  v10.className = 'station-select-station-now-playing-album';
+  v8.appendChild(v10);
+  
+return { $root: v1, menuNp: v6, menuNpArt: v7, menuNpSong: v9, menuNpAlbum: v10 };
 }
 export { stationSelect };

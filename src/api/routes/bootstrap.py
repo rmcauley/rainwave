@@ -4,6 +4,7 @@ import urllib.parse
 
 import orjson
 
+from api.exceptions import APIException
 from api.handler_classes.rainwave_handler import RainwaveHandler
 from api.helpers.public_relays import public_relays
 from api.helpers.station_list import station_list
@@ -81,14 +82,21 @@ class Bootstrap(RainwaveHandler):
         self.write(orjson.dumps(self.response))
 
     async def _make_payload(self):
-        async with get_cursor() as cursor:
+        try:
+            async with get_cursor() as cursor:
+                self.response.update(
+                    await get_station_info(
+                        cursor,
+                        self.optional_user,
+                        self.sid,
+                        include_request_line=True,
+                        include_live_voting=True,
+                    )
+                )
+        except APIException as e:
             self.response.update(
-                await get_station_info(
-                    cursor,
-                    self.optional_user,
-                    self.sid,
-                    include_request_line=True,
-                    include_live_voting=True,
+                self.get_json_error_response(
+                    e.status_code, exc_info=(APIException, e, None)
                 )
             )
         self.response["build_version"] = 1000

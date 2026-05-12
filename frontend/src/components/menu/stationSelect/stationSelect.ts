@@ -40,11 +40,13 @@ function initStationSelect(): void {
   const stationLinks: Record<number, ReturnType<typeof stationSelect>> = {};
   stations.forEach((station): void => {
     if (station.id !== api.user.sid) {
-      stationLinks[station.id] = stationSelect({
-        description: $l(`station_description_id_${station.id}` as RainwaveTranslationKey),
+      const stationLink = stationSelect({
+        description: $l(`station_menu_description_id_${station.id}` as RainwaveTranslationKey),
         name: station.name,
         url: station.url,
       });
+      stationLinks[station.id] = stationLink;
+      document.getElementById('station-select-menu')!.appendChild(stationLink.$root);
     }
   });
 
