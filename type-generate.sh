@@ -16,13 +16,17 @@ jq -M --slurpfile locale lang/en_MAIN.json '
 
 # The Pydantic DTO generator breaks linting rules that are difficult to override
 # with pyright's options, as it's not as flexible as e.g. ESLint.
-# Remove the translation key enum from Pydantic use stops these errors, so
+# Removing the translation key enums from Pydantic use stops these errors, so
 # this is a temporary file that generates an OpenAPI spec without it so that
 # Pydantic doesn't get it.  Yes, this is the cleanest way!
 jq -M '
   .components.schemas._translation_key = {
     "type": "string",
     "description": "Translation key used for localization lookups."
+  }
+  | .components.schemas._api_error_key = {
+    "type": "string",
+    "description": "Translation key used for API error localization lookups."
   }
 ' src/api/rainwave-openapi.json > "$tmp_openapi_for_dto"
 

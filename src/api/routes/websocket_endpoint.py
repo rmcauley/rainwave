@@ -342,6 +342,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                     self.sid,
                     include_request_line=True,
                     include_live_voting=True,
+                    request_locale=self.rainwave_locale,
                 )
                 if self.user:
                     response["user"] = user_to_api_private(self.user)

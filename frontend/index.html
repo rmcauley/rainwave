@@ -49,9 +49,23 @@
   </head>
 
   <body>
-    <div id="measure-box" style="top: -300px; position: absolute; visibility: hidden; width: 300px">
+    <div
+      id="measure-box"
+      style="top: -300px; position: absolute; visibility: hidden; width: 300px"
+      aria-hidden="true"
+    >
       <div class="list measure-list"><div class="item" id="measure-list-item">Reference</div></div>
     </div>
+
+    <svg style="display: none" aria-hidden="true">
+      <symbol id="rw-icon-close" viewBox="0 0 100 100">
+        <path
+          d="M50,0.005c-0.432,0-0.858-0.011-1.287,0C21.695,0.689,0,22.821,0,50.002C0,77.615,22.386,100,50,100 s50-22.385,50-49.997C100,22.39,77.614,0.005,50,0.005z M50,90c-22.091,0-40-17.906-40-39.997c0-22.09,17.909-39.998,40-39.998 c22.092,0,40,17.908,40,39.998C90,72.093,72.092,90,50,90z"
+        />
+        <line stroke-width="10" x1="30" y1="30" x2="69" y2="69" />
+        <line stroke-width="10" x1="69" y1="30" x2="30" y2="69" />
+      </symbol>
+    </svg>
 
     <div id="rainwave">
       <header id="header">

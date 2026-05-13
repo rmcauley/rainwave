@@ -3239,7 +3239,7 @@
             "type": "string"
           },
           "tl_key": {
-            "$ref": "#/components/schemas/_translation_key"
+            "$ref": "#/components/schemas/_api_error_key"
           },
           "traceback": {
             "type": "string"
@@ -6308,6 +6308,48 @@
           "yes",
           "your_album_rating",
           "your_numeric_user_id"
+        ]
+      },
+      "_api_error_key": {
+        "type": "string",
+        "description": "Translation key used for API error localization lookups.",
+        "enum": [
+          "404",
+          "admin_required",
+          "album_does_not_exist",
+          "auth_failed",
+          "auth_required",
+          "cannot_rate_now",
+          "db_error_retry",
+          "internal_error",
+          "invalid_argument",
+          "invalid_request",
+          "invalid_station_id",
+          "login_failed",
+          "login_limit",
+          "login_password_disabled",
+          "login_required",
+          "login_too_old",
+          "missing_argument",
+          "missing_station_id",
+          "password_required",
+          "perks_required",
+          "request_delete_failed",
+          "request_favorited_failed",
+          "request_unrated_failed",
+          "same_request_album",
+          "same_request_exists",
+          "search_string_too_short",
+          "server_just_started",
+          "song_does_not_exist",
+          "song_not_requested",
+          "station_offline",
+          "too_many_requests",
+          "tunein_required",
+          "tunein_to_rate_current_song",
+          "unlocked_only",
+          "user_locked",
+          "username_required"
         ]
       }
     }

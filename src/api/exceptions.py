@@ -7,11 +7,11 @@ from common.locale.rainwave_locale import RainwaveLocale
 
 
 class APIException(HTTPError):
-    tl_key: rainwave_typeddicts.TranslationKey
+    tl_key: rainwave_typeddicts.ApiErrorKey
 
     def __init__(
         self,
-        translation_key: rainwave_typeddicts.TranslationKey,
+        translation_key: rainwave_typeddicts.ApiErrorKey,
         text: str | None = None,
         status_code: int = 200,
         **kwargs: Any,

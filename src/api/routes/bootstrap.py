@@ -91,6 +91,7 @@ class Bootstrap(RainwaveHandler):
                         self.sid,
                         include_request_line=True,
                         include_live_voting=True,
+                        request_locale=self.rainwave_locale,
                     )
                 )
         except APIException as e:

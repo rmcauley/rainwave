@@ -21,6 +21,11 @@ class InfoRequest(APIHandler):
         async with get_cursor() as cursor:
             self.response.update(
                 await get_station_info(
-                    cursor, self.optional_user, self.sid, False, False
+                    cursor,
+                    self.optional_user,
+                    self.sid,
+                    False,
+                    False,
+                    self.rainwave_locale,
                 )
             )
