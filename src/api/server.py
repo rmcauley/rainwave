@@ -13,11 +13,17 @@ from api.handler_classes.json404 import Error404Handler
 from api.helpers.cached_all_artists import update_all_artists_cache
 from api.helpers.cached_all_groups import update_all_groups_cache
 from api.websocket.websocket_zmq_listener import setup_websocket_zmq
-from common import config, log
+from common import config, log, stations
 from common.cache.cache import cache_connect
+from common.cache.timeline_cache import (
+    get_station_timeline_from_cache,
+    update_timeline_api_cache,
+)
 from common.db.connection import db_connect
+from common.db.cursor import get_cursor
 from common.playlist.object_counts import update_playlist_object_counts
 from common.processes.supervisor import ProcessSpec, run_forked_processes
+from common.schedule.advance_timeline import get_timeline
 
 app: tornado.web.Application | None = None
 
@@ -100,8 +106,6 @@ class APIServer:
             if enable_periodic_jobs:
                 self._start_periodic_jobs()
 
-            for request in request_classes:
-                log.debug("start", "   Handler: %s" % str(request))
             log.info("start", "Max open files: %s" % resource.RLIMIT_NOFILE)
             log.info("start", "API server on port %s ready to go." % port_no)
 
@@ -116,9 +120,33 @@ class APIServer:
 
     async def warmup(self):
         async with db_connect(auto_retry=False), cache_connect():
-            await update_playlist_object_counts()
-            await update_all_artists_cache()
-            await update_all_groups_cache()
+            await asyncio.gather(
+                update_playlist_object_counts(),
+                update_all_artists_cache(),
+                update_all_groups_cache(),
+            )
+
+            async with get_cursor() as cursor:
+                for sid in stations.station_ids:
+                    timeline_from_cache_check = await get_station_timeline_from_cache(
+                        sid
+                    )
+                    if timeline_from_cache_check:
+                        continue
+
+                    try:
+                        log.info(
+                            "warmup",
+                            f"Station {sid} missing cached timeline, backfilling.",
+                        )
+                        timeline = await get_timeline(cursor, sid)
+                        await update_timeline_api_cache(cursor, sid, timeline, [])
+                    except Exception as e:
+                        log.exception(
+                            "warmup",
+                            f"Failed to warm timeline API cache for station {sid}.",
+                            e,
+                        )
 
     def start(
         self, per_port_logging: bool, api_num_processes: int, enable_periodic_jobs: bool

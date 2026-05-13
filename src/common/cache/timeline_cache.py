@@ -1,6 +1,9 @@
-from typing import TypedDict
+import asyncio
+from typing import Any, Coroutine, TypedDict, cast
 
+from common.cache.cache import cache_get
 from common.cache.station_cache import cache_get_station, cache_set_station
+from common.cache.update_user_rating_acl import UserRatingACL
 from common.db.cursor import RainwaveCursor
 from common.playlist.album.model.album_on_station import AlbumOnStation
 from common.schedule.timeline import TimelineOnStation
@@ -63,15 +66,31 @@ async def update_timeline_api_cache(
     )
 
 
-async def get_timeline_api_cache(
+def get_station_timeline_from_cache(
     sid: int,
-) -> tuple[
+) -> Coroutine[Any, Any, TimelineApiCache | None]:
+    return cache_get_station(sid, "timeline_api")
+
+
+async def get_timeline_api_cache(sid: int) -> tuple[
     TimelineApiCache | None,
-    rainwave_typeddicts.StationInfo | None,
-    rainwave_typeddicts.AlbumDiff,
+    rainwave_typeddicts.AlbumDiff | None,
+    rainwave_typeddicts.AllStationsInfo | None,
+    UserRatingACL | None,
 ]:
-    return (
-        await cache_get_station(sid, "timeline_api"),
-        await cache_get_station(sid, "all_station_info"),
-        await cache_get_station(sid, "album_diff"),
+    timeline_api, album_diff, all_station_info, user_rating_acl = cast(
+        tuple[
+            TimelineApiCache | None,
+            rainwave_typeddicts.AlbumDiff | None,
+            rainwave_typeddicts.AllStationsInfo | None,
+            UserRatingACL | None,
+        ],
+        await asyncio.gather(
+            get_station_timeline_from_cache(sid),
+            cache_get_station(sid, "album_diff"),
+            cache_get("all_stations_info"),
+            cache_get_station(sid, "user_rating_acl"),
+        ),
     )
+
+    return (timeline_api, album_diff, all_station_info, user_rating_acl)

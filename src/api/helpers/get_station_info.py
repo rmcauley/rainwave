@@ -1,13 +1,10 @@
-import asyncio
-from typing import TypedDict, cast
+from typing import TypedDict
 
 from api.exceptions import APIException
 from api.helpers.user_vote_cache import get_user_vote_cache
 from api.rainwave_return_key_to_open_api import RainwaveResponse
-from common.cache.cache import cache_get
 from common.cache.station_cache import cache_get_station
-from common.cache.timeline_cache import TimelineApiCache
-from common.cache.update_user_rating_acl import UserRatingACL
+from common.cache.timeline_cache import get_timeline_api_cache
 from common.db.cursor import RainwaveCursor
 from api import rainwave_typeddicts
 from common.requests.get_user_requests import get_user_requests, user_requests_to_api
@@ -62,19 +59,8 @@ async def get_station_info(
     if include_request_line:
         response["request_line"] = await cache_get_station(sid, "request_line")
 
-    timeline_api, album_diff, all_station_info, user_rating_acl = cast(
-        tuple[
-            TimelineApiCache | None,
-            rainwave_typeddicts.AlbumDiff,
-            rainwave_typeddicts.AllStationsInfo,
-            UserRatingACL | None,
-        ],
-        await asyncio.gather(
-            cache_get_station(sid, "timeline_api"),
-            cache_get_station(sid, "album_diff"),
-            cache_get("all_stations_info"),
-            cache_get_station(sid, "user_rating_acl"),
-        ),
+    timeline_api, album_diff, all_station_info, user_rating_acl = (
+        await get_timeline_api_cache(sid)
     )
     if timeline_api is None:
         raise APIException(
@@ -215,7 +201,7 @@ async def get_station_info(
                 response["already_voted"] = user_vote_cache
 
     response["all_stations_info"] = all_station_info or {}
-    response["album_diff"] = album_diff
+    response["album_diff"] = album_diff or []
 
     if include_live_voting:
         response["live_voting"] = await cache_get_station(sid, "live_voting")

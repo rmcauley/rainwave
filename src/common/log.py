@@ -44,7 +44,7 @@ general_log = logging.getLogger("tornado.general")
 
 stdout_handler: logging.StreamHandler[Any] = logging.StreamHandler()
 stdout_handler.setFormatter(formatter)
-stdout_handler.setLevel(logging.WARNING)
+stdout_handler.setLevel(logging.DEBUG)
 log.addHandler(stdout_handler)
 general_log.addHandler(stdout_handler)
 
@@ -85,12 +85,6 @@ def init(
         file_handler.setLevel(log_file_level)
         log.addHandler(file_handler)
         general_log.addHandler(file_handler)
-
-    debug("test", "Debug test.")
-    info("test", "Info test.")
-    warn("test", "Warn test.")
-    error("test", "Error test.")
-    critical("test", "Critical test.")
 
 
 def _massage_line(key: str, message: str, user_id: int | None) -> str:

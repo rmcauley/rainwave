@@ -122,7 +122,7 @@ class BackendServer:
                 )
                 user_inactive_marking.start()
 
-            log.debug(
+            log.info(
                 "start",
                 "Backend server started, station %s port %s, ready to go."
                 % (stations.station_id_friendly[sid], port),
