@@ -1,13 +1,14 @@
 [Unit]
 Description=Rainwave Internet Radio ZeroMQ Proxy
 Wants=network.target
+After=network.target
 
 [Service]
 Type=simple
 User=rainwave
 Group=www-data
-WorkingDirectory=/home/rainwave
-ExecStart=/home/rainwave/.local/bin/uv run rw_zmq_proxy.py
+WorkingDirectory=/home/rainwave/rainwave
+ExecStart=/home/rainwave/.local/bin/uv run python src/rw_zmq_proxy.py
 Restart=on-failure
 RestartSec=5
 

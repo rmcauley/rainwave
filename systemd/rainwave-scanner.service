@@ -7,8 +7,8 @@ Requires=postgresql.service memcached.service memcached_ratings.service
 Type=simple
 User=rainwave
 Group=www-data
-WorkingDirectory=/home/rainwave
-ExecStart=/home/rainwave/.local/bin/uv run rw_scanner.py
+WorkingDirectory=/home/rainwave/rainwave
+ExecStart=/home/rainwave/.local/bin/uv run python src/rw_scanner.py
 
 [Install]
 WantedBy=multi-user.target

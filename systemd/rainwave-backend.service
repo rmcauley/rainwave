@@ -8,8 +8,8 @@ After=rainwave-zmq-proxy.service
 Type=simple
 User=rainwave
 Group=www-data
-WorkingDirectory=/home/rainwave
-ExecStart=/home/rainwave/.local/bin/uv run rw_song_change_api.py
+WorkingDirectory=/home/rainwave/rainwave
+ExecStart=/home/rainwave/.local/bin/uv run python src/rw_song_change_api.py
 
 [Install]
 WantedBy=multi-user.target
