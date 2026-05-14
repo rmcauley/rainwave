@@ -224,6 +224,17 @@ async def _setup_rainwave_state() -> None:
             await advance_timeline(advance_cursor, 1)
         async with get_tx_cursor() as process_cursor:
             await process_timeline_advance(process_cursor, 1)
+        await cursor.update(
+            """
+            INSERT INTO r4_song_history (sid, song_id)
+            SELECT sid, song_id
+            FROM r4_song_sid
+            WHERE sid = %s
+            ORDER BY song_id ASC
+            LIMIT 1
+            """,
+            (1,),
+        )
         _progress("warming API caches")
         await update_all_artists_cache()
         await update_all_groups_cache()

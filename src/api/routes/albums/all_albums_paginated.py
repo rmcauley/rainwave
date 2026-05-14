@@ -77,7 +77,7 @@ class AllAlbumsPaginatedHandler(APIHandler):
             base_sql = get_all_albums_list_sql(user_id)
             albums_with_sentinel = await cursor.fetch_all(
                 sql.SQL(
-                    "{query} AND r4_albums.album_id > {after} ORDER BY id LIMIT {page_limit}"
+                    "{query} AND r4_albums.album_id > {after} ORDER BY r4_albums.album_id LIMIT {page_limit}"
                 ).format(
                     query=base_sql,
                     after=sql.Placeholder(name="after"),
@@ -94,7 +94,11 @@ class AllAlbumsPaginatedHandler(APIHandler):
                 "data": albums,
                 "has_more": has_more,
                 "progress": min(
-                    math.ceil(next_cursor / total_albums * 100) if total_albums > 0 else 100,
+                    (
+                        math.ceil(next_cursor / total_albums * 100)
+                        if total_albums > 0
+                        else 100
+                    ),
                     100,
                 ),
                 "next": next_cursor,

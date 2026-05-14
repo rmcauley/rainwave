@@ -297,7 +297,7 @@ class AlbumOnStation:
                 % (
                     rating_count,
                     self.data["album_name"],
-                    stations.station_id_friendly[sid],
+                    stations.station_id_friendly.get(sid, f"Station {sid}"),
                 ),
             )
 

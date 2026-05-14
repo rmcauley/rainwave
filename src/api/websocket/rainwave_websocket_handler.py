@@ -36,6 +36,17 @@ class RainwaveWebsocketHandler(WebSocketHandler, ABC):
             self.on_close()
             self.close()
 
+    async def write_rainwave_response_async(self, data: RainwaveResponse) -> None:
+        message = orjson.dumps(data)
+        try:
+            await self.write_message(message)
+        except WebSocketClosedError:
+            self.on_close()
+        except WebSocketError as e:
+            log.exception("websocket", "WebSocket Error", e)
+            self.on_close()
+            self.close()
+
     def check_origin(self, origin: str) -> bool:
         if config.websocket_allow_from == "*":
             return True

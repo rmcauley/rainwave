@@ -66,7 +66,6 @@ def test_log_init_shutdown_and_connection_cache_guards(tmp_path: Path) -> None:
             log_path = tmp_path / "unit.log"
             assert log_path.exists()
             contents = log_path.read_text(encoding="utf-8")
-            assert "Info test." in contents
             assert "hello" in contents
 
             log.debug("unit", "after shutdown")

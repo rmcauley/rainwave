@@ -321,7 +321,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
 
     async def update(self):
         if not await cache_get_station(self.sid, "backend_ok"):
-            self.write_rainwave_response(
+            await self.write_rainwave_response_async(
                 {
                     "sync_result": {
                         "code": 403,
@@ -350,10 +350,10 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                     "exectime": time.monotonic() - startclock,
                     "time": int(timestamp()),
                 }
-                self.write_rainwave_response(response)
+                await self.write_rainwave_response_async(response)
         except Exception as e:
             try:
-                self.write_rainwave_response(
+                await self.write_rainwave_response_async(
                     {
                         "sync_result": {
                             "code": 500,
@@ -371,12 +371,14 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
         if self.user:
             async with get_cursor() as cursor:
                 await self.user.refresh(cursor)
-            self.write_rainwave_response({"user": user_to_api_private(self.user)})
+            await self.write_rainwave_response_async(
+                {"user": user_to_api_private(self.user)}
+            )
 
     async def _station_offline_check(self):
         if not await cache_get_station(self.sid, "backend_ok"):
             # shamelessly fake an error.
-            self.write_rainwave_response(
+            await self.write_rainwave_response_async(
                 {
                     "sync_result": {
                         "tl_key": "station_offline",

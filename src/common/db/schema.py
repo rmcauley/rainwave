@@ -260,6 +260,11 @@ async def create_tables() -> None:
         await create_index(cursor, "r4_song_sid", ["song_elec_blocked"])
         await create_index(cursor, "r4_song_sid", ["song_exists"])
         await create_index(cursor, "r4_song_sid", ["song_request_only"])
+        await cursor.update("""
+            CREATE INDEX r4_song_sid_existing_sid_song_id_idx
+            ON r4_song_sid (sid, song_id)
+            WHERE song_exists = TRUE
+        """)
         await create_delete_fk(cursor, "r4_song_sid", "r4_songs", "song_id")
 
         await cursor.update(" \
@@ -309,6 +314,12 @@ async def create_tables() -> None:
         await create_index(cursor, "r4_album_sid", ["sid"])
         await create_index(cursor, "r4_album_sid", ["album_requests_pending"])
         await create_index(cursor, "r4_album_sid", ["album_exists", "sid"])
+        # Can't use the create_index helper since there's a WHERE here
+        await cursor.update("""
+            CREATE INDEX r4_album_sid_existing_sid_album_id_idx
+            ON r4_album_sid (sid, album_id)
+            WHERE album_exists = TRUE
+        """)
         await create_delete_fk(cursor, "r4_album_sid", "r4_albums", "album_id")
 
         await cursor.update("""
