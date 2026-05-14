@@ -13,6 +13,7 @@ import type { RainwaveAction, RainwaveParams, RainwaveResponse, RainwaveUser } f
 const DEFAULT_RECONNECT_TIMEOUT = 500;
 const MAX_QUEUED_REQUESTS = 10;
 const STALLED_SOCKET_TIMEOUT = 10_000;
+const SYNC_RETRYING_ERROR = { code: 0, text: '', tl_key: 'sync_retrying' } as unknown as components['schemas']['_error'];
 
 type RainwaveResolveFn<T extends RainwaveAction> = (value: RainwaveResponse<T>) => void;
 
@@ -238,7 +239,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   }
 
   private _onSocketError(event: Event): void {
-    this.emit('error', { code: 0, tl_key: 'sync_retrying', text: '' });
+    this.emit('error', SYNC_RETRYING_ERROR);
     this._externalOnSocketError(event);
     this._socket?.close();
   }
@@ -437,7 +438,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       this._socketActivityTimeoutTimer = null;
       this._requestQueue.unshift(request);
       this._debug('Looks like the connection timed out.');
-      this.emit('error', { code: 0, text: '', tl_key: 'sync_retrying' });
+      this.emit('error', SYNC_RETRYING_ERROR);
       this._reconnectSocket();
     }
   }

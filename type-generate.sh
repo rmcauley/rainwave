@@ -37,6 +37,5 @@ uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type
 
 npx openapi-typescript ./src/api/rainwave-openapi.json -o ./frontend/src/rainwaveApi/rainwave-openapi.d.ts
 npx openapi-typescript ./src/api/rainwave-openapi.json -o ./admin_panel/src/rainwave-openapi.d.ts
-npx openapi-typescript ./src/api/rainwave-openapi.json -o ./stream_widget/src/rainwave-openapi.d.ts
 
 echo "Done."

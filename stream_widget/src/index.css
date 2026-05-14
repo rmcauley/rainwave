@@ -1,0 +1,242 @@
+html,
+body {
+  background: transparent;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.rw-overlay {
+  --rw-art-shadow: none;
+  --rw-art-size: 120px;
+  --rw-background: transparent;
+  --rw-box-shadow: none;
+  --rw-color: white;
+  --rw-font-family: sans-serif;
+  --rw-font-size: 18pt;
+  --rw-header-color: #ffc96a;
+  --rw-padding: 8px;
+  --rw-scale: 1;
+  --rw-text-shadow: 3px 3px 3px black;
+  --rw-width: 420px;
+
+  box-sizing: border-box;
+  color: var(--rw-color);
+  font-family: var(--rw-font-family);
+  font-size: calc(var(--rw-font-size) * var(--rw-scale));
+  max-width: calc(var(--rw-width) * var(--rw-scale));
+  padding: 0;
+  text-shadow: var(--rw-text-shadow);
+}
+
+.rw-overlay[data-align='center'] {
+  text-align: center;
+}
+
+.rw-overlay[data-align='right'] {
+  text-align: right;
+}
+
+.rw-header {
+  color: var(--rw-header-color);
+  font-size: 0.72em;
+  padding: 0 var(--rw-padding);
+  position: relative;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.rw-frame {
+  min-height: calc(var(--rw-art-size) + (var(--rw-padding) * 2));
+  position: relative;
+}
+
+.rw-frame.rw-status {
+  opacity: 0.7;
+  padding: var(--rw-padding);
+}
+
+.rw-card {
+  align-items: center;
+  background: var(--rw-background);
+  box-shadow: var(--rw-box-shadow);
+  box-sizing: border-box;
+  display: flex;
+  gap: var(--rw-padding);
+  max-width: 100%;
+  padding: var(--rw-padding);
+  position: absolute;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+  width: 100%;
+}
+
+.rw-overlay[data-layout='art_top'] .rw-card,
+.rw-overlay[data-layout='art_bottom'] .rw-card {
+  flex-direction: column;
+}
+
+.rw-overlay[data-layout='art_right'] .rw-card {
+  flex-direction: row;
+}
+
+.rw-art {
+  box-shadow: var(--rw-art-shadow);
+  flex: 0 0 auto;
+  height: var(--rw-art-size);
+  object-fit: cover;
+  width: var(--rw-art-size);
+}
+
+.rw-text {
+  min-width: 0;
+}
+
+.rw-title,
+.rw-artist,
+.rw-album,
+.rw-requester {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rw-title {
+  font-weight: 700;
+}
+
+.rw-artist,
+.rw-album,
+.rw-requester {
+  font-size: 0.78em;
+}
+
+.rw-hidden {
+  opacity: 0;
+}
+
+.rw-entering,
+.rw-exiting {
+  opacity: 0;
+}
+
+.rw-enter-left {
+  transform: translateX(-24px);
+}
+
+.rw-enter-right {
+  transform: translateX(24px);
+}
+
+.rw-enter-top {
+  transform: translateY(-24px);
+}
+
+.rw-enter-bottom {
+  transform: translateY(24px);
+}
+
+.rw-exit-left {
+  transform: translateX(-24px);
+}
+
+.rw-exit-right {
+  transform: translateX(24px);
+}
+
+.rw-exit-top {
+  transform: translateY(-24px);
+}
+
+.rw-exit-bottom {
+  transform: translateY(24px);
+}
+
+.builder {
+  background: #111;
+  box-sizing: border-box;
+  color: #f5f5f5;
+  min-height: 100vh;
+  overflow: auto;
+  padding: 24px;
+}
+
+.builder h1 {
+  font-size: 24px;
+  margin: 0 0 18px;
+}
+
+.builder-layout {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(300px, 460px) minmax(320px, 1fr);
+}
+
+.builder-form {
+  display: grid;
+  gap: 12px;
+}
+
+.builder-field {
+  display: grid;
+  gap: 5px;
+}
+
+.builder-check {
+  align-items: center;
+  display: flex;
+}
+
+.builder-field input,
+.builder-field select,
+.builder-url {
+  background: #202020;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #fff;
+  padding: 7px 9px;
+}
+
+.builder-preview {
+  background:
+    linear-gradient(45deg, #2b2b2b 25%, transparent 25%),
+    linear-gradient(-45deg, #2b2b2b 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #2b2b2b 75%),
+    linear-gradient(-45deg, transparent 75%, #2b2b2b 75%);
+  background-color: #181818;
+  background-position:
+    0 0,
+    0 10px,
+    10px -10px,
+    -10px 0;
+  background-size: 20px 20px;
+  min-height: 240px;
+  padding: 24px;
+}
+
+.builder-url {
+  box-sizing: border-box;
+  height: 88px;
+  margin-top: 24px;
+  width: 100%;
+}
+
+@media (max-width: 820px) {
+  .builder-layout {
+    grid-template-columns: 1fr;
+  }
+}

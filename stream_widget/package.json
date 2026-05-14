@@ -3,8 +3,11 @@
   "version": "0.0.1",
   "description": "rainwave.cc",
   "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "lint:fix": "eslint --fix . && prettier --write ."
   },
   "repository": {
