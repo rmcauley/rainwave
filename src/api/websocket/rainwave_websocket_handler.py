@@ -5,6 +5,7 @@ from aiohttp import WebSocketError
 import orjson
 from tornado.websocket import WebSocketClosedError, WebSocketHandler
 
+from api.helpers.rating_preload import RatingPreload
 from api.rainwave_return_key_to_open_api import RainwaveResponse
 from common import config, log
 
@@ -16,7 +17,7 @@ class RainwaveWebsocketHandler(WebSocketHandler, ABC):
     listen_key: str
 
     @abstractmethod
-    async def update(self) -> None:
+    async def update(self, rating_preload: RatingPreload | None = None) -> None:
         raise NotImplementedError
 
     @abstractmethod

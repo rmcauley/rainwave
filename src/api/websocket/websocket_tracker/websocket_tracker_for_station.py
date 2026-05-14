@@ -1,10 +1,17 @@
 import asyncio
 
+from api.helpers.rating_preload import (
+    RatingPreload,
+    collect_timeline_song_album_ids,
+    get_rating_preload,
+)
 from api.rainwave_return_key_to_open_api import RainwaveResponse
 from api.websocket.rainwave_websocket_handler import (
     RainwaveWebsocketHandler,
 )
 from common import log
+from common.cache.timeline_cache import get_timeline_api_cache
+from common.db.cursor import get_cursor
 
 import datetime
 import tornado
@@ -67,9 +74,13 @@ class WebsocketTrackerForStation:
     ) -> RainwaveWebsocketHandler | None:
         return self._websockets_by_listen_key.get(listen_key, None)
 
-    async def _update_session(self, websocket: RainwaveWebsocketHandler) -> bool:
+    async def _update_session(
+        self,
+        websocket: RainwaveWebsocketHandler,
+        rating_preload: RatingPreload | None = None,
+    ) -> bool:
         try:
-            await websocket.update()
+            await websocket.update(rating_preload=rating_preload)
             return True
         except Exception as e:
             log.exception("sync_update_all", "Failed to update session.", e)
@@ -84,11 +95,43 @@ class WebsocketTrackerForStation:
             self.remove(websocket)
             return False
 
+    async def _get_rating_preload_for_sessions(
+        self, sid: int, sessions: tuple[RainwaveWebsocketHandler, ...]
+    ) -> RatingPreload | None:
+        user_ids = {session.user_id for session in sessions if session.user_id > 1}
+        if not user_ids:
+            return None
+
+        timeline_api, _, _, _ = await get_timeline_api_cache(sid)
+        if timeline_api is None:
+            return None
+
+        song_ids, album_ids = collect_timeline_song_album_ids(
+            timeline_api["sched_current"],
+            timeline_api["sched_next"],
+            timeline_api["sched_history"],
+        )
+        async with get_cursor() as cursor:
+            return await get_rating_preload(cursor, sid, user_ids, song_ids, album_ids)
+
     async def update_all(self, sid: int):
+        sessions = tuple(self)
+        try:
+            rating_preload = await self._get_rating_preload_for_sessions(sid, sessions)
+        except Exception as e:
+            log.exception(
+                "sync_update_all",
+                "Failed to preload ratings for websocket update.",
+                e,
+            )
+            rating_preload = None
         session_count = 0
         session_failed_count = 0
         updates = await asyncio.gather(
-            *(self._update_session(session) for session in self),
+            *(
+                self._update_session(session, rating_preload=rating_preload)
+                for session in sessions
+            ),
             return_exceptions=True,
         )
 

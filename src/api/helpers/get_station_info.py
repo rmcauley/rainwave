@@ -1,6 +1,12 @@
 from typing import TypedDict
 
 from api.exceptions import APIException
+from api.helpers.rating_preload import (
+    AlbumRatings,
+    RatingPreload,
+    SongRatings,
+    collect_timeline_song_album_ids,
+)
 from api.helpers.user_vote_cache import get_user_vote_cache
 from api.rainwave_return_key_to_open_api import RainwaveResponse
 from common.cache.station_cache import cache_get_station
@@ -27,10 +33,6 @@ class AlbumRatingRow(TypedDict):
     album_fave: bool | None
 
 
-SongRatings = dict[int, tuple[float | None, bool | None]]
-AlbumRatings = dict[int, tuple[float | None, bool | None]]
-
-
 def _attach_rating_to_song(
     song_ratings: SongRatings,
     album_ratings: AlbumRatings,
@@ -53,6 +55,7 @@ async def get_station_info(
     include_request_line: bool,
     include_live_voting: bool,
     request_locale: RainwaveLocale,
+    rating_preload: RatingPreload | None = None,
 ) -> RainwaveResponse:
     response: RainwaveResponse = {}
     if optional_user:
@@ -73,69 +76,66 @@ async def get_station_info(
             song_requests = await get_user_requests(cursor, sid, optional_user.id)
             response["requests"] = user_requests_to_api(song_requests)
 
-            song_ids: list[int] = []
-            album_ids: list[int] = []
-            for upnext in sched_next:
-                for song in upnext["songs"]:
-                    song_ids.append(song["id"])
-                    album_ids.append(song["albums"][0]["id"])
-            for song in sched_current["songs"]:
-                song_ids.append(song["id"])
-                album_ids.append(song["albums"][0]["id"])
-            for history_entry in sched_history:
-                for song in history_entry["songs"]:
-                    song_ids.append(song["id"])
-                    album_ids.append(song["albums"][0]["id"])
-
-            song_rating_rows = await cursor.fetch_all(
-                """
-                SELECT 
-                    song_id, 
-                    song_rating_user, 
-                    song_fave 
-                FROM r4_song_ratings 
-                WHERE 
-                    song_id = ANY (%s) 
-                    AND user_id = %s
-                """,
-                (song_ids, optional_user.id),
-                row_type=SongRatingRow,
-            )
-            album_rating_rows = await cursor.fetch_all(
-                """
-                SELECT 
-                    r4_album_sid.album_id AS album_id,
-                    album_rating_user, 
-                    album_fave 
-                FROM r4_album_sid 
-                    LEFT JOIN r4_album_ratings ON (
-                        r4_album_sid.album_id = r4_album_ratings.album_id
-                        AND r4_album_sid.sid = r4_album_ratings.sid
-                        AND r4_album_ratings.user_id = %s
-                    )
-                    LEFT JOIN r4_album_faves ON (
-                        r4_album_sid.album_id = r4_album_faves.album_id
-                        AND r4_album_faves.user_id = %s
-                    )
-                WHERE
-                    r4_album_sid.album_id = ANY (%s)
-                    AND r4_album_sid.sid = %s
-                """,
-                (optional_user.id, optional_user.id, album_ids, sid),
-                row_type=AlbumRatingRow,
-            )
-
-            song_ratings = {
-                row["song_id"]: (row["song_rating_user"], row["song_fave"])
-                for row in song_rating_rows
-            }
-            album_ratings = {
-                row["album_id"]: (
-                    row["album_rating_user"],
-                    row["album_fave"],
+            if rating_preload and optional_user.id in rating_preload.user_ids:
+                song_ratings = rating_preload.song_ratings_by_user.get(
+                    optional_user.id, {}
                 )
-                for row in album_rating_rows
-            }
+                album_ratings = rating_preload.album_ratings_by_user.get(
+                    optional_user.id, {}
+                )
+            else:
+                song_ids, album_ids = collect_timeline_song_album_ids(
+                    sched_current, sched_next, sched_history
+                )
+                song_rating_rows = await cursor.fetch_all(
+                    """
+                    SELECT 
+                        song_id, 
+                        song_rating_user, 
+                        song_fave 
+                    FROM r4_song_ratings 
+                    WHERE 
+                        song_id = ANY (%s) 
+                        AND user_id = %s
+                    """,
+                    (song_ids, optional_user.id),
+                    row_type=SongRatingRow,
+                )
+                album_rating_rows = await cursor.fetch_all(
+                    """
+                    SELECT 
+                        r4_album_sid.album_id AS album_id,
+                        album_rating_user, 
+                        album_fave 
+                    FROM r4_album_sid 
+                        LEFT JOIN r4_album_ratings ON (
+                            r4_album_sid.album_id = r4_album_ratings.album_id
+                            AND r4_album_sid.sid = r4_album_ratings.sid
+                            AND r4_album_ratings.user_id = %s
+                        )
+                        LEFT JOIN r4_album_faves ON (
+                            r4_album_sid.album_id = r4_album_faves.album_id
+                            AND r4_album_faves.user_id = %s
+                        )
+                    WHERE
+                        r4_album_sid.album_id = ANY (%s)
+                        AND r4_album_sid.sid = %s
+                    """,
+                    (optional_user.id, optional_user.id, album_ids, sid),
+                    row_type=AlbumRatingRow,
+                )
+
+                song_ratings = {
+                    row["song_id"]: (row["song_rating_user"], row["song_fave"])
+                    for row in song_rating_rows
+                }
+                album_ratings = {
+                    row["album_id"]: (
+                        row["album_rating_user"],
+                        row["album_fave"],
+                    )
+                    for row in album_rating_rows
+                }
 
             if optional_user.is_tunedin():
                 sched_current["songs"][0]["rating_allowed"] = True

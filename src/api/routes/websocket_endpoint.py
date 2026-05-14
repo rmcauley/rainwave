@@ -15,6 +15,7 @@ from api import fieldtypes
 from api.exceptions import APIException
 from api.helpers.get_station_info import get_station_info
 from api.helpers.get_browser_locale import get_browser_locale
+from api.helpers.rating_preload import RatingPreload
 from api.handle_url import api_endpoints, handle_api_url
 from api.handler_classes.api_handler import APIHandler
 from api.helpers.get_remote_ip_or_throw import get_remote_ip_or_throw
@@ -319,7 +320,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                 endpoint.response["message_id"] = {"message_id": message_id}
             self.write_rainwave_response(endpoint.response)
 
-    async def update(self):
+    async def update(self, rating_preload: RatingPreload | None = None):
         if not await cache_get_station(self.sid, "backend_ok"):
             await self.write_rainwave_response_async(
                 {
@@ -343,6 +344,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                     include_request_line=True,
                     include_live_voting=True,
                     request_locale=self.rainwave_locale,
+                    rating_preload=rating_preload,
                 )
                 if self.user:
                     response["user"] = user_to_api_private(self.user)
