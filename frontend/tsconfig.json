@@ -19,8 +19,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2023",
-    "useDefineForClassFields": true,
-    "plugins": [{ "name": "typescript-eslint-language-service" }]
+    "useDefineForClassFields": true
   },
   "include": ["src", "../lang", "vite.config.ts", "vitest.config.ts"]
 }

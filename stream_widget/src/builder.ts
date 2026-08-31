@@ -1,6 +1,5 @@
 import {
   ANIMATIONS,
-  DEFAULT_CONFIG,
   LAYOUTS,
   PRESET_BACKGROUNDS,
   PRESET_LAYOUTS,
@@ -11,9 +10,8 @@ import {
   serializeConfig,
   transitionForPresetLayout,
 } from './config';
-import { FALLBACK_STATIONS, fetchStations } from './stations';
 import { OverlayRenderer } from './overlay';
-
+import { FALLBACK_STATIONS, fetchStations } from './stations';
 import type { Station, TimelineEntry, WidgetConfig } from './types';
 
 const SAMPLE_ENTRY = {
@@ -26,7 +24,16 @@ const SAMPLE_ENTRY = {
     {
       id: 1,
       title: 'Sample Track With A Long Stream-Friendly Title',
-      albums: [{ id: 1, name: 'Sample Album', art: null, fave: false, rating: 0, rating_user: 0 }],
+      albums: [
+        {
+          id: 1,
+          name: 'Sample Album',
+          art: null,
+          fave: false,
+          rating: 0,
+          rating_user: 0,
+        },
+      ],
       artists: [{ id: 1, name: 'Rainwave Artist', order: 0 }],
       cool: false,
       elec_blocked: false,
@@ -108,7 +115,11 @@ function inputField(
   return wrapper;
 }
 
-function checkboxField(label: string, value: boolean, onChange: (value: boolean) => void): HTMLElement {
+function checkboxField(
+  label: string,
+  value: boolean,
+  onChange: (value: boolean) => void,
+): HTMLElement {
   const wrapper = document.createElement('label');
   wrapper.className = 'builder-field builder-check';
   const input = document.createElement('input');
@@ -153,7 +164,10 @@ function setConfig<K extends keyof WidgetConfig>(
 ): WidgetConfig {
   const next = { ...config, [key]: value };
   if (key === 'presetLayout') {
-    return { ...next, ...transitionForPresetLayout(value as WidgetConfig['presetLayout']) };
+    return {
+      ...next,
+      ...transitionForPresetLayout(value as WidgetConfig['presetLayout']),
+    };
   }
 
   return next;
@@ -164,6 +178,7 @@ async function initBuilder(root: HTMLElement): Promise<void> {
   let stations = FALLBACK_STATIONS;
   try {
     stations = await fetchStations();
+    // oxlint-disable-next-line no-unused-vars
   } catch (_error) {
     stations = FALLBACK_STATIONS;
   }
@@ -204,20 +219,31 @@ async function initBuilder(root: HTMLElement): Promise<void> {
       ),
       selectField('Art layout', config.layout, LAYOUTS, (value) => update('layout', value)),
       inputField('Art size', config.artSize, (value) => update('artSize', value)),
-      selectField('Text align', config.textAlign, TEXT_ALIGNS, (value) => update('textAlign', value)),
+      selectField('Text align', config.textAlign, TEXT_ALIGNS, (value) =>
+        update('textAlign', value),
+      ),
       selectField('Animate in', config.animIn, ANIMATIONS, (value) => update('animIn', value)),
       selectField('Animate out', config.animOut, ANIMATIONS, (value) => update('animOut', value)),
       checkboxField('Show artist', config.showArtist, (value) => update('showArtist', value)),
       checkboxField('Show header', config.npHeader, (value) => update('npHeader', value)),
       inputField('Header text', config.npMessage, (value) => update('npMessage', value)),
       inputField('Text color', config.color, (value) => update('color', value)),
-      inputField('Background color', config.backgroundColor, (value) => update('backgroundColor', value)),
+      inputField('Background color', config.backgroundColor, (value) =>
+        update('backgroundColor', value),
+      ),
       inputField('Font size', config.fontSize, (value) => update('fontSize', value)),
       inputField('Width', config.maxWidth, (value) => update('maxWidth', value)),
       inputField('Padding', config.padding, (value) => update('padding', value)),
-      inputField('Display delay seconds', config.delay, (value) => update('delay', Number.parseInt(value, 10) || 0), 'number'),
-      inputField('Attribution every N songs', config.attributionFrequency, (value) =>
-        update('attributionFrequency', Number.parseInt(value, 10) || 0),
+      inputField(
+        'Display delay seconds',
+        config.delay,
+        (value) => update('delay', Number.parseInt(value, 10) || 0),
+        'number',
+      ),
+      inputField(
+        'Attribution every N songs',
+        config.attributionFrequency,
+        (value) => update('attributionFrequency', Number.parseInt(value, 10) || 0),
         'number',
       ),
     );

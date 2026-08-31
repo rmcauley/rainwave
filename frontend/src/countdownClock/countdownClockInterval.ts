@@ -1,6 +1,5 @@
 import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
 import { preferenceEvents } from '../preferences';
-
 import { countdownClockLoop } from './countdownClock';
 import { shouldShowClockInTitle } from './shouldShowCountdownClock';
 

@@ -1,8 +1,7 @@
-import type { JSX } from 'react';
-
 import { Stack, TextField, Typography } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useQuery } from '@tanstack/react-query';
+import type { JSX } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { postRainwave } from '../api/rainwave';
@@ -41,7 +40,8 @@ export function AlbumsPage(): JSX.Element {
 
   const songsQuery = useQuery({
     queryKey: ['admin', 'album-songs', sid, albumId],
-    queryFn: () => postRainwave('/api4/admin/album_songs', { sid: Number(sid), album_id: Number(albumId) }),
+    queryFn: () =>
+      postRainwave('/api4/admin/album_songs', { sid: Number(sid), album_id: Number(albumId) }),
     enabled: Boolean(albumId),
   });
 
@@ -53,7 +53,10 @@ export function AlbumsPage(): JSX.Element {
 
   return (
     <Stack spacing={3}>
-      <PageSection title="Albums" subtitle="Station-scoped album list scaffold for cooldown and art workflows.">
+      <PageSection
+        title="Albums"
+        subtitle="Station-scoped album list scaffold for cooldown and art workflows."
+      >
         <Stack direction="row" spacing={2} alignItems="center">
           <TextField
             select
@@ -70,7 +73,8 @@ export function AlbumsPage(): JSX.Element {
             ))}
           </TextField>
           <Typography variant="body2" color="text.secondary">
-            The detail pane uses URL state and the enriched `admin/album_songs` payload with `rating` and `rating_count`.
+            The detail pane uses URL state and the enriched `admin/album_songs` payload with
+            `rating` and `rating_count`.
           </Typography>
         </Stack>
         {albumsQuery.error ? <RainwaveErrorAlert error={albumsQuery.error} /> : null}
@@ -95,7 +99,10 @@ export function AlbumsPage(): JSX.Element {
         />
       </PageSection>
 
-      <PageSection title="Album Detail" subtitle="Read-only scaffold for the song, cooldown, and artwork workflows.">
+      <PageSection
+        title="Album Detail"
+        subtitle="Read-only scaffold for the song, cooldown, and artwork workflows."
+      >
         {songsQuery.error ? <RainwaveErrorAlert error={songsQuery.error} /> : null}
         {artQuery.error ? <RainwaveErrorAlert error={artQuery.error} /> : null}
         {!albumId ? (

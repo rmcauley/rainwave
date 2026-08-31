@@ -38,8 +38,14 @@ describe('widget config', () => {
   });
 
   it('maps intended placement to transition direction', () => {
-    expect(transitionForPresetLayout('center_left')).toEqual({ animIn: 'to_left', animOut: 'to_right' });
-    expect(transitionForPresetLayout('top_center')).toEqual({ animIn: 'to_top', animOut: 'to_bottom' });
+    expect(transitionForPresetLayout('center_left')).toEqual({
+      animIn: 'to_left',
+      animOut: 'to_right',
+    });
+    expect(transitionForPresetLayout('top_center')).toEqual({
+      animIn: 'to_top',
+      animOut: 'to_bottom',
+    });
   });
 
   it('maps legacy preset size to widget scale', () => {

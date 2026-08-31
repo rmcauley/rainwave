@@ -1,14 +1,11 @@
-import { getAlbumArt } from '../../../helpers/albumArt';
 import { stations } from '../../../helpers/stations';
 import { $l } from '../../../language';
 import { preferences, setPreference } from '../../../preferences';
 import { api } from '../../../rainwaveApi';
-
 import { RainwaveAudioBackend } from './playerBackend';
 
-import type { components } from '../../../rainwaveApi/rainwave-openapi';
-
 import './player.scss';
+import { updateMediaSession } from './updateMediaSession';
 
 function sanitizeVolume(newVolume: number): number {
   if (!Number.isFinite(newVolume)) {
@@ -143,37 +140,14 @@ function initPlayer(): void {
   stopEl.addEventListener('click', player.stop);
   player.addEventListener('stateChange', updatePlayerState);
 
-  if (navigator.mediaSession) {
-    function updateMediaSession(nowPlaying: components['schemas']['sched_current']): void {
-      const song = nowPlaying.songs[0];
-      if (!song || !api.user.tuned_in) {
-        return;
-      }
-      const artwork = [
-        {
-          src: new URL(getAlbumArt(song), window.location.origin).toString(),
-          sizes: '320x320',
-          type: 'image/jpeg',
-        },
-      ];
+  api.addEventListener('sched_current', updateMediaSession);
 
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: song.title,
-        artist: song.artists.map((artist) => artist.name).join(', '),
-        album: song.albums[0].name,
-        artwork: artwork,
-      });
-    }
-
-    api.addEventListener('sched_current', updateMediaSession);
-
-    navigator.mediaSession.setActionHandler('play', player.play);
-    navigator.mediaSession.setActionHandler('pause', player.stop);
-    navigator.mediaSession.setActionHandler('previoustrack', function () {});
-    navigator.mediaSession.setActionHandler('nexttrack', function () {});
-    navigator.mediaSession.setActionHandler('seekbackward', function () {});
-    navigator.mediaSession.setActionHandler('seekforward', function () {});
-  }
+  navigator.mediaSession.setActionHandler('play', player.play);
+  navigator.mediaSession.setActionHandler('pause', player.stop);
+  navigator.mediaSession.setActionHandler('previoustrack', function () {});
+  navigator.mediaSession.setActionHandler('nexttrack', function () {});
+  navigator.mediaSession.setActionHandler('seekbackward', function () {});
+  navigator.mediaSession.setActionHandler('seekforward', function () {});
 
   drawVolume();
   drawMute();

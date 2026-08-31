@@ -1,43 +1,36 @@
 {
   "name": "rainwave",
   "version": "5.0.0",
-  "description": "rainwave.cc",
   "private": true,
+  "description": "rainwave.cc",
+  "homepage": "https://github.com/rmcauley/rainwave#readme",
+  "license": "GPL-2.0-only",
+  "author": "Robert McAuley",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmcauley/rainwave.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "npm run build && vite preview",
-    "lint": "eslint . && stylelint \"src/**/*.scss\" && prettier --check .",
+    "lint": "oxlint . && stylelint \"src/**/*.scss\" && oxfmt --check .",
     "lint:styles": "stylelint \"src/**/*.scss\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint:fix": "eslint --fix . && stylelint --fix \"src/**/*.scss\" && prettier --write ."
+    "lint:fix": "oxlint --fix . && stylelint --fix \"src/**/*.scss\" && oxfmt --write ."
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rmcauley/rainwave.git"
-  },
-  "author": "Robert McAuley",
-  "license": "GPL-2.0-only",
-  "homepage": "https://github.com/rmcauley/rainwave#readme",
   "devDependencies": {
-    "@stylistic/eslint-plugin": "5.10.0",
-    "@types/node": "20.19.30",
-    "eslint": "9.39.4",
-    "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-n": "17.24.0",
-    "eslint-plugin-simple-import-sort": "13.0.0",
-    "eslint-plugin-unused-imports": "4.4.1",
-    "prettier": "3.8.3",
-    "sass-embedded": "1.99.0",
-    "stylelint": "17.6.0",
-    "stylelint-config-recess-order": "7.7.0",
+    "oxfmt": "0.65.0",
+    "oxlint": "1.80.0",
+    "sass-embedded": "1.103.1",
+    "stylelint": "17.14.1",
+    "stylelint-config-recess-order": "7.8.0",
     "stylelint-config-standard": "40.0.0",
     "stylelint-config-standard-scss": "17.0.0",
     "stylelint-order": "8.1.1",
-    "typescript": "6.0.2",
-    "typescript-eslint": "8.58.0",
-    "vite": "8.0.10",
-    "vitest": "4.1.2"
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
   }
 }

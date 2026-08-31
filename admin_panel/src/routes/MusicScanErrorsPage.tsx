@@ -1,8 +1,7 @@
-import type { JSX } from 'react';
-
 import { Stack } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useQuery } from '@tanstack/react-query';
+import type { JSX } from 'react';
 
 import { postRainwave } from '../api/rainwave';
 import { formatPowerHourTimes } from '../api/time';
@@ -34,7 +33,10 @@ export function MusicScanErrorsPage(): JSX.Element {
 
   return (
     <Stack spacing={3}>
-      <PageSection title="Music Scan Errors" subtitle="Read-only table from /api4/admin/music_scan_errors.">
+      <PageSection
+        title="Music Scan Errors"
+        subtitle="Read-only table from /api4/admin/music_scan_errors."
+      >
         {query.error ? <RainwaveErrorAlert error={query.error} /> : null}
         <DataGrid
           autoHeight

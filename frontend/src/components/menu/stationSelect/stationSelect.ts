@@ -1,10 +1,8 @@
 import { stations } from '../../../helpers/stations';
 import { $l } from '../../../language';
-import { api } from '../../../rainwaveApi';
-
-import { stationSelect } from './stationSelect.template';
-
 import type { RainwaveTranslationKey } from '../../../language/translations';
+import { api } from '../../../rainwaveApi';
+import { stationSelect } from './stationSelect.template';
 
 import './stationSelect.scss';
 

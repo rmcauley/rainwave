@@ -1,5 +1,4 @@
 import { cardinal, ordinal, ordinalSuffixes, translation } from './translations';
-
 import type { RainwaveTranslationKey, RainwaveTranslationPlural } from './translations';
 
 function formatOrdinal(value: number): string {

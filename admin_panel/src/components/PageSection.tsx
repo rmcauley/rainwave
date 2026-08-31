@@ -1,6 +1,5 @@
-import type { JSX, ReactNode } from 'react';
-
 import { Paper, Stack, Typography } from '@mui/material';
+import type { JSX, ReactNode } from 'react';
 
 interface PageSectionProps {
   title: string;

@@ -1,7 +1,6 @@
-import { translation } from './translations';
 import { $l } from '.';
-
 import type { TimelineEntry } from '../rainwaveApi/types';
+import { translation } from './translations';
 import type { RainwaveTranslationKey } from './translations';
 
 function getTimelineEntryName(timelineEntry: TimelineEntry): string {

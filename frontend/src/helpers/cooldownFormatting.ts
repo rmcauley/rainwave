@@ -1,5 +1,4 @@
 import { translation } from '../language/translations';
-
 import { getServerTime } from './clock';
 
 const timeFormatWeek = translation.timeformat_w as string;

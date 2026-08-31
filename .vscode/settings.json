@@ -12,23 +12,13 @@
   },
   "editor.formatOnSave": true,
   "files.insertFinalNewline": true,
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
-  },
   "editor.defaultFormatter": "ms-python.black-formatter",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always"
-  },
   "python.analysis.autoImportCompletions": true,
   "python.analysis.diagnosticMode": "workspace",
   "mypy.runUsingActiveInterpreter": true,
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy",
   "mypy-type-checker.importStrategy": "fromEnvironment",
-  "mypy-type-checker.preferDaemon": true
+  "mypy-type-checker.preferDaemon": true,
+  "prettier.enable": false,
+  "eslint.enable": false
 }

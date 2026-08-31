@@ -1,0 +1,25 @@
+{
+  "ignorePatterns": ["dist/**", "legacy/**/*"],
+  "plugins": ["typescript", "unicorn", "oxc", "vitest", "import"],
+  "categories": {
+    "correctness": "error",
+    "nursery": "error",
+    "perf": "error",
+    "suspicious": "error"
+  },
+  "rules": {
+    "no-underscore-dangle": "off",
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css", "**/*.scss"] }],
+    "no-unused-vars": ["error", { "fix": { "imports": "safe-fix" }, "argsIgnorePattern": "^_" }],
+    "no-await-in-loop": "off"
+  },
+  "env": {
+    "browser": true
+  },
+  "overrides": [
+    {
+      "files": ["vite.config.ts", "vitest.config.ts"],
+      "env": { "node": true }
+    }
+  ]
+}

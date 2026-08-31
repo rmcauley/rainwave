@@ -2,26 +2,28 @@ import type { components, paths } from '../rainwave-openapi';
 
 type ApiPath = keyof paths;
 type PostOperation<Path extends ApiPath> = paths[Path]['post'];
-type JsonRequest<Path extends ApiPath> = PostOperation<Path> extends {
-  requestBody: {
-    content: {
-      'application/json': infer Body;
-    };
-  };
-}
-  ? Body
-  : undefined;
-type JsonResponse<Path extends ApiPath> = PostOperation<Path> extends {
-  responses: {
-    default: {
+type JsonRequest<Path extends ApiPath> =
+  PostOperation<Path> extends {
+    requestBody: {
       content: {
-        'application/json': infer Response;
+        'application/json': infer Body;
       };
     };
-  };
-}
-  ? Response
-  : never;
+  }
+    ? Body
+    : undefined;
+type JsonResponse<Path extends ApiPath> =
+  PostOperation<Path> extends {
+    responses: {
+      default: {
+        content: {
+          'application/json': infer Response;
+        };
+      };
+    };
+  }
+    ? Response
+    : never;
 
 interface RainwaveEnvelope {
   error?: components['schemas']['error'];
@@ -66,7 +68,11 @@ export async function postRainwave<Path extends ApiPath>(
   }
 
   if (hasApiError(payload) && payload.error) {
-    throw new RainwaveApiError(payload.error.text || payload.error.tl_key, response.status, payload.error);
+    throw new RainwaveApiError(
+      payload.error.text || payload.error.tl_key,
+      response.status,
+      payload.error,
+    );
   }
 
   return payload;

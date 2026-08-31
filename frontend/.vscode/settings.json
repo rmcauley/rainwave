@@ -6,19 +6,16 @@
   "editor.formatOnSave": true,
   "files.insertFinalNewline": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always",
+    "source.fixAll.oxc": "always",
     "source.fixAll.stylelint": "always"
   },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "stylelint.lintFiles.glob": "**/*.{css,scss}",
   "stylelint.validate": ["css", "postcss", "scss"],
   "css.validate": false,
   "less.validate": false,
-  "scss.validate": false
+  "scss.validate": false,
+  "js/ts.experimental.useTsgo": true,
+  "prettier.enable": false,
+  "eslint.enable": false
 }

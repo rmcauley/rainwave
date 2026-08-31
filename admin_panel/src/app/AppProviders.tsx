@@ -1,9 +1,8 @@
-import type { JSX, ReactNode } from 'react';
-
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { QueryClientProvider } from '@tanstack/react-query';
+import type { JSX, ReactNode } from 'react';
 
 import { queryClient } from './queryClient';
 import { theme } from './theme';

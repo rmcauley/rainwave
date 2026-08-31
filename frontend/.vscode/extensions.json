@@ -1,9 +1,8 @@
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
     "stylelint.vscode-stylelint",
-    "mrmlnc.vscode-scss"
-  ],
-  "unwantedRecommendations": ["ms-python.mypy-type-checker"]
+    "mrmlnc.vscode-scss",
+    "oxc.oxc-vscode",
+    "typescriptteam.native-preview"
+  ]
 }

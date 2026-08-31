@@ -63,6 +63,7 @@ class FakeCursor:
 
 class FakeWebsocket:
     def __init__(self, user_id: int, listen_key: str = "") -> None:
+        super().__init__()
         self.user_id = user_id
         self.listen_key = listen_key
         self.uuid = f"ws-{user_id}-{listen_key}"

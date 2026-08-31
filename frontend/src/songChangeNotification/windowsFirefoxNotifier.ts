@@ -1,5 +1,4 @@
 import { $l } from '../language';
-
 import type { Notifier } from './notifierType';
 
 const windowsFirefoxNotifier: Notifier = (song, artists, art) => {

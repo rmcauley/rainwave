@@ -68,7 +68,10 @@ const DEFAULT_CONFIG: WidgetConfig = {
   presetBackground: 'overgame',
 };
 
-function isIn<const T extends readonly string[]>(value: string | null, allowed: T): value is T[number] {
+function isIn<const T extends readonly string[]>(
+  value: string | null,
+  allowed: T,
+): value is T[number] {
   return value !== null && allowed.includes(value);
 }
 
@@ -119,10 +122,9 @@ function normalizeTextAlign(value: string | null): TextAlign {
   return DEFAULT_CONFIG.textAlign;
 }
 
-function defaultsForPresentationMode(mode: PresentationMode): Pick<
-  WidgetConfig,
-  'color' | 'textStrokeColor' | 'textStrokeSize' | 'textShadow' | 'npColor'
-> {
+function defaultsForPresentationMode(
+  mode: PresentationMode,
+): Pick<WidgetConfig, 'color' | 'textStrokeColor' | 'textStrokeSize' | 'textShadow' | 'npColor'> {
   if (mode === 'light') {
     return {
       color: '#151515',
@@ -200,7 +202,10 @@ function parseConfig(search: string | URLSearchParams): WidgetConfig {
     npHeader: parseBool(params.get('np_header'), DEFAULT_CONFIG.npHeader),
     npMessage: params.get('np_message') || DEFAULT_CONFIG.npMessage,
     npColor: params.get('np_color') || presentationDefaults.npColor,
-    attributionFrequency: Math.max(0, parseNumber(params.get('ad'), DEFAULT_CONFIG.attributionFrequency)),
+    attributionFrequency: Math.max(
+      0,
+      parseNumber(params.get('ad'), DEFAULT_CONFIG.attributionFrequency),
+    ),
     adMessage: params.get('ad_message') || DEFAULT_CONFIG.adMessage,
     delay: Math.max(0, parseNumber(params.get('delay'), DEFAULT_CONFIG.delay)),
     showRequesters: parseBool(params.get('show_requesters'), DEFAULT_CONFIG.showRequesters),

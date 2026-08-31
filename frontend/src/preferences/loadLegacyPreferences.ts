@@ -1,5 +1,4 @@
 import { DEFAULT_PREFERENCES } from './defaultPreferences';
-
 import type { Preferences } from './preferenceTypes';
 
 const LEGACY_COOKIE_KEY = 'r5_prefs';
@@ -51,7 +50,7 @@ if (legacyPrefsCookie) {
           } else if (mappedKey === 'showClockInTitle') {
             legacyPreferences.showClockInTitle = 'default';
           } else {
-            legacyPreferences[mappedKey] = value === 'true' ? true : false;
+            legacyPreferences[mappedKey] = value === 'true';
           }
         });
       }

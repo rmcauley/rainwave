@@ -8,7 +8,9 @@ function formatInZone(epochSeconds: number | null, zone: string): string {
     return 'Not set';
   }
 
-  return DateTime.fromSeconds(epochSeconds, { zone: 'utc' }).setZone(zone).toFormat("yyyy-LL-dd HH:mm ZZZZ");
+  return DateTime.fromSeconds(epochSeconds, { zone: 'utc' })
+    .setZone(zone)
+    .toFormat('yyyy-LL-dd HH:mm ZZZZ');
 }
 
 export function formatPowerHourTimes(epochSeconds: number | null): {

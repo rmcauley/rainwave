@@ -1,5 +1,3 @@
-import type { JSX } from 'react';
-
 import BugReportOutlinedIcon from '@mui/icons-material/BugReportOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import LibraryMusicOutlinedIcon from '@mui/icons-material/LibraryMusicOutlined';
@@ -16,6 +14,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import type { JSX } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 
 const drawerWidth = 280;
@@ -31,7 +30,12 @@ const navigationItems = [
 export function AdminPanelLayout(): JSX.Element {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <AppBar position="fixed" color="transparent" elevation={0} sx={{ ml: `${drawerWidth}px`, width: `calc(100% - ${drawerWidth}px)` }}>
+      <AppBar
+        position="fixed"
+        color="transparent"
+        elevation={0}
+        sx={{ ml: `${drawerWidth}px`, width: `calc(100% - ${drawerWidth}px)` }}
+      >
         <Toolbar>
           <Typography variant="h5" component="h1">
             Rainwave Admin Panel
@@ -41,8 +45,8 @@ export function AdminPanelLayout(): JSX.Element {
       <Drawer
         variant="permanent"
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
+          'width': drawerWidth,
+          'flexShrink': 0,
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
@@ -62,8 +66,8 @@ export function AdminPanelLayout(): JSX.Element {
               component={NavLink}
               to={item.path}
               sx={{
-                borderRadius: 1,
-                mb: 0.5,
+                'borderRadius': 1,
+                'mb': 0.5,
                 '&.active': {
                   bgcolor: 'action.selected',
                 },

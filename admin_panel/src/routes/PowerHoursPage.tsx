@@ -1,7 +1,3 @@
-import type { JSX } from 'react';
-
-import { useState } from 'react';
-
 import {
   Alert,
   Button,
@@ -15,10 +11,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import { DateTimePicker } from '@mui/x-date-pickers';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
+import type { JSX } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { postRainwave } from '../api/rainwave';
@@ -55,7 +53,9 @@ export function PowerHoursPage(): JSX.Element {
   const [stationId, setStationId] = useState('1');
   const [url, setUrl] = useState('');
   const [start, setStart] = useState(DateTime.local().plus({ days: 1 }).startOf('hour'));
-  const [end, setEnd] = useState(DateTime.local().plus({ days: 1 }).startOf('hour').plus({ hours: 1 }));
+  const [end, setEnd] = useState(
+    DateTime.local().plus({ days: 1 }).startOf('hour').plus({ hours: 1 }),
+  );
 
   const listQuery = useQuery({
     queryKey: ['admin', 'power-hours'],
@@ -87,10 +87,14 @@ export function PowerHoursPage(): JSX.Element {
 
   return (
     <Stack spacing={3}>
-      <PageSection title="Power Hours" subtitle="Router-backed list and detail scaffold for the admin power hour workflow.">
+      <PageSection
+        title="Power Hours"
+        subtitle="Router-backed list and detail scaffold for the admin power hour workflow."
+      >
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body2" color="text.secondary">
-            This scaffold already uses the renamed `change_power_hour_*` contract and MUI date-time pickers.
+            This scaffold already uses the renamed `change_power_hour_*` contract and MUI date-time
+            pickers.
           </Typography>
           <Button variant="contained" onClick={(): void => setCreateDialogOpen(true)}>
             Create Power Hour
@@ -118,18 +122,33 @@ export function PowerHoursPage(): JSX.Element {
         />
       </PageSection>
 
-      <PageSection title="Selected Power Hour" subtitle="Detail panel scaffold. Full mutation coverage comes in the next pass.">
+      <PageSection
+        title="Selected Power Hour"
+        subtitle="Detail panel scaffold. Full mutation coverage comes in the next pass."
+      >
         {detailQuery.error ? <RainwaveErrorAlert error={detailQuery.error} /> : null}
         {!schedId ? (
-          <Alert severity="info">Select a Power Hour row to bind the detail panel to the URL.</Alert>
+          <Alert severity="info">
+            Select a Power Hour row to bind the detail panel to the URL.
+          </Alert>
         ) : null}
         {detailQuery.data ? (
           <Grid container spacing={2}>
             <Grid size={3}>
-              <TextField fullWidth label="Power Hour ID" value={String(detailQuery.data.admin_power_hour.sched_id)} slotProps={{ input: { readOnly: true } }} />
+              <TextField
+                fullWidth
+                label="Power Hour ID"
+                value={String(detailQuery.data.admin_power_hour.sched_id)}
+                slotProps={{ input: { readOnly: true } }}
+              />
             </Grid>
             <Grid size={3}>
-              <TextField fullWidth label="SID" value={String(detailQuery.data.admin_power_hour.sid)} slotProps={{ input: { readOnly: true } }} />
+              <TextField
+                fullWidth
+                label="SID"
+                value={String(detailQuery.data.admin_power_hour.sid)}
+                slotProps={{ input: { readOnly: true } }}
+              />
             </Grid>
             <Grid size={6}>
               <TextField
@@ -143,19 +162,37 @@ export function PowerHoursPage(): JSX.Element {
         ) : null}
       </PageSection>
 
-      <Dialog open={createDialogOpen} onClose={(): void => setCreateDialogOpen(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={createDialogOpen}
+        onClose={(): void => setCreateDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>Create Power Hour</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
-            <TextField label="Name" value={name} onChange={(event): void => setName(event.target.value)} />
-            <TextField select label="Station" value={stationId} onChange={(event): void => setStationId(event.target.value)}>
+            <TextField
+              label="Name"
+              value={name}
+              onChange={(event): void => setName(event.target.value)}
+            />
+            <TextField
+              select
+              label="Station"
+              value={stationId}
+              onChange={(event): void => setStationId(event.target.value)}
+            >
               {stationOptions.map((option) => (
                 <MenuItem key={option} value={String(option)}>
                   {`Station ${option}`}
                 </MenuItem>
               ))}
             </TextField>
-            <TextField label="URL" value={url} onChange={(event): void => setUrl(event.target.value)} />
+            <TextField
+              label="URL"
+              value={url}
+              onChange={(event): void => setUrl(event.target.value)}
+            />
             <DateTimePicker
               label="Start"
               value={start}
@@ -179,7 +216,11 @@ export function PowerHoursPage(): JSX.Element {
         </DialogContent>
         <DialogActions>
           <Button onClick={(): void => setCreateDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={(): void => void createMutation.mutate()} disabled={createMutation.isPending}>
+          <Button
+            variant="contained"
+            onClick={(): void => void createMutation.mutate()}
+            disabled={createMutation.isPending}
+          >
             Create
           </Button>
         </DialogActions>

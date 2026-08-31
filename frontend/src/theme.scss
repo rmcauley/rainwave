@@ -46,11 +46,7 @@ $song-yours: #18a485;
 $autovoted: color.adjust($song-yours, $lightness: -23%);
 $vote-requester: color.adjust(color.adjust($blue, $saturation: 15%), $lightness: 10%);
 $song-votes: $text-d;
-$song-cool-info: color.mix(
-  $blue,
-  $text,
-  $weight: 70%
-); // when request panel shows you "On cooldown for X"
+$song-cool-info: color.mix($blue, $text, $weight: 70%); // when request panel shows you "On cooldown for X"
 $votebtn-h: $blue;
 $votebtn-voted: $blue;
 $timeline-link-h-bkg: color.adjust(
@@ -74,10 +70,7 @@ $new-indicator: $orange; // when album is new
 
 // Panels
 $panel-bkg: color.adjust($bkg, $lightness: 4%);
-$panel-bkg-d: color.adjust(
-  $panel-bkg,
-  $lightness: -2.5%
-); // playlist panel bkg when detail is open at same time
+$panel-bkg-d: color.adjust($panel-bkg, $lightness: -2.5%); // playlist panel bkg when detail is open at same time
 $panel-b: color.adjust($panel-bkg, $lightness: 19%);
 $tab: $text-dd;
 $tab-b: $text-ddd;

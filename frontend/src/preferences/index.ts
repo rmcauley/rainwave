@@ -1,13 +1,15 @@
 import { DEFAULT_PREFERENCES } from './defaultPreferences';
 import { legacyPreferences } from './loadLegacyPreferences';
-
 import type { PreferenceChange, Preferences } from './preferenceTypes';
 
 const LOCAL_STORAGE_KEY = 'rw_prefs';
 
 const preferenceEvents = new EventTarget();
 
-const preferences: Preferences = { ...DEFAULT_PREFERENCES, ...legacyPreferences };
+const preferences: Preferences = {
+  ...DEFAULT_PREFERENCES,
+  ...legacyPreferences,
+};
 
 try {
   const raw = window.localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -18,8 +20,6 @@ try {
     }
   }
 } catch (e) {
-  // Allow console logging this for debugging.
-  // eslint-disable-next-line no-console
   console.warn('Preferences could not be loaded from storage.  Preferences reset.', e);
   // Don't throw though, we don't want these gunking up our reports.
 }

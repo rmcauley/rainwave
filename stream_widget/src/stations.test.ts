@@ -5,7 +5,10 @@ import { fetchStations } from './stations';
 describe('station fetching', () => {
   it('fetches unauthenticated station metadata from /api4/stations', async () => {
     const calls: RequestInit[] = [];
-    const fakeFetch = async (_url: string | URL | Request, init?: RequestInit): Promise<Response> => {
+    const fakeFetch = async (
+      _url: string | URL | Request,
+      init?: RequestInit,
+    ): Promise<Response> => {
       calls.push(init || {});
 
       return new Response(JSON.stringify({ stations: [{ id: 5, name: 'All' }] }), {

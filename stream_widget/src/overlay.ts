@@ -1,6 +1,5 @@
-import { nowPlayingFromSchedule } from './nowPlaying';
 import { widgetScale } from './config';
-
+import { nowPlayingFromSchedule } from './nowPlaying';
 import type { NowPlaying, TimelineEntry, WidgetConfig } from './types';
 
 function classForAnimation(animation: string, phase: 'enter' | 'exit'): string {
@@ -162,7 +161,10 @@ class OverlayRenderer {
   }
 
   private shouldShowAttribution(): boolean {
-    return this.config.attributionFrequency > 0 && this.songCount % this.config.attributionFrequency === 0;
+    return (
+      this.config.attributionFrequency > 0 &&
+      this.songCount % this.config.attributionFrequency === 0
+    );
   }
 
   private scheduleHide(): void {

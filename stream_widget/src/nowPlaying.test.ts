@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_CONFIG } from './config';
 import { NO_ART_URL, buildAlbumArtUrl, nowPlayingFromSchedule } from './nowPlaying';
-
 import type { TimelineEntry } from './types';
 
 const SAMPLE_ENTRY = {

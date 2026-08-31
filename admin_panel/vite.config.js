@@ -1,6 +1,5 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-
+import { defineConfig } from 'vite';
 import { checker } from 'vite-plugin-checker';
 
 const tsconfigPath = './tsconfig.json';

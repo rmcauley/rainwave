@@ -4,16 +4,19 @@ import {
   RainwaveSDKInternalError,
   RainwaveSDKUsageError,
 } from './errors';
-import { RainwaveEventListener } from './eventListener';
-
 import type { RainwaveSDKInvalidRatingError } from './errors';
+import { RainwaveEventListener } from './eventListener';
 import type { components } from './rainwave-openapi';
 import type { RainwaveAction, RainwaveParams, RainwaveResponse, RainwaveUser } from './types';
 
 const DEFAULT_RECONNECT_TIMEOUT = 500;
 const MAX_QUEUED_REQUESTS = 10;
 const STALLED_SOCKET_TIMEOUT = 10_000;
-const SYNC_RETRYING_ERROR = { code: 0, text: '', tl_key: 'sync_retrying' } as unknown as components['schemas']['_error'];
+const SYNC_RETRYING_ERROR = {
+  code: 0,
+  text: '',
+  tl_key: 'sync_retrying',
+} as unknown as components['schemas']['_error'];
 
 type RainwaveResolveFn<T extends RainwaveAction> = (value: RainwaveResponse<T>) => void;
 

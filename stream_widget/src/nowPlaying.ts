@@ -16,12 +16,15 @@ function buildAlbumArtUrl(albumArt: string | null, size = 320): string {
 function artistNames(song: TimelineSong): string {
   return song.artists
     .slice()
-    .sort((a, b) => a.order - b.order)
+    .toSorted((a, b) => a.order - b.order)
     .map((artist) => artist.name)
     .join(', ');
 }
 
-function nowPlayingFromSchedule(entry: TimelineEntry, config: Pick<WidgetConfig, 'showRequesters'>): NowPlaying | null {
+function nowPlayingFromSchedule(
+  entry: TimelineEntry,
+  config: Pick<WidgetConfig, 'showRequesters'>,
+): NowPlaying | null {
   const song = entry.songs[0];
   if (!song) {
     return null;

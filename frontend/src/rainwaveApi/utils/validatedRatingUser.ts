@@ -1,5 +1,4 @@
 import { RainwaveSDKInvalidRatingError } from '../errors';
-
 import type { components } from '../rainwave-openapi';
 
 function guardRatingUser(ratingUser: number): components['schemas']['_rating'] {

@@ -2,13 +2,11 @@ import { getAlbumArt } from '../helpers/albumArt';
 import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
 import { preferences } from '../preferences';
 import { api } from '../rainwaveApi';
-
+import type { TimelineEntry } from '../rainwaveApi/types';
 import { linuxNotifier } from './linuxNotifier';
+import type { Notifier } from './notifierType';
 import { standardNotifier } from './standardNotifier';
 import { windowsFirefoxNotifier } from './windowsFirefoxNotifier';
-
-import type { TimelineEntry } from '../rainwaveApi/types';
-import type { Notifier } from './notifierType';
 
 let enabled = false;
 const currentSongId: number | undefined | null = null;
@@ -49,11 +47,12 @@ function notify(schedCurrent: TimelineEntry): void {
   const artists = currentSong.artists.map((a) => a.name).join(', ');
   try {
     const n = notifier(currentSong, artists, art);
-    n.onshow = function (): void {
+    n.addEventListener('show', function (): void {
       setTimeout(n.close.bind(n), 7000);
-    };
-  } catch (_e) {
+    });
+  } catch (e) {
     enabled = false;
+    console.error(e);
   }
 }
 

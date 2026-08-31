@@ -40,7 +40,7 @@ function stationSelect(context: stationSelectContext) {
   const v10 = document.createElement('div');
   v10.className = 'station-select-station-now-playing-album';
   v8.appendChild(v10);
-  
-return { $root: v1, menuNp: v6, menuNpArt: v7, menuNpSong: v9, menuNpAlbum: v10 };
+
+  return { $root: v1, menuNp: v6, menuNpArt: v7, menuNpSong: v9, menuNpAlbum: v10 };
 }
 export { stationSelect };

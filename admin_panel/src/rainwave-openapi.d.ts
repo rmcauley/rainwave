@@ -4,3859 +4,4230 @@
  */
 
 export interface paths {
-    "/api4/admin/add_album_to_power_hour": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminAddAlbumToPowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/add_donation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminAddDonation"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/add_song_to_power_hour": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminAddSongToPowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/change_power_hour_name": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminChangePowerHourName"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/change_power_hour_start_time": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminChangePowerHourStartTime"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/change_power_hour_url": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminChangePowerHourUrl"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/create_power_hour": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminCreatePowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/delete_power_hour": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminDeletePowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/duplicate_power_hour": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminDuplicatePowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/europify_power_hour": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminEuropifyPowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/js_errors": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminJSErrors"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/music_scan_errors": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminMusicScanErrors"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/order_power_hour_songs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminOrderPowerHourSongs"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/power_hour": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminGetPowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/power_hour_remove_song": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminRemoveSongFromPowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/power_hours": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminGetPowerHours"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/reset_album_cooldown": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminResetAlbumCooldown"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/reset_song_cooldown": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminResetSongCooldown"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/set_album_cooldown": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminSetAlbumCooldown"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/set_song_cooldown": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminSetSongCooldown"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/set_song_request_only": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminSetSongRequestOnly"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/album_art": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminAlbumArt"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/album_songs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminAlbumSongs"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/albums": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminAlbums"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/admin/shuffle_power_hour": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminShufflePowerHour"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/update_user_avatar_by_discord_id": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminUpdateUserAvatarByDiscordId"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/update_user_nickname_by_discord_id": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminUpdateUserNicknameByDiscordId"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/enable_perks_by_discord_ids": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminEnablePerksByDiscordIds"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/user_search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminUserSearch"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/user_search_by_discord_user_id": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["adminUserSearchByDiscordUserId"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/album": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getAlbum"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/all_albums": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Returns all albums on the station, sorted by album name. */
-        post: operations["getAllAlbums"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/all_albums_paginated": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Returns all albums on the station, sorted by album ID. */
-        post: operations["getAllAlbumsPaginated"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/all_artists": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getAllArtists"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/all_artists_paginated": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getAllArtistsPaginated"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/all_faves": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getAllFaves"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/all_groups": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getAllGroups"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/all_groups_paginated": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getAllGroupsPaginated"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/all_songs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getAllSongs"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/artist": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getArtist"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/check_sched_current_id": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["checkSchedCurrentId"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/auth": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["auth"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/ping": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["ping"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/clear_rating": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["clearRating"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/clear_requests": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["clearRequests"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/clear_requests_on_cooldown": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["clearRequestsOnCooldown"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/delete_request": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["deleteRequest"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/fave_album": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["faveAlbum"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/fave_all_songs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["faveAllSongsInAlbum"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/fave_song": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["faveSong"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/group": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getGroup"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/info_all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getAllStationsInfo"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/listener": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getListener"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/order_requests": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["reorderRequests"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/pause_request_queue": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["pauseRequestQueue"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/playback_history": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getPlaybackHistory"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/rate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["rateSong"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/request": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["requestSong"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/request_favorited_songs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["requestFavoritedSongs"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/request_line": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getRequestLine"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/request_unrated_songs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["requestUnratedSongs"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["search"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/song": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getSong"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/station_song_count": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getStationSongCount"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/stations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getStations"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/top_100": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getTop100"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/unpause_request_queue": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["unpauseRequestQueue"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/unrated_songs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getUnratedSongs"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/user_info": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getUserInfo"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/user_recent_votes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getUserRecentVotes"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/user_requested_history": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["getUserRequestedHistory"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/vote": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["vote"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api4/websocket/{sid}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * WebSocket upgrade endpoint
-         * @description Upgrades HTTP connection to a WebSocket session for the station.
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    sid: number;
-                };
-                cookie?: never;
+  '/api4/admin/add_album_to_power_hour': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminAddAlbumToPowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/add_donation': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminAddDonation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/add_song_to_power_hour': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminAddSongToPowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/change_power_hour_name': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminChangePowerHourName'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/change_power_hour_start_time': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminChangePowerHourStartTime'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/change_power_hour_url': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminChangePowerHourUrl'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/create_power_hour': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminCreatePowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/delete_power_hour': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminDeletePowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/duplicate_power_hour': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminDuplicatePowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/europify_power_hour': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminEuropifyPowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/js_errors': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminJSErrors'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/music_scan_errors': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminMusicScanErrors'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/order_power_hour_songs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminOrderPowerHourSongs'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/power_hour': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminGetPowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/power_hour_remove_song': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminRemoveSongFromPowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/power_hours': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminGetPowerHours'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/reset_album_cooldown': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminResetAlbumCooldown'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/reset_song_cooldown': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminResetSongCooldown'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/set_album_cooldown': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminSetAlbumCooldown'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/set_song_cooldown': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminSetSongCooldown'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/set_song_request_only': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminSetSongRequestOnly'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/album_art': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminAlbumArt'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/album_songs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminAlbumSongs'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/albums': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminAlbums'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/admin/shuffle_power_hour': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminShufflePowerHour'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/update_user_avatar_by_discord_id': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminUpdateUserAvatarByDiscordId'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/update_user_nickname_by_discord_id': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminUpdateUserNicknameByDiscordId'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/enable_perks_by_discord_ids': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminEnablePerksByDiscordIds'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/user_search': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminUserSearch'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/user_search_by_discord_user_id': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['adminUserSearchByDiscordUserId'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/album': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getAlbum'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/all_albums': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Returns all albums on the station, sorted by album name. */
+    post: operations['getAllAlbums'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/all_albums_paginated': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Returns all albums on the station, sorted by album ID. */
+    post: operations['getAllAlbumsPaginated'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/all_artists': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getAllArtists'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/all_artists_paginated': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getAllArtistsPaginated'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/all_faves': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getAllFaves'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/all_groups': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getAllGroups'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/all_groups_paginated': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getAllGroupsPaginated'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/all_songs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getAllSongs'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/artist': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getArtist'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/check_sched_current_id': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['checkSchedCurrentId'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/auth': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['auth'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/ping': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['ping'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/clear_rating': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['clearRating'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/clear_requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['clearRequests'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/clear_requests_on_cooldown': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['clearRequestsOnCooldown'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/delete_request': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['deleteRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/fave_album': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['faveAlbum'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/fave_all_songs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['faveAllSongsInAlbum'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/fave_song': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['faveSong'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/group': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getGroup'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/info_all': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getAllStationsInfo'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/listener': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getListener'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/order_requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['reorderRequests'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/pause_request_queue': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['pauseRequestQueue'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/playback_history': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getPlaybackHistory'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/rate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['rateSong'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/request': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['requestSong'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/request_favorited_songs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['requestFavoritedSongs'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/request_line': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getRequestLine'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/request_unrated_songs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['requestUnratedSongs'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/search': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['search'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/song': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getSong'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/station_song_count': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getStationSongCount'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/stations': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getStations'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/top_100': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getTop100'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/unpause_request_queue': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['unpauseRequestQueue'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/unrated_songs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getUnratedSongs'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/user_info': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getUserInfo'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/user_recent_votes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getUserRecentVotes'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/user_requested_history': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['getUserRequestedHistory'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/vote': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['vote'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api4/websocket/{sid}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * WebSocket upgrade endpoint
+     * @description Upgrades HTTP connection to a WebSocket session for the station.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          sid: number;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Websocket initiated. */
+        101: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': {
+              _error?: components['schemas']['_error'];
             };
-            requestBody?: never;
-            responses: {
-                /** @description Websocket initiated. */
-                101: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            _error?: components["schemas"]["_error"];
-                        };
-                    };
-                };
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            _error?: components["schemas"]["_error"];
-                        };
-                    };
-                };
-            };
+          };
         };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': {
+              _error?: components['schemas']['_error'];
+            };
+          };
+        };
+      };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /** @description Base album art URL for Rainwave. Usage: `art = album_art ? "https://rainwave.cc/${albumArt}_320.jpg" : "https://rainwave.cc/static/images4/noart_1.jpg"` */
-        _album_art: string | null;
-        _album_core: {
-            added_on: components["schemas"]["_time"];
-            art: string | null;
-            cool: boolean;
-            cool_lowest: components["schemas"]["_time"];
-            fave: boolean;
-            fave_count: number;
-            id: number;
-            name: string;
-            played_last: components["schemas"]["_time"];
-            rating: number | null;
-            rating_count: number;
-            rating_user: components["schemas"]["_rating_user"];
-            request_count: number;
-            song_count: number;
-            vote_count: number;
-        };
-        _album_in_list: {
-            cool: boolean;
-            cool_lowest: components["schemas"]["_time"];
-            fave: boolean;
-            id: number;
-            name: string;
-            newest_song_time: components["schemas"]["_time"];
-            rating: number;
-            rating_complete: boolean;
-            rating_user: components["schemas"]["_rating_user"];
-        };
-        _artist: {
-            id: number;
-            name: string;
-        };
-        _artist_in_list: {
-            id: number;
-            name: string;
-            song_count: number;
-        };
-        _artist_with_order: {
-            id: number;
-            name: string;
-            order: number;
-        };
-        _boolean_result: {
-            success: boolean;
-            text: string;
-            tl_key: components["schemas"]["_translation_key"];
-        };
-        _elec_blocked_by: ("in_election" | "album" | "group") | null;
-        /**
-         * @description 2 for normal song, 4 for request.  Other numbers are no longer used.
-         * @enum {integer}
-         */
-        _election_song_type: 2 | 4;
-        _error: {
-            code?: number;
-            success?: boolean;
-            text: string;
-            tl_key: components["schemas"]["_api_error_key"];
-            traceback?: string;
-        };
-        _listener_rating_spread_item: {
-            rating?: number;
-            ratings?: number;
-        };
-        _listener_ratings_by_station: {
-            average_rating: string;
-            ratings: number;
-            sid: components["schemas"]["_station_id"];
-        };
-        _listener_requests_by_station: {
-            requests: number;
-            sid: components["schemas"]["_station_id"];
-        };
-        _listener_top_album: {
-            id: number;
-            name: string;
-            rating: number;
-            rating_listener: number;
-        };
-        _listener_top_request_album: {
-            id: number;
-            name: string;
-            request_count_listener: number;
-        };
-        _listener_votes_by_station: {
-            sid: components["schemas"]["_station_id"];
-            votes: number;
-        };
-        _live_voting_entry: {
-            entry_id: number;
-            entry_votes: number;
-            song_id: number;
-        };
-        _playback_history_entry: {
-            album_id: number;
-            album_name: string;
-            artist_parseable: string;
-            fave: boolean;
-            id: number;
-            rating: number;
-            rating_user: components["schemas"]["_rating_user"];
-            song_played_at: components["schemas"]["_time"];
-            title: string;
-        };
-        _rating: number;
-        _rating_histogram: {
-            "1.0": number;
-            1.5: number;
-            "2.0": number;
-            2.5: number;
-            "3.0": number;
-            3.5: number;
-            "4.0": number;
-            4.5: number;
-            "5.0": number;
-        };
-        _rating_user: number | null;
-        _relay: {
-            hostname: string;
-            name: string;
-            port: number;
-            protocol: string;
-        };
-        _request_album: {
-            art: components["schemas"]["_album_art"];
-            id: number;
-            name: string;
-            rating: number;
-            rating_complete: boolean;
-            rating_user: components["schemas"]["_rating_user"];
-        };
-        _request_line_entry: {
-            line_expiry_election: components["schemas"]["_time"] | null;
-            line_expiry_tune_in: components["schemas"]["_time"] | null;
-            line_has_had_valid: boolean;
-            line_wait_start: components["schemas"]["_time"];
-            position: number;
-            skip: boolean;
-            song?: components["schemas"]["_request_line_entry_song"];
-            song_id: number | null;
-            user_id: number;
-            username: string;
-        };
-        _request_line_entry_song: null | {
-            album_name: string;
-            id: number;
-            title: string;
-        };
-        _search_album: {
-            cool: boolean;
-            fave: boolean;
-            id: number;
-            name: string;
-            rating: number;
-            rating_complete: boolean;
-            rating_user: components["schemas"]["_rating_user"];
-        };
-        _search_artist: {
-            id: number;
-            name: string;
-        };
-        _song_bare: {
-            fave: boolean | null;
-            id: number;
-            length: number;
-            link_text: string | null;
-            rating: number;
-            rating_user: components["schemas"]["_rating_user"];
-            title: string;
-            url: string | null;
-        };
-        _song_bare_album: {
-            albums: [
-                {
-                    id: number;
-                    name: string;
-                }
-            ];
-        };
-        _song_bare_artist: {
-            artists: components["schemas"]["_artist"][];
-        };
-        _song_group: {
-            id: number;
-            name: string;
-        };
-        _song_in_artist: components["schemas"]["_song_bare"] & components["schemas"]["_song_bare_album"] & {
-            cool: boolean;
-            requestable: boolean;
-            sid: components["schemas"]["_station_id"];
-        };
-        _song_on_album: components["schemas"]["_song_bare"] & {
-            artist_parseable: string;
-            added_on: components["schemas"]["_time"];
-            cool: boolean;
-            cool_end: components["schemas"]["_time"];
-            origin_sid: components["schemas"]["_station_id"];
-            requestable: boolean;
-        };
-        _station_id: number;
-        _station_info: {
-            album: string;
-            art: components["schemas"]["_album_art"];
-            artists: string;
-            event_name: string | null;
-            event_type: components["schemas"]["_timeline_entry_type"] | null;
-            title: string;
-        };
-        _station_list_station: {
-            id: number;
-            url: string;
-        };
-        /** @description Epoch Time - seconds since Jan 1st 00:00 1970 */
-        _time: number;
-        _timeline_entry: {
-            end: components["schemas"]["_time"];
-            id: number;
-            length: number;
-            name: string | null;
-            sid: components["schemas"]["_station_id"];
-            songs: components["schemas"]["_timeline_song"][];
-            start: components["schemas"]["_time"];
-            start_actual: components["schemas"]["_time"] | null;
-            type: components["schemas"]["_timeline_entry_type"];
-            url: string | null;
-            used: boolean;
-            voting_allowed: boolean;
-        };
-        /** @enum {string} */
-        _timeline_entry_type: "Election" | "OneUp" | "PVPElection";
-        _timeline_song: components["schemas"]["_song_bare"] & {
-            albums: [
-                components["schemas"]["_timeline_song_album"]
-            ];
-            artists: components["schemas"]["_artist_with_order"][];
-            cool: boolean;
-            elec_blocked: boolean;
-            elec_blocked_by: components["schemas"]["_elec_blocked_by"];
-            elec_request_user_id: number | null;
-            elec_request_username: string | null;
-            entry_id: number;
-            entry_position: number;
-            entry_type: components["schemas"]["_election_song_type"];
-            entry_votes: number;
-            groups: components["schemas"]["_song_group"][];
-            origin_sid: components["schemas"]["_station_id"];
-            rating_allowed: boolean;
-            rating_count: number;
-            request_count: number;
-            request_id?: number | null;
-            sid: components["schemas"]["_station_id"];
-        };
-        _timeline_song_album: {
-            art: components["schemas"]["_album_art"];
-            fave: boolean;
-            id: number;
-            name: string;
-            rating: number;
-            rating_user: components["schemas"]["_rating_user"];
-        };
-        _updated_album_rating: {
-            id: number;
-            rating_complete: boolean;
-            rating_user: components["schemas"]["_rating_user"];
-            sid: components["schemas"]["_station_id"];
-        };
-        _user_recent_vote: {
-            album_name: string;
-            fave: boolean;
-            id: number;
-            rating: number;
-            rating_user: components["schemas"]["_rating_user"];
-            title: string;
-        };
-        album: {
-            added_on: components["schemas"]["_time"];
-            art: components["schemas"]["_album_art"];
-            cool_lowest: components["schemas"]["_time"];
-            cool: boolean;
-            fave_count: number;
-            fave: boolean;
-            id: number;
-            name: string;
-            played_last: components["schemas"]["_time"];
-            rating_count: number;
-            rating_user: components["schemas"]["_rating_user"];
-            rating: number | null;
-            song_count: number;
-            vote_count: number;
-            genres: components["schemas"]["_song_group"][];
-            rating_complete: boolean;
-            rating_histogram: components["schemas"]["_rating_histogram"];
-            rating_rank: number;
-            rating_rank_percentile: number;
-            request_count: number;
-            request_rank: number;
-            request_rank_percentile: number;
-            songs: components["schemas"]["_song_on_album"][];
-        };
-        album_diff: {
-            cool?: boolean;
-            cool_lowest?: components["schemas"]["_time"];
-            id?: number;
-            newest_song_time?: components["schemas"]["_time"];
-        }[];
-        albums: components["schemas"]["_search_album"][];
-        all_albums: components["schemas"]["_album_in_list"][];
-        all_albums_paginated: {
-            data: components["schemas"]["_album_in_list"][];
-            has_more: boolean;
-            next: number;
-            progress: number;
-        };
-        all_artists: components["schemas"]["_artist_in_list"][];
-        all_artists_paginated: {
-            data: components["schemas"]["_artist_in_list"][];
-            has_more: boolean;
-            next: number;
-            progress: number;
-        };
-        all_faves: {
-            album_id: number;
-            album_name: string;
-            fave: boolean;
-            id: number;
-            rating: number;
-            rating_user: components["schemas"]["_rating_user"];
-            title: string;
-        }[];
-        all_groups: components["schemas"]["_song_group"][];
-        all_groups_paginated: {
-            data: components["schemas"]["_song_group"][];
-            has_more: boolean;
-            next: number;
-            progress: number;
-        };
-        all_songs: {
-            album_name: string;
-            fave: boolean;
-            id: number;
-            rating: number;
-            rating_user: components["schemas"]["_rating_user"];
-            title: string;
-        }[];
-        all_stations_info: {
-            [key: string]: components["schemas"]["_station_info"];
-        };
-        /** @description An array of [timelineEntry.id, electionEntry.id] items. */
-        already_voted: [
-            number,
-            number
-        ][];
-        api_info: {
-            exectime: number;
-            time: components["schemas"]["_time"];
-        };
-        _artist_detail: unknown;
-        /** @description all_songs[station_id][album_id] = [song1, song2, ...] - for song names, inspect song.album[0].name. */
-        _all_songs_for_artist: {
-            1?: {
-                [key: string]: components["schemas"]["_song_in_artist"][];
-            };
-            2?: {
-                [key: string]: components["schemas"]["_song_in_artist"][];
-            };
-            3?: {
-                [key: string]: components["schemas"]["_song_in_artist"][];
-            };
-            4?: {
-                [key: string]: components["schemas"]["_song_in_artist"][];
-            };
-            5?: {
-                [key: string]: components["schemas"]["_song_in_artist"][];
-            };
-            6?: {
-                [key: string]: components["schemas"]["_song_in_artist"][];
-            };
-        };
-        artist: components["schemas"]["_artist"] & {
-            all_songs?: components["schemas"]["_all_songs_for_artist"];
-        };
-        artists: components["schemas"]["_search_artist"][];
-        build_version: number;
-        cookie_domain: string;
-        delete_request_result: components["schemas"]["_boolean_result"];
-        error: components["schemas"]["_error"];
-        error_report_result: components["schemas"]["_boolean_result"];
-        fave_album_result: components["schemas"]["_boolean_result"] & {
-            fave: boolean;
-            id: number;
-            sid: components["schemas"]["_station_id"];
-        };
-        fave_all_songs_result: components["schemas"]["_boolean_result"] & {
-            fave: boolean;
-            sid: components["schemas"]["_station_id"];
-            song_ids: number[];
-        };
-        fave_song_result: components["schemas"]["_boolean_result"] & {
-            fave: boolean;
-            id: number;
-            sid: components["schemas"]["_station_id"];
-        };
-        group: components["schemas"]["_song_group"] & {
-            /** @description all_songs_for_sid[album_id][station_id] = [song1, song2...] */
-            all_songs_for_sid: {
-                [key: string]: {
-                    [key: string]: components["schemas"]["_song_in_artist"][];
-                };
-            };
-        };
-        listener: {
-            avatar: string | null;
-            colour: string | null;
-            /** @deprecated */
-            losing_votes: number;
-            /** @deprecated */
-            mind_changes: number;
-            name: string;
-            rank: string | null;
-            rating_spread: components["schemas"]["_listener_rating_spread_item"][];
-            ratings_by_station: components["schemas"]["_listener_ratings_by_station"][];
-            ratings_completion: {
-                1: number;
-                2: number;
-                3: number;
-                4: number;
-                6: number;
-            };
-            regdate: components["schemas"]["_time"];
-            requests_by_source_station: components["schemas"]["_listener_requests_by_station"][];
-            requests_by_station: components["schemas"]["_listener_requests_by_station"][];
-            top_albums: components["schemas"]["_listener_top_album"][];
-            top_request_albums: components["schemas"]["_listener_top_request_album"][];
-            /** @deprecated */
-            total_ratings: number;
-            /** @deprecated */
-            total_requests: number;
-            /** @deprecated */
-            total_votes: number;
-            user_id: number;
-            votes_by_station: components["schemas"]["_listener_votes_by_station"][];
-            /** @deprecated */
-            winning_votes: number;
-        };
-        live_voting: {
-            [key: string]: components["schemas"]["_live_voting_entry"][];
-        };
-        locale: string;
-        locales: {
-            [key: string]: string;
-        };
-        message_id: {
-            message_id: number;
-        };
-        order_requests_result: components["schemas"]["_boolean_result"];
-        pause_request_queue_result: components["schemas"]["_boolean_result"];
-        playback_history: components["schemas"]["_playback_history_entry"][];
-        power_hours: {
-            end: components["schemas"]["_time"];
-            id: number;
-            name: string;
-            sid: components["schemas"]["_station_id"];
-            start: components["schemas"]["_time"];
-            url: string | null;
-        }[];
-        rate_result: components["schemas"]["_boolean_result"] & {
-            rating_user: components["schemas"]["_rating_user"];
-            song_id: number;
-            updated_album_ratings: components["schemas"]["_updated_album_rating"][];
-        };
-        /** @description This API event occurs when a user who is logged in tunes in without using their listener key. This prompts them to tune in again in order to obtain the correct M3U. */
-        redownload_m3u: {
-            text: string;
-            tl_key: components["schemas"]["_translation_key"];
-        };
-        relays: components["schemas"]["_relay"][];
-        request_favorited_songs_result: components["schemas"]["_boolean_result"];
-        request_line: components["schemas"]["_request_line_entry"][];
-        request_result: components["schemas"]["_boolean_result"];
-        request_unrated_songs_result: components["schemas"]["_boolean_result"];
-        requests: (components["schemas"]["_song_bare"] & components["schemas"]["_song_bare_artist"] & {
-            albums: [
-                components["schemas"]["_request_album"]
-            ];
-            cool: boolean;
-            cool_end: components["schemas"]["_time"] | null;
-            elec_blocked: boolean;
-            elec_blocked_by: components["schemas"]["_elec_blocked_by"];
-            elec_blocked_num: number | null;
-            /** @description Does the song still exist on the Rainwave? */
-            good: boolean;
-            order: number;
-            origin_sid: components["schemas"]["_station_id"];
-            request_id: number;
-            sid: components["schemas"]["_station_id"];
-            /** @description Does the song still exist on the station of the API request? */
-            valid: boolean;
-        })[];
-        sched_current: components["schemas"]["_timeline_entry"];
-        sched_history: components["schemas"]["_timeline_entry"][];
-        sched_next: components["schemas"]["_timeline_entry"][];
-        song: {
-            album: [
-                components["schemas"]["_request_album"]
-            ];
-            artists: components["schemas"]["_artist_with_order"][];
-            cool: boolean;
-            elec_blocked: boolean;
-            elec_blocked_by: components["schemas"]["_elec_blocked_by"];
-            groups: components["schemas"]["_song_group"][];
-            origin_sid: components["schemas"]["_station_id"];
-            rating_allowed: boolean;
-            rating_count: number;
-            rating_rank: number;
-            rating_rank_percentile: number;
-            /** @deprecated */
-            request_count: number;
-            /** @deprecated */
-            request_rank: number;
-            /** @deprecated */
-            request_rank_percentile: number;
-            sid: components["schemas"]["_station_id"];
-            rating_histogram?: components["schemas"]["_rating_histogram"];
-        };
-        _search_song: components["schemas"]["_song_bare"] & {
-            added_on: components["schemas"]["_time"];
-            album_id: number;
-            album_name: string;
-            cool: boolean;
-            cool_end: components["schemas"]["_time"] | null;
-            origin_sid: components["schemas"]["_station_id"];
-            requestable: boolean;
-        };
-        songs: components["schemas"]["_search_song"][];
-        station_list: {
-            [key: string]: components["schemas"]["_station_list_station"];
-        };
-        station_song_count: {
-            sid: components["schemas"]["_station_id"];
-            song_count: number;
-        }[];
-        stations: {
-            description: string;
-            id: components["schemas"]["_station_id"];
-            name: string;
-            relays: components["schemas"]["relays"];
-            stream: string;
-        }[];
-        stream_filename: string;
-        sync_result: components["schemas"]["_error"];
-        top_100: {
-            album_name: string;
-            id: number;
-            origin_sid: components["schemas"]["_station_id"];
-            song_rating: number;
-            song_rating_count: number;
-            title: string;
-        }[];
-        unpause_request_queue_result: components["schemas"]["_boolean_result"];
-        unrated_songs: {
-            album_name: string;
-            id: number;
-            title: string;
-        }[];
-        user: {
-            admin: boolean;
-            avatar: string | null;
-            id: number;
-            listen_key: string | null;
-            listener_id: number | null;
-            lock: boolean;
-            lock_counter: number;
-            lock_in_effect: boolean;
-            lock_sid: components["schemas"]["_station_id"] | null;
-            name: string;
-            /** @deprecated */
-            new_privmsg: number;
-            perks: boolean;
-            rate_anything: boolean;
-            request_expires_at: components["schemas"]["_time"] | null;
-            request_position: number | null;
-            requests_paused: boolean;
-            sid: components["schemas"]["_station_id"];
-            tuned_in: boolean;
-            voted_entry: number | null;
-        };
-        user_info: components["schemas"]["user"];
-        user_recent_votes: components["schemas"]["_user_recent_vote"][];
-        user_requested_history: components["schemas"]["_user_recent_vote"][];
-        vote_result: components["schemas"]["_boolean_result"] & {
-            elec_id: number | null;
-            entry_id: number;
-        };
-        websocket_host: string;
-        pong: boolean;
-        wserror: components["schemas"]["_error"];
-        wsok: boolean;
-        wsthrottle: {
-            text: string;
-            tl_key: components["schemas"]["_translation_key"];
-        };
-        admin_user_search_result: {
-            user_id: number | null;
-            sid: number | null;
-        };
-        _admin_js_error: {
-            user_id: number;
-            username: string;
-            time: number;
-            name: string;
-            message: string;
-            lineNumber: number | string | null;
-            columnNumber: number | string | null;
-            stack: string;
-            location: string;
-            userAgent: string;
-            browserLanguage: string;
-        };
-        admin_js_errors: components["schemas"]["_admin_js_error"][];
-        _admin_music_scan_error: {
-            time: number;
-            file: string;
-            type: string;
-            error: string;
-            traceback: string;
-        };
-        admin_music_scan_errors: components["schemas"]["_admin_music_scan_error"][];
-        _admin_power_hour_song: {
-            one_up_id: number;
-            sched_id: number;
-            song_id: number;
-            one_up_order: number | null;
-            one_up_used: boolean;
-            one_up_queued: boolean;
-            one_up_sid: number;
-            one_up_start_actual: number | null;
-            song_title: string;
-            album_name: string;
-            album_id: number;
-            song_length: number;
-        };
-        admin_power_hour: {
-            sched_start: number | null;
-            sched_end: number | null;
-            sched_type: string;
-            sched_name: string | null;
-            sched_url: string | null;
-            sid: number;
-            sched_timed: boolean;
-            sched_creator_user_id: number | null;
-            sched_id: number;
-            sched_start_actual: number | null;
-            sched_end_actual: number | null;
-            sched_used: boolean;
-            songs?: components["schemas"]["_admin_power_hour_song"][];
-        };
-        admin_power_hours: components["schemas"]["admin_power_hour"][];
-        _admin_album: {
-            album_id: number;
-            album_name: string;
-            rating: number | null;
-            rating_count: number;
-            album_cool_multiply: number | null;
-            album_cool_override: number | null;
-        };
-        admin_albums: components["schemas"]["_admin_album"][];
-        _admin_album_song: {
-            song_id: number;
-            song_filename: string;
-            rating: number | null;
-            rating_count: number;
-            song_cool_multiply: number | null;
-            song_cool_override: number | null;
-            song_request_only: boolean;
-        };
-        admin_album_songs: components["schemas"]["_admin_album_song"][];
-        _admin_album_art: {
-            sid: components["schemas"]["_station_id"];
-            album_art: components["schemas"]["_album_art"];
-        };
-        admin_album_art: components["schemas"]["_admin_album_art"][];
-        update_user_nickname_by_discord_id_result: components["schemas"]["_boolean_result"];
-        update_user_avatar_by_discord_id_result: components["schemas"]["_boolean_result"];
-        enable_perks_by_discord_ids_result: components["schemas"]["_boolean_result"];
-        add_donation_result: components["schemas"]["_boolean_result"];
-        delete_power_hour_result: components["schemas"]["_boolean_result"];
-        set_song_request_only_result: components["schemas"]["_boolean_result"];
-        set_song_cooldown_result: components["schemas"]["_boolean_result"];
-        set_album_cooldown_result: components["schemas"]["_boolean_result"];
-        /**
-         * @description Translation key used for localization lookups.
-         * @enum {string}
-         */
-        _translation_key: "#_requests" | "404" | "Albums" | "Artists" | "Artists_pluralized" | "Cancel" | "Clear" | "Faves" | "Filter..." | "Groups" | "Listeners" | "Loading..." | "Patreon" | "Pause" | "PayPal" | "Rate" | "Request" | "RequestLine" | "Requests" | "Resume" | "Settings" | "Songs" | "Suspend" | "Unrated" | "Users" | "admin_required" | "album_all_cooldown" | "album_does_not_exist" | "album_has_cooldown" | "album_id" | "album_name" | "album_on_other_station" | "album_on_station" | "album_rating_detail" | "album_rating_ranked_at_v2" | "album_requests_ranked_at" | "all_faves" | "allow_api_auth" | "already_voted_for_song" | "amount" | "api_docs" | "api_key" | "api_key_manager" | "app_would_like_to" | "async_error" | "audio_connect_error" | "audio_connect_error_reattempting" | "audio_error" | "auth_failed" | "auth_failed_message" | "auth_required" | "average_rating_by_station" | "basic" | "blocked_by_name__album" | "blocked_by_name__group" | "blocked_by_name__in_election" | "cannot_rate_now" | "cannot_vote_for_this_now" | "cd_album" | "cd_album_length" | "cd_album_size" | "cd_blue_bkg_is" | "cd_category" | "cd_category_length" | "cd_cooldown_length" | "cd_cooldowns_depend_on" | "cd_example" | "cd_higher_rating" | "cd_larger_album" | "cd_newer" | "cd_rating" | "cd_recently_added" | "cd_song" | "cd_song_length" | "cd_type_of_cooldown" | "cd_what_is" | "cd_why_use_cooldown" | "change_language" | "chat" | "clear_request_queue" | "coming_up" | "continued" | "cool_end" | "crash_happened" | "create_api_key" | "db_error_permanent" | "db_error_retry" | "debug_information" | "deeplink_error" | "delete" | "discord_already_associated" | "election" | "empty_list" | "end" | "event_naming__oneup" | "fave" | "fave_all_songs" | "fave_failed" | "font_options" | "forums" | "full" | "github_repo" | "go" | "groups_tab_title" | "hold_to_rate" | "hotkey_mode" | "hotkeys_fave" | "hotkeys_play" | "hotkeys_rate05" | "hotkeys_rate10" | "hotkeys_vote0" | "hotkeys_vote1" | "id" | "internal_error" | "invalid_argument" | "invalid_hotkey" | "invalid_hotkey_vote" | "invalid_request" | "invalid_station_id" | "language_name" | "language_name_short" | "legacy_username" | "library" | "link_discord" | "listen_via_browser" | "listen_via_mp3" | "listen_via_ogg" | "locked_to_station" | "login" | "login_failed" | "login_limit" | "login_password_disabled" | "login_required" | "login_too_old" | "login_with_legacy" | "logout" | "lost_connection" | "make_a_request" | "message" | "missing_argument" | "missing_station_id" | "mobile_sync_retrying" | "must_login_and_tune_in_to_request" | "name" | "new_album" | "new_songs" | "newish_album" | "newish_songs" | "no" | "no_ratings" | "no_results" | "no_search_results" | "no_song_selected" | "no_songs_on_this_station" | "nobody_in_line" | "not_an_election" | "now_playing" | "now_playing_on_..." | "num_votes" | "oauth_rejected" | "oops" | "origin_sid" | "page_title_on_google" | "password" | "password_required" | "pause_request_queue" | "perks_required" | "playback_history" | "playback_history_link" | "played_ago" | "playlist" | "playlist_preferences" | "please_refresh" | "power_hour" | "power_hours" | "preferences" | "prefs_f_norm" | "prefs_hkm" | "prefs_l_displose" | "prefs_l_stksz" | "prefs_notify" | "prefs_p_avup" | "prefs_p_fav1" | "prefs_p_favup" | "prefs_p_null1" | "prefs_p_songsort" | "prefs_p_sort" | "prefs_pwr" | "prefs_r_clear" | "prefs_r_incmplt" | "prefs_r_noglbl" | "prefs_roboto" | "prefs_sort_playlist_by_alpha" | "prefs_sort_playlist_by_rating_user" | "prefs_t_clk" | "prefs_t_rt" | "prefs_t_tl" | "previouslyplayed" | "qr_code" | "random_relay" | "rate_song_mobile_dialog" | "rating" | "rating_cleared" | "rating_counts_across_stations" | "rating_detail_numbers" | "rating_percentile_bottom" | "rating_percentile_top" | "rating_preferences" | "rating_spread" | "rating_submitted" | "rating_user" | "ratings_completion_rate" | "recent_votes" | "redownload_m3u" | "register_with_discord" | "registered_in_year" | "relevant_categories" | "relevant_categories_rollover" | "relevant_category" | "report_error" | "report_sending" | "report_sent" | "report_submitted" | "request_delete_failed" | "request_deleted" | "request_failed" | "request_favorited_failed" | "request_favorited_songs_success" | "request_fill_with_faves" | "request_fill_with_unrated" | "request_grab_tag__paused" | "request_history" | "request_in_election" | "request_on_cooldown_ends_soon" | "request_on_cooldown_for" | "request_only_on_x" | "request_percentile_bottom" | "request_percentile_top" | "request_queue_paused" | "request_queue_unpaused" | "request_success" | "request_unrated_failed" | "request_unrated_songs_success" | "request_you_are_x_in_line" | "requests_all_on_cooldown" | "requests_by_source_station" | "requests_by_station" | "requests_reordered" | "same_request_album" | "same_request_exists" | "search" | "search..." | "search_result_limit" | "search_string_too_short" | "server_just_started" | "sid" | "signup" | "site_mode" | "something_went_wrong" | "song_does_not_exist" | "song_has_no_ratings" | "song_id" | "song_not_requested" | "song_on_other_station" | "song_rating" | "song_rating_count" | "song_rating_detail" | "songs_from" | "special_event_alert" | "start" | "station_description_id_1" | "station_description_id_2" | "station_description_id_3" | "station_description_id_4" | "station_description_id_5" | "station_description_id_6" | "station_menu_description_id_1" | "station_menu_description_id_2" | "station_menu_description_id_3" | "station_menu_description_id_4" | "station_menu_description_id_5" | "station_menu_description_id_6" | "station_name_1" | "station_name_2" | "station_name_3" | "station_name_4" | "station_name_5" | "station_name_6" | "station_offline" | "station_select_header" | "stop" | "success" | "sync_retrying" | "sync_stopped" | "tab_title_preferences" | "timeformat_d" | "timeformat_h" | "timeformat_m" | "timeformat_s" | "timeformat_w" | "timeline_art__request_indicator" | "timeline_art__your_request_indicator" | "timeline_preferences" | "tip_jar" | "tip_jar_all_donations" | "tip_jar_balance" | "tip_jar_instruction_1" | "tip_jar_instruction_2" | "tip_jar_instruction_3" | "tip_jar_opener" | "tip_jar_opener_end" | "title" | "too_many_requests" | "top_100" | "top_rated_albums" | "top_requested_albums" | "try_external_player" | "tunein" | "tunein_required" | "tunein_to_rate_current_song" | "unfave_all_songs" | "unknown_error_message" | "unlocked_only" | "unpause_request_queue" | "unrated_songs" | "user_id" | "user_locked" | "user_recent_votes" | "user_requested_history" | "username_required" | "view_your" | "vote" | "vote_now" | "vote_submitted" | "voted" | "votes_by_source_station" | "votes_by_station" | "waiting_for_hotkey" | "websocket_throttle" | "yes" | "your_album_rating" | "your_numeric_user_id";
-        /**
-         * @description Translation key used for API error localization lookups.
-         * @enum {string}
-         */
-        _api_error_key: "404" | "admin_required" | "album_does_not_exist" | "auth_failed" | "auth_required" | "cannot_rate_now" | "db_error_retry" | "internal_error" | "invalid_argument" | "invalid_request" | "invalid_station_id" | "login_failed" | "login_limit" | "login_password_disabled" | "login_required" | "login_too_old" | "missing_argument" | "missing_station_id" | "password_required" | "perks_required" | "request_delete_failed" | "request_favorited_failed" | "request_unrated_failed" | "same_request_album" | "same_request_exists" | "search_string_too_short" | "server_just_started" | "song_does_not_exist" | "song_not_requested" | "station_offline" | "too_many_requests" | "tunein_required" | "tunein_to_rate_current_song" | "unlocked_only" | "user_locked" | "username_required";
+  schemas: {
+    /** @description Base album art URL for Rainwave. Usage: `art = album_art ? "https://rainwave.cc/${albumArt}_320.jpg" : "https://rainwave.cc/static/images4/noart_1.jpg"` */
+    _album_art: string | null;
+    _album_core: {
+      added_on: components['schemas']['_time'];
+      art: string | null;
+      cool: boolean;
+      cool_lowest: components['schemas']['_time'];
+      fave: boolean;
+      fave_count: number;
+      id: number;
+      name: string;
+      played_last: components['schemas']['_time'];
+      rating: number | null;
+      rating_count: number;
+      rating_user: components['schemas']['_rating_user'];
+      request_count: number;
+      song_count: number;
+      vote_count: number;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    _album_in_list: {
+      cool: boolean;
+      cool_lowest: components['schemas']['_time'];
+      fave: boolean;
+      id: number;
+      name: string;
+      newest_song_time: components['schemas']['_time'];
+      rating: number;
+      rating_complete: boolean;
+      rating_user: components['schemas']['_rating_user'];
+    };
+    _artist: {
+      id: number;
+      name: string;
+    };
+    _artist_in_list: {
+      id: number;
+      name: string;
+      song_count: number;
+    };
+    _artist_with_order: {
+      id: number;
+      name: string;
+      order: number;
+    };
+    _boolean_result: {
+      success: boolean;
+      text: string;
+      tl_key: components['schemas']['_translation_key'];
+    };
+    _elec_blocked_by: ('in_election' | 'album' | 'group') | null;
+    /**
+     * @description 2 for normal song, 4 for request.  Other numbers are no longer used.
+     * @enum {integer}
+     */
+    _election_song_type: 2 | 4;
+    _error: {
+      code?: number;
+      success?: boolean;
+      text: string;
+      tl_key: components['schemas']['_api_error_key'];
+      traceback?: string;
+    };
+    _listener_rating_spread_item: {
+      rating?: number;
+      ratings?: number;
+    };
+    _listener_ratings_by_station: {
+      average_rating: string;
+      ratings: number;
+      sid: components['schemas']['_station_id'];
+    };
+    _listener_requests_by_station: {
+      requests: number;
+      sid: components['schemas']['_station_id'];
+    };
+    _listener_top_album: {
+      id: number;
+      name: string;
+      rating: number;
+      rating_listener: number;
+    };
+    _listener_top_request_album: {
+      id: number;
+      name: string;
+      request_count_listener: number;
+    };
+    _listener_votes_by_station: {
+      sid: components['schemas']['_station_id'];
+      votes: number;
+    };
+    _live_voting_entry: {
+      entry_id: number;
+      entry_votes: number;
+      song_id: number;
+    };
+    _playback_history_entry: {
+      album_id: number;
+      album_name: string;
+      artist_parseable: string;
+      fave: boolean;
+      id: number;
+      rating: number;
+      rating_user: components['schemas']['_rating_user'];
+      song_played_at: components['schemas']['_time'];
+      title: string;
+    };
+    _rating: number;
+    _rating_histogram: {
+      '1.0': number;
+      1.5: number;
+      '2.0': number;
+      2.5: number;
+      '3.0': number;
+      3.5: number;
+      '4.0': number;
+      4.5: number;
+      '5.0': number;
+    };
+    _rating_user: number | null;
+    _relay: {
+      hostname: string;
+      name: string;
+      port: number;
+      protocol: string;
+    };
+    _request_album: {
+      art: components['schemas']['_album_art'];
+      id: number;
+      name: string;
+      rating: number;
+      rating_complete: boolean;
+      rating_user: components['schemas']['_rating_user'];
+    };
+    _request_line_entry: {
+      line_expiry_election: components['schemas']['_time'] | null;
+      line_expiry_tune_in: components['schemas']['_time'] | null;
+      line_has_had_valid: boolean;
+      line_wait_start: components['schemas']['_time'];
+      position: number;
+      skip: boolean;
+      song?: components['schemas']['_request_line_entry_song'];
+      song_id: number | null;
+      user_id: number;
+      username: string;
+    };
+    _request_line_entry_song: null | {
+      album_name: string;
+      id: number;
+      title: string;
+    };
+    _search_album: {
+      cool: boolean;
+      fave: boolean;
+      id: number;
+      name: string;
+      rating: number;
+      rating_complete: boolean;
+      rating_user: components['schemas']['_rating_user'];
+    };
+    _search_artist: {
+      id: number;
+      name: string;
+    };
+    _song_bare: {
+      fave: boolean | null;
+      id: number;
+      length: number;
+      link_text: string | null;
+      rating: number;
+      rating_user: components['schemas']['_rating_user'];
+      title: string;
+      url: string | null;
+    };
+    _song_bare_album: {
+      albums: [
+        {
+          id: number;
+          name: string;
+        },
+      ];
+    };
+    _song_bare_artist: {
+      artists: components['schemas']['_artist'][];
+    };
+    _song_group: {
+      id: number;
+      name: string;
+    };
+    _song_in_artist: components['schemas']['_song_bare'] &
+      components['schemas']['_song_bare_album'] & {
+        cool: boolean;
+        requestable: boolean;
+        sid: components['schemas']['_station_id'];
+      };
+    _song_on_album: components['schemas']['_song_bare'] & {
+      artist_parseable: string;
+      added_on: components['schemas']['_time'];
+      cool: boolean;
+      cool_end: components['schemas']['_time'];
+      origin_sid: components['schemas']['_station_id'];
+      requestable: boolean;
+    };
+    _station_id: number;
+    _station_info: {
+      album: string;
+      art: components['schemas']['_album_art'];
+      artists: string;
+      event_name: string | null;
+      event_type: components['schemas']['_timeline_entry_type'] | null;
+      title: string;
+    };
+    _station_list_station: {
+      id: number;
+      url: string;
+    };
+    /** @description Epoch Time - seconds since Jan 1st 00:00 1970 */
+    _time: number;
+    _timeline_entry: {
+      end: components['schemas']['_time'];
+      id: number;
+      length: number;
+      name: string | null;
+      sid: components['schemas']['_station_id'];
+      songs: components['schemas']['_timeline_song'][];
+      start: components['schemas']['_time'];
+      start_actual: components['schemas']['_time'] | null;
+      type: components['schemas']['_timeline_entry_type'];
+      url: string | null;
+      used: boolean;
+      voting_allowed: boolean;
+    };
+    /** @enum {string} */
+    _timeline_entry_type: 'Election' | 'OneUp' | 'PVPElection';
+    _timeline_song: components['schemas']['_song_bare'] & {
+      albums: [components['schemas']['_timeline_song_album']];
+      artists: components['schemas']['_artist_with_order'][];
+      cool: boolean;
+      elec_blocked: boolean;
+      elec_blocked_by: components['schemas']['_elec_blocked_by'];
+      elec_request_user_id: number | null;
+      elec_request_username: string | null;
+      entry_id: number;
+      entry_position: number;
+      entry_type: components['schemas']['_election_song_type'];
+      entry_votes: number;
+      groups: components['schemas']['_song_group'][];
+      origin_sid: components['schemas']['_station_id'];
+      rating_allowed: boolean;
+      rating_count: number;
+      request_count: number;
+      request_id?: number | null;
+      sid: components['schemas']['_station_id'];
+    };
+    _timeline_song_album: {
+      art: components['schemas']['_album_art'];
+      fave: boolean;
+      id: number;
+      name: string;
+      rating: number;
+      rating_user: components['schemas']['_rating_user'];
+    };
+    _updated_album_rating: {
+      id: number;
+      rating_complete: boolean;
+      rating_user: components['schemas']['_rating_user'];
+      sid: components['schemas']['_station_id'];
+    };
+    _user_recent_vote: {
+      album_name: string;
+      fave: boolean;
+      id: number;
+      rating: number;
+      rating_user: components['schemas']['_rating_user'];
+      title: string;
+    };
+    album: {
+      added_on: components['schemas']['_time'];
+      art: components['schemas']['_album_art'];
+      cool_lowest: components['schemas']['_time'];
+      cool: boolean;
+      fave_count: number;
+      fave: boolean;
+      id: number;
+      name: string;
+      played_last: components['schemas']['_time'];
+      rating_count: number;
+      rating_user: components['schemas']['_rating_user'];
+      rating: number | null;
+      song_count: number;
+      vote_count: number;
+      genres: components['schemas']['_song_group'][];
+      rating_complete: boolean;
+      rating_histogram: components['schemas']['_rating_histogram'];
+      rating_rank: number;
+      rating_rank_percentile: number;
+      request_count: number;
+      request_rank: number;
+      request_rank_percentile: number;
+      songs: components['schemas']['_song_on_album'][];
+    };
+    album_diff: {
+      cool?: boolean;
+      cool_lowest?: components['schemas']['_time'];
+      id?: number;
+      newest_song_time?: components['schemas']['_time'];
+    }[];
+    albums: components['schemas']['_search_album'][];
+    all_albums: components['schemas']['_album_in_list'][];
+    all_albums_paginated: {
+      data: components['schemas']['_album_in_list'][];
+      has_more: boolean;
+      next: number;
+      progress: number;
+    };
+    all_artists: components['schemas']['_artist_in_list'][];
+    all_artists_paginated: {
+      data: components['schemas']['_artist_in_list'][];
+      has_more: boolean;
+      next: number;
+      progress: number;
+    };
+    all_faves: {
+      album_id: number;
+      album_name: string;
+      fave: boolean;
+      id: number;
+      rating: number;
+      rating_user: components['schemas']['_rating_user'];
+      title: string;
+    }[];
+    all_groups: components['schemas']['_song_group'][];
+    all_groups_paginated: {
+      data: components['schemas']['_song_group'][];
+      has_more: boolean;
+      next: number;
+      progress: number;
+    };
+    all_songs: {
+      album_name: string;
+      fave: boolean;
+      id: number;
+      rating: number;
+      rating_user: components['schemas']['_rating_user'];
+      title: string;
+    }[];
+    all_stations_info: {
+      [key: string]: components['schemas']['_station_info'];
+    };
+    /** @description An array of [timelineEntry.id, electionEntry.id] items. */
+    already_voted: [number, number][];
+    api_info: {
+      exectime: number;
+      time: components['schemas']['_time'];
+    };
+    _artist_detail: unknown;
+    /** @description all_songs[station_id][album_id] = [song1, song2, ...] - for song names, inspect song.album[0].name. */
+    _all_songs_for_artist: {
+      1?: {
+        [key: string]: components['schemas']['_song_in_artist'][];
+      };
+      2?: {
+        [key: string]: components['schemas']['_song_in_artist'][];
+      };
+      3?: {
+        [key: string]: components['schemas']['_song_in_artist'][];
+      };
+      4?: {
+        [key: string]: components['schemas']['_song_in_artist'][];
+      };
+      5?: {
+        [key: string]: components['schemas']['_song_in_artist'][];
+      };
+      6?: {
+        [key: string]: components['schemas']['_song_in_artist'][];
+      };
+    };
+    artist: components['schemas']['_artist'] & {
+      all_songs?: components['schemas']['_all_songs_for_artist'];
+    };
+    artists: components['schemas']['_search_artist'][];
+    build_version: number;
+    cookie_domain: string;
+    delete_request_result: components['schemas']['_boolean_result'];
+    error: components['schemas']['_error'];
+    error_report_result: components['schemas']['_boolean_result'];
+    fave_album_result: components['schemas']['_boolean_result'] & {
+      fave: boolean;
+      id: number;
+      sid: components['schemas']['_station_id'];
+    };
+    fave_all_songs_result: components['schemas']['_boolean_result'] & {
+      fave: boolean;
+      sid: components['schemas']['_station_id'];
+      song_ids: number[];
+    };
+    fave_song_result: components['schemas']['_boolean_result'] & {
+      fave: boolean;
+      id: number;
+      sid: components['schemas']['_station_id'];
+    };
+    group: components['schemas']['_song_group'] & {
+      /** @description all_songs_for_sid[album_id][station_id] = [song1, song2...] */
+      all_songs_for_sid: {
+        [key: string]: {
+          [key: string]: components['schemas']['_song_in_artist'][];
+        };
+      };
+    };
+    listener: {
+      avatar: string | null;
+      colour: string | null;
+      /** @deprecated */
+      losing_votes: number;
+      /** @deprecated */
+      mind_changes: number;
+      name: string;
+      rank: string | null;
+      rating_spread: components['schemas']['_listener_rating_spread_item'][];
+      ratings_by_station: components['schemas']['_listener_ratings_by_station'][];
+      ratings_completion: {
+        1: number;
+        2: number;
+        3: number;
+        4: number;
+        6: number;
+      };
+      regdate: components['schemas']['_time'];
+      requests_by_source_station: components['schemas']['_listener_requests_by_station'][];
+      requests_by_station: components['schemas']['_listener_requests_by_station'][];
+      top_albums: components['schemas']['_listener_top_album'][];
+      top_request_albums: components['schemas']['_listener_top_request_album'][];
+      /** @deprecated */
+      total_ratings: number;
+      /** @deprecated */
+      total_requests: number;
+      /** @deprecated */
+      total_votes: number;
+      user_id: number;
+      votes_by_station: components['schemas']['_listener_votes_by_station'][];
+      /** @deprecated */
+      winning_votes: number;
+    };
+    live_voting: {
+      [key: string]: components['schemas']['_live_voting_entry'][];
+    };
+    locale: string;
+    locales: {
+      [key: string]: string;
+    };
+    message_id: {
+      message_id: number;
+    };
+    order_requests_result: components['schemas']['_boolean_result'];
+    pause_request_queue_result: components['schemas']['_boolean_result'];
+    playback_history: components['schemas']['_playback_history_entry'][];
+    power_hours: {
+      end: components['schemas']['_time'];
+      id: number;
+      name: string;
+      sid: components['schemas']['_station_id'];
+      start: components['schemas']['_time'];
+      url: string | null;
+    }[];
+    rate_result: components['schemas']['_boolean_result'] & {
+      rating_user: components['schemas']['_rating_user'];
+      song_id: number;
+      updated_album_ratings: components['schemas']['_updated_album_rating'][];
+    };
+    /** @description This API event occurs when a user who is logged in tunes in without using their listener key. This prompts them to tune in again in order to obtain the correct M3U. */
+    redownload_m3u: {
+      text: string;
+      tl_key: components['schemas']['_translation_key'];
+    };
+    relays: components['schemas']['_relay'][];
+    request_favorited_songs_result: components['schemas']['_boolean_result'];
+    request_line: components['schemas']['_request_line_entry'][];
+    request_result: components['schemas']['_boolean_result'];
+    request_unrated_songs_result: components['schemas']['_boolean_result'];
+    requests: (components['schemas']['_song_bare'] &
+      components['schemas']['_song_bare_artist'] & {
+        albums: [components['schemas']['_request_album']];
+        cool: boolean;
+        cool_end: components['schemas']['_time'] | null;
+        elec_blocked: boolean;
+        elec_blocked_by: components['schemas']['_elec_blocked_by'];
+        elec_blocked_num: number | null;
+        /** @description Does the song still exist on the Rainwave? */
+        good: boolean;
+        order: number;
+        origin_sid: components['schemas']['_station_id'];
+        request_id: number;
+        sid: components['schemas']['_station_id'];
+        /** @description Does the song still exist on the station of the API request? */
+        valid: boolean;
+      })[];
+    sched_current: components['schemas']['_timeline_entry'];
+    sched_history: components['schemas']['_timeline_entry'][];
+    sched_next: components['schemas']['_timeline_entry'][];
+    song: {
+      album: [components['schemas']['_request_album']];
+      artists: components['schemas']['_artist_with_order'][];
+      cool: boolean;
+      elec_blocked: boolean;
+      elec_blocked_by: components['schemas']['_elec_blocked_by'];
+      groups: components['schemas']['_song_group'][];
+      origin_sid: components['schemas']['_station_id'];
+      rating_allowed: boolean;
+      rating_count: number;
+      rating_rank: number;
+      rating_rank_percentile: number;
+      /** @deprecated */
+      request_count: number;
+      /** @deprecated */
+      request_rank: number;
+      /** @deprecated */
+      request_rank_percentile: number;
+      sid: components['schemas']['_station_id'];
+      rating_histogram?: components['schemas']['_rating_histogram'];
+    };
+    _search_song: components['schemas']['_song_bare'] & {
+      added_on: components['schemas']['_time'];
+      album_id: number;
+      album_name: string;
+      cool: boolean;
+      cool_end: components['schemas']['_time'] | null;
+      origin_sid: components['schemas']['_station_id'];
+      requestable: boolean;
+    };
+    songs: components['schemas']['_search_song'][];
+    station_list: {
+      [key: string]: components['schemas']['_station_list_station'];
+    };
+    station_song_count: {
+      sid: components['schemas']['_station_id'];
+      song_count: number;
+    }[];
+    stations: {
+      description: string;
+      id: components['schemas']['_station_id'];
+      name: string;
+      relays: components['schemas']['relays'];
+      stream: string;
+    }[];
+    stream_filename: string;
+    sync_result: components['schemas']['_error'];
+    top_100: {
+      album_name: string;
+      id: number;
+      origin_sid: components['schemas']['_station_id'];
+      song_rating: number;
+      song_rating_count: number;
+      title: string;
+    }[];
+    unpause_request_queue_result: components['schemas']['_boolean_result'];
+    unrated_songs: {
+      album_name: string;
+      id: number;
+      title: string;
+    }[];
+    user: {
+      admin: boolean;
+      avatar: string | null;
+      id: number;
+      listen_key: string | null;
+      listener_id: number | null;
+      lock: boolean;
+      lock_counter: number;
+      lock_in_effect: boolean;
+      lock_sid: components['schemas']['_station_id'] | null;
+      name: string;
+      /** @deprecated */
+      new_privmsg: number;
+      perks: boolean;
+      rate_anything: boolean;
+      request_expires_at: components['schemas']['_time'] | null;
+      request_position: number | null;
+      requests_paused: boolean;
+      sid: components['schemas']['_station_id'];
+      tuned_in: boolean;
+      voted_entry: number | null;
+    };
+    user_info: components['schemas']['user'];
+    user_recent_votes: components['schemas']['_user_recent_vote'][];
+    user_requested_history: components['schemas']['_user_recent_vote'][];
+    vote_result: components['schemas']['_boolean_result'] & {
+      elec_id: number | null;
+      entry_id: number;
+    };
+    websocket_host: string;
+    pong: boolean;
+    wserror: components['schemas']['_error'];
+    wsok: boolean;
+    wsthrottle: {
+      text: string;
+      tl_key: components['schemas']['_translation_key'];
+    };
+    admin_user_search_result: {
+      user_id: number | null;
+      sid: number | null;
+    };
+    _admin_js_error: {
+      user_id: number;
+      username: string;
+      time: number;
+      name: string;
+      message: string;
+      lineNumber: number | string | null;
+      columnNumber: number | string | null;
+      stack: string;
+      location: string;
+      userAgent: string;
+      browserLanguage: string;
+    };
+    admin_js_errors: components['schemas']['_admin_js_error'][];
+    _admin_music_scan_error: {
+      time: number;
+      file: string;
+      type: string;
+      error: string;
+      traceback: string;
+    };
+    admin_music_scan_errors: components['schemas']['_admin_music_scan_error'][];
+    _admin_power_hour_song: {
+      one_up_id: number;
+      sched_id: number;
+      song_id: number;
+      one_up_order: number | null;
+      one_up_used: boolean;
+      one_up_queued: boolean;
+      one_up_sid: number;
+      one_up_start_actual: number | null;
+      song_title: string;
+      album_name: string;
+      album_id: number;
+      song_length: number;
+    };
+    admin_power_hour: {
+      sched_start: number | null;
+      sched_end: number | null;
+      sched_type: string;
+      sched_name: string | null;
+      sched_url: string | null;
+      sid: number;
+      sched_timed: boolean;
+      sched_creator_user_id: number | null;
+      sched_id: number;
+      sched_start_actual: number | null;
+      sched_end_actual: number | null;
+      sched_used: boolean;
+      songs?: components['schemas']['_admin_power_hour_song'][];
+    };
+    admin_power_hours: components['schemas']['admin_power_hour'][];
+    _admin_album: {
+      album_id: number;
+      album_name: string;
+      rating: number | null;
+      rating_count: number;
+      album_cool_multiply: number | null;
+      album_cool_override: number | null;
+    };
+    admin_albums: components['schemas']['_admin_album'][];
+    _admin_album_song: {
+      song_id: number;
+      song_filename: string;
+      rating: number | null;
+      rating_count: number;
+      song_cool_multiply: number | null;
+      song_cool_override: number | null;
+      song_request_only: boolean;
+    };
+    admin_album_songs: components['schemas']['_admin_album_song'][];
+    _admin_album_art: {
+      sid: components['schemas']['_station_id'];
+      album_art: components['schemas']['_album_art'];
+    };
+    admin_album_art: components['schemas']['_admin_album_art'][];
+    update_user_nickname_by_discord_id_result: components['schemas']['_boolean_result'];
+    update_user_avatar_by_discord_id_result: components['schemas']['_boolean_result'];
+    enable_perks_by_discord_ids_result: components['schemas']['_boolean_result'];
+    add_donation_result: components['schemas']['_boolean_result'];
+    delete_power_hour_result: components['schemas']['_boolean_result'];
+    set_song_request_only_result: components['schemas']['_boolean_result'];
+    set_song_cooldown_result: components['schemas']['_boolean_result'];
+    set_album_cooldown_result: components['schemas']['_boolean_result'];
+    /**
+     * @description Translation key used for localization lookups.
+     * @enum {string}
+     */
+    _translation_key:
+      | '#_requests'
+      | '404'
+      | 'Albums'
+      | 'Artists'
+      | 'Artists_pluralized'
+      | 'Cancel'
+      | 'Clear'
+      | 'Faves'
+      | 'Filter...'
+      | 'Groups'
+      | 'Listeners'
+      | 'Loading...'
+      | 'Patreon'
+      | 'Pause'
+      | 'PayPal'
+      | 'Rate'
+      | 'Request'
+      | 'RequestLine'
+      | 'Requests'
+      | 'Resume'
+      | 'Settings'
+      | 'Songs'
+      | 'Suspend'
+      | 'Unrated'
+      | 'Users'
+      | 'admin_required'
+      | 'album_all_cooldown'
+      | 'album_does_not_exist'
+      | 'album_has_cooldown'
+      | 'album_id'
+      | 'album_name'
+      | 'album_on_other_station'
+      | 'album_on_station'
+      | 'album_rating_detail'
+      | 'album_rating_ranked_at_v2'
+      | 'album_requests_ranked_at'
+      | 'all_faves'
+      | 'allow_api_auth'
+      | 'already_voted_for_song'
+      | 'amount'
+      | 'api_docs'
+      | 'api_key'
+      | 'api_key_manager'
+      | 'app_would_like_to'
+      | 'async_error'
+      | 'audio_connect_error'
+      | 'audio_connect_error_reattempting'
+      | 'audio_error'
+      | 'auth_failed'
+      | 'auth_failed_message'
+      | 'auth_required'
+      | 'average_rating_by_station'
+      | 'basic'
+      | 'blocked_by_name__album'
+      | 'blocked_by_name__group'
+      | 'blocked_by_name__in_election'
+      | 'cannot_rate_now'
+      | 'cannot_vote_for_this_now'
+      | 'cd_album'
+      | 'cd_album_length'
+      | 'cd_album_size'
+      | 'cd_blue_bkg_is'
+      | 'cd_category'
+      | 'cd_category_length'
+      | 'cd_cooldown_length'
+      | 'cd_cooldowns_depend_on'
+      | 'cd_example'
+      | 'cd_higher_rating'
+      | 'cd_larger_album'
+      | 'cd_newer'
+      | 'cd_rating'
+      | 'cd_recently_added'
+      | 'cd_song'
+      | 'cd_song_length'
+      | 'cd_type_of_cooldown'
+      | 'cd_what_is'
+      | 'cd_why_use_cooldown'
+      | 'change_language'
+      | 'chat'
+      | 'clear_request_queue'
+      | 'coming_up'
+      | 'continued'
+      | 'cool_end'
+      | 'crash_happened'
+      | 'create_api_key'
+      | 'db_error_permanent'
+      | 'db_error_retry'
+      | 'debug_information'
+      | 'deeplink_error'
+      | 'delete'
+      | 'discord_already_associated'
+      | 'election'
+      | 'empty_list'
+      | 'end'
+      | 'event_naming__oneup'
+      | 'fave'
+      | 'fave_all_songs'
+      | 'fave_failed'
+      | 'font_options'
+      | 'forums'
+      | 'full'
+      | 'github_repo'
+      | 'go'
+      | 'groups_tab_title'
+      | 'hold_to_rate'
+      | 'hotkey_mode'
+      | 'hotkeys_fave'
+      | 'hotkeys_play'
+      | 'hotkeys_rate05'
+      | 'hotkeys_rate10'
+      | 'hotkeys_vote0'
+      | 'hotkeys_vote1'
+      | 'id'
+      | 'internal_error'
+      | 'invalid_argument'
+      | 'invalid_hotkey'
+      | 'invalid_hotkey_vote'
+      | 'invalid_request'
+      | 'invalid_station_id'
+      | 'language_name'
+      | 'language_name_short'
+      | 'legacy_username'
+      | 'library'
+      | 'link_discord'
+      | 'listen_via_browser'
+      | 'listen_via_mp3'
+      | 'listen_via_ogg'
+      | 'locked_to_station'
+      | 'login'
+      | 'login_failed'
+      | 'login_limit'
+      | 'login_password_disabled'
+      | 'login_required'
+      | 'login_too_old'
+      | 'login_with_legacy'
+      | 'logout'
+      | 'lost_connection'
+      | 'make_a_request'
+      | 'message'
+      | 'missing_argument'
+      | 'missing_station_id'
+      | 'mobile_sync_retrying'
+      | 'must_login_and_tune_in_to_request'
+      | 'name'
+      | 'new_album'
+      | 'new_songs'
+      | 'newish_album'
+      | 'newish_songs'
+      | 'no'
+      | 'no_ratings'
+      | 'no_results'
+      | 'no_search_results'
+      | 'no_song_selected'
+      | 'no_songs_on_this_station'
+      | 'nobody_in_line'
+      | 'not_an_election'
+      | 'now_playing'
+      | 'now_playing_on_...'
+      | 'num_votes'
+      | 'oauth_rejected'
+      | 'oops'
+      | 'origin_sid'
+      | 'page_title_on_google'
+      | 'password'
+      | 'password_required'
+      | 'pause_request_queue'
+      | 'perks_required'
+      | 'playback_history'
+      | 'playback_history_link'
+      | 'played_ago'
+      | 'playlist'
+      | 'playlist_preferences'
+      | 'please_refresh'
+      | 'power_hour'
+      | 'power_hours'
+      | 'preferences'
+      | 'prefs_f_norm'
+      | 'prefs_hkm'
+      | 'prefs_l_displose'
+      | 'prefs_l_stksz'
+      | 'prefs_notify'
+      | 'prefs_p_avup'
+      | 'prefs_p_fav1'
+      | 'prefs_p_favup'
+      | 'prefs_p_null1'
+      | 'prefs_p_songsort'
+      | 'prefs_p_sort'
+      | 'prefs_pwr'
+      | 'prefs_r_clear'
+      | 'prefs_r_incmplt'
+      | 'prefs_r_noglbl'
+      | 'prefs_roboto'
+      | 'prefs_sort_playlist_by_alpha'
+      | 'prefs_sort_playlist_by_rating_user'
+      | 'prefs_t_clk'
+      | 'prefs_t_rt'
+      | 'prefs_t_tl'
+      | 'previouslyplayed'
+      | 'qr_code'
+      | 'random_relay'
+      | 'rate_song_mobile_dialog'
+      | 'rating'
+      | 'rating_cleared'
+      | 'rating_counts_across_stations'
+      | 'rating_detail_numbers'
+      | 'rating_percentile_bottom'
+      | 'rating_percentile_top'
+      | 'rating_preferences'
+      | 'rating_spread'
+      | 'rating_submitted'
+      | 'rating_user'
+      | 'ratings_completion_rate'
+      | 'recent_votes'
+      | 'redownload_m3u'
+      | 'register_with_discord'
+      | 'registered_in_year'
+      | 'relevant_categories'
+      | 'relevant_categories_rollover'
+      | 'relevant_category'
+      | 'report_error'
+      | 'report_sending'
+      | 'report_sent'
+      | 'report_submitted'
+      | 'request_delete_failed'
+      | 'request_deleted'
+      | 'request_failed'
+      | 'request_favorited_failed'
+      | 'request_favorited_songs_success'
+      | 'request_fill_with_faves'
+      | 'request_fill_with_unrated'
+      | 'request_grab_tag__paused'
+      | 'request_history'
+      | 'request_in_election'
+      | 'request_on_cooldown_ends_soon'
+      | 'request_on_cooldown_for'
+      | 'request_only_on_x'
+      | 'request_percentile_bottom'
+      | 'request_percentile_top'
+      | 'request_queue_paused'
+      | 'request_queue_unpaused'
+      | 'request_success'
+      | 'request_unrated_failed'
+      | 'request_unrated_songs_success'
+      | 'request_you_are_x_in_line'
+      | 'requests_all_on_cooldown'
+      | 'requests_by_source_station'
+      | 'requests_by_station'
+      | 'requests_reordered'
+      | 'same_request_album'
+      | 'same_request_exists'
+      | 'search'
+      | 'search...'
+      | 'search_result_limit'
+      | 'search_string_too_short'
+      | 'server_just_started'
+      | 'sid'
+      | 'signup'
+      | 'site_mode'
+      | 'something_went_wrong'
+      | 'song_does_not_exist'
+      | 'song_has_no_ratings'
+      | 'song_id'
+      | 'song_not_requested'
+      | 'song_on_other_station'
+      | 'song_rating'
+      | 'song_rating_count'
+      | 'song_rating_detail'
+      | 'songs_from'
+      | 'special_event_alert'
+      | 'start'
+      | 'station_description_id_1'
+      | 'station_description_id_2'
+      | 'station_description_id_3'
+      | 'station_description_id_4'
+      | 'station_description_id_5'
+      | 'station_description_id_6'
+      | 'station_menu_description_id_1'
+      | 'station_menu_description_id_2'
+      | 'station_menu_description_id_3'
+      | 'station_menu_description_id_4'
+      | 'station_menu_description_id_5'
+      | 'station_menu_description_id_6'
+      | 'station_name_1'
+      | 'station_name_2'
+      | 'station_name_3'
+      | 'station_name_4'
+      | 'station_name_5'
+      | 'station_name_6'
+      | 'station_offline'
+      | 'station_select_header'
+      | 'stop'
+      | 'success'
+      | 'sync_retrying'
+      | 'sync_stopped'
+      | 'tab_title_preferences'
+      | 'timeformat_d'
+      | 'timeformat_h'
+      | 'timeformat_m'
+      | 'timeformat_s'
+      | 'timeformat_w'
+      | 'timeline_art__request_indicator'
+      | 'timeline_art__your_request_indicator'
+      | 'timeline_preferences'
+      | 'tip_jar'
+      | 'tip_jar_all_donations'
+      | 'tip_jar_balance'
+      | 'tip_jar_instruction_1'
+      | 'tip_jar_instruction_2'
+      | 'tip_jar_instruction_3'
+      | 'tip_jar_opener'
+      | 'tip_jar_opener_end'
+      | 'title'
+      | 'too_many_requests'
+      | 'top_100'
+      | 'top_rated_albums'
+      | 'top_requested_albums'
+      | 'try_external_player'
+      | 'tunein'
+      | 'tunein_required'
+      | 'tunein_to_rate_current_song'
+      | 'unfave_all_songs'
+      | 'unknown_error_message'
+      | 'unlocked_only'
+      | 'unpause_request_queue'
+      | 'unrated_songs'
+      | 'user_id'
+      | 'user_locked'
+      | 'user_recent_votes'
+      | 'user_requested_history'
+      | 'username_required'
+      | 'view_your'
+      | 'vote'
+      | 'vote_now'
+      | 'vote_submitted'
+      | 'voted'
+      | 'votes_by_source_station'
+      | 'votes_by_station'
+      | 'waiting_for_hotkey'
+      | 'websocket_throttle'
+      | 'yes'
+      | 'your_album_rating'
+      | 'your_numeric_user_id';
+    /**
+     * @description Translation key used for API error localization lookups.
+     * @enum {string}
+     */
+    _api_error_key:
+      | '404'
+      | 'admin_required'
+      | 'album_does_not_exist'
+      | 'auth_failed'
+      | 'auth_required'
+      | 'cannot_rate_now'
+      | 'db_error_retry'
+      | 'internal_error'
+      | 'invalid_argument'
+      | 'invalid_request'
+      | 'invalid_station_id'
+      | 'login_failed'
+      | 'login_limit'
+      | 'login_password_disabled'
+      | 'login_required'
+      | 'login_too_old'
+      | 'missing_argument'
+      | 'missing_station_id'
+      | 'password_required'
+      | 'perks_required'
+      | 'request_delete_failed'
+      | 'request_favorited_failed'
+      | 'request_unrated_failed'
+      | 'same_request_album'
+      | 'same_request_exists'
+      | 'search_string_too_short'
+      | 'server_just_started'
+      | 'song_does_not_exist'
+      | 'song_not_requested'
+      | 'station_offline'
+      | 'too_many_requests'
+      | 'tunein_required'
+      | 'tunein_to_rate_current_song'
+      | 'unlocked_only'
+      | 'user_locked'
+      | 'username_required';
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    adminAddAlbumToPowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                    album_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminAddDonation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    donor_id: number;
-                    amount: number;
-                    message: string;
-                    private: boolean;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        add_donation_result: components["schemas"]["add_donation_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminAddSongToPowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                    song_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminChangePowerHourName: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                    name: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminChangePowerHourStartTime: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                    utc_time: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminChangePowerHourUrl: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                    url: string | null;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminCreatePowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    name: string;
-                    start_utc_time: number;
-                    end_utc_time: number;
-                    url: string | null;
-                    fill_unrated: boolean | null;
-                    sid: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminDeletePowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        delete_power_hour_result: components["schemas"]["delete_power_hour_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminDuplicatePowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminEuropifyPowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminJSErrors: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_js_errors: components["schemas"]["admin_js_errors"];
-                    };
-                };
-            };
-        };
-    };
-    adminMusicScanErrors: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_music_scan_errors: components["schemas"]["admin_music_scan_errors"];
-                    };
-                };
-            };
-        };
-    };
-    adminOrderPowerHourSongs: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                    /** @description A comma-separated list of one_up_id values that represent the Power Hour song queue, in the order the admin desires. */
-                    order: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminGetPowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminRemoveSongFromPowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    one_up_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminGetPowerHours: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hours: components["schemas"]["admin_power_hours"];
-                    };
-                };
-            };
-        };
-    };
-    adminResetAlbumCooldown: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    album_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        set_album_cooldown_result: components["schemas"]["set_album_cooldown_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminResetSongCooldown: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    song_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        set_song_cooldown_result: components["schemas"]["set_song_cooldown_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminSetAlbumCooldown: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    album_id: number;
-                    multiply: number | null;
-                    override: number | null;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        set_album_cooldown_result: components["schemas"]["set_album_cooldown_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminSetSongCooldown: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    song_id: number;
-                    multiply: number | null;
-                    override: number | null;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        set_song_cooldown_result: components["schemas"]["set_song_cooldown_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminSetSongRequestOnly: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    song_id: number;
-                    request_only: boolean;
-                    sid: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        set_song_request_only_result: components["schemas"]["set_song_request_only_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminAlbumArt: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    album_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_album_art: components["schemas"]["admin_album_art"];
-                    };
-                };
-            };
-        };
-    };
-    adminAlbumSongs: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sid: number;
-                    album_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_album_songs: components["schemas"]["admin_album_songs"];
-                    };
-                };
-            };
-        };
-    };
-    adminAlbums: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sid: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_albums: components["schemas"]["admin_albums"];
-                    };
-                };
-            };
-        };
-    };
-    adminShufflePowerHour: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    sched_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_power_hour: components["schemas"]["admin_power_hour"];
-                    };
-                };
-            };
-        };
-    };
-    adminUpdateUserAvatarByDiscordId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    discord_user_id: string;
-                    avatar: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        update_user_avatar_by_discord_id_result: components["schemas"]["update_user_avatar_by_discord_id_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminUpdateUserNicknameByDiscordId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    discord_user_id: string;
-                    nickname: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        update_user_nickname_by_discord_id_result: components["schemas"]["update_user_nickname_by_discord_id_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminEnablePerksByDiscordIds: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    discord_user_ids: string[];
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        enable_perks_by_discord_ids_result: components["schemas"]["enable_perks_by_discord_ids_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminUserSearch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    username: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_user_search_result: components["schemas"]["admin_user_search_result"];
-                    };
-                };
-            };
-        };
-    };
-    adminUserSearchByDiscordUserId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    discord_user_id: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        admin_user_search_result: components["schemas"]["admin_user_search_result"];
-                    };
-                };
-            };
-        };
-    };
-    getAlbum: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    id: number;
-                    /** @description How to sort the songs that are a part of the album. */
-                    sort?: "added_on" | null;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        album: components["schemas"]["album"];
-                    };
-                };
-            };
-        };
-    };
-    getAllAlbums: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_albums: components["schemas"]["all_albums"];
-                    };
-                };
-            };
-        };
-    };
-    getAllAlbumsPaginated: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    after?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_albums_paginated: components["schemas"]["all_albums_paginated"];
-                    };
-                };
-            };
-        };
-    };
-    getAllArtists: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_artists: components["schemas"]["all_artists"];
-                    };
-                };
-            };
-        };
-    };
-    getAllArtistsPaginated: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    after?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_artists_paginated: components["schemas"]["all_artists_paginated"];
-                    };
-                };
-            };
-        };
-    };
-    getAllFaves: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    page_start?: number;
-                    per_page?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_faves: components["schemas"]["all_faves"];
-                    };
-                };
-            };
-        };
-    };
-    getAllGroups: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    after?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_groups: components["schemas"]["all_groups"];
-                    };
-                };
-            };
-        };
-    };
-    getAllGroupsPaginated: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    after?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_groups_paginated: components["schemas"]["all_groups_paginated"];
-                    };
-                };
-            };
-        };
-    };
-    getAllSongs: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    order?: "rating" | null;
-                    page_start?: number;
-                    per_page?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_songs: components["schemas"]["all_songs"];
-                    };
-                };
-            };
-        };
-    };
-    getArtist: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        artist: components["schemas"]["artist"];
-                    };
-                };
-            };
-        };
-    };
-    checkSchedCurrentId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description The last timeline entry sched_id you have seen. */
-                    sched_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-        };
-    };
-    auth: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    user_id: number;
-                    key: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        wsok: components["schemas"]["wsok"];
-                    };
-                };
-            };
-        };
-    };
-    ping: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        pong: components["schemas"]["pong"];
-                    };
-                };
-            };
-        };
-    };
-    clearRating: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    song_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        rate_result: components["schemas"]["rate_result"];
-                    };
-                };
-            };
-        };
-    };
-    clearRequests: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        requests: components["schemas"]["requests"];
-                    };
-                };
-            };
-        };
-    };
-    clearRequestsOnCooldown: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        requests: components["schemas"]["requests"];
-                    };
-                };
-            };
-        };
-    };
-    deleteRequest: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    song_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        requests: components["schemas"]["requests"];
-                    };
-                };
-            };
-        };
-    };
-    faveAlbum: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    album_id: number;
-                    fave: boolean;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        fave_album_result: components["schemas"]["fave_album_result"];
-                    };
-                };
-            };
-        };
-    };
-    faveAllSongsInAlbum: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    album_id: number;
-                    fave: boolean;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        fave_all_songs_result: components["schemas"]["fave_all_songs_result"];
-                    };
-                };
-            };
-        };
-    };
-    faveSong: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    fave: boolean;
-                    song_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        fave_song_result: components["schemas"]["fave_song_result"];
-                    };
-                };
-            };
-        };
-    };
-    getGroup: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        group: components["schemas"]["group"];
-                    };
-                };
-            };
-        };
-    };
-    getAllStationsInfo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        all_stations_info: components["schemas"]["all_stations_info"];
-                    };
-                };
-            };
-        };
-    };
-    getListener: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        listener: components["schemas"]["listener"];
-                    };
-                };
-            };
-        };
-    };
-    reorderRequests: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description A comma-separated list of Song IDs that represent the user's request queue, in the order the user desires. */
-                    order: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        order_requests_result: components["schemas"]["order_requests_result"];
-                        requests: components["schemas"]["requests"];
-                    };
-                };
-            };
-        };
-    };
-    pauseRequestQueue: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        pause_request_queue_result: components["schemas"]["pause_request_queue_result"];
-                        user: components["schemas"]["user"];
-                    };
-                };
-            };
-        };
-    };
-    getPlaybackHistory: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    page_start?: number;
-                    per_page?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        playback_history: components["schemas"]["playback_history"];
-                    };
-                };
-            };
-        };
-    };
-    rateSong: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    rating: number;
-                    song_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        rate_result: components["schemas"]["rate_result"];
-                    };
-                };
-            };
-        };
-    };
-    requestSong: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    song_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        requests: components["schemas"]["requests"];
-                    };
-                };
-            };
-        };
-    };
-    requestFavoritedSongs: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        request_favorited_songs_result: components["schemas"]["request_favorited_songs_result"];
-                        requests: components["schemas"]["requests"];
-                    };
-                };
-            };
-        };
-    };
-    getRequestLine: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        request_line_result: components["schemas"]["request_line"];
-                    };
-                };
-            };
-        };
-    };
-    requestUnratedSongs: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        request_unrated_songs_result: components["schemas"]["request_unrated_songs_result"];
-                        requests: components["schemas"]["requests"];
-                    };
-                };
-            };
-        };
-    };
-    search: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    search: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        albums: components["schemas"]["albums"];
-                        artists: components["schemas"]["artists"];
-                        songs: components["schemas"]["songs"];
-                    };
-                };
-            };
-        };
-    };
-    getSong: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        song: components["schemas"]["song"];
-                    };
-                };
-            };
-        };
-    };
-    getStationSongCount: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        station_song_count: components["schemas"]["station_song_count"];
-                    };
-                };
-            };
-        };
-    };
-    getStations: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        stations: components["schemas"]["stations"];
-                    };
-                };
-            };
-        };
-    };
-    getTop100: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        top_100: components["schemas"]["top_100"];
-                    };
-                };
-            };
-        };
-    };
-    unpauseRequestQueue: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": Record<string, never>;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        unpause_request_queue_result: components["schemas"]["unpause_request_queue_result"];
-                        user: components["schemas"]["user"];
-                    };
-                };
-            };
-        };
-    };
-    getUnratedSongs: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    page_start?: number;
-                    per_page?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        unrated_songs: components["schemas"]["unrated_songs"];
-                    };
-                };
-            };
-        };
-    };
-    getUserInfo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    api_key?: string;
-                    user_id?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        user_info: components["schemas"]["user_info"];
-                    };
-                };
-            };
-        };
-    };
-    getUserRecentVotes: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    page_start?: number;
-                    per_page?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        user_recent_votes: components["schemas"]["user_recent_votes"];
-                    };
-                };
-            };
-        };
-    };
-    getUserRequestedHistory: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    page_start?: number;
-                    per_page?: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        user_requested_history: components["schemas"]["user_requested_history"];
-                    };
-                };
-            };
-        };
-    };
-    vote: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    entry_id: number;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        vote_result: components["schemas"]["vote_result"];
-                    };
-                };
-            };
-        };
-    };
+  adminAddAlbumToPowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+          album_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminAddDonation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          donor_id: number;
+          amount: number;
+          message: string;
+          private: boolean;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            add_donation_result: components['schemas']['add_donation_result'];
+          };
+        };
+      };
+    };
+  };
+  adminAddSongToPowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+          song_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminChangePowerHourName: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+          name: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminChangePowerHourStartTime: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+          utc_time: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminChangePowerHourUrl: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+          url: string | null;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminCreatePowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          name: string;
+          start_utc_time: number;
+          end_utc_time: number;
+          url: string | null;
+          fill_unrated: boolean | null;
+          sid: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminDeletePowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            delete_power_hour_result: components['schemas']['delete_power_hour_result'];
+          };
+        };
+      };
+    };
+  };
+  adminDuplicatePowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminEuropifyPowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminJSErrors: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_js_errors: components['schemas']['admin_js_errors'];
+          };
+        };
+      };
+    };
+  };
+  adminMusicScanErrors: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_music_scan_errors: components['schemas']['admin_music_scan_errors'];
+          };
+        };
+      };
+    };
+  };
+  adminOrderPowerHourSongs: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+          /** @description A comma-separated list of one_up_id values that represent the Power Hour song queue, in the order the admin desires. */
+          order: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminGetPowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminRemoveSongFromPowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          one_up_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminGetPowerHours: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hours: components['schemas']['admin_power_hours'];
+          };
+        };
+      };
+    };
+  };
+  adminResetAlbumCooldown: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          album_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            set_album_cooldown_result: components['schemas']['set_album_cooldown_result'];
+          };
+        };
+      };
+    };
+  };
+  adminResetSongCooldown: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          song_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            set_song_cooldown_result: components['schemas']['set_song_cooldown_result'];
+          };
+        };
+      };
+    };
+  };
+  adminSetAlbumCooldown: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          album_id: number;
+          multiply: number | null;
+          override: number | null;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            set_album_cooldown_result: components['schemas']['set_album_cooldown_result'];
+          };
+        };
+      };
+    };
+  };
+  adminSetSongCooldown: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          song_id: number;
+          multiply: number | null;
+          override: number | null;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            set_song_cooldown_result: components['schemas']['set_song_cooldown_result'];
+          };
+        };
+      };
+    };
+  };
+  adminSetSongRequestOnly: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          song_id: number;
+          request_only: boolean;
+          sid: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            set_song_request_only_result: components['schemas']['set_song_request_only_result'];
+          };
+        };
+      };
+    };
+  };
+  adminAlbumArt: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          album_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_album_art: components['schemas']['admin_album_art'];
+          };
+        };
+      };
+    };
+  };
+  adminAlbumSongs: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sid: number;
+          album_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_album_songs: components['schemas']['admin_album_songs'];
+          };
+        };
+      };
+    };
+  };
+  adminAlbums: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sid: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_albums: components['schemas']['admin_albums'];
+          };
+        };
+      };
+    };
+  };
+  adminShufflePowerHour: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          sched_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_power_hour: components['schemas']['admin_power_hour'];
+          };
+        };
+      };
+    };
+  };
+  adminUpdateUserAvatarByDiscordId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          discord_user_id: string;
+          avatar: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            update_user_avatar_by_discord_id_result: components['schemas']['update_user_avatar_by_discord_id_result'];
+          };
+        };
+      };
+    };
+  };
+  adminUpdateUserNicknameByDiscordId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          discord_user_id: string;
+          nickname: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            update_user_nickname_by_discord_id_result: components['schemas']['update_user_nickname_by_discord_id_result'];
+          };
+        };
+      };
+    };
+  };
+  adminEnablePerksByDiscordIds: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          discord_user_ids: string[];
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            enable_perks_by_discord_ids_result: components['schemas']['enable_perks_by_discord_ids_result'];
+          };
+        };
+      };
+    };
+  };
+  adminUserSearch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          username: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_user_search_result: components['schemas']['admin_user_search_result'];
+          };
+        };
+      };
+    };
+  };
+  adminUserSearchByDiscordUserId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          discord_user_id: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            admin_user_search_result: components['schemas']['admin_user_search_result'];
+          };
+        };
+      };
+    };
+  };
+  getAlbum: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          id: number;
+          /** @description How to sort the songs that are a part of the album. */
+          sort?: 'added_on' | null;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            album: components['schemas']['album'];
+          };
+        };
+      };
+    };
+  };
+  getAllAlbums: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_albums: components['schemas']['all_albums'];
+          };
+        };
+      };
+    };
+  };
+  getAllAlbumsPaginated: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          after?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_albums_paginated: components['schemas']['all_albums_paginated'];
+          };
+        };
+      };
+    };
+  };
+  getAllArtists: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_artists: components['schemas']['all_artists'];
+          };
+        };
+      };
+    };
+  };
+  getAllArtistsPaginated: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          after?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_artists_paginated: components['schemas']['all_artists_paginated'];
+          };
+        };
+      };
+    };
+  };
+  getAllFaves: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          page_start?: number;
+          per_page?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_faves: components['schemas']['all_faves'];
+          };
+        };
+      };
+    };
+  };
+  getAllGroups: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          after?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_groups: components['schemas']['all_groups'];
+          };
+        };
+      };
+    };
+  };
+  getAllGroupsPaginated: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          after?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_groups_paginated: components['schemas']['all_groups_paginated'];
+          };
+        };
+      };
+    };
+  };
+  getAllSongs: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          order?: 'rating' | null;
+          page_start?: number;
+          per_page?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_songs: components['schemas']['all_songs'];
+          };
+        };
+      };
+    };
+  };
+  getArtist: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            artist: components['schemas']['artist'];
+          };
+        };
+      };
+    };
+  };
+  checkSchedCurrentId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          /** @description The last timeline entry sched_id you have seen. */
+          sched_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': Record<string, never>;
+        };
+      };
+    };
+  };
+  auth: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          user_id: number;
+          key: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            wsok: components['schemas']['wsok'];
+          };
+        };
+      };
+    };
+  };
+  ping: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            pong: components['schemas']['pong'];
+          };
+        };
+      };
+    };
+  };
+  clearRating: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          song_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            rate_result: components['schemas']['rate_result'];
+          };
+        };
+      };
+    };
+  };
+  clearRequests: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            requests: components['schemas']['requests'];
+          };
+        };
+      };
+    };
+  };
+  clearRequestsOnCooldown: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            requests: components['schemas']['requests'];
+          };
+        };
+      };
+    };
+  };
+  deleteRequest: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          song_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            requests: components['schemas']['requests'];
+          };
+        };
+      };
+    };
+  };
+  faveAlbum: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          album_id: number;
+          fave: boolean;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            fave_album_result: components['schemas']['fave_album_result'];
+          };
+        };
+      };
+    };
+  };
+  faveAllSongsInAlbum: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          album_id: number;
+          fave: boolean;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            fave_all_songs_result: components['schemas']['fave_all_songs_result'];
+          };
+        };
+      };
+    };
+  };
+  faveSong: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          fave: boolean;
+          song_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            fave_song_result: components['schemas']['fave_song_result'];
+          };
+        };
+      };
+    };
+  };
+  getGroup: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            group: components['schemas']['group'];
+          };
+        };
+      };
+    };
+  };
+  getAllStationsInfo: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            all_stations_info: components['schemas']['all_stations_info'];
+          };
+        };
+      };
+    };
+  };
+  getListener: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            listener: components['schemas']['listener'];
+          };
+        };
+      };
+    };
+  };
+  reorderRequests: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          /** @description A comma-separated list of Song IDs that represent the user's request queue, in the order the user desires. */
+          order: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            order_requests_result: components['schemas']['order_requests_result'];
+            requests: components['schemas']['requests'];
+          };
+        };
+      };
+    };
+  };
+  pauseRequestQueue: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            pause_request_queue_result: components['schemas']['pause_request_queue_result'];
+            user: components['schemas']['user'];
+          };
+        };
+      };
+    };
+  };
+  getPlaybackHistory: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          page_start?: number;
+          per_page?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            playback_history: components['schemas']['playback_history'];
+          };
+        };
+      };
+    };
+  };
+  rateSong: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          rating: number;
+          song_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            rate_result: components['schemas']['rate_result'];
+          };
+        };
+      };
+    };
+  };
+  requestSong: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          song_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            requests: components['schemas']['requests'];
+          };
+        };
+      };
+    };
+  };
+  requestFavoritedSongs: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            request_favorited_songs_result: components['schemas']['request_favorited_songs_result'];
+            requests: components['schemas']['requests'];
+          };
+        };
+      };
+    };
+  };
+  getRequestLine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            request_line_result: components['schemas']['request_line'];
+          };
+        };
+      };
+    };
+  };
+  requestUnratedSongs: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            request_unrated_songs_result: components['schemas']['request_unrated_songs_result'];
+            requests: components['schemas']['requests'];
+          };
+        };
+      };
+    };
+  };
+  search: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          search: string;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            albums: components['schemas']['albums'];
+            artists: components['schemas']['artists'];
+            songs: components['schemas']['songs'];
+          };
+        };
+      };
+    };
+  };
+  getSong: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            song: components['schemas']['song'];
+          };
+        };
+      };
+    };
+  };
+  getStationSongCount: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            station_song_count: components['schemas']['station_song_count'];
+          };
+        };
+      };
+    };
+  };
+  getStations: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            stations: components['schemas']['stations'];
+          };
+        };
+      };
+    };
+  };
+  getTop100: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            top_100: components['schemas']['top_100'];
+          };
+        };
+      };
+    };
+  };
+  unpauseRequestQueue: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            unpause_request_queue_result: components['schemas']['unpause_request_queue_result'];
+            user: components['schemas']['user'];
+          };
+        };
+      };
+    };
+  };
+  getUnratedSongs: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': {
+          page_start?: number;
+          per_page?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            unrated_songs: components['schemas']['unrated_songs'];
+          };
+        };
+      };
+    };
+  };
+  getUserInfo: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          api_key?: string;
+          user_id?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            user_info: components['schemas']['user_info'];
+          };
+        };
+      };
+    };
+  };
+  getUserRecentVotes: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': {
+          page_start?: number;
+          per_page?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            user_recent_votes: components['schemas']['user_recent_votes'];
+          };
+        };
+      };
+    };
+  };
+  getUserRequestedHistory: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': {
+          page_start?: number;
+          per_page?: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            user_requested_history: components['schemas']['user_requested_history'];
+          };
+        };
+      };
+    };
+  };
+  vote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          entry_id: number;
+        };
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            vote_result: components['schemas']['vote_result'];
+          };
+        };
+      };
+    };
+  };
 }

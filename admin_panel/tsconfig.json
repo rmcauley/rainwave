@@ -21,11 +21,7 @@
     "strict": true,
     "target": "es2023",
     "types": ["vite/client", "vitest/globals"],
-    "useDefineForClassFields": true,
-    "plugins": [
-      { "name": "typescript-eslint-language-service" },
-      { "name": "typescript-plugin-css-modules" }
-    ]
+    "useDefineForClassFields": true
   },
   "include": ["src"]
 }

@@ -1,8 +1,7 @@
-import type { JSX } from 'react';
-
 import { Stack } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { useQuery } from '@tanstack/react-query';
+import type { JSX } from 'react';
 
 import { postRainwave } from '../api/rainwave';
 import { formatPowerHourTimes } from '../api/time';

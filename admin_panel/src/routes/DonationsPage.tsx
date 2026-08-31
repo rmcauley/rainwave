@@ -1,17 +1,7 @@
-import type { JSX } from 'react';
-
-import { useState } from 'react';
-
-import {
-  Alert,
-  Button,
-  FormControlLabel,
-  Grid,
-  Stack,
-  Switch,
-  TextField,
-} from '@mui/material';
+import { Alert, Button, FormControlLabel, Grid, Stack, Switch, TextField } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
+import type { JSX } from 'react';
+import { useState } from 'react';
 
 import { postRainwave } from '../api/rainwave';
 import { PageSection } from '../components/PageSection';
@@ -35,13 +25,26 @@ export function DonationsPage(): JSX.Element {
 
   return (
     <Stack spacing={3}>
-      <PageSection title="Add Donation" subtitle="Submit donations through /api4/admin/add_donation.">
+      <PageSection
+        title="Add Donation"
+        subtitle="Submit donations through /api4/admin/add_donation."
+      >
         <Grid container spacing={2}>
           <Grid size={4}>
-            <TextField fullWidth label="Donor ID" value={donorId} onChange={(event): void => setDonorId(event.target.value)} />
+            <TextField
+              fullWidth
+              label="Donor ID"
+              value={donorId}
+              onChange={(event): void => setDonorId(event.target.value)}
+            />
           </Grid>
           <Grid size={4}>
-            <TextField fullWidth label="Amount" value={amount} onChange={(event): void => setAmount(event.target.value)} />
+            <TextField
+              fullWidth
+              label="Amount"
+              value={amount}
+              onChange={(event): void => setAmount(event.target.value)}
+            />
           </Grid>
           <Grid size={12}>
             <TextField
@@ -55,12 +58,21 @@ export function DonationsPage(): JSX.Element {
           </Grid>
           <Grid size={12}>
             <FormControlLabel
-              control={<Switch checked={isPrivate} onChange={(event): void => setIsPrivate(event.target.checked)} />}
+              control={
+                <Switch
+                  checked={isPrivate}
+                  onChange={(event): void => setIsPrivate(event.target.checked)}
+                />
+              }
               label="Private donation"
             />
           </Grid>
           <Grid size={12}>
-            <Button variant="contained" onClick={(): void => void mutation.mutate()} disabled={mutation.isPending}>
+            <Button
+              variant="contained"
+              onClick={(): void => void mutation.mutate()}
+              disabled={mutation.isPending}
+            >
               Add Donation
             </Button>
           </Grid>

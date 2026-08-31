@@ -1,6 +1,5 @@
 import { RainwaveError } from '../../frontend/src/rainwaveApi/errors';
 import { RainwaveApi } from '../../frontend/src/rainwaveApi/rainwave';
-
 import type { BootstrapPayload, TimelineEntry, WidgetConfig } from './types';
 
 async function fetchBootstrap(fetchImpl: typeof fetch = fetch): Promise<BootstrapPayload> {

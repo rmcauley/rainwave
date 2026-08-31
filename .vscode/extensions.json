@@ -1,10 +1,9 @@
 {
   "recommendations": [
     "ms-python.black-formatter",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
     "42crunch.vscode-openapi",
-    "matangover.mypy"
+    "matangover.mypy",
+    "oxc.oxc-vscode"
   ],
   "unwantedRecommendations": ["ms-python.mypy-type-checker"]
 }

@@ -2,32 +2,28 @@
   "name": "rainwave-stream-widget",
   "version": "0.0.1",
   "description": "rainwave.cc",
+  "homepage": "https://github.com/rmcauley/rainwave#readme",
+  "license": "GPL-2.0-only",
+  "author": "Robert McAuley",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmcauley/rainwave.git"
+  },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
     "test": "vitest run",
-    "lint:fix": "eslint --fix . && prettier --write ."
+    "lint:fix": "oxlint --fix . && oxfmt --write ."
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rmcauley/rainwave.git"
-  },
-  "author": "Robert McAuley",
-  "license": "GPL-2.0-only",
-  "homepage": "https://github.com/rmcauley/rainwave#readme",
   "devDependencies": {
-    "@types/node": "20.19.30",
-    "eslint": "9.39.2",
-    "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-n": "17.23.2",
-    "eslint-plugin-unused-imports": "4.3.0",
     "husky": "9.1.7",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.53.1",
-    "vite": "7.3.1",
-    "vite-plugin-checker": "0.12.0",
-    "vitest": "4.0.18"
+    "oxfmt": "0.65.0",
+    "oxlint": "1.80.0",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vite-plugin-checker": "0.14.5",
+    "vitest": "4.1.11"
   }
 }

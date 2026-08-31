@@ -1,5 +1,5 @@
-import { hasWidgetParams, parseConfig } from './config';
 import { initBuilder } from './builder';
+import { hasWidgetParams, parseConfig } from './config';
 import { OverlayRenderer } from './overlay';
 import { startRainwaveSync } from './rainwave';
 
@@ -34,6 +34,7 @@ async function init(): Promise<void> {
         window.location.reload();
       },
     });
+    // oxlint-disable-next-line no-unused-vars
   } catch (_error) {
     renderer.showStatus('Unable to connect.');
   }
