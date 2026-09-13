@@ -1,0 +1,6 @@
+- Font sizes are different to the real thing
+- Needs chill separate
+- Need "station select" header
+- Give more space to Now Playing
+- Hover effect
+- Auto close on exit

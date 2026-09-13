@@ -1,12 +1,13 @@
+import { getAlbumArt } from '../../../helpers/albumArt';
 import { stations } from '../../../helpers/stations';
 import { $l } from '../../../language';
 import type { RainwaveTranslationKey } from '../../../language/translations';
 import { api } from '../../../rainwaveApi';
-import { stationSelect } from './stationSelect.template';
 
 import './stationSelect.scss';
+import { stationSelect } from './stationSelect.template';
 
-const stationSelectMenu = document.getElementById('station-select-menu')!;
+const stationSelectMenu = document.getElementById('station-select-mouse-area')!;
 
 function closeStationSelect(_evt: Event): void {
   if (stationSelectMenu.classList.contains('open')) {
@@ -52,7 +53,7 @@ function initStationSelect(): void {
     Object.entries(stationLinks).forEach(([stationId, stationLink]) => {
       const stationData = data[stationId];
       if (stationData) {
-        stationLink.menuNpArt.style.backgroundImage = stationData.art || '';
+        stationLink.menuNpArt.style.backgroundImage = `url("${getAlbumArt(stationData.art)}")`;
         stationLink.menuNpAlbum.textContent = stationData.album;
         stationLink.menuNpSong.textContent = stationData.title;
       }

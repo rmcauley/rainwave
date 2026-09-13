@@ -21,6 +21,7 @@
     "lint:fix": "oxlint --fix . && stylelint --fix \"src/**/*.scss\" && oxfmt --write ."
   },
   "devDependencies": {
+    "@types/node": "26.4.1",
     "oxfmt": "0.65.0",
     "oxlint": "1.80.0",
     "sass-embedded": "1.103.1",

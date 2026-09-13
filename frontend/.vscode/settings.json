@@ -17,5 +17,11 @@
   "scss.validate": false,
   "js/ts.experimental.useTsgo": true,
   "prettier.enable": false,
-  "eslint.enable": false
+  "eslint.enable": false,
+  "[scss]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  }
 }

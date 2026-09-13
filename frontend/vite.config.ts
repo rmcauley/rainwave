@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 
-const backendOrigin = process.env.VITE_BACKEND_ORIGIN ?? 'http://localhost:24000';
+const backendOrigin = process.env.VITE_BACKEND_ORIGIN ?? 'https://rainwave.cc';
 
 export default defineConfig({
   server: {
@@ -15,6 +15,10 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/pages': {
+        target: backendOrigin,
+        changeOrigin: true,
+      },
+      '/album_art': {
         target: backendOrigin,
         changeOrigin: true,
       },
