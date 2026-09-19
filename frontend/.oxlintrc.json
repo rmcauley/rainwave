@@ -1,6 +1,9 @@
 {
   "ignorePatterns": ["dist/**", "src-old/**", "src-old/**/*"],
   "plugins": ["typescript", "unicorn", "oxc", "vitest", "import"],
+  "options": {
+    "typeAware": true
+  },
   "categories": {
     "correctness": "error",
     "nursery": "error",
@@ -8,10 +11,74 @@
     "suspicious": "error"
   },
   "rules": {
+    "constructor-super": "off",
+    "getter-return": "off",
+    "max-classes-per-file": "off",
+    "max-dependencies": "off",
+    "max-lines-per-function": "off",
+    "max-lines": "off",
+    "no-await-in-loop": "off",
+    "no-class-assign": "off",
+    "no-const-assign": "off",
+    "no-dupe-class-members": "off",
+    "no-dupe-keys": "off",
+    "no-func-assign": "off",
+    "no-import-assign": "off",
+    "no-inline-comments": "off",
+    "no-lonely-if": "off",
+    "no-negated-condition": "off",
+    "no-new-native-nonconstructor": "off",
+    "no-obj-calls": "off",
+    "no-redeclare": "off",
+    "no-setter-return": "off",
+    "no-this-before-super": "off",
+    "no-undef": "off",
     "no-underscore-dangle": "off",
-    "import/no-unassigned-import": ["error", { "allow": ["**/*.css", "**/*.scss"] }],
+    "no-unreachable": "off",
+    "no-unsafe-negation": "off",
     "no-unused-vars": ["error", { "fix": { "imports": "safe-fix" }, "argsIgnorePattern": "^_" }],
-    "no-await-in-loop": "off"
+    "prefer-destructuring": "off",
+    "require-unicode-regexp": "off",
+    "typescript/no-unnecessary-condition": "off",
+    "typescript/no-unsafe-enum-comparison": "off",
+    "typescript/no-unsafe-type-assertion": "off",
+    "typescript/prefer-readonly-parameter-types": "off",
+    "typescript/strict-boolean-expressions": "off",
+    "typescript/strict-void-return": "off",
+    "unicorn/no-array-callback-reference": "off",
+    "unicorn/no-lonely-if": "off",
+    "unicorn/no-negated-condition": "off",
+    "vitest/require-mock-type-parameters": "off",
+
+    "default-param-last": "error",
+    "eqeqeq": "error",
+    "no-console": "error",
+    "no-empty": "error",
+    "no-fallthrough": "error",
+    "no-regex-spaces": "error",
+    "no-restricted-imports": "error",
+    "no-use-before-define": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "typescript/consistent-type-exports": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/dot-notation": "error",
+    "typescript/explicit-function-return-type": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-namespace": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/no-require-imports": "error",
+    "vitest/no-conditional-in-test": "off",
+    "vitest/no-identical-title": "error",
+    "vitest/no-import-node-test": "error",
+    "vitest/no-interpolation-in-snapshots": "error",
+    "vitest/no-mocks-import": "error",
+    "vitest/no-unneeded-async-expect-function": "error",
+    "vitest/prefer-called-exactly-once-with": "error",
+    "curly": "error"
   },
   "env": {
     "browser": true
@@ -20,6 +87,19 @@
     {
       "files": ["vite.config.ts", "vitest.config.ts"],
       "env": { "node": true }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx"],
+      "env": { "node": true },
+      "rules": {
+        "typescript/explicit-function-return-type": "off",
+        "typescript/no-non-null-assertion": "off",
+        "typescript/unbound-method": "off",
+        "typescript/no-confusing-void-expression": "off",
+        "typescript/no-misused-spread": "off",
+        "unicorn/consistent-function-scoping": "off",
+        "typescript/consistent-return": "off"
+      }
     }
   ]
 }
