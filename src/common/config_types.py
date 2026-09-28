@@ -34,7 +34,6 @@ class RelayConfig(TypedDict):
     hostname: str
     ip_address: str
     protocol: str
-    port: int
     listclients_url: str
     admin_username: str
     admin_password: str
@@ -49,4 +48,3 @@ class PublicRelayConfig(TypedDict):
     name: str
     protocol: str
     hostname: str
-    port: int

@@ -76,10 +76,9 @@ async def _start() -> None:
             ),
         )
         clients.append(client)
-        relay_base_url = "%s%s:%s/admin/listclients?mount=/" % (
+        relay_base_url = "%s%s/admin/listclients?mount=/" % (
             relay_info["protocol"],
             relay_info["ip_address"],
-            relay_info["port"],
         )
         for sid in relay_info["sids"]:
             for file_extension in (".mp3", ".ogg"):

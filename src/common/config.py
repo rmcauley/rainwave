@@ -117,13 +117,6 @@ cooldown_age_stage1_min_multiplier = 0.4
 # hostname configuration directive is automatically included.
 accept_error_reports_from_hosts = ["localhost"]
 
-# Domain name that has address records for all your Icecast servers.
-# If you only have 1 Icecast server, put it here.
-# If you don't understand, put your primary Icecast server here.
-round_robin_relay_host = "allrelays.mydomain.com"
-round_robin_relay_protocol = "https://"
-round_robin_relay_port = ""
-
 # Configure a station block for every station you need.
 # IDs are converted to integers; strings are not allowed and will break the app.
 # This array is sensitive - do not add extra data as it could cause Rainwave to not start.
@@ -219,7 +212,6 @@ relays: RelaysConfig = {
         "hostname": "mydomain.com",
         "ip_address": "127.0.0.1",
         "protocol": "http://",
-        "port": 8000,
         "listclients_url": "/admin/listclients",
         "admin_username": "admin",
         "admin_password": "admin",

@@ -4,8 +4,8 @@ from api import rainwave_typeddicts
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
-from api.helpers import public_relays
-from api.routes.tune_in import get_round_robin_url
+from api.helpers.public_relays import api_relays
+from api.routes.tune_in import get_stream_filename
 from common import stations
 
 
@@ -34,8 +34,8 @@ class StationsRequest(APIHandler):
                             "station_description_id_%s" % station_id,
                         )
                     ),
-                    "stream": get_round_robin_url(station_id, user=self.optional_user),
-                    "relays": public_relays.public_relays[station_id],
+                    "stream": get_stream_filename(station_id, user=self.optional_user),
+                    "relays": api_relays[station_id],
                 }
             )
         self.response["stations"] = station_list

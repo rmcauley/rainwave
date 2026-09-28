@@ -6,7 +6,7 @@ import orjson
 
 from api.exceptions import APIException
 from api.handler_classes.rainwave_handler import RainwaveHandler
-from api.helpers.public_relays import public_relays
+from api.helpers.public_relays import api_relays
 from api.helpers.station_list import station_list
 from api.helpers.get_station_info import get_station_info
 from common.db.cursor import get_cursor
@@ -109,4 +109,4 @@ class Bootstrap(RainwaveHandler):
             self.sid or config.default_station
         ]["stream_filename"]
         self.response["station_list"] = station_list
-        self.response["relays"] = public_relays[self.sid or config.default_station]
+        self.response["relays"] = api_relays[self.sid or config.default_station]

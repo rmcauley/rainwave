@@ -10,16 +10,6 @@ from common import config, stations
 from common.user.model.user_base import UserBase
 
 
-def get_round_robin_url(
-    sid: int, filetype: str = "mp3", user: UserBase | None = None
-) -> str:
-    stream_url = config.round_robin_relay_protocol + config.round_robin_relay_host
-    if config.round_robin_relay_port:
-        stream_url += ":" + config.round_robin_relay_port
-    stream_url += "/" + get_stream_filename(sid, filetype, user)
-    return stream_url
-
-
 def get_stream_filename(
     sid: int, filetype: str = "mp3", user: UserBase | None = None
 ) -> str:
@@ -34,6 +24,15 @@ def get_stream_filename(
             user.id,
             user.private_data["listen_key"],
         )
+
+
+def get_stream_url(
+    sid: int, filetype: str = "mp3", user: UserBase | None = None
+) -> str:
+    relay = public_relays.public_relays[sid][0]
+    stream_url = relay["protocol"] + relay["hostname"]
+    stream_url += "/" + get_stream_filename(sid, filetype, user)
+    return stream_url
 
 
 @handle_url(r"/tune_in/(\w+|\d)\.(ogg|mp3)(.m3u)?")
@@ -77,21 +76,11 @@ class TuneInIndex(HtmlHandler):
 
         stream_filename = get_stream_filename(self.sid, filetype, self.optional_user)
 
-        self.write(
-            "#EXTINF:0,Rainwave %s: %s\n"
-            % (
-                stations.station_id_friendly[self.sid],
-                self.locale.translate("random_relay"),
-            )
-        )
-        self.write(get_round_robin_url(self.sid, filetype, self.optional_user) + "\n")
-
         for relay in public_relays.public_relays[self.sid]:
             self.write(
                 "#EXTINF:0, Rainwave %s: %s Relay\n"
                 % (stations.station_id_friendly[self.sid], relay["name"])
             )
             self.write(
-                "%s%s:%s/%s\n"
-                % (relay["protocol"], relay["hostname"], relay["port"], stream_filename)
+                "%s%s/%s\n" % (relay["protocol"], relay["hostname"], stream_filename)
             )

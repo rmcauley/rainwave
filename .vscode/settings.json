@@ -20,5 +20,8 @@
   "mypy-type-checker.importStrategy": "fromEnvironment",
   "mypy-type-checker.preferDaemon": true,
   "prettier.enable": false,
-  "eslint.enable": false
+  "eslint.enable": false,
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  }
 }
