@@ -36,14 +36,14 @@ function notify(schedCurrent: TimelineEntry): void {
     return;
   }
   const currentSong = schedCurrent.songs[0];
-  if (!currentSong || currentSong.id == currentSongId) {
+  if (!currentSong || currentSong.id === currentSongId) {
     return;
   }
   if (!api.user.tuned_in) {
     return;
   }
 
-  const art = getAlbumArt(currentSong);
+  const art = getAlbumArt(currentSong.albums[0].art);
   const artists = currentSong.artists.map((a) => a.name).join(', ');
   try {
     const n = notifier(currentSong, artists, art);
@@ -52,6 +52,7 @@ function notify(schedCurrent: TimelineEntry): void {
     });
   } catch (e) {
     enabled = false;
+    // oxlint-disable-next-line no-console
     console.error(e);
   }
 }

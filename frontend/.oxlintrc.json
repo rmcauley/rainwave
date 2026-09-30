@@ -69,7 +69,6 @@
     "typescript/no-empty-object-type": "error",
     "typescript/no-explicit-any": "error",
     "typescript/no-namespace": "error",
-    "typescript/no-non-null-assertion": "error",
     "typescript/no-require-imports": "error",
     "vitest/no-conditional-in-test": "off",
     "vitest/no-identical-title": "error",
@@ -78,12 +77,22 @@
     "vitest/no-mocks-import": "error",
     "vitest/no-unneeded-async-expect-function": "error",
     "vitest/prefer-called-exactly-once-with": "error",
-    "curly": "error"
+    "curly": "error",
+
+    // Rainwave exceptions
+    "typescript/no-non-null-assertion": "off",
+    "import/no-unassigned-import": "off"
   },
   "env": {
     "browser": true
   },
   "overrides": [
+    {
+      "files": ["**/*.template.ts"],
+      "rules": {
+        "typescript/explicit-function-return-type": "off"
+      }
+    },
     {
       "files": ["vite.config.ts", "vitest.config.ts"],
       "env": { "node": true }

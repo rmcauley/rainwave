@@ -42,7 +42,7 @@ function countdownClockLoop(): void {
   }
 
   if (!shouldShowClockInTitle()) {
-    if (document.title != originalTitle) {
+    if (document.title !== originalTitle) {
       document.title = originalTitle;
     }
 
@@ -53,7 +53,7 @@ function countdownClockLoop(): void {
   if (preferences.showClockInTitle) {
     thisPageTitle = `[${minuteClock}] ${thisPageTitle}`;
   }
-  if (thisPageTitle != document.title) {
+  if (thisPageTitle !== document.title) {
     document.title = thisPageTitle;
   }
 }

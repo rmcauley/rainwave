@@ -48,14 +48,15 @@ const stations: Station[] = [
 ];
 
 function correctCurrentUrlForStation(): void {
-  if (window.location.pathname != '/') {
+  if (window.location.pathname !== '/') {
     return;
   }
   Object.values(stations).forEach((station) => {
-    if (station.id === api.user.sid && window.location.pathname == '/') {
+    if (station.id === api.user.sid && window.location.pathname === '/') {
       window.history.replaceState(null, '', station.url);
     }
   });
 }
 
+export type { Station };
 export { correctCurrentUrlForStation, stations };

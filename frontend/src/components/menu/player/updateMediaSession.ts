@@ -1,6 +1,6 @@
 import { getAlbumArt } from '../../../helpers/albumArt';
 import { api } from '../../../rainwaveApi';
-import { components } from '../../../rainwaveApi/rainwave-openapi';
+import type { components } from '../../../rainwaveApi/rainwave-openapi';
 
 function updateMediaSession(nowPlaying: components['schemas']['sched_current']): void {
   const song = nowPlaying.songs[0];

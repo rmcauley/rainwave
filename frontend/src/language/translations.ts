@@ -55,7 +55,7 @@ const LOCALE_COOKIE_KEY = 'rw_lang';
 
 const ALL_TRANSLATIONS: Record<RainwaveLocale, RainwaveTranslationFile> = {
   'de-DE': translationDeDe as RainwaveTranslationFile,
-  'en-CA': translationEnCa as RainwaveTranslationFile,
+  'en-CA': translationEnCa,
   'es-CL': translationEsCl as RainwaveTranslationFile,
   'fi-FI': translationFiFi as RainwaveTranslationFile,
   'fr-CA': translationFrCa as RainwaveTranslationFile,
@@ -94,7 +94,7 @@ function getLanguage(): [RainwaveLocale, OrdinalSuffixes, RainwaveTranslationFil
   const potentialLang = (cookieLocale || navigator.language || 'en-CA').replace('_', '-');
 
   Object.keys(ALL_TRANSLATIONS).forEach((key) => {
-    if (key.toLowerCase() == potentialLang.toLowerCase()) {
+    if (key.toLowerCase() === potentialLang.toLowerCase()) {
       locale = key as RainwaveLocale;
       lang = ALL_TRANSLATIONS[key as RainwaveLocale];
     }
@@ -102,7 +102,7 @@ function getLanguage(): [RainwaveLocale, OrdinalSuffixes, RainwaveTranslationFil
 
   if (!lang) {
     Object.keys(ALL_TRANSLATIONS).forEach((key) => {
-      if (key.slice(0, 2).toLowerCase() == potentialLang.slice(0, 2).toLowerCase()) {
+      if (key.slice(0, 2).toLowerCase() === potentialLang.slice(0, 2).toLowerCase()) {
         locale = key as RainwaveLocale;
         lang = ALL_TRANSLATIONS[key as RainwaveLocale];
       }

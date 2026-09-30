@@ -1,9 +1,7 @@
 type Listener<T> = (data: T) => void;
 
 export class RainwaveEventListener<E> {
-  private _eventListeners: { [K in keyof E]?: Listener<E[K]>[] } = {} as {
-    [K in keyof E]?: Listener<E[K]>[];
-  };
+  private _eventListeners: { [K in keyof E]?: Listener<E[K]>[] } = {};
 
   constructor() {
     this._eventListeners = {};

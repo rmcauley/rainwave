@@ -51,6 +51,13 @@
   transform: translateX(-20px) translateY(calc(-20px));
 }
 
+#station-select-menu-header,
+#station-select-menu-separate-header {
+  background: theme.$menu-link-open;
+  text-transform: uppercase;
+  padding: 5px 10px;
+}
+
 #station-select-menu {
   position: relative;
   overflow: hidden;
@@ -106,4 +113,11 @@
       font-size: 0.7em;
     }
   }
+}
+
+.station-select-station-1,
+.station-select-station-2,
+.station-select-station-3,
+.station-select-station-4 {
+  margin-left: 20px;
 }

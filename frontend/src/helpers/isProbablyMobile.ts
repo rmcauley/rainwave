@@ -7,8 +7,8 @@ type NavigatorWithUAData = Navigator & {
 function isProbablyMobileBrowser(): boolean {
   const nav = navigator as NavigatorWithUAData;
 
-  if (nav.userAgentData?.mobile != null) {
-    return nav.userAgentData.mobile;
+  if (nav.userAgentData?.mobile !== null) {
+    return nav.userAgentData?.mobile === true;
   }
 
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
