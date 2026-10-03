@@ -103,7 +103,7 @@ const enableBackspaceTrap = function () {
   backspaceTimer = setTimeout(disableBackspaceTrap, 3000);
 };
 
-var disableBackspaceTrap = function () {
+const disableBackspaceTrap = function () {
   backspaceTimer = false;
   backspaceTrap = false;
 };
@@ -162,7 +162,7 @@ return false;
   }
 };
 
-var isIgnorable = function (evt) {
+const isIgnorable = function (evt) {
   if (evt.ctrlKey || evt.altKey || evt.metaKey) {return true;}
   // we can't trap anything beyond here for opera without losing important keys
   if (!("charCode" in evt)) {return false;}
@@ -171,8 +171,7 @@ var isIgnorable = function (evt) {
     {return true;}
   if (Sizing.simple && evt.keyCode != 27) {return true;}
   if (
-    evt.target &&
-    evt.target.classList.contains("search-box") &&
+    evt.target?.classList.contains("search-box") &&
     evt.keyCode != 27
   )
     {return true;}
@@ -181,7 +180,7 @@ var isIgnorable = function (evt) {
 return false;
 };
 
-var handleEvent = function (evt) {
+const handleEvent = function (evt) {
   // thanks Quirksmode, not sure how relevant it is with present browsers though, but keeping it around
   let targ;
   if (!evt) {evt = window.event;}
@@ -217,12 +216,12 @@ return true;
 };
 
 const canRouteToDetail = function () {
-  return Router.activeDetail && Router.activeDetail._keyHandle;
+  return Router.activeDetail?._keyHandle;
 };
 
 const routeToLists = function () {
   if (routeToDetailState) {
-    if (Router.activeList && Router.activeList.loaded) {
+    if (Router.activeList?.loaded) {
       Router.activeList.keyNavFocus();
     }
     if (canRouteToDetail()) {
@@ -240,9 +239,9 @@ const routeToDetail = function () {
   }
 };
 
-var routeToDetailState = false;
+let routeToDetailState = false;
 let hotkeyModeOn = false;
-var routeKey = function (keyCode, chr, shift) {
+const routeKey = function (keyCode, chr, shift) {
   if (hotkeyModeOn && hotkeyModeHandle(keyCode, chr)) {
     return true;
   } else if (keyCode == 96 || keymap.activate.indexOf(chr) !== -1) {
@@ -340,7 +339,7 @@ const hotkeyModeDisable = function () {
 return true;
 };
 
-var hotkeyModeEnable = function () {
+const hotkeyModeEnable = function () {
   hotkeyModeOn = true;
   if (hotkeyModeTimeout) {
     clearTimeout(hotkeyModeTimeout);
@@ -364,7 +363,7 @@ const hotkeyModeError = function (tlKey) {
   }, 3000);
 };
 
-var hotkeyModeHandle = function (keyCode, character) {
+const hotkeyModeHandle = function (keyCode, character) {
   try {
     if (keymap.rate10.indexOf(character) !== -1)
       {Timeline.rateCurrentSong(1.0);}

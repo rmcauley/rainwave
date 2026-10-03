@@ -90,7 +90,14 @@
     {
       "files": ["**/*.template.ts"],
       "rules": {
-        "typescript/explicit-function-return-type": "off"
+        "typescript/explicit-function-return-type": "off",
+        "no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["**/*.context.ts"],
+      "rules": {
+        "typescript/no-empty-object-type": "off"
       }
     },
     {
