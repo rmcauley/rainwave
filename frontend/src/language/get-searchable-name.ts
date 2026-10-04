@@ -1,5 +1,5 @@
 function removeDiacritics(input: string): string {
-  return input.normalize('NFD').replace(/\p{M}+/gu, '');
+  return input.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
 }
 
 function removeNonAlphanum(str: string): string {
@@ -7,7 +7,7 @@ function removeNonAlphanum(str: string): string {
 }
 
 function makeSearchableString(str: string): string {
-  return removeDiacritics(str).toLowerCase();
+  return removeDiacritics(str).toLowerCase().trim();
 }
 
 export { removeDiacritics, removeNonAlphanum, makeSearchableString };

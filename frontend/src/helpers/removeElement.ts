@@ -1,5 +1,3 @@
-import { requestNextAnimationFrame } from './requestNextAnimationFrame';
-
 function removeElement(el: HTMLElement): void {
   if (document.body.classList.contains('loading')) {
     if (el.parentNode) {
@@ -11,7 +9,7 @@ function removeElement(el: HTMLElement): void {
         el.parentNode.removeChild(el);
       }
     }, 1000);
-    requestNextAnimationFrame(function () {
+    requestAnimationFrame(function () {
       el.style.opacity = '0';
     });
   }

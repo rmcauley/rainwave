@@ -1,3 +1,6 @@
+import { isSimpleMode } from '../../../helpers/isSimpleMode.js';
+import { makeSearchableString } from '../../../language/get-searchable-name.js';
+import { preferences } from '../../../preferences/index.js';
 import { searchListTemplate } from '../searchList/searchListTemplate.template.js';
 
 type SearchListItem = {
@@ -6,37 +9,36 @@ type SearchListItem = {
   searchableName: string;
 };
 
+// 26px is a default from CSS, but recalculated at page load by initSearchList
+// by a placeholder element measurement that happens on first paint before JS is loaded
 let searchListItemHeight = 26;
 
 function initSearchList(): void {
   searchListItemHeight = document.getElementById('measure-list-item')!.offsetHeight;
 }
 
-// TODO: use passive listener
-// TODO: use requestAnimationFrame to render after a scroll
-
 class SearchList<T extends SearchListItem> {
-  #currentOpenId: number | undefined;
+  #currentOpenItem: T | undefined;
   #height = 0;
   #itemById: Map<number, T> = new Map();
   #itemHeight: number;
   #items: Array<T> = [];
-  #keyNavIdBeforeSearch: number | undefined;
-  #keyNavCurrentId: number | undefined;
-  #keyNavCurrentVisibleIndex: number | undefined;
-  #listElements: Array<HTMLElement> = [];
+  #keyNavCurrentItem: T | undefined;
+  #keyNavItemBeforeSearch: T | undefined;
   #loaded = false;
+  #onLoadOpenItemId: number | undefined;
   #rafTimer: ReturnType<typeof requestAnimationFrame> | undefined;
-  #redrawAfterRafBound: Parameters<typeof requestAnimationFrame>[0];
-  #scrollCurrentVisibleIndex: number | undefined;
-  #scrollMargin = 5;
-  #scrollTopBeforeSearch = 0;
+  #renderElements: Array<HTMLElement> = [];
+  #scrollCurrentVisibleIndex: number = 0;
+  #scrollMargin = 5; // in items
+  #scrollTop = 0;
+  #scrollTopBeforeSearch: number | undefined;
   #searchString = '';
   #sortKey: keyof T;
   #template: ReturnType<typeof searchListTemplate>;
   #visibleItems: Array<T> = [];
 
-  constructor(options: { root: HTMLElement; sortKey: keyof T;  }) {
+  constructor(options: { root: HTMLElement; sortKey: keyof T }) {
     this.#sortKey = options.sortKey;
 
     this.#template = searchListTemplate({});
@@ -44,23 +46,28 @@ class SearchList<T extends SearchListItem> {
 
     this.#itemHeight = searchListItemHeight;
 
-    this.#template.cancel.addEventListener('click', this.onSearchCancelClick.bind(this));
-    this.#template.searchBox.addEventListener('input', this.onSearchInput.bind(this));
-    this.#template.list.addEventListener('scroll', this.#redraw.bind(this), { passive: true });
+    this.#template.cancel.addEventListener('click', this.onSearchCancelClick);
+    if (!preferences.powerUserMode) {
+      this.#template.searchBox.addEventListener('input', this.onSearchInput);
+    }
+    this.#template.list.addEventListener('scroll', this.#onScroll, { passive: true });
 
-    window.addEventListener('resize', this.#onResize.bind(this), { passive: true });
+    window.addEventListener('resize', this.#onResize, { passive: true });
 
-    this.#redrawAfterRafBound = this.#redrawAfterRaf.bind(this);
+    requestAnimationFrame(() => {
+      this.#height = this.#template.list.scrollHeight;
+      this.#redraw();
+    });
   }
 
-  addItems(newItems: Array<T>): void {
+  addItems = (newItems: Array<T>): void => {
     this.#items = this.#items.concat(newItems);
     newItems.forEach((item) => this.#itemById.set(item.id, item));
     this.#sortItems();
-    this.#redraw();
-  }
+    this.#redrawDecoupled();
+  };
 
-  upsertItems(newItems: Array<T>): void {
+  upsertItems = (newItems: Array<T>): void => {
     const toAdd: Array<T> = [];
     newItems.forEach((item) => {
       const existing = this.#itemById.get(item.id);
@@ -73,15 +80,15 @@ class SearchList<T extends SearchListItem> {
     if (toAdd.length) {
       this.addItems(toAdd);
     } else {
-      this.#redraw();
+      this.#redrawDecoupled();
     }
-  }
+  };
 
-  getTitleFromId(id: number): string | undefined {
+  getTitleFromId = (id: number): string | undefined => {
     return this.#items[id]?.name;
-  }
+  };
 
-  #sortItems(): void {
+  #sortItems = (): void => {
     this.#items.sort((a, b) => {
       if (a[this.#sortKey] < b[this.#sortKey]) {
         return -1;
@@ -91,503 +98,368 @@ class SearchList<T extends SearchListItem> {
 
       return 0;
     });
-  }
+  };
 
-  #redraw(): void {
+  #getNumItemsToDisplay = (): number => {
+    return Math.ceil(this.#height / this.#itemHeight) + 1;
+  };
+
+  #redrawDecoupled = (): void => {
     if (!this.#rafTimer) {
-      this.#rafTimer = requestAnimationFrame(this.#redrawAfterRafBound);
+      this.#rafTimer = requestAnimationFrame(this.#redraw);
     }
-  }
+  };
 
-  #redrawAfterRaf(): void {
-    const numItemsToDisplay = Math.ceil(this.#height / this.#itemHeight) + 1;
-    // TODO: rendering here
-    this.#rafTimer = undefined;
-  }
-
-  #onResize(): void {
+  #redraw = (): void => {
     const fullHeight = this.#itemHeight * this.#visibleItems.length;
     if (fullHeight !== this.#height) {
       this.#template.stretcher.style.height = `${fullHeight}px`;
       this.#height = fullHeight;
     }
-    this.#redraw();
-  }
+
+    // TODO: list rendering here
+    // TODO: dataset.itemId must be set
+    this.#rafTimer = undefined;
+  };
+
+  #onScroll = (): void => {
+    if (this.#scrollTop !== this.#template.list.scrollTop) {
+      this.#scrollTop = this.#template.list.scrollTop;
+      this.#redrawDecoupled();
+    }
+  };
+
+  #onResize = (): void => {
+    this.#height = this.#template.list.scrollHeight;
+    this.#redrawDecoupled();
+  };
+
+  onLoad = (): void => {
+    this.#loaded = true;
+    if (this.#onLoadOpenItemId) {
+      this.open(this.#onLoadOpenItemId);
+    }
+  };
 
   // SEARCHING ****************************
 
-  #removeKeyNavHighlight(): void {
-    if (this.#keyNavCurrentId) {
-      const isVisible = this.#listElements.find((el) => el.dataset.itemId);
-      isVisible?.classList.remove('hover');
-      this.#keyNavCurrentId = undefined;
-    }
-  }
-
-  #keyNavHighlight(id: number | undefined): void {
-    // TODO: This now requires a check to see if it's in the visible
-    // list, to re-scroll if it's not.
-    // this.#originalKeyNav = undefined;
-    // this.removeKeyNavHighlight();
-    // this.#currentKeyNavId = id;
-    // data[currentKeyNavId]._el.classList.add('hover');
-    // if (!noScroll) {
-    //   list.scrollTo(data[id], true);
-    // }
-  }
-
-  keyNavFirstItem(): void {
-    this.#keyNavHighlight(this.#visibleItems[0]?.id);
-  }
-
-  keyNavLastItem(): void {
-    this.#keyNavHighlight(this.#visibleItems.at(-1)?.id);
-  }
-
-  keyNavArrowAction(jump: number): void {
-    this.#backspaceScrollTop = false;
-    if (!this.#keyNavCurrentId) {
-      this.keyNavFirstItem();
+  #keyNavRemoveHighlight = (): void => {
+    if (this.#keyNavCurrentItem === undefined) {
       return;
     }
-    const currentIdx = this.#itemById.(currentKeyNavId);
-    if (!currentIdx && currentIdx !== 0) {
-      list.keyNavFirstItem();
+    const keyNavIdString = this.#keyNavCurrentItem.id.toString();
+    const visibleHighlightedElement = this.#renderElements.find(
+      (el) => el.dataset.itemId === keyNavIdString,
+    );
+    visibleHighlightedElement?.classList.remove('hover');
+  };
 
+  #keyNavSetCurrentItem = (newKeyNavItem: T | undefined): void => {
+    if (!newKeyNavItem) {
+      this.#keyNavRemoveHighlight();
+      this.#keyNavCurrentItem = undefined;
       return;
     }
-    const newIndex = Math.max(0, Math.min(currentIdx + jump, visible.length - 1));
-    list.keyNavHighlight(visible[newIndex]);
 
-    return true;
-  }
+    if (newKeyNavItem === this.#keyNavCurrentItem) {
+      return;
+    }
 
-  keyNavDown(): void {
-    return keyNavArrowAction(1);
-  }
+    if (this.#keyNavCurrentItem) {
+      this.#keyNavRemoveHighlight();
+    }
 
-  keyNavUp(): void {
-    return keyNavArrowAction(-1);
-  }
+    this.#keyNavItemBeforeSearch = undefined;
+    this.#keyNavCurrentItem = newKeyNavItem;
+    const keyNavIdString = newKeyNavItem.id.toString();
+    const visibleElement = this.#renderElements.find((el) => el.dataset.itemId === keyNavIdString);
+    visibleElement?.classList.add('hover');
+    this.scrollTo(newKeyNavItem);
+  };
 
-  keyNavRight(): void {
-    return false;
-  }
+  keyNavFirstItem = (): void => {
+    const newKeyNavItem = this.#visibleItems[0];
+    if (newKeyNavItem) {
+      this.#keyNavSetCurrentItem(newKeyNavItem);
+    }
+  };
 
-  keyNavLeft(): void {
-    return false;
-  }
+  keyNavLastItem = (): void => {
+    const newKeyNavItem = this.#visibleItems.at(-1);
+    if (newKeyNavItem) {
+      this.#keyNavSetCurrentItem(newKeyNavItem);
+    }
+  };
 
-  keyNavPageDown(): void {
-    return this.keyNavArrowAction(15);
-  }
+  #keyNavArrowAction = (jump: number): void => {
+    // If the user has not navigated by keyboard before or has had their
+    // keyboard nav state reset, the index starts at -1 so that a jump of 1
+    // (i.e. pressing the down arrow) causes the first item to be highlighted.
+    let keyNavIndex = -1;
+    if (this.#keyNavCurrentItem) {
+      const currentItemIndex = this.#visibleItems.indexOf(this.#keyNavCurrentItem);
+      if (currentItemIndex >= 0) {
+        keyNavIndex = currentItemIndex;
+      }
+    }
 
-  keyNavPageUp(): void {
-    return this.keyNavArrowAction(-15);
-  }
+    // Clamp to array boundaries
+    keyNavIndex = Math.max(0, Math.min(keyNavIndex + jump, this.#visibleItems.length - 1));
+    const newItem = this.#visibleItems.at(keyNavIndex);
+    if (newItem) {
+      this.#keyNavCurrentItem = newItem;
+      this.#keyNavSetCurrentItem(newItem);
+    }
+  };
 
-  keyNavEnd(): void {
+  keyNavDown = (): void => {
+    return this.#keyNavArrowAction(1);
+  };
+
+  keyNavUp = (): void => {
+    return this.#keyNavArrowAction(-1);
+  };
+
+  keyNavRight = (): void => {
+    return;
+  };
+
+  keyNavLeft = (): void => {
+    return;
+  };
+
+  keyNavPageDown = (): void => {
+    return this.#keyNavArrowAction(Math.floor(this.#getNumItemsToDisplay() * 0.75));
+  };
+
+  keyNavPageUp = (): void => {
+    return this.#keyNavArrowAction(Math.floor(this.#getNumItemsToDisplay() * 0.75));
+  };
+
+  keyNavEnd = (): void => {
     this.keyNavLastItem();
-  }
+  };
 
-  keyNavHome(): void {
+  keyNavHome = (): void => {
     this.keyNavFirstItem();
-  }
+  };
 
-  keyNavEnter(): void {
-    if (
-      this.#keyNavCurrentId &&
-      this.#keyNavCurrentId &&
-      this.#itemById.get(currentKeyNavId)?._el
-    ) {
-      this.openElement({
-        target: data[currentKeyNavId]._el,
-        enter_key: true,
-      });
-
-      return true;
+  keyNavEnter = (): void => {
+    if (this.#keyNavCurrentItem) {
+      this.open(this.#keyNavCurrentItem.id);
     }
+  };
 
-    return false;
-  }
+  keyNavEscape = (): void => {
+    this.clearSearch();
+  };
 
-  keyNavEscape(): void {
-    if (this.#searchString.length > 0) {
-      this.clearSearch();
+  keyNavBlur = (): void => {
+    this.#keyNavRemoveHighlight();
+  };
+
+  keyNavFocus = (): void => {
+    if (this.#keyNavCurrentItem) {
+      this.#keyNavSetCurrentItem(this.#keyNavCurrentItem);
     }
+  };
 
-    return true;
-  }
-
-  keyNavBlur(): void {
-    if (currentKeyNavId && data[currentKeyNavId]?._el) {
-      data[currentKeyNavId]._el.classList.remove('hover');
-    }
-  }
-
-  keyNavFocus(): void {
-    if (currentKeyNavId && data[currentKeyNavId] && data[currentKeyNavId]) {
-      data[currentKeyNavId]._el.classList.add('hover');
-    }
-  }
-
-  keyNavBackspace(): void {
-    if (searchString.length == 1) {
-      list.clearSearch();
-
-      return true;
-    } else if (searchString.length > 1) {
-      searchString = searchString.substring(0, searchString.length - 1);
-
-      const useSearchString = Formatting.make_searchable_string(searchString);
-      const revisible = [];
-      for (let i = hidden.length - 1; i >= 0; i -= 1) {
-        if (!data[hidden[i]]) {
-          continue;
-        }
-        if (data[hidden[i]][searchKey].indexOf(useSearchString) != -1) {
-          revisible.push(hidden.splice(i, 1)[0]);
-        }
-      }
-      list.unhide(revisible);
-      list.doSearchbarStyle();
-
-      currentScrollIndex = false;
-      list.recalculate();
-      if (backspaceScrollTop && revisible.length + visible.length > numItemsToDisplay) {
-        list.scrollTo(backspaceScrollTop);
-        backspaceScrollTop = null;
-      }
-      list.reposition();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  doSearch(newString): void {
-    const firstTime = searchString.length === 0 ? true : false;
-    if (firstTime) {
-      originalKeyNav = currentKeyNavId;
-      list.removeKeyNavHighlight();
-    }
-    searchString = newString;
-    const useSearchString = Formatting.make_searchable_string(searchString);
-    const newVisible = [];
-    for (let i = 0; i < visible.length; i += 1) {
-      if (!data[visible[i]]) {
-        continue;
-      }
-      if (data[visible[i]][searchKey].indexOf(useSearchString) == -1) {
-        hidden.push(visible[i]);
-      } else {
-        newVisible.push(visible[i]);
-      }
-    }
-    visible = newVisible;
-    if (!visible.indexOf(currentKeyNavId)) {
-      list.removeKeyNavHighlight();
-    }
-    currentScrollIndex = false;
-    if (firstTime) {
-      originalScrollTop = scroll.scroll_top;
-      list.recalculate();
-      scroll.scroll_to(0);
-    } else if (visible.length <= numItemsToDisplay) {
-      backspaceScrollTop = scroll.scroll_top;
-      list.recalculate();
-      scroll.scroll_to(0);
-    } else if (visible.length <= currentScrollIndex) {
-      backspaceScrollTop = scroll.scroll_top;
-      list.recalculate();
-      scroll.scroll_to(
-        (visible.length - numItemsToDisplay) * (list.listItemHeight || Sizing.listItemHeight),
-      );
-    } else {
-      list.recalculate();
-    }
-    list.reposition();
-    list.doSearchbarStyle();
-  }
-
-  keyNavAddCharacter(character): void {
-    doSearch(searchString + character);
-
-    return true;
-  }
-
-  clearSearch(): void {
-    backspaceScrollTop = null;
-    searchString = '';
-    searchBox.value = '';
-    list.doSearchbarStyle();
-    if (hidden.length === 0) {
+  #doSearch = (newValue: string): void => {
+    if (newValue === this.#searchString) {
       return;
     }
-    list.unhide();
 
-    currentScrollIndex = false;
-    list.recalculate();
-    if (originalKeyNav) {
-      list.keyNavHighlight(originalKeyNav, true);
-      originalKeyNav = false;
+    const useSearchString = makeSearchableString(this.#searchString);
+
+    if (!useSearchString) {
+      this.clearSearch();
+      return;
     }
-    if (originalScrollTop && !ignoreOriginalScrollTop) {
-      scroll.scroll_to(originalScrollTop);
-      originalScrollTop = false;
-    } else {
-      list.scrollToDefault();
+
+    const firstTime = this.#searchString.length === 0;
+    if (firstTime) {
+      this.#keyNavItemBeforeSearch = this.#keyNavCurrentItem;
+      this.#keyNavRemoveHighlight();
+      this.#scrollTopBeforeSearch = this.#scrollTop;
     }
-    ignoreOriginalScrollTop = false;
-  }
 
-  onSearchCancelClick(): void {
-    list.clearSearch();
-    template.search_box.focus();
-  }
+    if (this.#searchString.length >= newValue.length) {
+      // If user is backspacing, we have to recalculate the
+      // visible list of items from scratch instead of narrowing down
+      // from the currently visible list.
+      this.#visibleItems = this.#items;
+    } else if (!this.#searchString.startsWith(newValue)) {
+      // If the user replaced their search string, detected by the new
+      // search not being an extended version of the previous search,
+      // we must restart the list filter from scratch instead of narrowing
+      // down from the currently visible list.
+      this.#visibleItems = this.#items;
+    }
 
-  onSearchInput(): void {
-    if (!searchBox.value.length) {
-      list.clearSearch();
+    this.#searchString = newValue;
+
+    this.#visibleItems = this.#visibleItems.filter((item) =>
+      item.searchableName.includes(useSearchString),
+    );
+    const scrollToItem = this.#visibleItems[0];
+
+    this.#doSearchbarStyle();
+
+    this.#redraw();
+
+    this.scrollTo(scrollToItem);
+  };
+
+  clearSearch = (): void => {
+    this.#searchString = '';
+
+    this.#template.searchBox.value = '';
+    this.#doSearchbarStyle();
+
+    if (this.#keyNavItemBeforeSearch) {
+      this.scrollTo(this.#keyNavItemBeforeSearch);
+      this.#keyNavItemBeforeSearch = undefined;
+    } else if (this.#scrollTopBeforeSearch !== undefined) {
+      this.#scrollToPx(this.#scrollTopBeforeSearch);
+      this.#scrollTopBeforeSearch = undefined;
+    } else if (this.#currentOpenItem && this.#visibleItems.includes(this.#currentOpenItem)) {
+      this.scrollTo(this.#currentOpenItem);
+    }
+  };
+
+  keyNavBackspace = (): void => {
+    if (this.#searchString.length === 1) {
+      this.clearSearch();
+    } else if (this.#searchString.length > 1) {
+      this.#searchString = this.#searchString.slice(0, -1);
+      this.#doSearch(this.#searchString);
+    }
+  };
+
+  keyNavAddCharacter = (character: string): void => {
+    this.#doSearch(this.#searchString + character);
+  };
+
+  onSearchCancelClick = (): void => {
+    this.clearSearch();
+    if (isSimpleMode()) {
+      this.#template.searchBox.focus();
+    }
+  };
+
+  onSearchInput = (): void => {
+    this.#doSearch(this.#template.searchBox.value);
+  };
+
+  #doSearchbarStyle = (): void => {
+    if (this.#searchString && this.#visibleItems.length === 0) {
+      this.#template.searchBox.classList.add('error');
+      this.#template.boxContainer.classList.add('search-error');
     } else {
-      if (searchBox.value.length < searchString.length) {
-        list.unhide();
-      } else if (searchBox.value.substring(0, searchString.length) !== searchString) {
-        list.unhide();
+      this.#template.searchBox.classList.remove('error');
+      this.#template.boxContainer.classList.remove('search-error');
+    }
+
+    if (this.#searchString.length > 0) {
+      if (isSimpleMode()) {
+        this.#template.searchBox.value = this.#searchString;
       }
-      doSearch(searchBox.value);
-    }
-  }
-
-  doSearchbarStyle(): void {
-    if (searchString && visible.length === 0) {
-      searchBox.classList.add('error');
-      template.box_container.classList.add('search-error');
+      this.#template.searchBox.classList.add('active');
+      this.#template.boxContainer.classList.add('active');
     } else {
-      searchBox.classList.remove('error');
-      template.box_container.classList.remove('search-error');
+      this.#template.searchBox.classList.remove('active');
+      this.#template.boxContainer.classList.remove('active');
     }
 
-    if (searchString.length > 0) {
-      if (!Sizing.simple) {
-        searchBox.value = searchString;
-      }
-      searchBox.classList.add('active');
-      template.box_container.classList.add('active');
-    } else {
-      searchBox.classList.remove('active');
-      template.box_container.classList.remove('active');
-    }
-
-    list.doSearchMessage();
-  }
+    this.#doSearchMessage();
+  };
 
   // SCROLL **************************
 
-  scrollToId(id): void {
-    if (id in data) {
-      list.scrollTo(data[id]);
-    } else if (!list.loaded) {
-      scrollToOnLoad = id;
+  scrollToId = (itemId: number): void => {
+    const item = this.#itemById.get(itemId);
+    if (item) {
+      this.scrollTo(item);
     }
-  }
+  };
 
-  scrollAfterLoad(): void {
-    searchBox.setAttribute('placeholder', $l('Filter...'));
-    searchBox.removeAttribute('disabled');
-    list.recalculate();
-    if (openToOnLoad) {
-      if (!list.setNewOpen(openToOnLoad)) {
-        list.reposition();
+  #scrollToPx = (newScrollTopPx: number): void => {
+    this.#scrollTop = newScrollTopPx;
+    this.#redraw();
+    this.#template.list.scrollTop = newScrollTopPx;
+  };
+
+  scrollTo = (item: T | undefined): void => {
+    let newScrollTopPx: undefined | number = 0;
+    if (item) {
+      const newIndex = this.#visibleItems.indexOf(item);
+      if (newIndex !== -1) {
+        const numItemsToDisplay = this.#getNumItemsToDisplay();
+        const topBoundaryIndex = this.#scrollCurrentVisibleIndex + this.#scrollMargin - 1;
+        const bottomBoundaryIndex =
+          this.#scrollCurrentVisibleIndex + numItemsToDisplay - this.#scrollMargin - 1;
+        if (this.#visibleItems.length < numItemsToDisplay) {
+          newScrollTopPx = 0;
+        } else if (newIndex > topBoundaryIndex && newIndex < bottomBoundaryIndex) {
+          newScrollTopPx = undefined;
+        } else if (newIndex >= bottomBoundaryIndex) {
+          newScrollTopPx = Math.min(
+            this.#itemHeight * this.#visibleItems.length,
+            (newIndex - numItemsToDisplay + this.#scrollMargin) * this.#itemHeight,
+          );
+        } else {
+          newScrollTopPx = Math.max(0, (newIndex - this.#scrollMargin) * this.#itemHeight);
+        }
       }
-      openToOnLoad = null;
-    } else if (scrollToOnLoad) {
-      list.scrollToId(scrollToOnLoad);
-      scrollToOnLoad = null;
+    }
+    if (newScrollTopPx !== undefined) {
+      this.#scrollToPx(newScrollTopPx);
+    }
+  };
+
+  #doSearchMessage = (): void => {
+    if (this.#searchString) {
+      this.#template.list.classList.add('search-active');
     } else {
-      list.reposition();
+      this.#template.list.classList.remove('search-active');
     }
-  }
 
-  scrollTo(dataItem): void {
-    if (dataItem) {
-      let newIndex = visible.indexOf(dataItem.id);
-      if (newIndex === -1) {
-        list.clearSearch();
-        newIndex = visible.indexOf(dataItem.id);
-      }
-
-      if (
-        newIndex > currentScrollIndex + scrollMargin - 1 &&
-        newIndex < currentScrollIndex + numItemsToDisplay - scrollMargin - 1
-      ) {
-        if (!currentScrollIndex) {
-          list.redrawCurrentPosition();
-        }
-      }
-      // position at the lower edge
-      else if (
-        currentScrollIndex &&
-        newIndex >= currentScrollIndex + numItemsToDisplay - scrollMargin - 1
-      ) {
-        scroll.scroll_to(
-          Math.min(
-            scroll.scroll_top_max,
-            (newIndex - numItemsToDisplay + scrollMargin + 2) *
-              (list.listItemHeight || Sizing.listItemHeight),
-          ),
-        );
-      }
-      // position at the higher edge
-      else {
-        scroll.scroll_to(
-          Math.max(
-            0,
-            (newIndex - scrollMargin + 1) * (list.listItemHeight || Sizing.listItemHeight),
-          ),
-        );
-      }
-    }
-  }
-
-  scrollToDefault(): void {
-    if (currentKeyNavId && visible.indexOf(currentKeyNavId)) {
-      list.scrollTo(data[currentKeyNavId]);
-    } else if (currentOpenId && visible.indexOf(currentOpenId)) {
-      currentKeyNavId = currentOpenId;
-      list.scrollTo(data[currentOpenId]);
+    if (this.#visibleItems.length === 0) {
+      this.#template.list.classList.add('no-results');
     } else {
-      list.reposition();
+      this.#template.list.classList.remove('no-results');
     }
-  }
-
-  redrawCurrentPosition(): void {
-    currentScrollIndex = false;
-    list.reposition();
-  }
-
-  doSearchMessage(): void {
-    if (visible.length === 0 && searchString) {
-      template._root.classList.add('no-results');
-
-      template._root.classList.add('search-active');
-    } else if (visible.length === 0 && itemsToDraw.length === 0) {
-      template._root.classList.add('no-results');
-      template._root.classList.remove('search-active');
-    } else {
-      template._root.classList.remove('no-results');
-      template._root.classList.remove('search-active');
-    }
-  }
-
-  reposition(): void {
-    if (numItemsToDisplay === undefined) {
-      return;
-    }
-    let newIndex = Math.floor(scroll.scroll_top / (list.listItemHeight || Sizing.listItemHeight));
-    newIndex = Math.max(0, Math.min(newIndex, visible.length - numItemsToDisplay));
-
-    let newMargin = scroll.scroll_top - (list.listItemHeight || Sizing.listItemHeight) * newIndex;
-    newMargin = newMargin ? -newMargin : 0;
-    list.doSearchMessage();
-    list.el.style[Fx.transform] = `translateY(${scroll.scroll_top + newMargin}px)`;
-
-    if (currentScrollIndex === newIndex) {
-      return;
-    }
-    if (visible.length === 0 && hidden.length === 0) {
-      if (list.autoTrim) {
-        while (list.el.firstChild) {
-          list.el.removeChild(list.el.lastChild);
-        }
-      }
-
-      return;
-    }
-
-    if (currentScrollIndex) {
-      if (newIndex < currentScrollIndex - numItemsToDisplay) {
-        currentScrollIndex = false;
-      } else if (newIndex > currentScrollIndex + numItemsToDisplay * 2) {
-        currentScrollIndex = false;
-      }
-    }
-
-    let i;
-    // full reset
-    if (!currentScrollIndex) {
-      while (list.el.firstChild) {
-        list.el.removeChild(list.el.lastChild);
-      }
-      for (i = newIndex; i < newIndex + numItemsToDisplay && i < visible.length; i += 1) {
-        if (!data[visible[i]]._el) {
-          list.drawEntry(data[visible[i]]);
-        }
-        list.el.appendChild(data[visible[i]]._el);
-      }
-    }
-    // scrolling up
-    else if (newIndex < currentScrollIndex) {
-      for (i = currentScrollIndex; i >= newIndex; i -= 1) {
-        if (!data[visible[i]]._el) {
-          list.drawEntry(data[visible[i]]);
-        }
-        list.el.insertBefore(data[visible[i]]._el, list.el.firstChild);
-      }
-      while (list.el.childNodes.length > numItemsToDisplay) {
-        list.el.removeChild(list.el.lastChild);
-      }
-    }
-    // scrolling down (or starting fresh)
-    else if (newIndex > currentScrollIndex) {
-      for (
-        i = currentScrollIndex + numItemsToDisplay;
-        i < newIndex + numItemsToDisplay && i < visible.length;
-        i++
-      ) {
-        if (!data[visible[i]]._el) {
-          list.drawEntry(data[visible[i]]);
-        }
-        list.el.appendChild(data[visible[i]]._el);
-      }
-      while (list.el.childNodes.length > Math.min(visible.length - newIndex, numItemsToDisplay)) {
-        list.el.removeChild(list.el.firstChild);
-      }
-    }
-    currentScrollIndex = newIndex;
-  }
+  };
 
   // NAV *****************************
 
-  setNewOpen(id): void {
-    if (!list.loaded) {
-      openToOnLoad = id;
-
-      return false;
-    }
-    if (currentOpenId && data[currentOpenId] && currentOpenId == id) {
-      return false;
-    }
-    if (currentOpenId && data[currentOpenId]) {
-      data[currentOpenId]._el.classList.remove('open');
-      currentOpenId = null;
-    }
-    currentOpenId = id;
-    if (!id || !(id in data)) {
+  open = (itemId: number): void => {
+    if (!this.#loaded) {
+      this.#onLoadOpenItemId = itemId;
       return;
     }
-    if (!data[id]._el) {
-      list.drawEntry(data[id]);
-    }
-    data[id]._el.classList.add('open');
-    list.keyNavHighlight(id);
-    if (searchString.length > 0) {
-      ignoreOriginalScrollTop = true;
+
+    if (this.#currentOpenItem?.id === itemId) {
+      return;
     }
 
-    return true;
-  }
+    const visibleOpenedElement = this.#renderElements.find((el) => el.classList.contains('open'));
+    visibleOpenedElement?.classList.add('hover');
+
+    const newItem = this.#itemById.get(itemId);
+    if (!newItem) {
+      return;
+    }
+
+    const itemIdString = itemId.toString();
+    const visibleOpenToElement = this.#renderElements.find(
+      (el) => el.dataset.itemId === itemIdString,
+    );
+    visibleOpenToElement?.classList.add('hover');
+    this.#keyNavCurrentItem = newItem;
+    this.#keyNavItemBeforeSearch = undefined;
+    this.#scrollTopBeforeSearch = undefined;
+  };
 }
 
 export { SearchList, initSearchList };
