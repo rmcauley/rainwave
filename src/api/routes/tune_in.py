@@ -67,7 +67,7 @@ class TuneInIndex(HtmlHandler):
 
         self.set_header(
             "Content-Disposition",
-            'inline; filename="rainwave_%s_%s.m3u"'
+            'attachment; filename="rainwave_%s_%s.m3u"'
             % (stations.station_id_friendly[self.sid].lower(), filetype),
         )
 
