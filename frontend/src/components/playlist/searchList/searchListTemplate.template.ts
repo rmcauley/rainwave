@@ -35,7 +35,7 @@ v8.appendChild(document.createTextNode($l("no_search_results")));
 v8.className='no-result-message while-search-active';
 v1.appendChild(v8);
 const v9 = document.createElement('div');
-v9.className='list-contents';
+v9.className='list';
 v1.appendChild(v9);
 const v10 = document.createElement('div');
 v10.setAttribute('classname',`stretcher`);
@@ -43,6 +43,6 @@ v9.appendChild(v10);
 const v11 = document.createElement('div');
 v11.setAttribute('classname',`list-contents`);
 v9.appendChild(v11);
-return {"$root": v1,"boxContainer": v2,"loadingBar": v3,"searchBox": v4,"cancel": v6,"noResultMessage": v7,"noResultSearchActiveMessage": v8,"list": v9,"stretcher": v10,"list-contents": v11,}
+return {"$root": v1,"boxContainer": v2,"loadingBar": v3,"searchBox": v4,"cancel": v6,"noResultMessage": v7,"noResultSearchActiveMessage": v8,"list": v9,"stretcher": v10,"listContents": v11,}
 ;}
 export { searchListTemplate };

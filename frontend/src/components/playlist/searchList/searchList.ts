@@ -9,6 +9,12 @@ type SearchListItem = {
   searchableName: string;
 };
 
+type SearchListRenderElement = { el: HTMLElement; itemId: number };
+
+// Controls how many items to render outside the strictly visible view
+// to enable smoother scrolling
+const OVERDRAW_ITEM_COUNT = 2;
+
 // 26px is a default from CSS, but recalculated at page load by initSearchList
 // by a placeholder element measurement that happens on first paint before JS is loaded
 let searchListItemHeight = 26;
@@ -17,7 +23,7 @@ function initSearchList(): void {
   searchListItemHeight = document.getElementById('measure-list-item')!.offsetHeight;
 }
 
-class SearchList<T extends SearchListItem> {
+abstract class SearchList<T extends SearchListItem> {
   #currentOpenItem: T | undefined;
   #height = 0;
   #itemById: Map<number, T> = new Map();
@@ -28,7 +34,7 @@ class SearchList<T extends SearchListItem> {
   #loaded = false;
   #onLoadOpenItemId: number | undefined;
   #rafTimer: ReturnType<typeof requestAnimationFrame> | undefined;
-  #renderElements: Array<HTMLElement> = [];
+  #renderElements: Array<SearchListRenderElement> = [];
   #scrollCurrentVisibleIndex: number = 0;
   #scrollMargin = 5; // in items
   #scrollTop = 0;
@@ -101,7 +107,7 @@ class SearchList<T extends SearchListItem> {
   };
 
   #getNumItemsToDisplay = (): number => {
-    return Math.ceil(this.#height / this.#itemHeight) + 1;
+    return Math.ceil(this.#height / this.#itemHeight);
   };
 
   #redrawDecoupled = (): void => {
@@ -117,8 +123,28 @@ class SearchList<T extends SearchListItem> {
       this.#height = fullHeight;
     }
 
-    // TODO: list rendering here
-    // TODO: dataset.itemId must be set
+    const topVisibleIndex = Math.floor(this.#scrollTop / this.#itemHeight) - OVERDRAW_ITEM_COUNT;
+    const bottomVisibleIndex = topVisibleIndex + this.#getNumItemsToDisplay() + OVERDRAW_ITEM_COUNT;
+    const visibleItems = this.#visibleItems.slice(topVisibleIndex, bottomVisibleIndex);
+
+    const elementMap = new Map<number, SearchListRenderElement>();
+    elementMap.forEach((el) => elementMap.set(el.itemId, el));
+
+    const newRenderElements: Array<SearchListRenderElement> = visibleItems.map((item, index) => {
+      const existingElement = elementMap.get(item.id);
+      if (existingElement) {
+        this.renderItemUpdate(item, existingElement.el);
+        existingElement.el.style.transform = `translateY(${index * this.#itemHeight}px)`;
+        return existingElement;
+      }
+      const el = this.renderItem(item);
+      el.style.transform = `translateY(${index * this.#itemHeight}px)`;
+      return { itemId: item.id, el };
+    });
+
+    this.#template.listContents.style.transform = `translateY(${topVisibleIndex * this.#itemHeight}px)`;
+
+    this.#renderElements = newRenderElements;
     this.#rafTimer = undefined;
   };
 
@@ -141,17 +167,21 @@ class SearchList<T extends SearchListItem> {
     }
   };
 
+  abstract renderItem(item: T): HTMLElement;
+
+  abstract renderItemUpdate(item: T, element: HTMLElement): void;
+
   // SEARCHING ****************************
 
   #keyNavRemoveHighlight = (): void => {
-    if (this.#keyNavCurrentItem === undefined) {
+    const keyNavCurrentItem = this.#keyNavCurrentItem;
+    if (keyNavCurrentItem === undefined) {
       return;
     }
-    const keyNavIdString = this.#keyNavCurrentItem.id.toString();
     const visibleHighlightedElement = this.#renderElements.find(
-      (el) => el.dataset.itemId === keyNavIdString,
+      (el) => el.itemId === keyNavCurrentItem.id,
     );
-    visibleHighlightedElement?.classList.remove('hover');
+    visibleHighlightedElement?.el.classList.remove('hover');
   };
 
   #keyNavSetCurrentItem = (newKeyNavItem: T | undefined): void => {
@@ -171,9 +201,8 @@ class SearchList<T extends SearchListItem> {
 
     this.#keyNavItemBeforeSearch = undefined;
     this.#keyNavCurrentItem = newKeyNavItem;
-    const keyNavIdString = newKeyNavItem.id.toString();
-    const visibleElement = this.#renderElements.find((el) => el.dataset.itemId === keyNavIdString);
-    visibleElement?.classList.add('hover');
+    const visibleElement = this.#renderElements.find((el) => el.itemId === newKeyNavItem.id);
+    visibleElement?.el.classList.add('hover');
     this.scrollTo(newKeyNavItem);
   };
 
@@ -443,19 +472,18 @@ class SearchList<T extends SearchListItem> {
       return;
     }
 
-    const visibleOpenedElement = this.#renderElements.find((el) => el.classList.contains('open'));
-    visibleOpenedElement?.classList.add('hover');
+    const visibleOpenedElement = this.#renderElements.find((el) =>
+      el.el.classList.contains('open'),
+    );
+    visibleOpenedElement?.el.classList.add('open');
 
     const newItem = this.#itemById.get(itemId);
     if (!newItem) {
       return;
     }
 
-    const itemIdString = itemId.toString();
-    const visibleOpenToElement = this.#renderElements.find(
-      (el) => el.dataset.itemId === itemIdString,
-    );
-    visibleOpenToElement?.classList.add('hover');
+    const visibleOpenToElement = this.#renderElements.find((el) => el.itemId === itemId);
+    visibleOpenToElement?.el.classList.add('open');
     this.#keyNavCurrentItem = newItem;
     this.#keyNavItemBeforeSearch = undefined;
     this.#scrollTopBeforeSearch = undefined;
