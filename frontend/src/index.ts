@@ -11,6 +11,7 @@ function rainwaveInit(): void {
     sid: window.BOOTSTRAP.user.sid,
     userId: window.BOOTSTRAP.user.id,
   });
+  api.processPayload({ api_info: window.BOOTSTRAP.api_info });
   api.processPayload({ user: window.BOOTSTRAP.user });
 
   initMenu();
@@ -30,7 +31,7 @@ function rainwaveInit(): void {
 
   // RWAudio = RWAudioConstructor();
 
-  if (preferences.powerUserMode) {
+  if (preferences.store.powerUserMode) {
     document.body.classList.add('power');
   } else {
     document.body.classList.add('simple');

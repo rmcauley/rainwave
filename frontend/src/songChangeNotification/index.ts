@@ -13,7 +13,7 @@ const currentSongId: number | undefined | null = null;
 let notifier: Notifier = standardNotifier;
 
 function checkPermission(): void {
-  if (!preferences.enableNotifications) {
+  if (!preferences.store.enableNotifications) {
     return;
   }
   if (enabled) {
@@ -32,7 +32,7 @@ function checkPermission(): void {
 }
 
 function notify(schedCurrent: TimelineEntry): void {
-  if (!enabled || !preferences.enableNotifications) {
+  if (!enabled || !preferences.store.enableNotifications) {
     return;
   }
   const currentSong = schedCurrent.songs[0];
@@ -62,7 +62,7 @@ function registerSongChangeNotification(): void {
     return;
   }
 
-  if (preferences.enableNotifications) {
+  if (preferences.store.enableNotifications) {
     checkPermission();
   }
 

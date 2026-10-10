@@ -12,10 +12,10 @@ function getServerTime(): number {
   return Math.round(new Date().getTime() / 1000) + timeDiff;
 }
 
-function resync(apiInfo: RainwaveSchemas['api_info']): void {
+function syncClock(apiInfo: RainwaveSchemas['api_info']): void {
   timeDiff = calculateTimeDiff(apiInfo);
 }
 
-api.addEventListener('api_info', resync);
+api.addEventListener('api_info', syncClock);
 
-export { getServerTime };
+export { getServerTime, syncClock };

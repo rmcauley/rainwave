@@ -483,15 +483,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   // API calls ***********************************************************************************************
 
-  voidFetch<T extends RainwaveAction>(action: T, params: RainwaveParams<T>): void {
-    this._request(
-      action,
-      params,
-      () => null,
-      () => null,
-    );
-  }
-
   fetch<T extends RainwaveAction>(
     action: T,
     params: RainwaveParams<T>,
@@ -499,69 +490,6 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     return new Promise((resolve, reject) => {
       this._request(action, params, resolve, reject);
     });
-  }
-
-  async allAlbums(
-    progressCallback?: (progress: number) => void,
-  ): Promise<RainwaveResponse<'all_albums_paginated'>['all_albums_paginated']['data']> {
-    let result = await this.fetch('all_albums_paginated', {});
-    let albums = result.all_albums_paginated.data;
-    if (progressCallback) {
-      progressCallback(result.all_albums_paginated.progress * 100);
-    }
-    while (result.all_albums_paginated.has_more) {
-      result = await this.fetch('all_albums_paginated', {
-        after: result.all_albums_paginated.next,
-      });
-      albums = albums.concat(result.all_albums_paginated.data);
-      if (progressCallback) {
-        progressCallback(result.all_albums_paginated.progress * 100);
-      }
-    }
-
-    return albums;
-  }
-
-  async allArtists(
-    progressCallback?: (progress: number) => void,
-  ): Promise<RainwaveResponse<'all_artists_paginated'>['all_artists_paginated']['data']> {
-    let result = await this.fetch('all_artists_paginated', {});
-    let artists = result.all_artists_paginated.data;
-    if (progressCallback) {
-      progressCallback(result.all_artists_paginated.progress * 100);
-    }
-    while (result.all_artists_paginated.has_more) {
-      result = await this.fetch('all_artists_paginated', {
-        after: result.all_artists_paginated.next,
-      });
-      artists = artists.concat(result.all_artists_paginated.data);
-      if (progressCallback) {
-        progressCallback(result.all_artists_paginated.progress * 100);
-      }
-    }
-
-    return artists;
-  }
-
-  async allGroups(
-    progressCallback?: (progress: number) => void,
-  ): Promise<RainwaveResponse<'all_groups_paginated'>['all_groups_paginated']['data']> {
-    let result = await this.fetch('all_groups_paginated', {});
-    let groups = result.all_groups_paginated.data;
-    if (progressCallback) {
-      progressCallback(result.all_groups_paginated.progress * 100);
-    }
-    while (result.all_groups_paginated.has_more) {
-      result = await this.fetch('all_groups_paginated', {
-        after: result.all_groups_paginated.next,
-      });
-      groups = groups.concat(result.all_groups_paginated.data);
-      if (progressCallback) {
-        progressCallback(result.all_groups_paginated.progress * 100);
-      }
-    }
-
-    return groups;
   }
 
   // Convenience getters ***********************************************************************************************

@@ -1,12 +1,15 @@
 import { isSimpleMode } from '../../../helpers/isSimpleMode.js';
 import { makeSearchableString } from '../../../language/get-searchable-name.js';
 import { preferences } from '../../../preferences/index.js';
+import type { components } from '../../../rainwaveApi/rainwave-openapi.js';
 import { searchListTemplate } from '../searchList/searchListTemplate.template.js';
+
+type SearchListOptions = { root: HTMLElement };
 
 type SearchListItem = {
   id: number;
   name: string;
-  searchableName: string;
+  nameSearchable: string;
 };
 
 type SearchListRenderElement = { el: HTMLElement; itemId: number };
@@ -26,57 +29,54 @@ function initSearchList(): void {
 abstract class SearchList<T extends SearchListItem> {
   #currentOpenItem: T | undefined;
   #height = 0;
-  #itemById: Map<number, T> = new Map();
+  protected itemById: Map<number, T> = new Map();
   #itemHeight: number;
-  #items: Array<T> = [];
+  protected items: Array<T> = [];
   #keyNavCurrentItem: T | undefined;
   #keyNavItemBeforeSearch: T | undefined;
-  #loaded = false;
+  protected loaded = false;
   #onLoadOpenItemId: number | undefined;
   #rafTimer: ReturnType<typeof requestAnimationFrame> | undefined;
-  #renderElements: Array<SearchListRenderElement> = [];
+  protected renderElements: Array<SearchListRenderElement> = [];
   #scrollCurrentVisibleIndex: number = 0;
   #scrollMargin = 5; // in items
   #scrollTop = 0;
   #scrollTopBeforeSearch: number | undefined;
   #searchString = '';
-  #sortKey: keyof T;
-  #template: ReturnType<typeof searchListTemplate>;
+  protected template: ReturnType<typeof searchListTemplate>;
   #visibleItems: Array<T> = [];
 
-  constructor(options: { root: HTMLElement; sortKey: keyof T }) {
-    this.#sortKey = options.sortKey;
-
-    this.#template = searchListTemplate({});
-    options.root.appendChild(this.#template.$root);
+  constructor(options: SearchListOptions) {
+    this.template = searchListTemplate({});
+    options.root.appendChild(this.template.$root);
 
     this.#itemHeight = searchListItemHeight;
 
-    this.#template.cancel.addEventListener('click', this.onSearchCancelClick);
-    if (!preferences.powerUserMode) {
-      this.#template.searchBox.addEventListener('input', this.onSearchInput);
+    this.template.cancel.addEventListener('click', this.onSearchCancelClick);
+    if (!preferences.store.powerUserMode) {
+      this.template.searchBox.addEventListener('input', this.onSearchInput);
     }
-    this.#template.list.addEventListener('scroll', this.#onScroll, { passive: true });
+    this.template.list.addEventListener('scroll', this.#onScroll, { passive: true });
 
     window.addEventListener('resize', this.#onResize, { passive: true });
 
     requestAnimationFrame(() => {
-      this.#height = this.#template.list.scrollHeight;
+      this.#height = this.template.list.scrollHeight;
       this.#redraw();
     });
   }
 
   addItems = (newItems: Array<T>): void => {
-    this.#items = this.#items.concat(newItems);
-    newItems.forEach((item) => this.#itemById.set(item.id, item));
-    this.#sortItems();
-    this.#redrawDecoupled();
+    this.items = this.items.concat(newItems);
+    newItems.forEach((item) => this.itemById.set(item.id, item));
+    this.sortItems();
+    this.redrawDecoupled();
   };
 
   upsertItems = (newItems: Array<T>): void => {
     const toAdd: Array<T> = [];
     newItems.forEach((item) => {
-      const existing = this.#itemById.get(item.id);
+      const existing = this.itemById.get(item.id);
       if (existing) {
         Object.assign(existing, item);
       } else {
@@ -86,19 +86,19 @@ abstract class SearchList<T extends SearchListItem> {
     if (toAdd.length) {
       this.addItems(toAdd);
     } else {
-      this.#redrawDecoupled();
+      this.redrawDecoupled();
     }
   };
 
   getTitleFromId = (id: number): string | undefined => {
-    return this.#items[id]?.name;
+    return this.items[id]?.name;
   };
 
-  #sortItems = (): void => {
-    this.#items.sort((a, b) => {
-      if (a[this.#sortKey] < b[this.#sortKey]) {
+  sortItemsByNameSearchable = (): void => {
+    this.items.sort((a, b) => {
+      if (a.nameSearchable < b.nameSearchable) {
         return -1;
-      } else if (a[this.#sortKey] > b[this.#sortKey]) {
+      } else if (a.nameSearchable > b.nameSearchable) {
         return 1;
       }
 
@@ -106,20 +106,27 @@ abstract class SearchList<T extends SearchListItem> {
     });
   };
 
+  sortItems = this.sortItemsByNameSearchable;
+
   #getNumItemsToDisplay = (): number => {
     return Math.ceil(this.#height / this.#itemHeight);
   };
 
-  #redrawDecoupled = (): void => {
+  protected redrawDecoupled = (): void => {
     if (!this.#rafTimer) {
       this.#rafTimer = requestAnimationFrame(this.#redraw);
     }
   };
 
+  protected showApiError = (_apiError: components['schemas']['error']): void => {
+    // TODO: show api error
+    // TODO: lock component
+  };
+
   #redraw = (): void => {
     const fullHeight = this.#itemHeight * this.#visibleItems.length;
     if (fullHeight !== this.#height) {
-      this.#template.stretcher.style.height = `${fullHeight}px`;
+      this.template.stretcher.style.height = `${fullHeight}px`;
       this.#height = fullHeight;
     }
 
@@ -142,26 +149,26 @@ abstract class SearchList<T extends SearchListItem> {
       return { itemId: item.id, el };
     });
 
-    this.#template.listContents.style.transform = `translateY(${topVisibleIndex * this.#itemHeight}px)`;
+    this.template.listContents.style.transform = `translateY(${topVisibleIndex * this.#itemHeight}px)`;
 
-    this.#renderElements = newRenderElements;
+    this.renderElements = newRenderElements;
     this.#rafTimer = undefined;
   };
 
   #onScroll = (): void => {
-    if (this.#scrollTop !== this.#template.list.scrollTop) {
-      this.#scrollTop = this.#template.list.scrollTop;
-      this.#redrawDecoupled();
+    if (this.#scrollTop !== this.template.list.scrollTop) {
+      this.#scrollTop = this.template.list.scrollTop;
+      this.redrawDecoupled();
     }
   };
 
   #onResize = (): void => {
-    this.#height = this.#template.list.scrollHeight;
-    this.#redrawDecoupled();
+    this.#height = this.template.list.scrollHeight;
+    this.redrawDecoupled();
   };
 
   onLoad = (): void => {
-    this.#loaded = true;
+    this.loaded = true;
     if (this.#onLoadOpenItemId) {
       this.open(this.#onLoadOpenItemId);
     }
@@ -178,7 +185,7 @@ abstract class SearchList<T extends SearchListItem> {
     if (keyNavCurrentItem === undefined) {
       return;
     }
-    const visibleHighlightedElement = this.#renderElements.find(
+    const visibleHighlightedElement = this.renderElements.find(
       (el) => el.itemId === keyNavCurrentItem.id,
     );
     visibleHighlightedElement?.el.classList.remove('hover');
@@ -201,7 +208,7 @@ abstract class SearchList<T extends SearchListItem> {
 
     this.#keyNavItemBeforeSearch = undefined;
     this.#keyNavCurrentItem = newKeyNavItem;
-    const visibleElement = this.#renderElements.find((el) => el.itemId === newKeyNavItem.id);
+    const visibleElement = this.renderElements.find((el) => el.itemId === newKeyNavItem.id);
     visibleElement?.el.classList.add('hover');
     this.scrollTo(newKeyNavItem);
   };
@@ -316,19 +323,19 @@ abstract class SearchList<T extends SearchListItem> {
       // If user is backspacing, we have to recalculate the
       // visible list of items from scratch instead of narrowing down
       // from the currently visible list.
-      this.#visibleItems = this.#items;
+      this.#visibleItems = this.items;
     } else if (!this.#searchString.startsWith(newValue)) {
       // If the user replaced their search string, detected by the new
       // search not being an extended version of the previous search,
       // we must restart the list filter from scratch instead of narrowing
       // down from the currently visible list.
-      this.#visibleItems = this.#items;
+      this.#visibleItems = this.items;
     }
 
     this.#searchString = newValue;
 
     this.#visibleItems = this.#visibleItems.filter((item) =>
-      item.searchableName.includes(useSearchString),
+      item.nameSearchable.includes(useSearchString),
     );
     const scrollToItem = this.#visibleItems[0];
 
@@ -342,7 +349,7 @@ abstract class SearchList<T extends SearchListItem> {
   clearSearch = (): void => {
     this.#searchString = '';
 
-    this.#template.searchBox.value = '';
+    this.template.searchBox.value = '';
     this.#doSearchbarStyle();
 
     if (this.#keyNavItemBeforeSearch) {
@@ -372,32 +379,32 @@ abstract class SearchList<T extends SearchListItem> {
   onSearchCancelClick = (): void => {
     this.clearSearch();
     if (isSimpleMode()) {
-      this.#template.searchBox.focus();
+      this.template.searchBox.focus();
     }
   };
 
   onSearchInput = (): void => {
-    this.#doSearch(this.#template.searchBox.value);
+    this.#doSearch(this.template.searchBox.value);
   };
 
   #doSearchbarStyle = (): void => {
     if (this.#searchString && this.#visibleItems.length === 0) {
-      this.#template.searchBox.classList.add('error');
-      this.#template.boxContainer.classList.add('search-error');
+      this.template.searchBox.classList.add('error');
+      this.template.boxContainer.classList.add('search-error');
     } else {
-      this.#template.searchBox.classList.remove('error');
-      this.#template.boxContainer.classList.remove('search-error');
+      this.template.searchBox.classList.remove('error');
+      this.template.boxContainer.classList.remove('search-error');
     }
 
     if (this.#searchString.length > 0) {
       if (isSimpleMode()) {
-        this.#template.searchBox.value = this.#searchString;
+        this.template.searchBox.value = this.#searchString;
       }
-      this.#template.searchBox.classList.add('active');
-      this.#template.boxContainer.classList.add('active');
+      this.template.searchBox.classList.add('active');
+      this.template.boxContainer.classList.add('active');
     } else {
-      this.#template.searchBox.classList.remove('active');
-      this.#template.boxContainer.classList.remove('active');
+      this.template.searchBox.classList.remove('active');
+      this.template.boxContainer.classList.remove('active');
     }
 
     this.#doSearchMessage();
@@ -406,7 +413,7 @@ abstract class SearchList<T extends SearchListItem> {
   // SCROLL **************************
 
   scrollToId = (itemId: number): void => {
-    const item = this.#itemById.get(itemId);
+    const item = this.itemById.get(itemId);
     if (item) {
       this.scrollTo(item);
     }
@@ -415,7 +422,7 @@ abstract class SearchList<T extends SearchListItem> {
   #scrollToPx = (newScrollTopPx: number): void => {
     this.#scrollTop = newScrollTopPx;
     this.#redraw();
-    this.#template.list.scrollTop = newScrollTopPx;
+    this.template.list.scrollTop = newScrollTopPx;
   };
 
   scrollTo = (item: T | undefined): void => {
@@ -448,22 +455,22 @@ abstract class SearchList<T extends SearchListItem> {
 
   #doSearchMessage = (): void => {
     if (this.#searchString) {
-      this.#template.list.classList.add('search-active');
+      this.template.list.classList.add('search-active');
     } else {
-      this.#template.list.classList.remove('search-active');
+      this.template.list.classList.remove('search-active');
     }
 
     if (this.#visibleItems.length === 0) {
-      this.#template.list.classList.add('no-results');
+      this.template.list.classList.add('no-results');
     } else {
-      this.#template.list.classList.remove('no-results');
+      this.template.list.classList.remove('no-results');
     }
   };
 
   // NAV *****************************
 
   open = (itemId: number): void => {
-    if (!this.#loaded) {
+    if (!this.loaded) {
       this.#onLoadOpenItemId = itemId;
       return;
     }
@@ -472,17 +479,15 @@ abstract class SearchList<T extends SearchListItem> {
       return;
     }
 
-    const visibleOpenedElement = this.#renderElements.find((el) =>
-      el.el.classList.contains('open'),
-    );
+    const visibleOpenedElement = this.renderElements.find((el) => el.el.classList.contains('open'));
     visibleOpenedElement?.el.classList.add('open');
 
-    const newItem = this.#itemById.get(itemId);
+    const newItem = this.itemById.get(itemId);
     if (!newItem) {
       return;
     }
 
-    const visibleOpenToElement = this.#renderElements.find((el) => el.itemId === itemId);
+    const visibleOpenToElement = this.renderElements.find((el) => el.itemId === itemId);
     visibleOpenToElement?.el.classList.add('open');
     this.#keyNavCurrentItem = newItem;
     this.#keyNavItemBeforeSearch = undefined;
@@ -491,3 +496,4 @@ abstract class SearchList<T extends SearchListItem> {
 }
 
 export { SearchList, initSearchList };
+export type { SearchListOptions };

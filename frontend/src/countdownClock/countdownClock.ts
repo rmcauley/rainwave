@@ -50,7 +50,7 @@ function countdownClockLoop(): void {
   }
 
   let thisPageTitle = nowPlayingTitle;
-  if (preferences.showClockInTitle) {
+  if (preferences.store.showClockInTitle) {
     thisPageTitle = `[${minuteClock}] ${thisPageTitle}`;
   }
   if (thisPageTitle !== document.title) {

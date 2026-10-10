@@ -1,4 +1,4 @@
-function removeElement(el: HTMLElement): void {
+function removeElement(el: HTMLElement, timeout: number = 1000): void {
   if (document.body.classList.contains('loading')) {
     if (el.parentNode) {
       el.parentNode.removeChild(el);
@@ -8,7 +8,7 @@ function removeElement(el: HTMLElement): void {
       if (el.parentNode) {
         el.parentNode.removeChild(el);
       }
-    }, 1000);
+    }, timeout);
     requestAnimationFrame(function () {
       el.style.opacity = '0';
     });

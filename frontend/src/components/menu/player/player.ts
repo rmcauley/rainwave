@@ -1,6 +1,6 @@
 import { stations } from '../../../helpers/stations';
 import { $l } from '../../../language';
-import { preferences, setPreference } from '../../../preferences';
+import { preferences } from '../../../preferences';
 import { api } from '../../../rainwaveApi';
 import { RainwaveAudioBackend } from './playerBackend';
 
@@ -27,8 +27,8 @@ function initPlayer(): void {
   const playEl = document.getElementById('player-body-play')!;
   const stopEl = document.getElementById('player-body-stop')!;
   const muteEl = document.getElementById('player-body-mute')!;
-  let volume = sanitizeVolume(preferences.volume);
-  let isMuted = preferences.muted;
+  let volume = sanitizeVolume(preferences.store.volume);
+  let isMuted = preferences.store.muted;
 
   function clearAudioErrors(): void {
     // ErrorHandler.removePermanentError('audio_error');
@@ -55,14 +55,14 @@ function initPlayer(): void {
   function setVolume(newVolume: number): void {
     volume = sanitizeVolume(newVolume);
     drawVolume();
-    setPreference('volume', volume);
+    preferences.set('volume', volume);
     applyOutputVolume();
   }
 
   function toggleMute(): void {
     isMuted = !isMuted;
     drawMute();
-    setPreference('muted', isMuted);
+    preferences.set('muted', isMuted);
     applyOutputVolume();
   }
 

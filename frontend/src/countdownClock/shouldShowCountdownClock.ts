@@ -1,11 +1,11 @@
 import { preferences } from '../preferences';
 
 function shouldShowClockInTitle(): boolean {
-  if (preferences.showClockInTitle === 'on') {
+  if (preferences.store.showClockInTitle === 'on') {
     return true;
   }
 
-  if (preferences.powerUserMode && preferences.showClockInTitle === 'default') {
+  if (preferences.store.powerUserMode && preferences.store.showClockInTitle === 'default') {
     return true;
   }
 

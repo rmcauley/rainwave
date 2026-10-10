@@ -12,7 +12,6 @@ interface Preferences {
   playlistUnratedFirst: boolean;
   playlistFavesFirst: boolean;
   playlistAvailableFirst: boolean;
-  playlistFavesAboveAvailable: boolean;
   playlistSortSongsLikeAlbums: boolean;
   showPreviousElections: boolean;
   showHowManyPreviousElections: number;
@@ -32,7 +31,6 @@ const POWER_MODE_ONLY_PREFERENCES: Array<keyof Preferences> = [
   'playlistUnratedFirst',
   'playlistFavesFirst',
   'playlistAvailableFirst',
-  'playlistFavesAboveAvailable',
   'playlistSortSongsLikeAlbums',
   'showPreviousElections',
   'showHowManyPreviousElections',

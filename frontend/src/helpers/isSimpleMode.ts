@@ -11,7 +11,7 @@ function isSimpleMode(): boolean {
   if (viewportWidth <= SIMPLE_LAYOUT_BREAKPOINT) {
     return true;
   }
-  return !preferences.powerUserMode;
+  return !preferences.store.powerUserMode;
 }
 
 export { isSimpleMode };

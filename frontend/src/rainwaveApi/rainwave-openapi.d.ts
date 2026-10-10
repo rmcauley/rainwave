@@ -1522,10 +1522,10 @@ export interface components {
       songs: components['schemas']['_song_on_album'][];
     };
     album_diff: {
-      cool?: boolean;
-      cool_lowest?: components['schemas']['_time'];
-      id?: number;
-      newest_song_time?: components['schemas']['_time'];
+      cool: boolean;
+      cool_lowest: components['schemas']['_time'];
+      id: number;
+      newest_song_time: components['schemas']['_time'];
     }[];
     albums: components['schemas']['_search_album'][];
     all_albums: components['schemas']['_album_in_list'][];
