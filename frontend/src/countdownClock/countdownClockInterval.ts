@@ -1,7 +1,6 @@
-import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
-import { preferenceEvents } from '../preferences';
+import { preferences } from '../preferences';
 import { countdownClockLoop } from './countdownClock';
-import { shouldShowClockInTitle } from './shouldShowCountdownClock';
+import { shouldShowClockInTitle } from './shouldShowClockInTitle';
 
 let interval: ReturnType<typeof setInterval> | null = null;
 
@@ -20,29 +19,15 @@ function disableCountdownClock(): void {
 }
 
 function changeCountdownClockEnabled(): void {
-  if (isProbablyMobileBrowser() && document.hidden) {
-    disableCountdownClock();
-
-    return;
-  }
-
   if (shouldShowClockInTitle()) {
     enableCountdownClock();
-
-    return;
-  }
-
-  if (document.hidden) {
+  } else {
     disableCountdownClock();
-
-    return;
   }
-
-  enableCountdownClock();
 }
 
 function registerCountdownClock(): void {
-  preferenceEvents.addEventListener('showClockInTitle', changeCountdownClockEnabled);
+  preferences.addEventListener('showClockInTitle', changeCountdownClockEnabled);
   document.addEventListener('visibilitychange', changeCountdownClockEnabled);
 }
 

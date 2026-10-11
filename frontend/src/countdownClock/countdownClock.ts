@@ -2,7 +2,7 @@ import { getServerTime } from '../helpers/clock';
 import { preferences } from '../preferences';
 import { api } from '../rainwaveApi';
 import { getCountdownClockFormatted } from './countdownClockFormat';
-import { shouldShowClockInTitle } from './shouldShowCountdownClock';
+import { shouldShowClockInTitle } from './shouldShowClockInTitle';
 
 // Countdown clock HTML element
 let nowPlayingCountdownClock: HTMLElement | null = null;
