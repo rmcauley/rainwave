@@ -1,7 +1,7 @@
 import { stations } from '../../../helpers/stations';
-import { $l } from '../../../language';
-import { preferences } from '../../../preferences';
-import { api } from '../../../rainwaveApi';
+import { $l } from '../../../language/language';
+import { preferences } from '../../../preferences/preferences';
+import { api } from '../../../rainwaveApi/api';
 import { RainwaveAudioBackend } from './playerBackend';
 
 import './player.scss';

@@ -1,9 +1,9 @@
 import { isSimpleMode } from '../../../helpers/isSimpleMode.js';
 import { removeElement } from '../../../helpers/removeElement.js';
 import { makeSearchableString } from '../../../language/get-searchable-name.js';
-import { preferences } from '../../../preferences/index.js';
+import { preferences } from '../../../preferences/preferences.js';
 import type { components } from '../../../rainwaveApi/rainwave-openapi.js';
-import { searchListTemplate } from '../searchList/searchListTemplate.template.js';
+import { searchListTemplate } from './searchList.template.js';
 
 type SearchListItem = {
   id: number;
@@ -26,26 +26,27 @@ function initSearchList(): void {
 }
 
 abstract class SearchList<T extends SearchListItem> {
-  element: DocumentFragment;
+  private currentOpenItem: T | undefined;
+  private height = 0;
+  private keyNavCurrentItem: T | undefined;
+  private keyNavItemBeforeSearch: T | undefined;
+  private onLoadOpenItemId: number | undefined;
+  private rafTimer: ReturnType<typeof requestAnimationFrame> | undefined;
+  private scrollCurrentVisibleIndex: number = 0;
+  private scrollMargin = 5; // in items
+  private scrollTop = 0;
+  private scrollTopBeforeSearch: number | undefined;
+  private searchString = '';
 
-  #currentOpenItem: T | undefined;
-  #height = 0;
   protected itemById: Map<number, T> = new Map();
   protected itemHeight: number;
   protected items: Array<T> = [];
-  #keyNavCurrentItem: T | undefined;
-  #keyNavItemBeforeSearch: T | undefined;
   protected loaded = false;
-  #onLoadOpenItemId: number | undefined;
-  #rafTimer: ReturnType<typeof requestAnimationFrame> | undefined;
   protected renderElements: Array<SearchListRenderElement> = [];
-  #scrollCurrentVisibleIndex: number = 0;
-  #scrollMargin = 5; // in items
-  #scrollTop = 0;
-  #scrollTopBeforeSearch: number | undefined;
-  #searchString = '';
-  protected template: ReturnType<typeof searchListTemplate>;
-  #visibleItems: Array<T> = [];
+
+  public element: DocumentFragment;
+  public template: ReturnType<typeof searchListTemplate>;
+  public visibleItems: Array<T> = [];
 
   constructor() {
     this.template = searchListTemplate({});
@@ -57,9 +58,9 @@ abstract class SearchList<T extends SearchListItem> {
     if (!preferences.store.powerUserMode) {
       this.template.searchBox.addEventListener('input', this.onSearchInput);
     }
-    this.template.list.addEventListener('scroll', this.#onScroll, { passive: true });
+    this.template.list.addEventListener('scroll', this.onScroll, { passive: true });
 
-    window.addEventListener('resize', this.#onResize, { passive: true });
+    window.addEventListener('resize', this.onResize, { passive: true });
   }
 
   startLoad = (): void => {
@@ -116,13 +117,13 @@ abstract class SearchList<T extends SearchListItem> {
     });
   };
 
-  #getNumItemsToDisplay = (): number => {
-    return Math.ceil(this.#height / this.itemHeight);
+  private getNumItemsToDisplay = (): number => {
+    return Math.ceil(this.height / this.itemHeight);
   };
 
   protected redrawDecoupled = (): void => {
-    if (!this.#rafTimer) {
-      this.#rafTimer = requestAnimationFrame(this.#redraw);
+    if (!this.rafTimer) {
+      this.rafTimer = requestAnimationFrame(this.redraw);
     }
   };
 
@@ -131,16 +132,16 @@ abstract class SearchList<T extends SearchListItem> {
     // TODO: lock component
   };
 
-  #redraw = (): void => {
-    const fullHeight = this.itemHeight * this.#visibleItems.length;
-    if (fullHeight !== this.#height) {
+  private redraw = (): void => {
+    const fullHeight = this.itemHeight * this.visibleItems.length;
+    if (fullHeight !== this.height) {
       this.template.stretcher.style.height = `${fullHeight}px`;
-      this.#height = fullHeight;
+      this.height = fullHeight;
     }
 
-    const topVisibleIndex = Math.floor(this.#scrollTop / this.itemHeight) - OVERDRAW_ITEM_COUNT;
-    const bottomVisibleIndex = topVisibleIndex + this.#getNumItemsToDisplay() + OVERDRAW_ITEM_COUNT;
-    const visibleItems = this.#visibleItems.slice(topVisibleIndex, bottomVisibleIndex);
+    const topVisibleIndex = Math.floor(this.scrollTop / this.itemHeight) - OVERDRAW_ITEM_COUNT;
+    const bottomVisibleIndex = topVisibleIndex + this.getNumItemsToDisplay() + OVERDRAW_ITEM_COUNT;
+    const visibleItems = this.visibleItems.slice(topVisibleIndex, bottomVisibleIndex);
 
     const elementMap = new Map<number, SearchListRenderElement>();
     elementMap.forEach((el) => elementMap.set(el.itemId, el));
@@ -160,37 +161,37 @@ abstract class SearchList<T extends SearchListItem> {
     this.template.listContents.style.transform = `translateY(${topVisibleIndex * this.itemHeight}px)`;
 
     this.renderElements = newRenderElements;
-    this.#rafTimer = undefined;
+    this.rafTimer = undefined;
   };
 
-  #onScroll = (): void => {
-    if (this.#scrollTop !== this.template.list.scrollTop) {
-      this.#scrollTop = this.template.list.scrollTop;
+  private onScroll = (): void => {
+    if (this.scrollTop !== this.template.list.scrollTop) {
+      this.scrollTop = this.template.list.scrollTop;
       this.redrawDecoupled();
     }
   };
 
-  #onResize = (): void => {
-    this.#height = this.template.list.scrollHeight;
+  private onResize = (): void => {
+    this.height = this.template.list.scrollHeight;
     this.redrawDecoupled();
   };
 
-  onLoad = (): void => {
+  protected onLoadFinish = (): void => {
     removeElement(this.template.loadingBar, 500);
     this.loaded = true;
-    if (this.#onLoadOpenItemId) {
-      this.setOpenItem(this.#onLoadOpenItemId);
+    if (this.onLoadOpenItemId) {
+      this.setOpenItem(this.onLoadOpenItemId);
     }
   };
 
-  abstract renderItem(item: T): HTMLElement;
+  protected abstract renderItem(item: T): HTMLElement;
 
-  abstract renderItemUpdate(item: T, element: HTMLElement): void;
+  protected abstract renderItemUpdate(item: T, element: HTMLElement): void;
 
-  // SEARCHING ****************************
+  // KEY NAV ****************************
 
-  #keyNavRemoveHighlight = (): void => {
-    const keyNavCurrentItem = this.#keyNavCurrentItem;
+  private keyNavRemoveHighlight = (): void => {
+    const keyNavCurrentItem = this.keyNavCurrentItem;
     if (keyNavCurrentItem === undefined) {
       return;
     }
@@ -200,85 +201,77 @@ abstract class SearchList<T extends SearchListItem> {
     visibleHighlightedElement?.el.classList.remove('hover');
   };
 
-  #keyNavSetCurrentItem = (newKeyNavItem: T | undefined): void => {
+  private keyNavSetCurrentItem = (newKeyNavItem: T | undefined): void => {
     if (!newKeyNavItem) {
-      this.#keyNavRemoveHighlight();
-      this.#keyNavCurrentItem = undefined;
+      this.keyNavRemoveHighlight();
+      this.keyNavCurrentItem = undefined;
       return;
     }
 
-    if (newKeyNavItem === this.#keyNavCurrentItem) {
+    if (newKeyNavItem === this.keyNavCurrentItem) {
       return;
     }
 
-    if (this.#keyNavCurrentItem) {
-      this.#keyNavRemoveHighlight();
+    if (this.keyNavCurrentItem) {
+      this.keyNavRemoveHighlight();
     }
 
-    this.#keyNavItemBeforeSearch = undefined;
-    this.#keyNavCurrentItem = newKeyNavItem;
+    this.keyNavItemBeforeSearch = undefined;
+    this.keyNavCurrentItem = newKeyNavItem;
     const visibleElement = this.renderElements.find((el) => el.itemId === newKeyNavItem.id);
     visibleElement?.el.classList.add('hover');
     this.scrollTo(newKeyNavItem);
   };
 
-  keyNavFirstItem = (): void => {
-    const newKeyNavItem = this.#visibleItems[0];
-    if (newKeyNavItem) {
-      this.#keyNavSetCurrentItem(newKeyNavItem);
-    }
-  };
-
-  keyNavLastItem = (): void => {
-    const newKeyNavItem = this.#visibleItems.at(-1);
-    if (newKeyNavItem) {
-      this.#keyNavSetCurrentItem(newKeyNavItem);
-    }
-  };
-
-  #keyNavArrowAction = (jump: number): void => {
+  private keyNavArrowAction = (jump: number): void => {
     // If the user has not navigated by keyboard before or has had their
     // keyboard nav state reset, the index starts at -1 so that a jump of 1
     // (i.e. pressing the down arrow) causes the first item to be highlighted.
     let keyNavIndex = -1;
-    if (this.#keyNavCurrentItem) {
-      const currentItemIndex = this.#visibleItems.indexOf(this.#keyNavCurrentItem);
+    if (this.keyNavCurrentItem) {
+      const currentItemIndex = this.visibleItems.indexOf(this.keyNavCurrentItem);
       if (currentItemIndex >= 0) {
         keyNavIndex = currentItemIndex;
       }
     }
 
     // Clamp to array boundaries
-    keyNavIndex = Math.max(0, Math.min(keyNavIndex + jump, this.#visibleItems.length - 1));
-    const newItem = this.#visibleItems.at(keyNavIndex);
+    keyNavIndex = Math.max(0, Math.min(keyNavIndex + jump, this.visibleItems.length - 1));
+    const newItem = this.visibleItems.at(keyNavIndex);
     if (newItem) {
-      this.#keyNavCurrentItem = newItem;
-      this.#keyNavSetCurrentItem(newItem);
+      this.keyNavCurrentItem = newItem;
+      this.keyNavSetCurrentItem(newItem);
+    }
+  };
+
+  keyNavFirstItem = (): void => {
+    const newKeyNavItem = this.visibleItems[0];
+    if (newKeyNavItem) {
+      this.keyNavSetCurrentItem(newKeyNavItem);
+    }
+  };
+
+  keyNavLastItem = (): void => {
+    const newKeyNavItem = this.visibleItems.at(-1);
+    if (newKeyNavItem) {
+      this.keyNavSetCurrentItem(newKeyNavItem);
     }
   };
 
   keyNavDown = (): void => {
-    return this.#keyNavArrowAction(1);
+    return this.keyNavArrowAction(1);
   };
 
   keyNavUp = (): void => {
-    return this.#keyNavArrowAction(-1);
-  };
-
-  keyNavRight = (): void => {
-    return;
-  };
-
-  keyNavLeft = (): void => {
-    return;
+    return this.keyNavArrowAction(-1);
   };
 
   keyNavPageDown = (): void => {
-    return this.#keyNavArrowAction(Math.floor(this.#getNumItemsToDisplay() * 0.75));
+    return this.keyNavArrowAction(Math.floor(this.getNumItemsToDisplay() * 0.75));
   };
 
   keyNavPageUp = (): void => {
-    return this.#keyNavArrowAction(Math.floor(this.#getNumItemsToDisplay() * 0.75));
+    return this.keyNavArrowAction(Math.floor(this.getNumItemsToDisplay() * 0.75));
   };
 
   keyNavEnd = (): void => {
@@ -290,8 +283,8 @@ abstract class SearchList<T extends SearchListItem> {
   };
 
   keyNavEnter = (): void => {
-    if (this.#keyNavCurrentItem) {
-      this.navigateToItem(this.#keyNavCurrentItem);
+    if (this.keyNavCurrentItem) {
+      this.navigateToItem(this.keyNavCurrentItem);
     }
   };
 
@@ -300,89 +293,91 @@ abstract class SearchList<T extends SearchListItem> {
   };
 
   keyNavBlur = (): void => {
-    this.#keyNavRemoveHighlight();
+    this.keyNavRemoveHighlight();
   };
 
   keyNavFocus = (): void => {
-    if (this.#keyNavCurrentItem) {
-      this.#keyNavSetCurrentItem(this.#keyNavCurrentItem);
+    if (this.keyNavCurrentItem) {
+      this.keyNavSetCurrentItem(this.keyNavCurrentItem);
     }
   };
 
-  #doSearch = (newValue: string): void => {
-    if (newValue === this.#searchString) {
+  keyNavBackspace = (): void => {
+    if (this.searchString.length === 1) {
+      this.clearSearch();
+    } else if (this.searchString.length > 1) {
+      this.searchString = this.searchString.slice(0, -1);
+      this.doSearch(this.searchString);
+    }
+  };
+
+  keyNavAddCharacter = (character: string): void => {
+    this.doSearch(this.searchString + character);
+  };
+
+  // SEARCHING ****************************
+
+  private doSearch = (newValue: string): void => {
+    if (newValue === this.searchString) {
       return;
     }
 
-    const useSearchString = makeSearchableString(this.#searchString);
+    const useSearchString = makeSearchableString(this.searchString);
 
     if (!useSearchString) {
       this.clearSearch();
       return;
     }
 
-    const firstTime = this.#searchString.length === 0;
+    const firstTime = this.searchString.length === 0;
     if (firstTime) {
-      this.#keyNavItemBeforeSearch = this.#keyNavCurrentItem;
-      this.#keyNavRemoveHighlight();
-      this.#scrollTopBeforeSearch = this.#scrollTop;
+      this.keyNavItemBeforeSearch = this.keyNavCurrentItem;
+      this.keyNavRemoveHighlight();
+      this.scrollTopBeforeSearch = this.scrollTop;
     }
 
-    if (this.#searchString.length >= newValue.length) {
+    if (this.searchString.length >= newValue.length) {
       // If user is backspacing, we have to recalculate the
       // visible list of items from scratch instead of narrowing down
       // from the currently visible list.
-      this.#visibleItems = this.items;
-    } else if (!this.#searchString.startsWith(newValue)) {
+      this.visibleItems = this.items;
+    } else if (!this.searchString.startsWith(newValue)) {
       // If the user replaced their search string, detected by the new
       // search not being an extended version of the previous search,
       // we must restart the list filter from scratch instead of narrowing
       // down from the currently visible list.
-      this.#visibleItems = this.items;
+      this.visibleItems = this.items;
     }
 
-    this.#searchString = newValue;
+    this.searchString = newValue;
 
-    this.#visibleItems = this.#visibleItems.filter((item) =>
+    this.visibleItems = this.visibleItems.filter((item) =>
       item.nameSearchable.includes(useSearchString),
     );
-    const scrollToItem = this.#visibleItems[0];
+    const scrollToItem = this.visibleItems[0];
 
-    this.#doSearchbarStyle();
+    this.doSearchbarStyle();
 
-    this.#redraw();
+    this.redraw();
 
     this.scrollTo(scrollToItem);
   };
 
   clearSearch = (): void => {
-    this.#searchString = '';
+    this.searchString = '';
 
     this.template.searchBox.value = '';
-    this.#doSearchbarStyle();
+    this.doSearchbarStyle();
 
-    if (this.#keyNavItemBeforeSearch) {
-      this.scrollTo(this.#keyNavItemBeforeSearch);
-      this.#keyNavItemBeforeSearch = undefined;
-    } else if (this.#scrollTopBeforeSearch !== undefined) {
-      this.#scrollToPx(this.#scrollTopBeforeSearch);
-      this.#scrollTopBeforeSearch = undefined;
-    } else if (this.#currentOpenItem && this.#visibleItems.includes(this.#currentOpenItem)) {
-      this.scrollTo(this.#currentOpenItem);
+    if (this.keyNavItemBeforeSearch) {
+      this.scrollTo(this.keyNavItemBeforeSearch);
+      this.keyNavItemBeforeSearch = undefined;
+    } else if (this.scrollTopBeforeSearch !== undefined) {
+      this.scrollToPx(this.scrollTopBeforeSearch);
+      this.scrollTopBeforeSearch = undefined;
+    } else if (this.currentOpenItem && this.visibleItems.includes(this.currentOpenItem)) {
+      this.scrollTo(this.currentOpenItem);
     }
-  };
-
-  keyNavBackspace = (): void => {
-    if (this.#searchString.length === 1) {
-      this.clearSearch();
-    } else if (this.#searchString.length > 1) {
-      this.#searchString = this.#searchString.slice(0, -1);
-      this.#doSearch(this.#searchString);
-    }
-  };
-
-  keyNavAddCharacter = (character: string): void => {
-    this.#doSearch(this.#searchString + character);
   };
 
   onSearchCancelClick = (): void => {
@@ -393,11 +388,11 @@ abstract class SearchList<T extends SearchListItem> {
   };
 
   onSearchInput = (): void => {
-    this.#doSearch(this.template.searchBox.value);
+    this.doSearch(this.template.searchBox.value);
   };
 
-  #doSearchbarStyle = (): void => {
-    if (this.#searchString && this.#visibleItems.length === 0) {
+  private doSearchbarStyle = (): void => {
+    if (this.searchString && this.visibleItems.length === 0) {
       this.template.searchBox.classList.add('error');
       this.template.boxContainer.classList.add('search-error');
     } else {
@@ -405,9 +400,9 @@ abstract class SearchList<T extends SearchListItem> {
       this.template.boxContainer.classList.remove('search-error');
     }
 
-    if (this.#searchString.length > 0) {
+    if (this.searchString.length > 0) {
       if (isSimpleMode()) {
-        this.template.searchBox.value = this.#searchString;
+        this.template.searchBox.value = this.searchString;
       }
       this.template.searchBox.classList.add('active');
       this.template.boxContainer.classList.add('active');
@@ -416,10 +411,58 @@ abstract class SearchList<T extends SearchListItem> {
       this.template.boxContainer.classList.remove('active');
     }
 
-    this.#doSearchMessage();
+    this.doSearchMessage();
+  };
+
+  private doSearchMessage = (): void => {
+    if (this.searchString) {
+      this.template.list.classList.add('search-active');
+    } else {
+      this.template.list.classList.remove('search-active');
+    }
+
+    if (this.visibleItems.length === 0) {
+      this.template.list.classList.add('no-results');
+    } else {
+      this.template.list.classList.remove('no-results');
+    }
   };
 
   // SCROLL **************************
+
+  private scrollToPx = (newScrollTopPx: number): void => {
+    this.scrollTop = newScrollTopPx;
+    this.redraw();
+    this.template.list.scrollTop = newScrollTopPx;
+  };
+
+  scrollTo = (item: T | undefined): void => {
+    let newScrollTopPx: undefined | number = 0;
+    if (item) {
+      const newIndex = this.visibleItems.indexOf(item);
+      if (newIndex !== -1) {
+        const numItemsToDisplay = this.getNumItemsToDisplay();
+        const topBoundaryIndex = this.scrollCurrentVisibleIndex + this.scrollMargin - 1;
+        const bottomBoundaryIndex =
+          this.scrollCurrentVisibleIndex + numItemsToDisplay - this.scrollMargin - 1;
+        if (this.visibleItems.length < numItemsToDisplay) {
+          newScrollTopPx = 0;
+        } else if (newIndex > topBoundaryIndex && newIndex < bottomBoundaryIndex) {
+          newScrollTopPx = undefined;
+        } else if (newIndex >= bottomBoundaryIndex) {
+          newScrollTopPx = Math.min(
+            this.itemHeight * this.visibleItems.length,
+            (newIndex - numItemsToDisplay + this.scrollMargin) * this.itemHeight,
+          );
+        } else {
+          newScrollTopPx = Math.max(0, (newIndex - this.scrollMargin) * this.itemHeight);
+        }
+      }
+    }
+    if (newScrollTopPx !== undefined) {
+      this.scrollToPx(newScrollTopPx);
+    }
+  };
 
   scrollToId = (itemId: number): void => {
     const item = this.itemById.get(itemId);
@@ -428,63 +471,15 @@ abstract class SearchList<T extends SearchListItem> {
     }
   };
 
-  #scrollToPx = (newScrollTopPx: number): void => {
-    this.#scrollTop = newScrollTopPx;
-    this.#redraw();
-    this.template.list.scrollTop = newScrollTopPx;
-  };
-
-  scrollTo = (item: T | undefined): void => {
-    let newScrollTopPx: undefined | number = 0;
-    if (item) {
-      const newIndex = this.#visibleItems.indexOf(item);
-      if (newIndex !== -1) {
-        const numItemsToDisplay = this.#getNumItemsToDisplay();
-        const topBoundaryIndex = this.#scrollCurrentVisibleIndex + this.#scrollMargin - 1;
-        const bottomBoundaryIndex =
-          this.#scrollCurrentVisibleIndex + numItemsToDisplay - this.#scrollMargin - 1;
-        if (this.#visibleItems.length < numItemsToDisplay) {
-          newScrollTopPx = 0;
-        } else if (newIndex > topBoundaryIndex && newIndex < bottomBoundaryIndex) {
-          newScrollTopPx = undefined;
-        } else if (newIndex >= bottomBoundaryIndex) {
-          newScrollTopPx = Math.min(
-            this.itemHeight * this.#visibleItems.length,
-            (newIndex - numItemsToDisplay + this.#scrollMargin) * this.itemHeight,
-          );
-        } else {
-          newScrollTopPx = Math.max(0, (newIndex - this.#scrollMargin) * this.itemHeight);
-        }
-      }
-    }
-    if (newScrollTopPx !== undefined) {
-      this.#scrollToPx(newScrollTopPx);
-    }
-  };
-
-  #doSearchMessage = (): void => {
-    if (this.#searchString) {
-      this.template.list.classList.add('search-active');
-    } else {
-      this.template.list.classList.remove('search-active');
-    }
-
-    if (this.#visibleItems.length === 0) {
-      this.template.list.classList.add('no-results');
-    } else {
-      this.template.list.classList.remove('no-results');
-    }
-  };
-
   // NAV *****************************
 
   setOpenItem = (itemId: number): void => {
     if (!this.loaded) {
-      this.#onLoadOpenItemId = itemId;
+      this.onLoadOpenItemId = itemId;
       return;
     }
 
-    if (this.#currentOpenItem?.id === itemId) {
+    if (this.currentOpenItem?.id === itemId) {
       return;
     }
 
@@ -498,9 +493,10 @@ abstract class SearchList<T extends SearchListItem> {
 
     const visibleOpenToElement = this.renderElements.find((el) => el.itemId === itemId);
     visibleOpenToElement?.el.classList.add('open');
-    this.#keyNavCurrentItem = newItem;
-    this.#keyNavItemBeforeSearch = undefined;
-    this.#scrollTopBeforeSearch = undefined;
+    this.keyNavCurrentItem = newItem;
+    this.keyNavItemBeforeSearch = undefined;
+    this.scrollTopBeforeSearch = undefined;
+    this.scrollTo(newItem);
   };
 
   abstract navigateToItem(item: T): void;

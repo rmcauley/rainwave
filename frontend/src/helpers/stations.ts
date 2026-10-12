@@ -1,5 +1,5 @@
-import { $l } from '../language';
-import { api } from '../rainwaveApi';
+import { $l } from '../language/language';
+import { api } from '../rainwaveApi/api';
 import type { components } from '../rainwaveApi/rainwave-openapi';
 
 type Station = components['schemas']['_station_list_station'] & {

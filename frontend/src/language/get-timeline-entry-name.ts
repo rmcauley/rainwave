@@ -1,5 +1,5 @@
-import { $l } from '.';
 import type { TimelineEntry } from '../rainwaveApi/types';
+import { $l } from './language';
 import { translation } from './translations';
 import type { RainwaveTranslationKey } from './translations';
 

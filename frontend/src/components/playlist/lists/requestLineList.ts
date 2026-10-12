@@ -1,6 +1,6 @@
-import { $l } from '../../../language';
 import { makeSearchableString } from '../../../language/get-searchable-name';
-import { api } from '../../../rainwaveApi';
+import { $l } from '../../../language/language';
+import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { navigateTo } from '../../router/navigateTo';
 import { SearchList } from '../searchList/searchList';
@@ -11,7 +11,7 @@ type RequestLineListItem = components['schemas']['request_line'][number] & {
   nameSearchable: string;
 };
 
-class RequestLineListClass extends SearchList<RequestLineListItem> {
+class RequestLineList extends SearchList<RequestLineListItem> {
   loaded = true;
 
   constructor() {
@@ -89,4 +89,4 @@ class RequestLineListClass extends SearchList<RequestLineListItem> {
   navigateToItem = (item: RequestLineListItem): void => navigateTo('listener', item.id);
 }
 
-export { RequestLineListClass };
+export { RequestLineList };

@@ -1,0 +1,15 @@
+<div id="playlist">
+  <div id="playlist-header">
+    <div id="playlist-header-tabs">
+      <a href="#!/album" bind="albumTab" class="playlist-header-tabs-tab"></a>
+      <a href="#!/artist" bind="artistTab" class="playlist-header-tabs-tab"></a>
+      <a href="#!/group" bind="groupTab" class="playlist-header-tabs-tab"></a>
+      <a href="#!/request_line" bind="requestLineTab" class="playlist-header-tabs-tab"></a>
+    </div>
+    <svg bind="closeIcon" class="rw-icon-close" viewBox="0 0 100 100" use="#rw-icon-close"></svg>
+  </div>
+  <div id="playlist-album" bind="albumList" class="playlist-list"></div>
+  <div id="playlist-artist" bind="artistList" class="playlist-list"></div>
+  <div id="playlist-group" bind="groupList" class="playlist-list"></div>
+  <div id="playlist-request" bind="requestLineList" class="playlist-list"></div>
+</div>

@@ -1,5 +1,5 @@
 import { makeSearchableString } from '../../../language/get-searchable-name';
-import { api } from '../../../rainwaveApi';
+import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { navigateTo } from '../../router/navigateTo';
 import { SearchList } from '../searchList/searchList';
@@ -8,7 +8,7 @@ type GroupListItem = components['schemas']['all_groups_paginated']['data'][numbe
   nameSearchable: string;
 };
 
-class GroupListClass extends SearchList<GroupListItem> {
+class GroupList extends SearchList<GroupListItem> {
   constructor() {
     super();
 
@@ -28,7 +28,7 @@ class GroupListClass extends SearchList<GroupListItem> {
     });
     this.addItems(data);
     if (!payload.has_more) {
-      this.onLoad();
+      this.onLoadFinish();
     }
   };
 
@@ -48,4 +48,4 @@ class GroupListClass extends SearchList<GroupListItem> {
   };
 }
 
-export { GroupListClass };
+export { GroupList };

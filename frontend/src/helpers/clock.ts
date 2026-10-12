@@ -1,4 +1,4 @@
-import { api } from '../rainwaveApi';
+import { api } from '../rainwaveApi/api';
 import type { RainwaveSchemas } from '../rainwaveApi/types';
 
 function calculateTimeDiff(apiInfo: RainwaveSchemas['api_info']): number {

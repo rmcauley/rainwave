@@ -105,14 +105,15 @@ def compile_templates(source_dir: str) -> None:
         template_output_file_name = os.path.splitext(file_name)[0] + ".template.ts"
         template_context_file_name = os.path.splitext(file_name)[0] + ".context.ts"
         try:
-            with open(file_name) as html_file, open(
-                template_output_file_name, "w"
-            ) as ts_file:
+            with (
+                open(file_name) as html_file,
+                open(template_output_file_name, "w") as ts_file,
+            ):
                 buffer = (
                     f"import type {{ {context_type_name(template_name)} }} from "
                     f"'{_relative_module_path(template_output_file_name, template_context_file_name)}';\n"
                 )
-                buffer += f"function {template_name}(context: {context_type_name(template_name)}) {{\n"
+                buffer += f"function {template_name}Template(context: {context_type_name(template_name)}) {{\n"
                 buffer += "const v1 = document.createDocumentFragment();\n"
                 parsed_result_binds: dict[str, str] = {"$root": "v1"}
                 parsed_result_imports: set[str] = set()
@@ -137,7 +138,7 @@ def compile_templates(source_dir: str) -> None:
                     )
                     + buffer
                 )
-                buffer += f"export {{ {template_name} }};"
+                buffer += f"export {{ {template_name}Template }};"
                 ts_file.write(buffer)
         except:
             print(f"Failed on {file_name}")

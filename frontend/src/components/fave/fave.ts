@@ -1,5 +1,5 @@
-import { api } from '../../rainwaveApi';
-import { fave } from './fave.template';
+import { api } from '../../rainwaveApi/api';
+import { faveTemplate } from './fave.template';
 
 function doFave(this: HTMLElement): void {
   const faveId = Number(this.dataset.faveId);
@@ -22,12 +22,11 @@ function doFave(this: HTMLElement): void {
 }
 
 function renderFave(
-  container: HTMLElement,
   itemId: number,
   isAlbum: boolean,
   isFave: boolean,
-): ReturnType<typeof fave> {
-  const template = fave(null);
+): ReturnType<typeof faveTemplate> {
+  const template = faveTemplate(null);
 
   if (api.user.id >= 1) {
     if (isFave) {

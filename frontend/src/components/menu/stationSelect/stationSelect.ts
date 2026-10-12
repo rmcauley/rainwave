@@ -1,12 +1,12 @@
 import { getAlbumArt } from '../../../helpers/albumArt';
 import type { Station } from '../../../helpers/stations';
 import { stations } from '../../../helpers/stations';
-import { $l } from '../../../language';
+import { $l } from '../../../language/language';
 import type { RainwaveTranslationKey } from '../../../language/translations';
-import { api } from '../../../rainwaveApi';
+import { api } from '../../../rainwaveApi/api';
 
 import './stationSelect.scss';
-import { stationSelect } from './stationSelect.template';
+import { stationSelectTemplate } from './stationSelect.template';
 
 const stationSelectMenu = document.getElementById('station-select-mouse-area')!;
 
@@ -34,8 +34,8 @@ function toggleStationSelect(evt: Event): void {
   }
 }
 
-function renderStationLink(station: Station): ReturnType<typeof stationSelect> {
-  const stationLink = stationSelect({
+function renderStationLink(station: Station): ReturnType<typeof stationSelectTemplate> {
+  const stationLink = stationSelectTemplate({
     description: $l(`station_menu_description_id_${station.id}` as RainwaveTranslationKey),
     name: station.name,
     url: station.url,
@@ -51,7 +51,7 @@ function initStationSelect(): void {
     'station_select_all_header',
   );
 
-  const stationLinks: Record<number, ReturnType<typeof stationSelect>> = {};
+  const stationLinks: Record<number, ReturnType<typeof stationSelectTemplate>> = {};
   stations.forEach((station): void => {
     if (station.id !== 6) {
       stationLinks[station.id] = renderStationLink(station);

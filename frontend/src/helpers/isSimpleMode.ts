@@ -1,4 +1,4 @@
-import { preferences } from '../preferences';
+import { preferences } from '../preferences/preferences';
 
 let viewportWidth = document.documentElement.clientWidth;
 

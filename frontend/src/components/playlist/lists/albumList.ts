@@ -1,7 +1,7 @@
 import { getServerTime } from '../../../helpers/clock';
 import { makeSearchableString } from '../../../language/get-searchable-name';
-import { preferences } from '../../../preferences';
-import { api } from '../../../rainwaveApi';
+import { preferences } from '../../../preferences/preferences';
+import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { renderFave } from '../../fave/fave';
 import { navigateTo } from '../../router/navigateTo';
@@ -12,7 +12,7 @@ type AlbumListItem = components['schemas']['all_albums_paginated']['data'][numbe
   nameSearchable: string;
 };
 
-class AlbumListClass extends SearchList<AlbumListItem> {
+class AlbumList extends SearchList<AlbumListItem> {
   constructor() {
     super();
     this.template.list.classList.add('album-list-core');
@@ -94,7 +94,7 @@ class AlbumListClass extends SearchList<AlbumListItem> {
     data.forEach((album) => (album.nameSearchable = makeSearchableString(album.name)));
     this.addItems(data);
     if (!payload.has_more) {
-      this.onLoad();
+      this.onLoadFinish();
     }
   };
 
@@ -148,7 +148,7 @@ class AlbumListClass extends SearchList<AlbumListItem> {
       element.classList.add('has_new');
     }
 
-    element.appendChild(renderFave(element, item.id, true, item.fave).$root);
+    element.appendChild(renderFave(item.id, true, item.fave).$root);
 
     const span = document.createElement('span');
     span.className = 'name';
@@ -203,4 +203,4 @@ class AlbumListClass extends SearchList<AlbumListItem> {
   };
 }
 
-export { AlbumListClass };
+export { AlbumList };

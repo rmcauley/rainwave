@@ -1,8 +1,8 @@
 import { $l } from '../../../language';
-import type { searchListTemplateContext } from './searchListTemplate.context';
+import type { searchListContext } from './searchList.context';
 
-import style from './searchListTemplate.scss';
-function searchListTemplate(context: searchListTemplateContext) {
+import style from './searchList.scss';
+function searchListTemplate(context: searchListContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.className = 'searchbox-container';

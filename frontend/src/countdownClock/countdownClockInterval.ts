@@ -1,4 +1,4 @@
-import { preferences } from '../preferences';
+import { preferences } from '../preferences/preferences';
 import { countdownClockLoop } from './countdownClock';
 import { shouldShowClockInTitle } from './shouldShowClockInTitle';
 

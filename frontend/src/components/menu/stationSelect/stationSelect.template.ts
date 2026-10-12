@@ -1,7 +1,7 @@
 import type { stationSelectContext } from './stationSelect.context';
 
 import style from './stationSelect.scss';
-function stationSelect(context: stationSelectContext) {
+function stationSelectTemplate(context: stationSelectContext) {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('a');
   v2.className = 'station-select-station';
@@ -35,4 +35,4 @@ function stationSelect(context: stationSelectContext) {
   v8.appendChild(v10);
   return { $root: v1, anchor: v2, menuNp: v6, menuNpArt: v7, menuNpSong: v9, menuNpAlbum: v10 };
 }
-export { stationSelect };
+export { stationSelectTemplate };

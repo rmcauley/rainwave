@@ -1,5 +1,5 @@
 import { makeSearchableString } from '../../../language/get-searchable-name';
-import { api } from '../../../rainwaveApi';
+import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { navigateTo } from '../../router/navigateTo';
 import { SearchList } from '../searchList/searchList';
@@ -8,7 +8,7 @@ type ArtistListItem = components['schemas']['all_artists_paginated']['data'][num
   nameSearchable: string;
 };
 
-class ArtistListClass extends SearchList<ArtistListItem> {
+class ArtistList extends SearchList<ArtistListItem> {
   constructor() {
     super();
 
@@ -31,7 +31,7 @@ class ArtistListClass extends SearchList<ArtistListItem> {
     this.addItems(data);
     this.template.loadingBar.style.transform = `scaleX(${(payload.progress * 0.8) / 100 + 0.2})`;
     if (!payload.has_more) {
-      this.onLoad();
+      this.onLoadFinish();
     }
   };
 
@@ -51,4 +51,4 @@ class ArtistListClass extends SearchList<ArtistListItem> {
   };
 }
 
-export { ArtistListClass };
+export { ArtistList };

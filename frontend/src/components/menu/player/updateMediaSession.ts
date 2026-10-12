@@ -1,5 +1,5 @@
 import { getAlbumArt } from '../../../helpers/albumArt';
-import { api } from '../../../rainwaveApi';
+import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 
 function updateMediaSession(nowPlaying: components['schemas']['sched_current']): void {
@@ -9,7 +9,7 @@ function updateMediaSession(nowPlaying: components['schemas']['sched_current']):
   }
   const artwork = [
     {
-      src: new URL(getAlbumArt(song), window.location.origin).toString(),
+      src: new URL(getAlbumArt(song.albums[0].art), window.location.origin).toString(),
       sizes: '320x320',
       type: 'image/jpeg',
     },

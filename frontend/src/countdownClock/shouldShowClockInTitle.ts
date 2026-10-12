@@ -1,5 +1,5 @@
 import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
-import { preferences } from '../preferences';
+import { preferences } from '../preferences/preferences';
 
 function shouldShowClockInTitle(): boolean {
   if (isProbablyMobileBrowser()) {

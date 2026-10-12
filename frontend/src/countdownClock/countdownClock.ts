@@ -1,6 +1,6 @@
 import { getServerTime } from '../helpers/clock';
-import { preferences } from '../preferences';
-import { api } from '../rainwaveApi';
+import { preferences } from '../preferences/preferences';
+import { api } from '../rainwaveApi/api';
 import { getCountdownClockFormatted } from './countdownClockFormat';
 import { shouldShowClockInTitle } from './shouldShowClockInTitle';
 

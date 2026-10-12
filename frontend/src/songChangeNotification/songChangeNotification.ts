@@ -1,7 +1,7 @@
 import { getAlbumArt } from '../helpers/albumArt';
 import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
-import { preferences } from '../preferences';
-import { api } from '../rainwaveApi';
+import { preferences } from '../preferences/preferences';
+import { api } from '../rainwaveApi/api';
 import type { TimelineEntry } from '../rainwaveApi/types';
 import { linuxNotifier } from './linuxNotifier';
 import type { Notifier } from './notifierType';

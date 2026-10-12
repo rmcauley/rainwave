@@ -1,4 +1,4 @@
-import { isSimpleMode } from '../../../src/helpers/isSimpleMode';
+import { isSimpleMode } from '../helpers/isSimpleMode';
 
 let backspaceTrap = false;
 let backspaceTimer: ReturnType<typeof setTimeout> | undefined = undefined;
