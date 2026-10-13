@@ -1,3 +1,5 @@
+import { preferences } from '../../preferences/preferences';
+import { navigateTo } from '../router/navigateTo';
 import type { Routes } from '../router/router';
 import { router } from '../router/router';
 import { AlbumList } from './lists/albumList';
@@ -25,17 +27,36 @@ const routeToTab = {
   keyof ReturnType<typeof playlistTemplate> | undefined
 >;
 
+const firstTab = 'album';
+const lastTab = 'request_line';
+const routeOrder = [firstTab, 'artist', 'group', lastTab] as const satisfies Array<
+  keyof typeof routeToList
+>;
+
+const navKeys: Set<KeyboardEvent['key']> = new Set([
+  'Backspace',
+  'Escape',
+  'ArrowDown',
+  'ArrowUp',
+  'PageUp',
+  'PageDown',
+  'Home',
+  'End',
+  'Tab',
+]);
+const fKeys = /^F\d+$/;
+const searchChars = /^[\d\w\-.&':+~,]$/;
+
 class Playlist {
   private currentRoute: keyof typeof routeToList | undefined;
-  private template: ReturnType<typeof playlistTemplate>;
   private albumList: AlbumList;
   private artistList: ArtistList;
   private groupList: GroupList;
   private requestLineList: RequestLineList;
+  public template: ReturnType<typeof playlistTemplate>;
 
   constructor() {
     this.template = playlistTemplate(null);
-    document.getElementById('main')!.appendChild(this.template.$root);
 
     this.albumList = new AlbumList();
     this.template.albumList.appendChild(this.albumList.template.$root);
@@ -53,6 +74,11 @@ class Playlist {
     router.addEventListener('artist', this.onRoute);
     router.addEventListener('group', this.onRoute);
     router.addEventListener('request_line', this.onRoute);
+
+    if (preferences.store.powerUserMode) {
+      window.addEventListener('keydown', this.onKeyDown, { capture: true });
+      window.addEventListener('keypress', this.onKeyPress, { capture: true });
+    }
   }
 
   private onRoute = ([newRoute, itemId]: [
@@ -78,65 +104,104 @@ class Playlist {
     this[routeToList[newRoute]].startLoad();
   };
 
-  // KEY NAV FORWARDING --------------------------------------------------------------------
+  // TAB KEY HANDLING ***********************************
 
-  keyNavDown = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavDown();
+  tabBackwards = (): void => {
+    const nextRoute = this.currentRoute
+      ? routeOrder.at(routeOrder.indexOf(this.currentRoute) - 1) || lastTab
+      : lastTab;
+    navigateTo(nextRoute, undefined);
+  };
+
+  tabForwards = (): void => {
+    const nextRoute = this.currentRoute
+      ? routeOrder.at(routeOrder.indexOf(this.currentRoute) + 1) || firstTab
+      : firstTab;
+    navigateTo(nextRoute, undefined);
+  };
+
+  // KEY NAV ***********************************
+
+  private shouldProcessKeyboardEvent = (evt: KeyboardEvent): boolean => {
+    if (evt.ctrlKey || evt.altKey || evt.metaKey) {
+      return false;
+    }
+
+    if (fKeys.test(evt.key)) {
+      return false;
+    }
+
+    return navKeys.has(evt.key) || searchChars.test(evt.key);
+  };
+
+  private routeKey = (evt: KeyboardEvent): void => {
+    // Tab dopesn't require an open list
+    if (evt.key === 'Tab') {
+      if (evt.shiftKey) {
+        this.tabBackwards();
+      } else {
+        this.tabForwards();
+      }
+      return;
+    }
+
+    if (!this.currentRoute) {
+      return;
+    }
+
+    if (evt.key === 'ArrowDown') {
+      return this[routeToList[this.currentRoute]].keyNavDown();
+    } else if (evt.key === 'ArrowUp') {
+      return this[routeToList[this.currentRoute]].keyNavUp();
+    } else if (evt.key === 'Enter') {
+      return this[routeToList[this.currentRoute]].keyNavEnter();
+    } else if (evt.key === 'PageDown') {
+      return this[routeToList[this.currentRoute]].keyNavPageDown();
+    } else if (evt.key === 'PageUp') {
+      return this[routeToList[this.currentRoute]].keyNavPageUp();
+    } else if (evt.key === 'Home') {
+      return this[routeToList[this.currentRoute]].keyNavHome();
+    } else if (evt.key === 'End') {
+      return this[routeToList[this.currentRoute]].keyNavEnd();
+    } else if (searchChars.test(evt.key) || evt.key === ' ') {
+      return this[routeToList[this.currentRoute]].keyNavAddCharacter(evt.key);
+    } else if (evt.key === 'Backspace') {
+      return this[routeToList[this.currentRoute]].keyNavBackspace();
+    } else if (evt.key === 'Escape') {
+      return this[routeToList[this.currentRoute]].keyNavEscape();
     }
   };
 
-  keyNavUp = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavUp();
+  private handleKeyboardEvent = (evt: KeyboardEvent): void => {
+    const target = evt.target as HTMLElement | undefined;
+    if (target?.tagName.toLowerCase() === 'input') {
+      return;
+    }
+
+    this.routeKey(evt);
+    evt.preventDefault();
+  };
+
+  private onKeyPress = (evt: KeyboardEvent): void => {
+    if (!this.shouldProcessKeyboardEvent(evt)) {
+      return;
+    }
+
+    if (!navKeys.has(evt.key)) {
+      this.handleKeyboardEvent(evt);
+    } else {
+      evt.preventDefault();
     }
   };
 
-  keyNavPageDown = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavPageDown();
+  private onKeyDown = (evt: KeyboardEvent): void => {
+    if (!this.shouldProcessKeyboardEvent(evt)) {
+      return;
     }
-  };
 
-  keyNavPageUp = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavPageUp();
-    }
-  };
-
-  keyNavEnd = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavEnd();
-    }
-  };
-
-  keyNavHome = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavHome();
-    }
-  };
-
-  keyNavEnter = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavEnter();
-    }
-  };
-
-  keyNavEscape = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavEscape();
-    }
-  };
-
-  keyNavBlur = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavBlur();
-    }
-  };
-
-  keyNavFocus = (): void => {
-    if (this.currentRoute) {
-      this[routeToList[this.currentRoute]].keyNavFocus();
+    if (navKeys.has(evt.key)) {
+      this.handleKeyboardEvent(evt);
+      evt.preventDefault();
     }
   };
 }

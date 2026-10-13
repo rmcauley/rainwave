@@ -1,8 +1,13 @@
+import type { Routes } from '../router/router';
 import { panelsTemplate } from './panels.template';
 
-function initPanels(): void {
-  const template = panelsTemplate(null);
-  document.getElementById('main')!.appendChild(template.$root);
+class Panels {
+  private currentRoute: keyof Routes | undefined;
+  public template: ReturnType<typeof panelsTemplate>;
+
+  constructor() {
+    this.template = panelsTemplate(null);
+  }
 }
 
-export { initPanels };
+export { Panels };

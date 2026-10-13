@@ -1,9 +1,11 @@
 import { initMenu } from './components/menu/menu';
-import { preferences } from './preferences/preferences';
-import { api } from './rainwaveApi/api';
+import { Panels } from './components/panels/panels';
+import { Playlist } from './components/playlist/playlist';
 
 import './index.scss';
 import './utilityClasses.scss';
+import { preferences } from './preferences/preferences';
+import { api } from './rainwaveApi/api';
 
 function rainwaveInit(): void {
   api.setOptions({
@@ -36,6 +38,12 @@ function rainwaveInit(): void {
   } else {
     document.body.classList.add('simple');
   }
+
+  const playlist = new Playlist();
+  document.getElementById('main')!.appendChild(playlist.template.$root);
+
+  const panels = new Panels();
+  document.getElementById('main')!.appendChild(panels.template.$root);
 
   // correctCurrentUrlForStation();
 
