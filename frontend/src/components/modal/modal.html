@@ -1,0 +1,19 @@
+<div class="modal" bind="modal">
+  <div class="modal-header">
+    <div class="modal-header-bkg">
+      <div class="modal-header-content">
+        <svg
+          bind="closeIcon"
+          class="rw-icon-close"
+          viewBox="0 0 100 100"
+          use="#rw-icon-close"
+        ></svg>
+        <if condition="title">
+          <span>{{ title }}</span>
+        </if>
+      </div>
+    </div>
+  </div>
+  <div class="modal-body" bind="body"></div>
+  <div class="modal-footer"></div>
+</div>

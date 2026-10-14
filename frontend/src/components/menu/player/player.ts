@@ -1,5 +1,5 @@
 import { stations } from '../../../helpers/stations';
-import { $l } from '../../../language/language';
+import { $l } from '../../../language';
 import { preferences } from '../../../preferences/preferences';
 import { api } from '../../../rainwaveApi/api';
 import { RainwaveAudioBackend } from './playerBackend';

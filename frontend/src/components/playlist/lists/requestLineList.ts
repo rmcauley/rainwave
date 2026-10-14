@@ -1,5 +1,5 @@
+import { $l } from '../../../language';
 import { makeSearchableString } from '../../../language/get-searchable-name';
-import { $l } from '../../../language/language';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { navigateTo } from '../../router/navigateTo';

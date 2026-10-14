@@ -1,4 +1,4 @@
-import { $l } from '../language/language';
+import { $l } from '../language';
 import { api } from '../rainwaveApi/api';
 import type { components } from '../rainwaveApi/rainwave-openapi';
 

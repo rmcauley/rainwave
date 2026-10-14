@@ -1,0 +1,10 @@
+import { Modal } from '../modal/modal';
+import { whatIsCooldownModalTemplate } from './whatIsCooldownModal.template';
+
+class WhatIsCooldownModal extends Modal {
+  setContent = (): void => {
+    this.template.body.appendChild(whatIsCooldownModalTemplate(undefined).$root);
+  };
+}
+
+export { WhatIsCooldownModal };

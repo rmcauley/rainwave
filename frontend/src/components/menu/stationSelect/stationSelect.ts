@@ -1,7 +1,7 @@
 import { getAlbumArt } from '../../../helpers/albumArt';
 import type { Station } from '../../../helpers/stations';
 import { stations } from '../../../helpers/stations';
-import { $l } from '../../../language/language';
+import { $l } from '../../../language';
 import type { RainwaveTranslationKey } from '../../../language/translations';
 import { api } from '../../../rainwaveApi/api';
 
