@@ -21,7 +21,6 @@
 #    - <if condition="foo">...</if>     : Conditional block
 #    - <else></else>                     : Else clause for if
 #    - <for each="items">...</for>      : Loop over array
-#    - <template use="name" />           : Include subtemplate
 #    - {{ var }}                         : Variable interpolation (in attributes & text)
 #
 # Cannot deal with SVG (or other namespaces) except for Rainwave's particular use case.
@@ -36,7 +35,12 @@ import os
 
 from lxml import html
 
-from template_compiler.parse_node import emit_binds, emit_text_content, parse_node
+from template_compiler.parse_node import (
+    emit_binds,
+    emit_text_content,
+    parse_node,
+    parse_root_element,
+)
 
 
 def _relative_module_path(from_file_name: str, to_file_name: str) -> str:
@@ -55,10 +59,39 @@ def context_type_name(template_name: str) -> str:
     return f"{template_name}Context"
 
 
+def find_single_root_element(fragments: list) -> html.HtmlElement | None:
+    """
+    Returns the lone root element if the template consists of exactly one real
+    element (no text or control flow beside it), so it can be the $root itself
+    instead of living inside a documentFragment.
+    """
+    root_element = None
+    for fragment in fragments:
+        if isinstance(fragment, str):
+            if fragment.strip():
+                return None
+        elif not isinstance(fragment.tag, str):
+            continue  # comments & processing instructions emit nothing
+        elif root_element is not None or fragment.tag in ("if", "else", "for"):
+            return None
+        else:
+            root_element = fragment
+    if root_element is not None and (root_element.tail or "").strip():
+        return None
+    return root_element
+
+
+def find_style_file_name(template_file_name: str) -> str | None:
+    """Returns the .scss file sitting next to the template, if any."""
+    style_file_name = os.path.splitext(template_file_name)[0] + ".scss"
+    if os.path.exists(style_file_name):
+        return os.path.basename(style_file_name)
+    return None
+
+
 def solve_ts_imports(
     template_file_name: str,
     imports: set[str],
-    template_name_to_filename: dict[str, str],
 ) -> str:
     import_buffer = ""
     for import_name in sorted(imports):
@@ -72,22 +105,8 @@ def solve_ts_imports(
                 f"import {{ $l }} from "
                 f"'{_relative_module_path(template_file_name, 'frontend/src/language/index.ts')}';\n"
             )
-        elif import_name == "style":
-            template_name = template_file_name.split(os.sep)[-1].split(".")[0]
-            import_buffer += f"import style from './{template_name}.scss';"
         else:
-            imported_template_file_name = template_name_to_filename.get(import_name)
-            if not imported_template_file_name:
-                raise Exception(f"Unknown template import '{import_name}'.")
-            imported_template_file_name = (
-                os.path.splitext(imported_template_file_name)[0] + ".template.ts"
-            )
-            if imported_template_file_name == template_file_name:
-                continue
-            import_buffer += (
-                f"import {{{import_name}}} from "
-                f"'{_relative_module_path(template_file_name, imported_template_file_name)}';\n"
-            )
+            raise Exception(f"Unknown template import '{import_name}'.")
     return import_buffer
 
 
@@ -104,37 +123,54 @@ def compile_templates(source_dir: str) -> None:
     for template_name, file_name in template_name_to_filename.items():
         template_output_file_name = os.path.splitext(file_name)[0] + ".template.ts"
         template_context_file_name = os.path.splitext(file_name)[0] + ".context.ts"
+        has_context = os.path.exists(template_context_file_name)
+        style_file_name = find_style_file_name(file_name)
         try:
             with (
                 open(file_name) as html_file,
                 open(template_output_file_name, "w") as ts_file,
             ):
-                buffer = (
-                    f"import type {{ {context_type_name(template_name)} }} from "
-                    f"'{_relative_module_path(template_output_file_name, template_context_file_name)}';\n"
-                )
-                buffer += f"function {template_name}Template(context: {context_type_name(template_name)}) {{\n"
-                buffer += "const v1 = document.createDocumentFragment();\n"
+                buffer = ""
+                context_param = ""
+                if has_context:
+                    buffer += (
+                        f"import type {{ {context_type_name(template_name)} }} from "
+                        f"'{_relative_module_path(template_output_file_name, template_context_file_name)}';\n"
+                    )
+                    context_param = f"context: {context_type_name(template_name)}"
+                buffer += f"function {template_name}Template({context_param}) {{\n"
+                fragments = html.fragments_fromstring(html_file.read())
+                root_element = find_single_root_element(fragments)
                 parsed_result_binds: dict[str, str] = {"$root": "v1"}
                 parsed_result_imports: set[str] = set()
-                js_variable_count = 1
-                for fragment in html.fragments_fromstring(html_file.read()):
-                    if isinstance(fragment, str):
-                        buffer += emit_text_content(fragment, "v1")
-                    else:
-                        parsed_result = parse_node(fragment, "v1", js_variable_count)
-                        parsed_result_binds.update(parsed_result.binds)
-                        parsed_result_imports.update(parsed_result.imports)
-                        js_variable_count = parsed_result.js_variable_count
-                        buffer += parsed_result.buffer
+                if root_element is not None:
+                    parsed_result = parse_root_element(root_element, 0)
+                    parsed_result_binds.update(parsed_result.binds)
+                    parsed_result_imports.update(parsed_result.imports)
+                    buffer += parsed_result.buffer
+                else:
+                    buffer += "const v1 = document.createDocumentFragment();\n"
+                    js_variable_count = 1
+                    for fragment in fragments:
+                        if isinstance(fragment, str):
+                            buffer += emit_text_content(fragment, "v1")
+                        else:
+                            parsed_result = parse_node(
+                                fragment, "v1", js_variable_count
+                            )
+                            parsed_result_binds.update(parsed_result.binds)
+                            parsed_result_imports.update(parsed_result.imports)
+                            js_variable_count = parsed_result.js_variable_count
+                            buffer += parsed_result.buffer
                 buffer += f"return {emit_binds(parsed_result_binds)}\n;"
                 buffer += "}\n"
 
+                if style_file_name:
+                    buffer = f"import style from './{style_file_name}';\n" + buffer
                 buffer = (
                     solve_ts_imports(
                         template_output_file_name,
                         parsed_result_imports,
-                        template_name_to_filename,
                     )
                     + buffer
                 )

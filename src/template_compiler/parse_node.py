@@ -23,10 +23,21 @@ def parse_node(
         results = parse_else_node(node, append_to_variable_name, js_variable_count)
     elif node.tag == "for":
         results = parse_for_node(node, append_to_variable_name, js_variable_count)
-    elif node.tag == "template":
-        results = parse_template_node(node, append_to_variable_name, js_variable_count)
     else:
         results = parse_html_node(node, append_to_variable_name, js_variable_count)
+
+    if "$l(" in results.buffer:
+        results.imports.add("$l")
+
+    return results
+
+
+def parse_root_element(
+    node: HtmlElement,
+    js_variable_count: int,
+) -> ParseNodeResults:
+    """Parse an element that becomes the template's $root instead of being appended to a fragment."""
+    results = parse_html_node(node, None, js_variable_count)
 
     if "$l(" in results.buffer:
         results.imports.add("$l")
@@ -124,44 +135,9 @@ def parse_for_node(
     )
 
 
-def parse_template_node(
-    node: HtmlElement,
-    append_to_variable_name: str,
-    js_variable_count: int,
-) -> ParseNodeResults:
-    use_attr = node.attrib.get("use")
-    if not use_attr:
-        raise RainwaveTemplateNodeParseFailure(
-            node, "<template> tag requires 'use' attribute"
-        )
-    use_attr = use_attr.strip()
-
-    bind_attr = node.attrib.get("bind")
-
-    buffer = ""
-    binds: dict[str, str] = {}
-
-    if bind_attr:
-        bind_attr = bind_attr.strip()
-        js_variable_count += 1
-        var_name = js_variable_name(js_variable_count)
-        binds[bind_attr] = var_name
-        buffer += f"const {var_name} = {use_attr}(context);\n"
-        buffer += f"{append_to_variable_name}.appendChild({var_name}.$root);\n"
-    else:
-        buffer += f"{append_to_variable_name}.appendChild({use_attr}(context).$root);\n"
-
-    return ParseNodeResults(
-        buffer=buffer,
-        binds=binds,
-        js_variable_count=js_variable_count,
-        imports={use_attr},
-    )
-
-
 def parse_html_node(
     node: HtmlElement,
-    append_to_variable_name: str,
+    append_to_variable_name: str | None,
     js_variable_count: int,
 ) -> ParseNodeResults:
     tag = node.tag
@@ -199,7 +175,6 @@ def parse_html_node(
             binds[attr_val_raw.strip()] = var_name
         elif attr_name == "class" and node.tag != "svg":
             buffer += f"{var_name}.className='{attr_val_raw.strip()}';\n"
-            imports.add("style")
         elif attr_name == "href":
             buffer += f"{var_name}.href={attr_val_parsed};\n"
         elif attr_name == "use" and node.tag == "svg":
@@ -213,8 +188,9 @@ def parse_html_node(
 
     binds.update(walked.binds)
 
-    buffer += f"{append_to_variable_name}.appendChild({var_name});\n"
-    buffer += _emit_text_node(node, node.tail, append_to_variable_name)
+    if append_to_variable_name is not None:
+        buffer += f"{append_to_variable_name}.appendChild({var_name});\n"
+        buffer += _emit_text_node(node, node.tail, append_to_variable_name)
 
     return ParseNodeResults(
         buffer=buffer + walked.buffer,

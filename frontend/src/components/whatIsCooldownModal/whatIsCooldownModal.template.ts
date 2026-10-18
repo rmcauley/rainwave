@@ -1,8 +1,5 @@
 import { $l } from '../../language';
-import type { whatIsCooldownModalContext } from './whatIsCooldownModal.context';
-
-import style from './whatIsCooldownModal.scss';
-function whatIsCooldownModalTemplate(context: whatIsCooldownModalContext) {
+function whatIsCooldownModalTemplate() {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('p');
   v2.appendChild(document.createTextNode($l('cd_blue_bkg_is')));

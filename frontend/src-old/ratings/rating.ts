@@ -45,8 +45,7 @@ const ratingApiCallback = function (json) {
         ratings[i].lastChild.textContent = Formatting.rating(json.rating_user);
       }
       if (
-        ratings[i].previousSibling &&
-        ratings[i].previousSibling.classList.contains('rating-clear')
+        ratings[i].previousSibling?.classList.contains('rating-clear')
       ) {
         ratings[i].previousSibling.classList.add('capable');
       }
@@ -59,8 +58,7 @@ const ratingApiCallback = function (json) {
         ratings[i].lastChild.textContent = '';
       }
       if (
-        ratings[i].previousSibling &&
-        ratings[i].previousSibling.classList.contains('rating-clear')
+        ratings[i].previousSibling?.classList.contains('rating-clear')
       ) {
         ratings[i].previousSibling.classList.remove('capable');
       }
@@ -73,8 +71,7 @@ const ratingApiCallback = function (json) {
         ratings[i].lastChild.textContent = '';
       }
       if (
-        ratings[i].previousSibling &&
-        ratings[i].previousSibling.classList.contains('rating-clear')
+        ratings[i].previousSibling?.classList.contains('rating-clear')
       ) {
         ratings[i].previousSibling.classList.remove('capable');
       }
@@ -174,7 +171,7 @@ const addEffect = function (el) {
 
 const getRatingFromMouse = function (evt) {
   let x, y;
-  if (typeof evt.offsetX != 'undefined' && typeof evt.offsetY != 'undefined') {
+  if (typeof evt.offsetX !== 'undefined' && typeof evt.offsetY !== 'undefined') {
     x = evt.offsetX;
     y = evt.offsetY;
   } else {
@@ -224,7 +221,7 @@ const touchend = function () {
 
 let scrollCheckMin;
 let scrollCheckMax;
-var scrollCheck = function (e) {
+const scrollCheck = function (e) {
   if (e.touches[0].pageY < scrollCheckMin || e.touches[0].pageY > scrollCheckMax) {
     touchend(e);
   }
@@ -258,7 +255,7 @@ const triggerTouchRating = function (e) {
 
 const ratingWidth = 58;
 const sliderWidth = 200;
-var doTouchRating = function () {
+const doTouchRating = function () {
   // document.body.addEventListener("touchend", touchend);
   // document.body.addEventListener("touchcancel", touchend);
   document.body.removeEventListener('touchmove', scrollCheck);
@@ -275,13 +272,13 @@ var doTouchRating = function () {
   let cancelling = false;
   let nowNumber = 5;
   const remove = function (e) {
-    if (!cancelling && touchingSong && touchingSong.$t && e.target == touchingSong.$t.rating) {
+    if (!cancelling && touchingSong?.$t && e.target == touchingSong.$t.rating) {
       doRating(nowNumber, touchingSong);
     } else if (touchingSong) {
       doRating(null, touchingSong);
     }
     Fx.removeElement(t.el);
-    if (touchingSong && touchingSong.el) {
+    if (touchingSong?.el) {
       touchingSong.el.classList.remove('on-top');
     }
     touchingSong = false;
@@ -329,7 +326,7 @@ return;
   });
 };
 
-var doRating = function (newRating, json) {
+const doRating = function (newRating, json) {
   const confirm = document.createElement('div');
   confirm.className = 'rating-number rating-confirm';
   confirm.textContent = Formatting.rating(newRating);
@@ -392,7 +389,7 @@ const fakeEffect = function (json, rating) {
 // INDIVIDUAL RATING BAR CODE
 
 const register = function (json) {
-  if (!json || !json.$t.rating || !json.id || isNaN(json.id)) {
+  if (!json?.$t.rating || !json.id || isNaN(json.id)) {
     return;
   }
   if (json.rating_user && (json.rating_user < 1 || json.rating_user > 5)) {
@@ -436,7 +433,7 @@ const register = function (json) {
   // that refers to or uses "json" in any way.
 };
 
-var registerAlbum = function (json) {
+const registerAlbum = function (json) {
   json.$t.rating.setAttribute('name', `arate_${  json.id}`);
   json.$t.rating.classList.add('album-rating');
 
@@ -447,7 +444,7 @@ var registerAlbum = function (json) {
   }
 };
 
-var registerSong = function (json) {
+const registerSong = function (json) {
   json.$t.rating.classList.add('song-rating');
   json.$t.rating.setAttribute('name', `srate_${  json.id}`);
 

@@ -1,37 +1,4 @@
-const RatingColors = {
-  "1.0": "#11537f",
-  "1.5": "#206898",
-  "2.0": "#2873a7",
-  "2.5": "#3281b7",
-  "3.0": "#3789c1",
-  "3.5": "#3789c1",
-  "4.0": "#459cd7",
-  "4.5": "#4ca6e3",
-  "5.0": "#55b3f3",
-};
-
-const RatingChart = function (json) {
-  const data = [];
-  for (const i in RatingColors) {
-    if (i in json.rating_histogram) {
-      data.push({
-        value: json.rating_histogram[i],
-        color: RatingColors[i],
-        label: i,
-        tooltip: `${Formatting.rating(i)  }: ${  json.rating_histogram[i]}`,
-      });
-    }
-  }
-  if (data.length === 0) {return;}
-  const c = HDivChart(data, { minShare: 4, addShareToTooltip: true });
-  c.classList.add("chart-ratings");
-  
-return c;
-};
-
-const CooldownExplanation = function () {
-  Modal($l("cd_what_is"), "modal_what_is_cooldown");
-};
+import { $l } from "../../../language";
 
 const AlbumView = function (album) {
   album.numSongRatings = 0;
@@ -209,7 +176,6 @@ const AlbumView = function (album) {
         forKeynav.push({ songs: songs[Stations[i].id] });
       }
     }
-    MultiAlbumKeyNav(template, forKeynav);
   } else if (album.songs.length === 0) {
     let sta;
     for (i = 0; i < Stations.length; i++) {
@@ -225,124 +191,6 @@ const AlbumView = function (album) {
     template._root.appendChild(
       RWTemplates.detail.songtable({ songs: album.songs })._root,
     );
-
-    if (!Sizing.simple) {
-      // keyboard nav i
-      let kni = false;
-      const keyNavMove = function (jump) {
-        const newI =
-          !kni
-            ? Math.max(0, -1 + jump)
-            : Math.min(album.songs.length - 1, Math.max(0, kni + jump));
-        if (newI === kni) {return;}
-
-        if (kni) {
-          album.songs[kni].$t.row.classList.remove("hover");
-        }
-        album.songs[newI].$t.row.classList.add("hover");
-        kni = newI;
-        scrollToKni();
-        
-return true;
-      };
-
-      var scrollToKni = function () {
-        const kniY = album.songs[kni].$t.row.offsetTop;
-        const nowY = template._scroll.scroll_top;
-        if (kniY > nowY + template._scroll.offset_height - 60) {
-          template._scroll.scroll_to(
-            kniY - template._scroll.offset_height + 60,
-          );
-        } else if (kniY < nowY + 60) {
-          template._scroll.scroll_to(kniY - 60);
-        }
-      };
-
-      template.keyNavDown = function () {
-        return keyNavMove(1);
-      };
-      template.keyNavUp = function () {
-        return keyNavMove(-1);
-      };
-      template.keyNavPageDown = function () {
-        return keyNavMove(15);
-      };
-      template.keyNavPageUp = function () {
-        return keyNavMove(-15);
-      };
-      template.keyNavEnd = function () {
-        return keyNavMove(album.songs.length);
-      };
-      template.keyNavHome = function () {
-        return keyNavMove(-album.songs.length);
-      };
-
-      template.keyNavLeft = function () {
-        return false;
-      };
-      template.keyNavRight = function () {
-        return false;
-      };
-
-      template.keyNavEnter = function () {
-        if (kni && album.songs[kni]) {
-          Requests.add(album.songs[kni].id);
-          
-return true;
-        }
-      };
-
-      template.keyNavAddCharacter = function (chr) {
-        if (kni && album.songs[kni]) {
-          if (chr == "i" && album.songs[kni].$t.detailIconClick) {
-            album.songs[kni].$t.detailIconClick();
-          } else if (parseInt(chr) >= 1 && parseInt(chr) <= 5) {
-            Rating.doRating(parseInt(chr), album.songs[kni]);
-          } else if (chr == "q") {Rating.doRating(1.5, album.songs[kni]);}
-          else if (chr == "w") {Rating.doRating(2.5, album.songs[kni]);}
-          else if (chr == "e") {Rating.doRating(3.5, album.songs[kni]);}
-          else if (chr == "r") {Rating.doRating(4.5, album.songs[kni]);}
-          else if (chr == "f" && User.id > 1) {
-            const e = document.createEvent("Events");
-            e.initEvent("click", true, false);
-            album.songs[kni].$t.fave.dispatchEvent(e);
-          }
-          
-return true;
-        }
-      };
-      template.keyNavBackspace = function () {
-        return false;
-      };
-
-      template.keyNavEscape = function () {
-        if (
-          kni &&
-          album.songs[kni] &&
-          album.songs[kni].$t.detailIconClick
-        ) {
-          album.songs[kni].$t.row.classList.remove("hover");
-        }
-        kni = false;
-      };
-
-      template.keyNavFocus = function () {
-        if (!kni) {
-          keyNavMove(1);
-        } else {
-          album.songs[kni].$t.row.classList.add("hover");
-        }
-      };
-
-      template.keyNavBlur = function () {
-        if (kni) {
-          album.songs[kni].$t.row.classList.remove("hover");
-        }
-      };
-
-      template._keyHandle = true;
-    }
-  }
 
   if (album.$t.cooldown_explanation) {
     album.$t.cooldown_explanation.addEventListener(
