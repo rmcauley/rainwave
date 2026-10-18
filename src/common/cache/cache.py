@@ -1,11 +1,12 @@
+import asyncio
 from contextlib import asynccontextmanager
 import pickle
-import emcache
+import aiomcache
 from common import config
 from api.exceptions import APIException
 from typing import Any
 
-client: emcache.Client | None = None
+client: aiomcache.Client | None = None
 
 
 @asynccontextmanager
@@ -17,13 +18,11 @@ async def cache_connect():
         )
 
     try:
-        client = await emcache.create_client(
-            [emcache.MemcachedHostAddress(config.memcache_host, config.memcache_port)],
-            connection_timeout=config.memcache_connect_timeout,
-            timeout=config.memcache_timeout,
+        client = aiomcache.Client(config.memcache_host, config.memcache_port)
+        # aiomcache connects lazily, so we force a get to test the connection
+        await asyncio.wait_for(
+            client.get(b"hello"), timeout=config.memcache_connect_timeout
         )
-        # memcache doesn't test its connection on start, so we force a get
-        await client.get(b"hello")
         yield client
     finally:
         if client:
@@ -37,19 +36,22 @@ async def cache_set(key: str, value: Any) -> None:
     if not client:
         raise APIException("internal_error", "No memcache connection.", status_code=500)
 
-    await client.set(key.encode("utf-8"), pickle.dumps(value))
+    await asyncio.wait_for(
+        client.set(key.encode("utf-8"), pickle.dumps(value)),
+        timeout=config.memcache_timeout,
+    )
 
 
 async def cache_get(key: str) -> Any:
     if not client:
         raise APIException("internal_error", "No memcache connection.", status_code=500)
 
-    result = await client.get(key.encode("utf-8"))
+    result = await asyncio.wait_for(
+        client.get(key.encode("utf-8")), timeout=config.memcache_timeout
+    )
     if result is None:
         return None
-    if isinstance(result, bytes):
-        return pickle.loads(result)
-    return pickle.loads(result.value)
+    return pickle.loads(result)
 
 
 async def cache_flush_all() -> None:
@@ -58,6 +60,4 @@ async def cache_flush_all() -> None:
     if not client:
         raise APIException("internal_error", "No memcache connection.", status_code=500)
 
-    await client.flush_all(
-        emcache.MemcachedHostAddress(config.memcache_host, config.memcache_port)
-    )
+    await asyncio.wait_for(client.flush_all(), timeout=config.memcache_timeout)

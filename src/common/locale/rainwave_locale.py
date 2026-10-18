@@ -1,40 +1,34 @@
 from typing import cast
 
+from babel import Locale, UnknownLocaleError
+
 from api import rainwave_typeddicts
 
 from .ordinal_suffixes import ORDINAL_SUFFIXES, ORDINAL_SUFFIXES_OTHER
 from .locale_types import (
+    LDMLPluralRule,
     RainwaveTranslationFile,
     RainwaveTranslationPlural,
     RainwaveTranslationValue,
 )
-from icu import Locale, PluralRules
 
 
 class RainwaveLocale:
     code: str
+    _locale: Locale
     _translation: RainwaveTranslationFile
     _ordinal_suffixes_other: str
     _ordinal_suffixes: dict[str, str]
     missing: dict[str, RainwaveTranslationValue]
 
     @staticmethod
-    def _load_plural_rules(
-        icu_locale: Locale,
-    ) -> tuple[PluralRules, PluralRules]:
-        # PyICU API shape differs across versions. Some builds expose only a
-        # single `forLocale(locale)` overload with no ordinal/cardinal constants.
-        default_rules = PluralRules.forLocale(icu_locale)
-        ordinal_type = getattr(PluralRules, "ORDINAL", None)
-        cardinal_type = getattr(PluralRules, "CARDINAL", None)
-
-        if ordinal_type is None or cardinal_type is None:
-            return default_rules, default_rules
-
-        return (
-            PluralRules.forLocale(icu_locale, ordinal_type),
-            PluralRules.forLocale(icu_locale, cardinal_type),
-        )
+    def _load_babel_locale(code: str) -> Locale:
+        # Some of our language codes (e.g. ko-KO) are not real CLDR locales,
+        # so fall back to the bare language for plural rules.
+        try:
+            return Locale.parse(code, sep="-")
+        except (UnknownLocaleError, ValueError):
+            return Locale.parse(code.split("-")[0])
 
     def __init__(
         self,
@@ -47,8 +41,7 @@ class RainwaveLocale:
         self._translation = translation
         self._ordinal_suffixes = ORDINAL_SUFFIXES.get(code, {})
         self._ordinal_suffixes_other = ORDINAL_SUFFIXES_OTHER.get(code, "")
-        icu_locale = Locale(code)
-        self._ordinal, self._cardinal = self._load_plural_rules(icu_locale)
+        self._locale = self._load_babel_locale(code)
 
         # document lines missing
         self.missing = {}
@@ -57,14 +50,14 @@ class RainwaveLocale:
                 self.missing[key] = value
 
     def format_ordinal(self, value: int | float) -> str:
-        category = self._ordinal.select(value)
+        category = self._locale.ordinal_form(value)
         suffix = self._ordinal_suffixes.get(category, self._ordinal_suffixes_other)
         return f"{value}{suffix}"
 
     def format_plural(
         self, translation_part: RainwaveTranslationPlural, value: int | float
     ) -> str:
-        category = self._cardinal.select(value)
+        category = cast(LDMLPluralRule, self._locale.plural_form(value))
         suffix = translation_part.plurals.get(
             category, translation_part.plurals.get("other", "")
         )

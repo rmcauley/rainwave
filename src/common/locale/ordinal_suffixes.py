@@ -11,7 +11,7 @@ ORDINAL_SUFFIXES_OTHER: dict[str, str] = {
     "pl-PL": ".",
     "pt-BR": "º",
     "pt-PT": "º",
-    "ru-RU": "-e",
+    "ru-RU": "-е",
 }
 
 ORDINAL_SUFFIXES: dict[str, dict[str, str]] = {

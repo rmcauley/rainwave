@@ -78,7 +78,7 @@ class TuneInIndex(HtmlHandler):
 
         for relay in public_relays.public_relays[self.sid]:
             self.write(
-                "#EXTINF:0, Rainwave %s: %s Relay\n"
+                "#EXTINF:0,Rainwave %s: %s Relay\n"
                 % (stations.station_id_friendly[self.sid], relay["name"])
             )
             self.write(
