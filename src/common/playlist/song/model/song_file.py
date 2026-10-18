@@ -19,7 +19,7 @@ from common.playlist.song.replaygain import get_gain_for_song
 from common.playlist.song_group.song_group import SongGroup
 
 
-class SongInsertDict(TypedDict):
+class SongUpdateDict(TypedDict):
     album_id: int
     song_origin_sid: int
     song_verified: bool
@@ -32,8 +32,11 @@ class SongInsertDict(TypedDict):
     song_link_text: str | None
     song_length: int
     song_file_mtime: int
-    song_replay_gain: str
     song_artist_parseable: str
+
+
+class SongInsertDict(SongUpdateDict):
+    song_replay_gain: str
 
 
 class SongFileRow(SongInsertDict):
@@ -94,7 +97,7 @@ class SongFile:
             else []
         )
 
-        to_upsert: SongInsertDict = {
+        to_upsert: SongUpdateDict = {
             "album_id": album.id,
             "song_artist_parseable": orjson.dumps(artist_parseable).decode("utf-8"),
             "song_artist_tag": tags.artist,
@@ -103,7 +106,6 @@ class SongFile:
             "song_length": tags.length,
             "song_link_text": tags.comment,
             "song_origin_sid": origin_sid,
-            "song_replay_gain": get_gain_for_song(self.filename),
             "song_scanned": True,
             "song_title": tags.title,
             "song_title_searchable": get_searchable_string(tags.title),
@@ -118,13 +120,19 @@ class SongFile:
         )
 
         if not song_row:
+            # Replaygain scanning is expensive, so only do it for brand new songs.
+            # Existing songs keep their stored value on update.
+            to_insert: SongInsertDict = {
+                **to_upsert,
+                "song_replay_gain": get_gain_for_song(self.filename),
+            }
             song_row = await cursor.fetch_row(
                 build_insert(
                     "r4_songs",
-                    to_upsert,
+                    to_insert,
                 )
                 + sql.SQL(" RETURNING *"),
-                to_upsert,
+                to_insert,
                 row_type=SongFileRow,
             )
         else:
