@@ -100,10 +100,16 @@
 
         @include transform(translateX(0) scaleX(1) !important);
 
-        transition: color $color-transtime, opacity $opacity-transtime,
-          background $color-transtime, -webkit-transform $wait-transtime;
-        transition: color $color-transtime, opacity $opacity-transtime,
-          background $color-transtime, transform $wait-transtime;
+        transition:
+          color $color-transtime,
+          opacity $opacity-transtime,
+          background $color-transtime,
+          -webkit-transform $wait-transtime;
+        transition:
+          color $color-transtime,
+          opacity $opacity-transtime,
+          background $color-transtime,
+          transform $wait-transtime;
       }
 
       &.confirmed {
@@ -112,10 +118,16 @@
 
         @include transform(translateX(-25px) scaleX(1) !important);
 
-        transition: color $color-transtime, opacity $opacity-transtime,
-          background $color-transtime, -webkit-transform $confirm-transtime;
-        transition: color $color-transtime, opacity $opacity-transtime,
-          background $color-transtime, transform $confirm-transtime;
+        transition:
+          color $color-transtime,
+          opacity $opacity-transtime,
+          background $color-transtime,
+          -webkit-transform $confirm-transtime;
+        transition:
+          color $color-transtime,
+          opacity $opacity-transtime,
+          background $color-transtime,
+          transform $confirm-transtime;
       }
 
       &.bad-rating {
@@ -124,10 +136,16 @@
 
         @include transform(translateX(-25px) scaleX(1) !important);
 
-        transition: color $color-transtime, opacity $opacity-transtime,
-          background $color-transtime, -webkit-transform $confirm-transtime;
-        transition: color $color-transtime, opacity $opacity-transtime,
-          background $color-transtime, transform $confirm-transtime;
+        transition:
+          color $color-transtime,
+          opacity $opacity-transtime,
+          background $color-transtime,
+          -webkit-transform $confirm-transtime;
+        transition:
+          color $color-transtime,
+          opacity $opacity-transtime,
+          background $color-transtime,
+          transform $confirm-transtime;
       }
     }
   }

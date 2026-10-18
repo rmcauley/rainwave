@@ -4,10 +4,16 @@ import { Playlist } from './components/playlist/playlist';
 
 import './index.scss';
 import './utilityClasses.scss';
+import { AlbumRating } from './components/ratings/albumRating/albumRating';
+import { initRatingPreferences } from './components/ratings/ratingPreferences';
+import { SongRating } from './components/ratings/songRating/songRating';
 import { preferences } from './preferences/preferences';
 import { api } from './rainwaveApi/api';
 
 function rainwaveInit(): void {
+  customElements.define('song-rating', SongRating);
+  customElements.define('album-rating', AlbumRating);
+
   api.setOptions({
     apiKey: window.BOOTSTRAP.user.api_key,
     sid: window.BOOTSTRAP.user.sid,
@@ -17,6 +23,7 @@ function rainwaveInit(): void {
   api.processPayload({ user: window.BOOTSTRAP.user });
 
   initMenu();
+  initRatingPreferences();
   // api.addEventListener('error', showTooltipError)
   // api.addEventListener('wserror', showTooltipError)
   // api.addEventListener('sdk_exception', showTooltipError)

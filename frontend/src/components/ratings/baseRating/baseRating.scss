@@ -1,0 +1,20 @@
+@property --rating {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+item-rating {
+  background-position: 0 calc(round(var(--rating) * 5, 1) * -28px + 3px);
+  transition: --rating 300ms cubic-bezier(0.5, 1, 0.89, 1); /* ≈ ease-out quad */
+}
+
+item-rating:hover {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  item-rating {
+    transition: none;
+  }
+}

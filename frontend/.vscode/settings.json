@@ -27,5 +27,6 @@
   "[html]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "mypy.enabled": false
+  "mypy.enabled": false,
+  "git.openRepositoryInParentFolders": "always"
 }
