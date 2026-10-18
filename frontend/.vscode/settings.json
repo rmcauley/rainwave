@@ -26,5 +26,6 @@
   },
   "[html]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
-  }
+  },
+  "mypy.enabled": false
 }
