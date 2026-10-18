@@ -55,7 +55,28 @@ throttle_exempt = (
     "all_albums_paginated",
     "all_groups_paginated",
     "all_artists_paginated",
+    # Automatic messages the frontend sends on its own, not user actions.
+    # "auth" is exempt because it can't be replayed from the queue before a
+    # user exists, and many users behind one IP may reconnect at the same time.
+    "ping",
+    "auth",
 )
+
+THROTTLE_WINDOW_SECONDS = 3
+THROTTLE_MESSAGE_LIMIT = 5
+# Upper bound on queued messages per connection, so a misbehaving client
+# can't make the server hold an unbounded queue in memory.
+MAX_THROTTLED_MSGS = 20
+
+# Message timestamps within the throttle window, shared by every connection
+# of the same user (or of the same IP, for anonymous users).
+_msg_times_by_key: dict[str, list[float]] = {}
+
+
+def _forget_expired_msg_times(key: str) -> None:
+    cutoff = timestamp() - THROTTLE_WINDOW_SECONDS
+    if not any(t > cutoff for t in _msg_times_by_key.get(key, [])):
+        _msg_times_by_key.pop(key, None)
 
 
 @handle_api_url(r"websocket/(\d+)")
@@ -74,7 +95,6 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
 
         # Variables for this class
         self.remote_ip = get_remote_ip_or_throw(self.request.remote_ip)
-        self.msg_times: list[float] = []
         self.throttled = False
         self.throttled_msgs: list[RainwaveWebsocketMessage] = []
 
@@ -104,7 +124,54 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
 
     def on_close(self):
         self.throttled_msgs = []
+        # The connection's last messages may still be inside the window, so
+        # check again once they have expired.
+        tornado.ioloop.IOLoop.instance().add_timeout(
+            datetime.timedelta(seconds=THROTTLE_WINDOW_SECONDS + 0.1),
+            _forget_expired_msg_times,
+            self._throttle_key(),
+        )
         websockets_by_sid[self.sid].remove(self)
+
+    def _throttle_key(self) -> str:
+        # user_id stays 1 until auth succeeds, so unauthenticated and
+        # anonymous connections are tracked by IP.
+        if self.user_id > 1:
+            return "user:%s" % self.user_id
+        return "ip:%s" % self.remote_ip
+
+    def _record_message_time(self) -> int:
+        key = self._throttle_key()
+        now = timestamp()
+        times = [
+            t
+            for t in _msg_times_by_key.get(key, [])
+            if t > now - THROTTLE_WINDOW_SECONDS
+        ]
+        times.append(now)
+        _msg_times_by_key[key] = times
+        return len(times)
+
+    def _write_throttle_response(self, message: RainwaveWebsocketMessage) -> None:
+        message_id = fieldtypes.zero_or_greater_integer(message.get("message_id", 0))
+        if message_id:
+            self.write_rainwave_response(
+                {
+                    "wsthrottle": {
+                        "tl_key": "websocket_throttle",
+                        "text": self.rainwave_locale.translate("websocket_throttle"),
+                    },
+                    "message_id": {
+                        "message_id": message_id,
+                    },
+                }
+            )
+
+    def _queue_throttled_message(self, message: RainwaveWebsocketMessage) -> None:
+        if len(self.throttled_msgs) >= MAX_THROTTLED_MSGS:
+            self._write_throttle_response(message)
+            return
+        self.throttled_msgs.append(message)
 
     async def process_throttle(self):
         if not self.throttled_msgs or not self.user:
@@ -119,21 +186,7 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
             msgs = [m for m in self.throttled_msgs if m["action"] == action]
             msg = msgs.pop()
             for m in msgs:
-                message_id = fieldtypes.zero_or_greater_integer(m.get("message_id", 0))
-                if message_id:
-                    self.write_rainwave_response(
-                        {
-                            "wsthrottle": {
-                                "tl_key": "websocket_throttle",
-                                "text": self.rainwave_locale.translate(
-                                    "websocket_throttle"
-                                ),
-                            },
-                            "message_id": {
-                                "message_id": message_id,
-                            },
-                        }
-                    )
+                self._write_throttle_response(m)
             self.throttled_msgs = [
                 m for m in self.throttled_msgs if m["action"] != action
             ]
@@ -179,9 +232,27 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
 
         user = self.user
         if rw_message["action"] == "auth":
+            if user is not None:
+                # The frontend opens a new socket to re-authenticate. Not
+                # processing this keeps an authenticated socket from being
+                # used to guess other users' keys without ever being closed.
+                self.write_rainwave_response(
+                    {
+                        "wserror": {
+                            "tl_key": "invalid_request",
+                            "text": "Already authenticated on this websocket.",
+                        }
+                    }
+                )
+                return
             await self._process_message(rw_message, None)
             if self.user:
                 await self._station_offline_check()
+            else:
+                # One failed attempt per connection. The frontend stops on an
+                # auth failure and never retries, so this only affects clients
+                # guessing keys. The error response is already queued to send.
+                self.close()
             return
         elif user is None:
             self.write_rainwave_response(
@@ -192,6 +263,9 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
                     }
                 }
             )
+            # The frontend always authenticates first, so this is not a normal
+            # client. Closing hands it to nginx's connection limits.
+            self.close()
             return
 
         await self._process_message(rw_message, user)
@@ -204,20 +278,16 @@ class WebsocketEndpoint(RainwaveWebsocketHandler):
     ) -> None:
         message_id = fieldtypes.zero_or_greater_integer(message.get("message_id", None))
 
-        throt_t = timestamp() - 3
-        self.msg_times = [t for t in self.msg_times if t > throt_t]
-
         if not is_throttle_process and message["action"] not in throttle_exempt:
-            self.msg_times.append(timestamp())
-            # log.debug("throttle", "%s - %s" % (len(self.msg_times), message['action']))
+            recent_message_count = self._record_message_time()
             if self.throttled:
                 # log.debug("throttle", "Currently throttled, adding to queue.")
-                self.throttled_msgs.append(message)
+                self._queue_throttled_message(message)
                 return
-            elif len(self.msg_times) >= 5:
+            elif recent_message_count >= THROTTLE_MESSAGE_LIMIT:
                 # log.debug("throttle", "Too many messages, throttling.")
                 self.throttled = True
-                self.throttled_msgs.append(message)
+                self._queue_throttled_message(message)
                 tornado.ioloop.IOLoop.instance().add_timeout(
                     datetime.timedelta(seconds=0.5), self.process_throttle
                 )

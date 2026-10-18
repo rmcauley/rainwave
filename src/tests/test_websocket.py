@@ -9,6 +9,7 @@ from tornado.httpclient import HTTPRequest, HTTPResponse
 from tornado.testing import gen_test  # pyright: ignore[reportUnknownVariableType]
 from tornado.websocket import WebSocketClientConnection, websocket_connect
 
+from api.routes.websocket_endpoint import MAX_THROTTLED_MSGS
 from api.websocket.live_voting.live_voting import live_voting_broadcast_service
 from api.websocket.websocket_zmq_listener import websocket_on_zmq
 from common import config
@@ -202,6 +203,132 @@ class TestWebsocket(RequestClassesTestCase):
             )
             assert message["pong"] is True
             assert message["message_id"]["message_id"] == 123
+        finally:
+            connection.close()
+
+    @gen_test(timeout=20)
+    async def test_websocket_failed_auth_closes_connection(self) -> None:
+        connection = await self._connect_websocket()
+        try:
+            connection.write_message(
+                json.dumps(
+                    {
+                        "action": "auth",
+                        "user_id": TUNED_IN_LOGGED_IN_USER_ID,
+                        "key": "not-the-key",
+                        "message_id": 9,
+                    }
+                )
+            )
+
+            message = await self._read_message(connection)
+            assert message["error"]["tl_key"] == "auth_failed"
+            assert message["message_id"]["message_id"] == 9
+
+            closed = await asyncio.wait_for(connection.read_message(), 5.0)
+            assert closed is None
+        finally:
+            connection.close()
+
+    @gen_test(timeout=20)
+    async def test_websocket_message_before_auth_closes_connection(self) -> None:
+        connection = await self._connect_websocket()
+        try:
+            connection.write_message(json.dumps({"action": "ping", "message_id": 3}))
+
+            message = await self._read_message(connection)
+            assert message["wserror"]["tl_key"] == "auth_required"
+
+            closed = await asyncio.wait_for(connection.read_message(), 5.0)
+            assert closed is None
+        finally:
+            connection.close()
+
+    @gen_test(timeout=20)
+    async def test_websocket_second_auth_is_rejected_and_keeps_connection(
+        self,
+    ) -> None:
+        connection = await self._connect_websocket()
+        try:
+            await self._auth_websocket(
+                connection,
+                user_id=TUNED_IN_LOGGED_IN_USER_ID,
+                key=TUNED_IN_LOGGED_IN_API_KEY,
+            )
+
+            connection.write_message(
+                json.dumps(
+                    {
+                        "action": "auth",
+                        "user_id": SITE_ADMIN_USER_ID,
+                        "key": "guess",
+                    }
+                )
+            )
+            message = await self._wait_for_message(
+                connection, lambda payload: "wserror" in payload
+            )
+            assert message["wserror"]["tl_key"] == "invalid_request"
+
+            connection.write_message(json.dumps({"action": "ping", "message_id": 5}))
+            pong = await self._wait_for_message(
+                connection, lambda payload: "pong" in payload
+            )
+            assert pong["message_id"]["message_id"] == 5
+        finally:
+            connection.close()
+
+    @gen_test(timeout=20)
+    async def test_websocket_pings_are_never_throttled(self) -> None:
+        connection = await self._connect_websocket()
+        try:
+            await self._auth_websocket(
+                connection,
+                user_id=TUNED_IN_LOGGED_IN_USER_ID,
+                key=TUNED_IN_LOGGED_IN_API_KEY,
+            )
+
+            ping_count = 15
+            for message_id in range(1, ping_count + 1):
+                connection.write_message(
+                    json.dumps({"action": "ping", "message_id": message_id})
+                )
+
+            for message_id in range(1, ping_count + 1):
+                message = await self._read_message(connection)
+                assert "wsthrottle" not in message
+                assert message["pong"] is True
+                assert message["message_id"]["message_id"] == message_id
+        finally:
+            connection.close()
+
+    @gen_test(timeout=20)
+    async def test_websocket_throttle_queue_is_capped(self) -> None:
+        connection = await self._connect_websocket()
+        try:
+            await self._auth_websocket(
+                connection,
+                user_id=TUNED_IN_LOGGED_IN_USER_ID,
+                key=TUNED_IN_LOGGED_IN_API_KEY,
+            )
+
+            # "fave_song" is a non-unique action, so queued copies are never
+            # collapsed. 4 get through before throttling starts, MAX_THROTTLED_MSGS
+            # are queued, and the rest must be rejected immediately.
+            message_count = 60
+            for message_id in range(1, message_count + 1):
+                connection.write_message(
+                    json.dumps({"action": "fave_song", "message_id": message_id})
+                )
+
+            rejected_message_ids: set[int] = set()
+            while len(rejected_message_ids) < message_count - 4 - MAX_THROTTLED_MSGS:
+                message = await self._wait_for_message(
+                    connection, lambda payload: "wsthrottle" in payload, timeout=5.0
+                )
+                rejected_message_ids.add(message["message_id"]["message_id"])
+
+            assert all(5 + MAX_THROTTLED_MSGS <= i for i in rejected_message_ids)
         finally:
             connection.close()
 
