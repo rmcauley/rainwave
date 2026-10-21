@@ -19,10 +19,10 @@
   },
   "devDependencies": {
     "husky": "9.1.7",
-    "oxfmt": "0.65.0",
+    "oxfmt": "0.74.0",
     "oxlint": "1.80.0",
     "typescript": "7.0.2",
-    "vite": "8.2.2",
+    "vite": "8.3.5",
     "vite-plugin-checker": "0.14.5",
     "vitest": "4.1.11"
   }
