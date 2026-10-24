@@ -32,6 +32,7 @@
 ##########################################
 
 import os
+from typing import Union
 
 from lxml import html
 
@@ -59,7 +60,9 @@ def context_type_name(template_name: str) -> str:
     return f"{template_name}Context"
 
 
-def find_single_root_element(fragments: list) -> html.HtmlElement | None:
+def find_single_root_element(
+    fragments: list[Union[str, html.HtmlElement]],
+) -> html.HtmlElement | None:
     """
     Returns the lone root element if the template consists of exactly one real
     element (no text or control flow beside it), so it can be the $root itself
@@ -130,15 +133,7 @@ def compile_templates(source_dir: str) -> None:
                 open(file_name) as html_file,
                 open(template_output_file_name, "w") as ts_file,
             ):
-                buffer = ""
-                context_param = ""
-                if has_context:
-                    buffer += (
-                        f"import type {{ {context_type_name(template_name)} }} from "
-                        f"'{_relative_module_path(template_output_file_name, template_context_file_name)}';\n"
-                    )
-                    context_param = f"context: {context_type_name(template_name)}"
-                buffer += f"function {template_name}Template({context_param}) {{\n"
+                fn_buffer = ""
                 fragments = html.fragments_fromstring(html_file.read())
                 root_element = find_single_root_element(fragments)
                 parsed_result_binds: dict[str, str] = {"$root": "v1"}
@@ -147,13 +142,13 @@ def compile_templates(source_dir: str) -> None:
                     parsed_result = parse_root_element(root_element, 0)
                     parsed_result_binds.update(parsed_result.binds)
                     parsed_result_imports.update(parsed_result.imports)
-                    buffer += parsed_result.buffer
+                    fn_buffer += parsed_result.buffer
                 else:
-                    buffer += "const v1 = document.createDocumentFragment();\n"
+                    fn_buffer += "const v1 = document.createDocumentFragment();\n"
                     js_variable_count = 1
                     for fragment in fragments:
                         if isinstance(fragment, str):
-                            buffer += emit_text_content(fragment, "v1")
+                            fn_buffer += emit_text_content(fragment, "v1")
                         else:
                             parsed_result = parse_node(
                                 fragment, "v1", js_variable_count
@@ -161,21 +156,34 @@ def compile_templates(source_dir: str) -> None:
                             parsed_result_binds.update(parsed_result.binds)
                             parsed_result_imports.update(parsed_result.imports)
                             js_variable_count = parsed_result.js_variable_count
-                            buffer += parsed_result.buffer
-                buffer += f"return {emit_binds(parsed_result_binds)}\n;"
-                buffer += "}\n"
+                            fn_buffer += parsed_result.buffer
+
+                file_buffer = ""
+                context_param = ""
+                if has_context:
+                    file_buffer += (
+                        f"import type {{ {context_type_name(template_name)} }} from "
+                        f"'{_relative_module_path(template_output_file_name, template_context_file_name)}';\n"
+                    )
+                    context_param = f"context: {context_type_name(template_name)}"
 
                 if style_file_name:
-                    buffer = f"import style from './{style_file_name}';\n" + buffer
-                buffer = (
-                    solve_ts_imports(
-                        template_output_file_name,
-                        parsed_result_imports,
-                    )
-                    + buffer
+                    file_buffer += f"import style from './{style_file_name}';\n"
+
+                file_buffer += solve_ts_imports(
+                    template_output_file_name,
+                    parsed_result_imports,
                 )
-                buffer += f"export {{ {template_name}Template }};"
-                ts_file.write(buffer)
+
+                file_buffer += f"function {template_name}Template({context_param}) {{\n"
+
+                file_buffer += fn_buffer
+
+                file_buffer += f"return {emit_binds(parsed_result_binds)}\n;"
+                file_buffer += "}\n"
+
+                file_buffer += f"export {{ {template_name}Template }};"
+                ts_file.write(file_buffer)
         except:
             print(f"Failed on {file_name}")
             raise

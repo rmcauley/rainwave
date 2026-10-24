@@ -6,7 +6,7 @@ class Panels {
   public template: ReturnType<typeof panelsTemplate>;
 
   constructor() {
-    this.template = panelsTemplate(null);
+    this.template = panelsTemplate();
   }
 }
 

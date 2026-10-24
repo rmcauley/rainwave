@@ -1,4 +1,20 @@
 import { $l } from "../../../language";
+import { components } from "../../../rainwaveApi/rainwave-openapi";
+import { isPlaylistItemNew } from "../../playlist/isPlaylistItemNew";
+import { albumPanelTemplate } from "./albumPanel.template";
+
+class AlbumPanel {
+  template: ReturnType<typeof albumPanelTemplate>
+
+  constructor(album: components['schemas']['album']) {
+    this.template = albumPanelTemplate({album});
+  }
+
+  render = (): void => {
+
+    
+  }
+}
 
 const AlbumView = function (album) {
   album.numSongRatings = 0;

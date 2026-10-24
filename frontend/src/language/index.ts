@@ -21,7 +21,7 @@ function formatPlural(plurals: RainwaveTranslationPlural['plurals'], value: numb
 //    Variables will be given class "lang_[line]_[variablename]" when filling in variables
 function $l(
   key: RainwaveTranslationKey,
-  args?: Record<string, string | number>,
+  args?: Record<string, string | number | null>,
   el?: HTMLElement,
   clear_el?: boolean,
 ): string {
@@ -55,6 +55,8 @@ function $l(
         tokenText = formatOrdinal(value);
       } else if (token.type === 'plural' && typeof value === 'number') {
         tokenText = formatPlural(token.plurals, value);
+      } else if (value === null) {
+        tokenText = '';
       } else if (token.type === 'substitute' && value !== undefined) {
         tokenText = typeof value === 'number' ? value.toString() : value;
       } else {
