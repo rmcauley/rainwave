@@ -1,52 +1,57 @@
-<div bind="art" class="album-art"></div>
-
-<div class="album-panel" bind="header">
-  <if condition="isNew">
-    <div class="album-panel-new-indicator">it's new!</div>
-  </if>
-  <if condition="isAllOnCooldown">
-    <div class="album-all-cooldown" bind="albumAllCooldown">
-      <span>{{ $l("album_all_cooldown") }}</span>
-      <sup>?</sup>
-    </div>
-  </if>
-  <else>
-    <if condition="hasCooldown">
-      <div class="album-has-cooldown" bind="albumHasCooldown">
-        <span>{{ $l("album_has_cooldown") }}</span>
+<div class="panel-header album-panel-header" bind="header">
+  <div>
+    <if condition="isNew">
+      <div class="album-panel-new-indicator">{{ $l("new_album") }}</div>
+    </if>
+    <if condition="hasNewSongs">
+      <div class="album-panel-new-songs-indicator">{{ $l("new_songs") }}</div>
+    </if>
+    <if condition="isAllOnCooldown">
+      <div class="album-all-cooldown" bind="albumAllCooldown">
+        <span>{{ $l("album_all_cooldown") }}</span>
         <sup>?</sup>
       </div>
     </if>
-  </else>
-  <if condition="album.rating_user">
-    <div>{{ $l("your_album_rating", { 'rating_user': context.album.rating_user }) }}</div>
-  </if>
-  <if condition="album.rating_count">
-    <div>
-      <span>{{ $l("album_rating_detail") }}</span>
-      <span>
-        {{ $l("rating_detail_numbers", { "rating": context.album.rating, "count":
-        context.album.rating_count, "percentile": context.album.rating_rank_percentile,
-        "percentile_message": context.ratingPercentileMessage }) }}
-      </span>
-      <div bind="graphPlacement"></div>
-    </div>
-  </if>
-  <if condition="album.genres.length > 0">
-    <div class="album-panel-genres">
-      <div bind="categoryRollover">{{ $l("relevant_categories_rollover")}}</div>
-      <div bind="categoryList" class="category-list">
-        <for each="album.genres" bind="genres">
-          <a href="#!/group/{{ id }}">{{ name }}</a>
-        </for>
+    <else>
+      <if condition="hasCooldown">
+        <div class="album-has-cooldown" bind="albumHasCooldown">
+          <span>{{ $l("album_has_cooldown") }}</span>
+          <sup>?</sup>
+        </div>
+      </if>
+    </else>
+    <if condition="album.rating_user">
+      <div>{{ $l("your_album_rating", { 'rating_user': context.album.rating_user }) }}</div>
+    </if>
+    <if condition="album.rating_count">
+      <div>
+        <span>{{ $l("album_rating_detail") }}</span>
+        <span>
+          {{ $l("rating_detail_numbers", { "rating": context.album.rating, "count":
+          context.album.rating_count, "percentile": context.album.rating_rank_percentile,
+          "percentile_message": context.ratingPercentileMessage }) }}
+        </span>
+        <div bind="ratingGraph"></div>
       </div>
-    </div>
-  </if>
-  <if condition="user.perks">
-    <div>
-      <a class="fave-all-songs" bind="faveAllSongs">{{ $l("fave_all_songs") }}</a>
-      <span>-</span>
-      <a class="unfave-all-songs" bind="unfaveAllSongs">{{ $l("unfave_all_songs") }}</a>
-    </div>
-  </if>
+    </if>
+    <if condition="album.genres.length > 0">
+      <div class="album-panel-header-genres">
+        <div bind="categoryRollover">{{ $l("relevant_categories_rollover")}}</div>
+        <div bind="categoryList" class="category-list">
+          <for each="album.genres" bind="genres">
+            <a href="#!/group/{{ id }}">{{ name }}</a>
+          </for>
+        </div>
+      </div>
+    </if>
+    <if condition="user.perks">
+      <div>
+        <a class="fave-all-songs" bind="faveAllSongs">{{ $l("fave_all_songs") }}</a>
+        <span>-</span>
+        <a class="unfave-all-songs" bind="unfaveAllSongs">{{ $l("unfave_all_songs") }}</a>
+      </div>
+    </if>
+  </div>
+
+  <div bind="art" class="album-art"></div>
 </div>

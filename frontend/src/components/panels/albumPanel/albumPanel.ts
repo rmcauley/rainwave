@@ -1,18 +1,51 @@
-import { components } from "../../../rainwaveApi/rainwave-openapi";
-import { albumPanelTemplate } from "./albumPanel.template";
+import { $l } from '../../../language';
+import { api } from '../../../rainwaveApi/api';
+import type { components } from '../../../rainwaveApi/rainwave-openapi';
+import { isPlaylistItemNew } from '../../playlist/isPlaylistItemNew';
+import { albumPanelTemplate } from './albumPanel.template';
+import { albumPanelRatingChart } from './albumPanelRatingChart';
 
 class AlbumPanel {
-
+  template: ReturnType<typeof albumPanelTemplate>;
   constructor(album: components['schemas']['album']) {
-    // this.template = albumPanelTemplate({album});
-  }
+    const hasCooldown = !album.cool && album.songs.some((s) => s.cool);
+    const isNew = isPlaylistItemNew(album.added_on);
+    const hasNewSongs = !isNew && album.songs.some((s) => isPlaylistItemNew(s.added_on));
 
-  render = (): void => {
+    let ratingPercentileMessage;
+    if (album.rating_rank_percentile >= 50) {
+      ratingPercentileMessage = $l('rating_percentile_top', {
+        rating: album.rating,
+        percentile: album.rating_rank_percentile,
+        percentile_top: 100 - album.rating_rank_percentile,
+      });
+    } else {
+      ratingPercentileMessage = $l('rating_percentile_bottom', {
+        rating: album.rating,
+        percentile: album.rating_rank_percentile,
+      });
+    }
 
-    
+    this.template = albumPanelTemplate({
+      album,
+      hasCooldown,
+      hasNewSongs,
+      isAllOnCooldown: album.cool,
+      isNew,
+      ratingPercentileMessage,
+      user: api.user,
+    });
+
+    if (this.template.ratingGraph) {
+      const chart = albumPanelRatingChart(album);
+      if (chart) {
+        this.template.ratingGraph.parentNode?.replaceChild(chart, this.template.ratingGraph);
+      }
+    }
   }
 }
-export {AlbumPanel}
+
+export { AlbumPanel };
 
 // const AlbumView = function (album) {
 //   album.numSongRatings = 0;
@@ -116,17 +149,6 @@ export {AlbumPanel}
 //         template.category_list.parentNode.removeChild(template.category_list);
 //       },
 //     );
-//   }
-
-//   if (template.graph_placement) {
-//     const chart = RatingChart(album);
-//     if (chart) {
-//       template.graph_placement.parentNode.replaceChild(
-//         chart,
-//         template.graph_placement,
-//       );
-//     }
-//     template.graph_placement = null;
 //   }
 
 //   if (template.fave_all_songs) {
