@@ -33,7 +33,7 @@
     </div>
   </if>
   <if condition="album.genres.length > 0">
-    <div class="album-panel-genres" bind="genres">
+    <div class="album-panel-genres">
       <div bind="categoryRollover">{{ $l("relevant_categories_rollover")}}</div>
       <div bind="categoryList" class="category-list">
         <for each="album.genres" bind="genres">

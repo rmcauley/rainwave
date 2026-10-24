@@ -1,13 +1,10 @@
-import { $l } from "../../../language";
 import { components } from "../../../rainwaveApi/rainwave-openapi";
-import { isPlaylistItemNew } from "../../playlist/isPlaylistItemNew";
 import { albumPanelTemplate } from "./albumPanel.template";
 
 class AlbumPanel {
-  template: ReturnType<typeof albumPanelTemplate>
 
   constructor(album: components['schemas']['album']) {
-    this.template = albumPanelTemplate({album});
+    // this.template = albumPanelTemplate({album});
   }
 
   render = (): void => {
@@ -15,218 +12,219 @@ class AlbumPanel {
     
   }
 }
+export {AlbumPanel}
 
-const AlbumView = function (album) {
-  album.numSongRatings = 0;
-  for (var i in RatingColors) {
-    if (i in album.rating_histogram) {
-      album.numSongRatings += album.rating_histogram[i];
-    }
-  }
+// const AlbumView = function (album) {
+//   album.numSongRatings = 0;
+//   for (var i in RatingColors) {
+//     if (i in album.rating_histogram) {
+//       album.numSongRatings += album.rating_histogram[i];
+//     }
+//   }
 
-  album.songs.sort(SongsTableSorting);
+//   album.songs.sort(SongsTableSorting);
 
-  album.isNew = album.added_on > Clock.now - 86400 * 14;
-  album.isNewish = album.added_on > Clock.now - 86400 * 30;
+//   album.isNew = album.added_on > Clock.now - 86400 * 14;
+//   album.isNewish = album.added_on > Clock.now - 86400 * 30;
 
-  album.hasNew = false;
-  album.hasNewish = false;
-  album.allCooldown = false;
-  let onCooldown = 0;
-  album.hasCooldown = false;
-  for (i = 0; i < album.songs.length; i++) {
-    if (album.songs[i].added_on > Clock.now - 86400 * 14) {
-      album.songs[i].isNew = true;
-      album.hasNew = true;
-    } else if (album.songs[i].added_on > Clock.now - 86400 * 30) {
-      album.songs[i].isNewish = true;
-      album.hasNewish = true;
-    } else {
-      album.songs[i].isNew = false;
-    }
+//   album.hasNew = false;
+//   album.hasNewish = false;
+//   album.allCooldown = false;
+//   let onCooldown = 0;
+//   album.hasCooldown = false;
+//   for (i = 0; i < album.songs.length; i++) {
+//     if (album.songs[i].added_on > Clock.now - 86400 * 14) {
+//       album.songs[i].isNew = true;
+//       album.hasNew = true;
+//     } else if (album.songs[i].added_on > Clock.now - 86400 * 30) {
+//       album.songs[i].isNewish = true;
+//       album.hasNewish = true;
+//     } else {
+//       album.songs[i].isNew = false;
+//     }
 
-    if (album.songs[i].cool) {
-      album.hasCooldown = true;
-      onCooldown++;
-    }
-  }
+//     if (album.songs[i].cool) {
+//       album.hasCooldown = true;
+//       onCooldown++;
+//     }
+//   }
 
-  if (onCooldown === album.songs.length) {
-    album.allCooldown = true;
-  }
+//   if (onCooldown === album.songs.length) {
+//     album.allCooldown = true;
+//   }
 
-  // there are some instances of old songs breaking out into new albums
-  // correct for that here
-  album.isNew = album.hasNew && album.isNew;
-  album.isNewish = album.hasNewish && album.isNewish;
+//   // there are some instances of old songs breaking out into new albums
+//   // correct for that here
+//   album.isNew = album.hasNew && album.isNew;
+//   album.isNewish = album.hasNewish && album.isNewish;
 
-  album.newIndicator = false;
-  if (album.isNew) {
-    album.newIndicator = $l("new_album");
-    album.newIndicatorClass = "new_indicator";
-  } else if (album.isNewish) {
-    album.newIndicator = $l("newish_album");
-    album.newIndicatorClass = "newish_indicator";
-  } else if (album.hasNew) {
-    album.newIndicator = $l("new_songs");
-    album.newIndicatorClass = "new_indicator";
-  } else if (album.hasNewish) {
-    album.newIndicator = $l("newish_songs");
-    album.newIndicatorClass = "newish_indicator";
-  }
+//   album.newIndicator = false;
+//   if (album.isNew) {
+//     album.newIndicator = $l("new_album");
+//     album.newIndicatorClass = "new_indicator";
+//   } else if (album.isNewish) {
+//     album.newIndicator = $l("newish_album");
+//     album.newIndicatorClass = "newish_indicator";
+//   } else if (album.hasNew) {
+//     album.newIndicator = $l("new_songs");
+//     album.newIndicatorClass = "new_indicator";
+//   } else if (album.hasNewish) {
+//     album.newIndicator = $l("newish_songs");
+//     album.newIndicatorClass = "newish_indicator";
+//   }
 
-  if (album.rating_rank_percentile >= 50) {
-    album.ratingPercentileMessage = $l("rating_percentile_top", {
-      rating: album.rating,
-      percentile: album.rating_rank_percentile,
-      percentile_top: 100 - album.rating_rank_percentile,
-    });
-  } else {
-    album.ratingPercentileMessage = $l("rating_percentile_bottom", {
-      rating: album.rating,
-      percentile: album.rating_rank_percentile,
-    });
-  }
+//   if (album.rating_rank_percentile >= 50) {
+//     album.ratingPercentileMessage = $l("rating_percentile_top", {
+//       rating: album.rating,
+//       percentile: album.rating_rank_percentile,
+//       percentile_top: 100 - album.rating_rank_percentile,
+//     });
+//   } else {
+//     album.ratingPercentileMessage = $l("rating_percentile_bottom", {
+//       rating: album.rating,
+//       percentile: album.rating_rank_percentile,
+//     });
+//   }
 
-  if (album.request_rank_percentile >= 50) {
-    album.requestPercentileMessage = $l("request_percentile_top", {
-      percentile: album.request_rank_percentile,
-      percentile_top: 100 - album.request_rank_percentile,
-    });
-  } else {
-    album.requestPercentileMessage = $l("request_percentile_bottom", {
-      percentile: album.request_rank_percentile,
-    });
-  }
+//   if (album.request_rank_percentile >= 50) {
+//     album.requestPercentileMessage = $l("request_percentile_top", {
+//       percentile: album.request_rank_percentile,
+//       percentile_top: 100 - album.request_rank_percentile,
+//     });
+//   } else {
+//     album.requestPercentileMessage = $l("request_percentile_bottom", {
+//       percentile: album.request_rank_percentile,
+//     });
+//   }
 
-  const template = RWTemplates.detail.album(album, document.createElement("div"));
-  AlbumArt(album.art, template.art);
+//   const template = RWTemplates.detail.album(album, document.createElement("div"));
+//   AlbumArt(album.art, template.art);
 
-  if (template.category_rollover) {
-    template.category_list.parentNode.removeChild(template.category_list);
-    template.category_rollover.parentNode.addEventListener(
-      "mouseenter",
-      function () {
-        template.category_rollover.parentNode.appendChild(
-          template.category_list,
-        );
-      },
-    );
-    template.category_rollover.parentNode.addEventListener(
-      "mouseleave",
-      function () {
-        template.category_list.parentNode.removeChild(template.category_list);
-      },
-    );
-  }
+//   if (template.category_rollover) {
+//     template.category_list.parentNode.removeChild(template.category_list);
+//     template.category_rollover.parentNode.addEventListener(
+//       "mouseenter",
+//       function () {
+//         template.category_rollover.parentNode.appendChild(
+//           template.category_list,
+//         );
+//       },
+//     );
+//     template.category_rollover.parentNode.addEventListener(
+//       "mouseleave",
+//       function () {
+//         template.category_list.parentNode.removeChild(template.category_list);
+//       },
+//     );
+//   }
 
-  if (template.graph_placement) {
-    const chart = RatingChart(album);
-    if (chart) {
-      template.graph_placement.parentNode.replaceChild(
-        chart,
-        template.graph_placement,
-      );
-    }
-    template.graph_placement = null;
-  }
+//   if (template.graph_placement) {
+//     const chart = RatingChart(album);
+//     if (chart) {
+//       template.graph_placement.parentNode.replaceChild(
+//         chart,
+//         template.graph_placement,
+//       );
+//     }
+//     template.graph_placement = null;
+//   }
 
-  if (template.fave_all_songs) {
-    let allFaveRunning = false;
-    template.fave_all_songs.addEventListener("click", function () {
-      if (allFaveRunning) {
-        ErrorHandler.tooltipError(
-          ErrorHandler.makeError("websocket_throttle", 400),
-        );
-      }
-      allFaveRunning = true;
-      API.async_get(
-        "fave_all_songs",
-        { album_id: album.id, fave: true },
-        function () {
-          allFaveRunning = false;
-        },
-      );
-    });
-    template.unfave_all_songs.addEventListener("click", function () {
-      if (allFaveRunning) {
-        ErrorHandler.tooltipError(
-          ErrorHandler.makeError("websocket_throttle", 400),
-        );
-      }
-      allFaveRunning = true;
-      API.async_get(
-        "fave_all_songs",
-        { album_id: album.id, fave: false },
-        function () {
-          allFaveRunning = false;
-        },
-      );
-    });
-  }
+//   if (template.fave_all_songs) {
+//     let allFaveRunning = false;
+//     template.fave_all_songs.addEventListener("click", function () {
+//       if (allFaveRunning) {
+//         ErrorHandler.tooltipError(
+//           ErrorHandler.makeError("websocket_throttle", 400),
+//         );
+//       }
+//       allFaveRunning = true;
+//       API.async_get(
+//         "fave_all_songs",
+//         { album_id: album.id, fave: true },
+//         function () {
+//           allFaveRunning = false;
+//         },
+//       );
+//     });
+//     template.unfave_all_songs.addEventListener("click", function () {
+//       if (allFaveRunning) {
+//         ErrorHandler.tooltipError(
+//           ErrorHandler.makeError("websocket_throttle", 400),
+//         );
+//       }
+//       allFaveRunning = true;
+//       API.async_get(
+//         "fave_all_songs",
+//         { album_id: album.id, fave: false },
+//         function () {
+//           allFaveRunning = false;
+//         },
+//       );
+//     });
+//   }
 
-  for (i = 0; i < album.songs.length; i++) {
-    if (!album.songs[i].artists) {
-      album.songs[i].artists = JSON.parse(album.songs[i].artist_parseable);
-    }
-  }
-  if (User.sid == 5) {
-    const songs = {};
-    for (i = 0; i < album.songs.length; i++) {
-      if (!songs[album.songs[i].origin_sid]) {
-        songs[album.songs[i].origin_sid] = [];
-      }
-      songs[album.songs[i].origin_sid].push(album.songs[i]);
-    }
-    const forKeynav = [];
-    for (i = 0; i < Stations.length; i++) {
-      if (songs[Stations[i].id]) {
-        const h2 = document.createElement("h2");
-        h2.textContent = $l("songs_from", {
-          station: $l(`station_name_${  Stations[i].id}`),
-        });
-        template._root.appendChild(h2);
-        template._root.appendChild(
-          RWTemplates.detail.songtable({ songs: songs[Stations[i].id] })._root,
-        );
-        forKeynav.push({ songs: songs[Stations[i].id] });
-      }
-    }
-  } else if (album.songs.length === 0) {
-    let sta;
-    for (i = 0; i < Stations.length; i++) {
-      if (Stations[i].id == User.sid) {
-        sta = Stations[i].name;
-      }
-    }
-    const msg = document.createElement("div");
-    msg.className = "no-songs-message";
-    msg.textContent = $l("no_songs_on_this_station", { station: sta });
-    template._root.appendChild(msg);
-  } else {
-    template._root.appendChild(
-      RWTemplates.detail.songtable({ songs: album.songs })._root,
-    );
+//   for (i = 0; i < album.songs.length; i++) {
+//     if (!album.songs[i].artists) {
+//       album.songs[i].artists = JSON.parse(album.songs[i].artist_parseable);
+//     }
+//   }
+//   if (User.sid == 5) {
+//     const songs = {};
+//     for (i = 0; i < album.songs.length; i++) {
+//       if (!songs[album.songs[i].origin_sid]) {
+//         songs[album.songs[i].origin_sid] = [];
+//       }
+//       songs[album.songs[i].origin_sid].push(album.songs[i]);
+//     }
+//     const forKeynav = [];
+//     for (i = 0; i < Stations.length; i++) {
+//       if (songs[Stations[i].id]) {
+//         const h2 = document.createElement("h2");
+//         h2.textContent = $l("songs_from", {
+//           station: $l(`station_name_${  Stations[i].id}`),
+//         });
+//         template._root.appendChild(h2);
+//         template._root.appendChild(
+//           RWTemplates.detail.songtable({ songs: songs[Stations[i].id] })._root,
+//         );
+//         forKeynav.push({ songs: songs[Stations[i].id] });
+//       }
+//     }
+//   } else if (album.songs.length === 0) {
+//     let sta;
+//     for (i = 0; i < Stations.length; i++) {
+//       if (Stations[i].id == User.sid) {
+//         sta = Stations[i].name;
+//       }
+//     }
+//     const msg = document.createElement("div");
+//     msg.className = "no-songs-message";
+//     msg.textContent = $l("no_songs_on_this_station", { station: sta });
+//     template._root.appendChild(msg);
+//   } else {
+//     template._root.appendChild(
+//       RWTemplates.detail.songtable({ songs: album.songs })._root,
+//     );
 
-  if (album.$t.cooldown_explanation) {
-    album.$t.cooldown_explanation.addEventListener(
-      "click",
-      CooldownExplanation,
-    );
-  }
+//   if (album.$t.cooldown_explanation) {
+//     album.$t.cooldown_explanation.addEventListener(
+//       "click",
+//       CooldownExplanation,
+//     );
+//   }
 
-  for (i = 0; i < album.songs.length; i++) {
-    Fave.register(album.songs[i]);
-    Rating.register(album.songs[i]);
-    if (album.songs[i].requestable) {
-      Requests.makeClickable(album.songs[i].$t.title, album.songs[i].id);
-    }
-    SongsTableDetail(album.songs[i], i > album.songs.length - 4);
-  }
+//   for (i = 0; i < album.songs.length; i++) {
+//     Fave.register(album.songs[i]);
+//     Rating.register(album.songs[i]);
+//     if (album.songs[i].requestable) {
+//       Requests.makeClickable(album.songs[i].$t.title, album.songs[i].id);
+//     }
+//     SongsTableDetail(album.songs[i], i > album.songs.length - 4);
+//   }
 
-  template._headerText = album.name;
+//   template._headerText = album.name;
 
-  return template;
-};
+//   return template;
+// };
 
-export { RatingColors, RatingChart, CooldownExplanation, AlbumView };
+// export { RatingColors, RatingChart, CooldownExplanation, AlbumView };

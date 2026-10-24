@@ -23,6 +23,14 @@
 #    - <for each="items">...</for>      : Loop over array
 #    - {{ var }}                         : Variable interpolation (in attributes & text)
 #
+# Binds:
+#    - A bind inside <if>/<else> is typed `T | undefined`, unless it is bound in
+#      both the <if> and its <else>, in which case it is always present.
+#    - A bind inside <for> needs a bind attribute on the <for>, which becomes an
+#      array of each iteration's binds (plus its $root).
+#    - Bind names must be unique within a template (or <for> body), except
+#      across an <if> and its <else>.  "$root" is reserved.
+#
 # Cannot deal with SVG (or other namespaces) except for Rainwave's particular use case.
 #
 # Restrictions:
@@ -37,11 +45,13 @@ from typing import Union
 from lxml import html
 
 from template_compiler.parse_node import (
+    ROOT_BIND_NAME,
+    element_ts_type,
     emit_binds,
-    emit_text_content,
-    parse_node,
     parse_root_element,
+    walk_fragments,
 )
+from template_compiler.parse_node_results import Bind
 
 
 def _relative_module_path(from_file_name: str, to_file_name: str) -> str:
@@ -136,27 +146,26 @@ def compile_templates(source_dir: str) -> None:
                 fn_buffer = ""
                 fragments = html.fragments_fromstring(html_file.read())
                 root_element = find_single_root_element(fragments)
-                parsed_result_binds: dict[str, str] = {"$root": "v1"}
+                parsed_result_binds: dict[str, Bind]
                 parsed_result_imports: set[str] = set()
                 if root_element is not None:
                     parsed_result = parse_root_element(root_element, 0)
-                    parsed_result_binds.update(parsed_result.binds)
-                    parsed_result_imports.update(parsed_result.imports)
+                    parsed_result_binds = {
+                        ROOT_BIND_NAME: Bind(
+                            "v1", element_ts_type(str(root_element.tag))
+                        )
+                    }
                     fn_buffer += parsed_result.buffer
                 else:
                     fn_buffer += "const v1 = document.createDocumentFragment();\n"
-                    js_variable_count = 1
-                    for fragment in fragments:
-                        if isinstance(fragment, str):
-                            fn_buffer += emit_text_content(fragment, "v1")
-                        else:
-                            parsed_result = parse_node(
-                                fragment, "v1", js_variable_count
-                            )
-                            parsed_result_binds.update(parsed_result.binds)
-                            parsed_result_imports.update(parsed_result.imports)
-                            js_variable_count = parsed_result.js_variable_count
-                            fn_buffer += parsed_result.buffer
+                    parsed_result = walk_fragments(fragments, "v1", 1)
+                    parsed_result_binds = {
+                        ROOT_BIND_NAME: Bind("v1", "DocumentFragment")
+                    }
+                    fn_buffer += parsed_result.buffer
+                # Duplicates and "$root" were already rejected while parsing
+                parsed_result_binds.update(parsed_result.binds)
+                parsed_result_imports.update(parsed_result.imports)
 
                 file_buffer = ""
                 context_param = ""
