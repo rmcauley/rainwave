@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = "==3.14.*"
 
 [options]
@@ -404,22 +404,22 @@ wheels = [
 
 [[package]]
 name = "datamodel-code-generator"
-version = "0.54.1"
+version = "0.81.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "argcomplete" },
-    { name = "black" },
+    { name = "black", marker = "sys_platform != 'emscripten'" },
     { name = "genson" },
     { name = "inflect" },
-    { name = "isort" },
+    { name = "isort", marker = "sys_platform != 'emscripten'" },
     { name = "jinja2" },
-    { name = "packaging" },
     { name = "pydantic" },
     { name = "pyyaml" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/79/4b/6a63ea00c65402576e05e8cc963349ffe58db07d8c8183ab51488dbfb67a/datamodel_code_generator-0.54.1.tar.gz", hash = "sha256:dd9eb7594f94a8b85d7e410f4d997a443cf7a52a1dcc049fae6cf35660f18803", size = 829716, upload-time = "2026-03-04T04:15:02.582Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/41/a1/87deb406ca27b0ae25cda946940208dfe2a2953b7fef20f8a968746e6b36/datamodel_code_generator-0.81.0.tar.gz", hash = "sha256:3b4d1639cc7430f7e34fddc3827fb5d3eb0a4f5394750890c46ba2a9d56e3ee2", size = 2912162, upload-time = "2026-09-14T00:05:20.43Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6d/ce/8a8aadbb2fb428109949d0f7a42232d1d452dab0b8550f6e8c5843afa93d/datamodel_code_generator-0.54.1-py3-none-any.whl", hash = "sha256:67c59ff2368eb2ec96ba11441bc8957bb68a71459dd37275a78ea90238ad5f01", size = 264344, upload-time = "2026-03-04T04:15:00.721Z" },
+    { url = "https://files.pythonhosted.org/packages/84/30/acea9e8d4c5e7819c10b25581accfa805e5368ec564fc210c8f4c4ffd666/datamodel_code_generator-0.81.0-py3-none-any.whl", hash = "sha256:82ff0c295685065a83c530ce42ec03fc75b7ca01e72083eb8232d68f7637013a", size = 721675, upload-time = "2026-09-14T00:05:18.451Z" },
 ]
 
 [[package]]
@@ -1236,7 +1236,7 @@ requires-dist = [
     { name = "aiomcache", specifier = ">=0.8.2,<0.9" },
     { name = "babel", specifier = ">=2.18.0,<3" },
     { name = "bcrypt", specifier = ">=5.0.0,<6" },
-    { name = "datamodel-code-generator", specifier = ">=0.54.0,<0.55" },
+    { name = "datamodel-code-generator", specifier = ">=0.54.0,<0.82" },
     { name = "lxml", specifier = ">=6.0.2,<7" },
     { name = "mutagen", specifier = ">=1.47.0,<2" },
     { name = "orjson", specifier = ">=3.11.7,<4" },
