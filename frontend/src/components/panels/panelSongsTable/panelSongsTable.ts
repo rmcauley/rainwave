@@ -4,22 +4,31 @@
 // {{ ^Formatting.rating(context.rating) }}
 
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
-import { panelSongTableRowTemplate } from './panelSongTableRow.template';
+import { panelSongsTableTemplate } from './panelSongsTable.template';
+import { panelSongsTableRowTemplate } from './panelSongsTableRow.template';
 
 class PanelSongTable {
-  private songs: ReturnType<typeof panelSongTableRowTemplate>[];
+  template: ReturnType<typeof panelSongsTableTemplate>;
 
-  constructor(songs: components['schemas']['album']['songs']) {
-    this.songs = songs.map((song) =>
-      panelSongTableRowTemplate({
+  private songs: ReturnType<typeof panelSongsTableRowTemplate>[];
+
+  constructor(songs: components['schemas']['album']['songs'], header?: string) {
+    this.template = panelSongsTableTemplate({ header });
+
+    const tbody = document.createElement('tbody');
+    this.template.table.appendChild(tbody);
+    this.songs = songs.map((song) => {
+      const songTemplate = panelSongsTableRowTemplate({
         song,
         showArtists: true,
         showCooldown: true,
         showLinks: true,
         showRatingClear: true,
         showRatingNumber: true,
-      }),
-    );
+      });
+      tbody.appendChild(songTemplate.$root);
+      return songTemplate;
+    });
   }
 }
 

@@ -1,3 +1,4 @@
+import { getStationName } from '../../../helpers/getStationName';
 import { isProbablyMobileBrowser } from '../../../helpers/isProbablyMobile';
 import { $l } from '../../../language';
 import { api } from '../../../rainwaveApi/api';
@@ -5,6 +6,7 @@ import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { setAlbumArt } from '../../albumArt/albumArt';
 import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
 import { isPlaylistItemNew } from '../../playlist/isPlaylistItemNew';
+import { PanelSongTable } from '../panelSongsTable/panelSongsTable';
 import { albumPanelTemplate } from './albumPanel.template';
 import { albumPanelRatingChart } from './albumPanelRatingChart';
 
@@ -59,6 +61,34 @@ class AlbumPanel {
       faveAllSongs.addEventListener('click', () => this.faveAllSongs(album.id, true));
       unfaveAllSongs.addEventListener('click', () => this.faveAllSongs(album.id, false));
     }
+
+    const tables: Record<
+      string,
+      { header?: string; songs: components['schemas']['album']['songs'] }
+    > = {};
+    if (api.user.sid === 5) {
+      album.songs.forEach((song) => {
+        tables[song.origin_sid] ??= {
+          header: $l('songs_from', { station: getStationName(song.origin_sid) }),
+          songs: [],
+        };
+        tables[song.origin_sid]?.songs.push(song);
+      });
+    } else {
+      tables[api.user.sid] = { songs: album.songs };
+    }
+
+    if (Object.keys(tables).length === 0) {
+      const msg = document.createElement('div');
+      msg.className = 'no-songs-message';
+      msg.textContent = $l('no_songs_on_this_station', { station: getStationName(api.user.sid) });
+      this.template.$root.appendChild(msg);
+    } else {
+      Object.values(tables).forEach((tableData) => {
+        const table = new PanelSongTable(tableData.songs, tableData.header);
+        this.template.$root.appendChild(table.template.$root);
+      });
+    }
   }
 
   faveAllSongs = (albumId: number, fave: boolean): void => {
@@ -81,49 +111,6 @@ class AlbumPanel {
 
 export { AlbumPanel };
 
-//   for (i = 0; i < album.songs.length; i++) {
-//     if (!album.songs[i].artists) {
-//       album.songs[i].artists = JSON.parse(album.songs[i].artist_parseable);
-//     }
-//   }
-//   if (User.sid == 5) {
-//     const songs = {};
-//     for (i = 0; i < album.songs.length; i++) {
-//       if (!songs[album.songs[i].origin_sid]) {
-//         songs[album.songs[i].origin_sid] = [];
-//       }
-//       songs[album.songs[i].origin_sid].push(album.songs[i]);
-//     }
-//     const forKeynav = [];
-//     for (i = 0; i < Stations.length; i++) {
-//       if (songs[Stations[i].id]) {
-//         const h2 = document.createElement("h2");
-//         h2.textContent = $l("songs_from", {
-//           station: $l(`station_name_${  Stations[i].id}`),
-//         });
-//         template._root.appendChild(h2);
-//         template._root.appendChild(
-//           RWTemplates.detail.songtable({ songs: songs[Stations[i].id] })._root,
-//         );
-//         forKeynav.push({ songs: songs[Stations[i].id] });
-//       }
-//     }
-//   } else if (album.songs.length === 0) {
-//     let sta;
-//     for (i = 0; i < Stations.length; i++) {
-//       if (Stations[i].id == User.sid) {
-//         sta = Stations[i].name;
-//       }
-//     }
-//     const msg = document.createElement("div");
-//     msg.className = "no-songs-message";
-//     msg.textContent = $l("no_songs_on_this_station", { station: sta });
-//     template._root.appendChild(msg);
-//   } else {
-//     template._root.appendChild(
-//       RWTemplates.detail.songtable({ songs: album.songs })._root,
-//     );
-
 //   if (album.$t.cooldown_explanation) {
 //     album.$t.cooldown_explanation.addEventListener(
 //       "click",
@@ -144,5 +131,3 @@ export { AlbumPanel };
 
 //   return template;
 // };
-
-// export { RatingColors, RatingChart, CooldownExplanation, AlbumView };
