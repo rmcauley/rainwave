@@ -121,7 +121,7 @@ class TestAdditionalContracts(RequestClassesTestCase):
 
         response = await self.get_path("/tune_in/1.ogg.m3u")
         tune_in_ogg_body = response.body.decode("utf-8")
-        assert "#EXTINF:0, Rainwave Station:" in tune_in_ogg_body
+        assert "#EXTINF:0,Rainwave Station:" in tune_in_ogg_body
         assert "station.ogg" in tune_in_ogg_body
 
         response = await self.get_path("/tune_in/999.mp3", raise_error=False)

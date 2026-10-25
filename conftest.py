@@ -12,7 +12,7 @@ from typing import MutableMapping, TextIO
 import pytest
 from dotenv import load_dotenv
 from psycopg import connect, sql
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 SRC_ROOT = PROJECT_ROOT / "src"
