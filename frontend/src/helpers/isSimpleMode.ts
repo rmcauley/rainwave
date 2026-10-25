@@ -1,14 +1,11 @@
 import { preferences } from '../preferences/preferences';
-
-let viewportWidth = document.documentElement.clientWidth;
-
-window.addEventListener('resize', () => (viewportWidth = document.documentElement.clientWidth));
+import { getViewportWidth } from './getViewportSize';
 
 // taken from theme.scss
 const SIMPLE_LAYOUT_BREAKPOINT = 1049;
 
 function isSimpleMode(): boolean {
-  if (viewportWidth <= SIMPLE_LAYOUT_BREAKPOINT) {
+  if (getViewportWidth() <= SIMPLE_LAYOUT_BREAKPOINT) {
     return true;
   }
   return !preferences.store.powerUserMode;

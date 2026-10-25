@@ -9,4 +9,5 @@ export type albumPanelContext = {
   hasCooldown: boolean;
   user: typeof api.user;
   ratingPercentileMessage: string;
+  showGenres: boolean;
 };

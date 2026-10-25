@@ -1,0 +1,13 @@
+@use '../../theme' as *;
+
+.art-container {
+  border-color: $art-b;
+  border-width: 0;
+  border-style: solid;
+  background-color: $bkg;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: $art-size;
+  height: $art-size;
+}

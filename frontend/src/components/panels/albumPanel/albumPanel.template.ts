@@ -76,66 +76,70 @@ function albumPanelTemplate(context: albumPanelContext) {
     v15.appendChild(v18);
     v19 = v18;
   }
-  let v26: HTMLElementTagNameMap['div'] | undefined;
   let v27: HTMLElementTagNameMap['div'] | undefined;
-  let v28: Array<{ $root: DocumentFragment }> | undefined;
+  let v28: HTMLElementTagNameMap['div'] | undefined;
+  let v29: Array<{ $root: DocumentFragment }> | undefined;
   if (context.album.genres.length > 0) {
     const v20 = document.createElement('div');
     v20.className = 'album-panel-header-genres';
     v2.appendChild(v20);
-    const v21 = document.createElement('div');
-    v21.appendChild(document.createTextNode($l('relevant_categories_rollover')));
-    v20.appendChild(v21);
-    const v22 = document.createElement('div');
-    v22.className = 'category-list';
-    v20.appendChild(v22);
-    const v23 = context.album.genres.map((context) => {
-      const v24 = document.createDocumentFragment();
-      const v25 = document.createElement('a');
-      v25.appendChild(document.createTextNode(context.name));
-      v25.href = `#!/group/` + context.id;
-      v24.appendChild(v25);
-      v22.appendChild(v24);
-      return { $root: v24 };
+    let v22: HTMLElementTagNameMap['div'] | undefined;
+    if (context.album.genres.length > 2) {
+      const v21 = document.createElement('div');
+      v21.appendChild(document.createTextNode($l('relevant_categories_rollover')));
+      v20.appendChild(v21);
+      v22 = v21;
+    }
+    const v23 = document.createElement('div');
+    v23.className = 'category-list';
+    v20.appendChild(v23);
+    const v24 = context.album.genres.map((context) => {
+      const v25 = document.createDocumentFragment();
+      const v26 = document.createElement('a');
+      v26.appendChild(document.createTextNode(context.name));
+      v26.href = `#!/group/` + context.id;
+      v25.appendChild(v26);
+      v23.appendChild(v25);
+      return { $root: v25 };
     });
-    v26 = v21;
     v27 = v22;
     v28 = v23;
+    v29 = v24;
   }
-  let v33: HTMLElementTagNameMap['a'] | undefined;
   let v34: HTMLElementTagNameMap['a'] | undefined;
+  let v35: HTMLElementTagNameMap['a'] | undefined;
   if (context.user.perks) {
-    const v29 = document.createElement('div');
-    v2.appendChild(v29);
-    const v30 = document.createElement('a');
-    v30.appendChild(document.createTextNode($l('fave_all_songs')));
-    v30.className = 'fave-all-songs';
-    v29.appendChild(v30);
-    const v31 = document.createElement('span');
-    v31.appendChild(document.createTextNode(`-`));
-    v29.appendChild(v31);
-    const v32 = document.createElement('a');
-    v32.appendChild(document.createTextNode($l('unfave_all_songs')));
-    v32.className = 'unfave-all-songs';
-    v29.appendChild(v32);
-    v33 = v30;
-    v34 = v32;
+    const v30 = document.createElement('div');
+    v2.appendChild(v30);
+    const v31 = document.createElement('a');
+    v31.appendChild(document.createTextNode($l('fave_all_songs')));
+    v31.className = 'fave-all-songs';
+    v30.appendChild(v31);
+    const v32 = document.createElement('span');
+    v32.appendChild(document.createTextNode(`-`));
+    v30.appendChild(v32);
+    const v33 = document.createElement('a');
+    v33.appendChild(document.createTextNode($l('unfave_all_songs')));
+    v33.className = 'unfave-all-songs';
+    v30.appendChild(v33);
+    v34 = v31;
+    v35 = v33;
   }
-  const v35 = document.createElement('div');
-  v35.className = 'album-art';
-  v1.appendChild(v35);
+  const v36 = document.createElement('div');
+  v36.className = 'album-art';
+  v1.appendChild(v36);
   return {
     $root: v1,
     header: v1,
     albumAllCooldown: v12,
     albumHasCooldown: v13,
     ratingGraph: v19,
-    categoryRollover: v26,
-    categoryList: v27,
-    genres: v28,
-    faveAllSongs: v33,
-    unfaveAllSongs: v34,
-    art: v35,
+    categoryRollover: v27,
+    categoryList: v28,
+    genres: v29,
+    faveAllSongs: v34,
+    unfaveAllSongs: v35,
+    art: v36,
   };
 }
 export { albumPanelTemplate };

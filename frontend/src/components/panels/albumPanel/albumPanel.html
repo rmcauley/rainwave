@@ -34,16 +34,18 @@
         <div bind="ratingGraph"></div>
       </div>
     </if>
+
     <if condition="album.genres.length > 0">
-      <div class="album-panel-header-genres">
-        <div bind="categoryRollover">{{ $l("relevant_categories_rollover")}}</div>
-        <div bind="categoryList" class="category-list">
-          <for each="album.genres" bind="genres">
+      <div class="album-panel-header-categories">
+        <div>{{ $l("relevant_categories_rollover")}}</div>
+        <div class="album-panel-header-categories-list">
+          <for each="album.genres">
             <a href="#!/group/{{ id }}">{{ name }}</a>
           </for>
         </div>
       </div>
     </if>
+
     <if condition="user.perks">
       <div>
         <a class="fave-all-songs" bind="faveAllSongs">{{ $l("fave_all_songs") }}</a>

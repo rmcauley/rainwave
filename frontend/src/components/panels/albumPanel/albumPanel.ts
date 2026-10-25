@@ -1,6 +1,8 @@
+import { isProbablyMobileBrowser } from '../../../helpers/isProbablyMobile';
 import { $l } from '../../../language';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
+import { setAlbumArt } from '../../albumArt/albumArt';
 import { isPlaylistItemNew } from '../../playlist/isPlaylistItemNew';
 import { albumPanelTemplate } from './albumPanel.template';
 import { albumPanelRatingChart } from './albumPanelRatingChart';
@@ -34,6 +36,7 @@ class AlbumPanel {
       isNew,
       ratingPercentileMessage,
       user: api.user,
+      showGenres: !isProbablyMobileBrowser,
     });
 
     if (this.template.ratingGraph) {
@@ -42,148 +45,34 @@ class AlbumPanel {
         this.template.ratingGraph.parentNode?.replaceChild(chart, this.template.ratingGraph);
       }
     }
+
+    setAlbumArt(this.template.art, album.art);
+
+    // if (this.template.faveAllSongs && this.template.unfaveAllSongs) {
+    //   let allFaveRunning = false;
+    //   this.template.faveAllSongs.addEventListener('click', function () {
+    //     if (allFaveRunning) {
+    //       ErrorHandler.tooltipError(ErrorHandler.makeError('websocket_throttle', 400));
+    //     }
+    //     allFaveRunning = true;
+    //     API.async_get('fave_all_songs', { album_id: album.id, fave: true }, function () {
+    //       allFaveRunning = false;
+    //     });
+    //   });
+    //   this.template.unfaveAllSongs.addEventListener('click', function () {
+    //     if (allFaveRunning) {
+    //       ErrorHandler.tooltipError(ErrorHandler.makeError('websocket_throttle', 400));
+    //     }
+    //     allFaveRunning = true;
+    //     API.async_get('fave_all_songs', { album_id: album.id, fave: false }, function () {
+    //       allFaveRunning = false;
+    //     });
+    //   });
+    // }
   }
 }
 
 export { AlbumPanel };
-
-// const AlbumView = function (album) {
-//   album.numSongRatings = 0;
-//   for (var i in RatingColors) {
-//     if (i in album.rating_histogram) {
-//       album.numSongRatings += album.rating_histogram[i];
-//     }
-//   }
-
-//   album.songs.sort(SongsTableSorting);
-
-//   album.isNew = album.added_on > Clock.now - 86400 * 14;
-//   album.isNewish = album.added_on > Clock.now - 86400 * 30;
-
-//   album.hasNew = false;
-//   album.hasNewish = false;
-//   album.allCooldown = false;
-//   let onCooldown = 0;
-//   album.hasCooldown = false;
-//   for (i = 0; i < album.songs.length; i++) {
-//     if (album.songs[i].added_on > Clock.now - 86400 * 14) {
-//       album.songs[i].isNew = true;
-//       album.hasNew = true;
-//     } else if (album.songs[i].added_on > Clock.now - 86400 * 30) {
-//       album.songs[i].isNewish = true;
-//       album.hasNewish = true;
-//     } else {
-//       album.songs[i].isNew = false;
-//     }
-
-//     if (album.songs[i].cool) {
-//       album.hasCooldown = true;
-//       onCooldown++;
-//     }
-//   }
-
-//   if (onCooldown === album.songs.length) {
-//     album.allCooldown = true;
-//   }
-
-//   // there are some instances of old songs breaking out into new albums
-//   // correct for that here
-//   album.isNew = album.hasNew && album.isNew;
-//   album.isNewish = album.hasNewish && album.isNewish;
-
-//   album.newIndicator = false;
-//   if (album.isNew) {
-//     album.newIndicator = $l("new_album");
-//     album.newIndicatorClass = "new_indicator";
-//   } else if (album.isNewish) {
-//     album.newIndicator = $l("newish_album");
-//     album.newIndicatorClass = "newish_indicator";
-//   } else if (album.hasNew) {
-//     album.newIndicator = $l("new_songs");
-//     album.newIndicatorClass = "new_indicator";
-//   } else if (album.hasNewish) {
-//     album.newIndicator = $l("newish_songs");
-//     album.newIndicatorClass = "newish_indicator";
-//   }
-
-//   if (album.rating_rank_percentile >= 50) {
-//     album.ratingPercentileMessage = $l("rating_percentile_top", {
-//       rating: album.rating,
-//       percentile: album.rating_rank_percentile,
-//       percentile_top: 100 - album.rating_rank_percentile,
-//     });
-//   } else {
-//     album.ratingPercentileMessage = $l("rating_percentile_bottom", {
-//       rating: album.rating,
-//       percentile: album.rating_rank_percentile,
-//     });
-//   }
-
-//   if (album.request_rank_percentile >= 50) {
-//     album.requestPercentileMessage = $l("request_percentile_top", {
-//       percentile: album.request_rank_percentile,
-//       percentile_top: 100 - album.request_rank_percentile,
-//     });
-//   } else {
-//     album.requestPercentileMessage = $l("request_percentile_bottom", {
-//       percentile: album.request_rank_percentile,
-//     });
-//   }
-
-//   const template = RWTemplates.detail.album(album, document.createElement("div"));
-//   AlbumArt(album.art, template.art);
-
-//   if (template.category_rollover) {
-//     template.category_list.parentNode.removeChild(template.category_list);
-//     template.category_rollover.parentNode.addEventListener(
-//       "mouseenter",
-//       function () {
-//         template.category_rollover.parentNode.appendChild(
-//           template.category_list,
-//         );
-//       },
-//     );
-//     template.category_rollover.parentNode.addEventListener(
-//       "mouseleave",
-//       function () {
-//         template.category_list.parentNode.removeChild(template.category_list);
-//       },
-//     );
-//   }
-
-//   if (template.fave_all_songs) {
-//     let allFaveRunning = false;
-//     template.fave_all_songs.addEventListener("click", function () {
-//       if (allFaveRunning) {
-//         ErrorHandler.tooltipError(
-//           ErrorHandler.makeError("websocket_throttle", 400),
-//         );
-//       }
-//       allFaveRunning = true;
-//       API.async_get(
-//         "fave_all_songs",
-//         { album_id: album.id, fave: true },
-//         function () {
-//           allFaveRunning = false;
-//         },
-//       );
-//     });
-//     template.unfave_all_songs.addEventListener("click", function () {
-//       if (allFaveRunning) {
-//         ErrorHandler.tooltipError(
-//           ErrorHandler.makeError("websocket_throttle", 400),
-//         );
-//       }
-//       allFaveRunning = true;
-//       API.async_get(
-//         "fave_all_songs",
-//         { album_id: album.id, fave: false },
-//         function () {
-//           allFaveRunning = false;
-//         },
-//       );
-//     });
-//   }
 
 //   for (i = 0; i < album.songs.length; i++) {
 //     if (!album.songs[i].artists) {

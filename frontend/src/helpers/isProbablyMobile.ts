@@ -4,7 +4,7 @@ type NavigatorWithUAData = Navigator & {
   };
 };
 
-function isProbablyMobileBrowser(): boolean {
+function testIsProbablyMobileBrowser(): boolean {
   const nav = navigator as NavigatorWithUAData;
 
   if (nav.userAgentData?.mobile !== null) {
@@ -13,5 +13,7 @@ function isProbablyMobileBrowser(): boolean {
 
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 }
+
+const isProbablyMobileBrowser = testIsProbablyMobileBrowser();
 
 export { isProbablyMobileBrowser };
