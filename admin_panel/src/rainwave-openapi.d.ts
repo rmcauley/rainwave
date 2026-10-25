@@ -2294,7 +2294,8 @@ export interface components {
       | 'tunein_to_rate_current_song'
       | 'unlocked_only'
       | 'user_locked'
-      | 'username_required';
+      | 'username_required'
+      | 'websocket_throttle';
   };
   responses: never;
   parameters: never;

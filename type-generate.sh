@@ -30,14 +30,18 @@ jq -M '
   }
 ' src/api/rainwave-openapi.json > "$tmp_openapi_for_dto"
 
+uv run datamodel-codegen --input "$tmp_openapi_for_dto" --input-file-type openapi --output src/api/rainwave_dto.py --output-model-type pydantic_v2.BaseModel --target-python-version 3.14 --openapi-scopes paths --formatters builtin --remove-special-field-name-prefix
+uv run black src/api/rainwave_dto.py
+
+uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_typeddicts.py --output-model-type typing.TypedDict --target-python-version 3.14 --formatters builtin --remove-special-field-name-prefix
+uv run black src/api/rainwave_typeddicts.py
+
 npx oxfmt --write ./src/api/rainwave-openapi.json
 
-uv run datamodel-codegen --input "$tmp_openapi_for_dto" --input-file-type openapi --output src/api/rainwave_dto.py --output-model-type pydantic_v2.BaseModel --target-python-version 3.14 --openapi-scopes paths --formatters black --remove-special-field-name-prefix
-uv run datamodel-codegen --input src/api/rainwave-openapi.json --input-file-type openapi --output src/api/rainwave_typeddicts.py --output-model-type typing.TypedDict --target-python-version 3.14 --formatters black --remove-special-field-name-prefix
-
 npx openapi-typescript ./src/api/rainwave-openapi.json -o ./frontend/src/rainwaveApi/rainwave-openapi.d.ts
-npx oxfmt --write ./frontend/src/rainwaveApi/rainwave-openapi.d.ts
+(cd frontend && npx oxfmt --write ./src/rainwaveApi/rainwave-openapi.d.ts)
+
 npx openapi-typescript ./src/api/rainwave-openapi.json -o ./admin_panel/src/rainwave-openapi.d.ts
-npx oxfmt --write ./admin_panel/src/rainwave-openapi.d.ts
+(cd admin_panel && npx oxfmt --write ./src/rainwave-openapi.d.ts)
 
 echo "Done."

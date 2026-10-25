@@ -8,7 +8,7 @@ class WhatIsCooldownModal extends Modal {
   }
 
   setContent = (): void => {
-    this.template.body.appendChild(whatIsCooldownModalTemplate(undefined).$root);
+    this.template.body.appendChild(whatIsCooldownModalTemplate().$root);
   };
 }
 

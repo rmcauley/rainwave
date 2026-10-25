@@ -3,13 +3,19 @@ import { $l } from '../../../language';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { setAlbumArt } from '../../albumArt/albumArt';
+import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
 import { isPlaylistItemNew } from '../../playlist/isPlaylistItemNew';
 import { albumPanelTemplate } from './albumPanel.template';
 import { albumPanelRatingChart } from './albumPanelRatingChart';
 
 class AlbumPanel {
   template: ReturnType<typeof albumPanelTemplate>;
+
+  private faveAllSongsRunning: boolean;
+
   constructor(album: components['schemas']['album']) {
+    this.faveAllSongsRunning = false;
+
     const hasCooldown = !album.cool && album.songs.some((s) => s.cool);
     const isNew = isPlaylistItemNew(album.added_on);
     const hasNewSongs = !isNew && album.songs.some((s) => isPlaylistItemNew(s.added_on));
@@ -48,28 +54,29 @@ class AlbumPanel {
 
     setAlbumArt(this.template.art, album.art);
 
-    // if (this.template.faveAllSongs && this.template.unfaveAllSongs) {
-    //   let allFaveRunning = false;
-    //   this.template.faveAllSongs.addEventListener('click', function () {
-    //     if (allFaveRunning) {
-    //       ErrorHandler.tooltipError(ErrorHandler.makeError('websocket_throttle', 400));
-    //     }
-    //     allFaveRunning = true;
-    //     API.async_get('fave_all_songs', { album_id: album.id, fave: true }, function () {
-    //       allFaveRunning = false;
-    //     });
-    //   });
-    //   this.template.unfaveAllSongs.addEventListener('click', function () {
-    //     if (allFaveRunning) {
-    //       ErrorHandler.tooltipError(ErrorHandler.makeError('websocket_throttle', 400));
-    //     }
-    //     allFaveRunning = true;
-    //     API.async_get('fave_all_songs', { album_id: album.id, fave: false }, function () {
-    //       allFaveRunning = false;
-    //     });
-    //   });
-    // }
+    const { faveAllSongs, unfaveAllSongs } = this.template;
+    if (faveAllSongs && unfaveAllSongs) {
+      faveAllSongs.addEventListener('click', () => this.faveAllSongs(album.id, true));
+      unfaveAllSongs.addEventListener('click', () => this.faveAllSongs(album.id, false));
+    }
   }
+
+  faveAllSongs = (albumId: number, fave: boolean): void => {
+    const { faveAllSongs, unfaveAllSongs } = this.template;
+    if (faveAllSongs && unfaveAllSongs) {
+      if (this.faveAllSongsRunning) {
+        showErrorTooltip(
+          { text: $l('websocket_throttle'), tl_key: 'websocket_throttle' },
+          fave ? faveAllSongs : unfaveAllSongs,
+        );
+      }
+      this.faveAllSongsRunning = true;
+      api
+        .fetch('fave_all_songs', { album_id: albumId, fave: true })
+        .then(() => (this.faveAllSongsRunning = true))
+        .catch((err) => showErrorTooltip(err, faveAllSongs));
+    }
+  };
 }
 
 export { AlbumPanel };
