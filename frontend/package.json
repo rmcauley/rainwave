@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "26.4.1",
-    "oxfmt": "0.65.0",
+    "oxfmt": "0.74.0",
     "oxlint": "1.80.0",
     "oxlint-tsgolint": "7.0.2002",
     "sass-embedded": "1.103.1",
@@ -32,7 +32,7 @@
     "stylelint-config-standard-scss": "17.0.0",
     "stylelint-order": "8.1.1",
     "typescript": "7.0.2",
-    "vite": "8.2.2",
+    "vite": "8.3.5",
     "vitest": "4.1.11"
   }
 }
