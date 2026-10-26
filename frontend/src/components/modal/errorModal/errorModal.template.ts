@@ -1,4 +1,4 @@
-import { $l } from '../../language';
+import { $l } from '../../../language';
 function errorModalTemplate() {
   const v1 = document.createDocumentFragment();
   const v2 = document.createElement('p');

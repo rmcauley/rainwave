@@ -3,7 +3,7 @@ import { makeSearchableString } from '../../../language/get-searchable-name';
 import { preferences } from '../../../preferences/preferences';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
-import { renderFave } from '../../fave/fave';
+import { AlbumFave } from '../../fave/albumFave/albumFave';
 import { navigateTo } from '../../router/navigateTo';
 import { isPlaylistItemNew } from '../isPlaylistItemNew';
 import { SearchList } from '../searchList/searchList';
@@ -148,12 +148,12 @@ class AlbumList extends SearchList<AlbumListItem> {
       element.classList.add('has_new');
     }
 
-    element.appendChild(renderFave(item.id, true, item.fave).$root);
-
     const span = document.createElement('span');
     span.className = 'name';
     span.textContent = item.name;
     element.appendChild(span);
+
+    AlbumFave.appendToParent(element, item.id, item.fave);
 
     this.renderItemUpdate(item, element);
 

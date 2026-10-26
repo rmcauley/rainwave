@@ -1,19 +1,14 @@
 import { initMenu } from './components/menu/menu';
 import { Panels } from './components/panels/panels';
 import { Playlist } from './components/playlist/playlist';
-
-import './index.scss';
-import './utilityClasses.scss';
-import { AlbumRating } from './components/ratings/albumRating/albumRating';
 import { initRatingPreferences } from './components/ratings/ratingPreferences';
-import { SongRating } from './components/ratings/songRating/songRating';
 import { preferences } from './preferences/preferences';
 import { api } from './rainwaveApi/api';
 
-function rainwaveInit(): void {
-  customElements.define('song-rating', SongRating);
-  customElements.define('album-rating', AlbumRating);
+import './index.scss';
+import './utilityClasses.scss';
 
+function rainwaveInit(): void {
   api.setOptions({
     apiKey: window.BOOTSTRAP.user.api_key,
     sid: window.BOOTSTRAP.user.sid,

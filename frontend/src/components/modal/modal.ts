@@ -1,72 +1,64 @@
-import { removeElement } from '../../helpers/removeElement';
+import { authFailureModalTemplate } from './authFailureModal/authFailureModal.template';
+import { errorModalTemplate } from './errorModal/errorModal.template';
 import { modalTemplate } from './modal.template';
+import { whatIsCooldownModalTemplate } from './whatIsCooldownModal/whatIsCooldownModal.template';
 
 let preventingNewModals = false;
+
 const pageDimmer = document.createElement('div');
+pageDimmer.className = 'page-dimmer';
 
-class Modal {
-  static currentModal: Modal | undefined;
+const template = modalTemplate();
 
-  template: ReturnType<typeof modalTemplate>;
+type modalNames = 'authFailure' | 'error' | 'whatIsCooldown';
+type modalData = { template: () => { $root: HTMLElement | DocumentFragment }; closeable: boolean };
 
-  constructor(templateParams: Parameters<typeof modalTemplate>[0]) {
-    this.template = modalTemplate(templateParams);
+const MODALS: Record<modalNames, modalData> = {
+  authFailure: { template: authFailureModalTemplate, closeable: false },
+  error: { template: errorModalTemplate, closeable: false },
+  whatIsCooldown: { template: whatIsCooldownModalTemplate, closeable: true },
+};
 
-    if (templateParams.closeable) {
-      this.template.closeIcon.addEventListener('click', this.close);
-    } else {
-      this.template.closeIcon.parentElement?.removeChild(this.template.closeIcon);
-    }
-
-    this.template.modal.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
+function showModal(modal: modalNames): void {
+  if (preventingNewModals) {
+    return;
   }
 
-  setContent = (): void => {
-    // to be inherited
-  };
+  const closeable = MODALS[modal].closeable;
+  while (template.body.firstChild) {
+    template.body.removeChild(template.body.firstChild);
+  }
 
-  static closeOpenModal = (evt: MouseEvent): void => {
-    if (Modal.currentModal && !preventingNewModals) {
-      Modal.currentModal.close(evt);
-      Modal.currentModal = undefined;
-    }
-  };
+  if (closeable) {
+    template.closeIcon.classList.remove('modal-close-icon--hidden');
+  } else {
+    template.closeIcon.classList.add('modal-close-icon--hidden');
+    preventingNewModals = true;
+  }
 
-  show = (preventNewModals: boolean = false): void => {
-    if (preventingNewModals) {
-      return;
-    }
-    preventingNewModals = preventNewModals;
-
-    Modal.currentModal?.close(undefined, false);
-    Modal.currentModal = this;
-
-    document.body.insertBefore(pageDimmer, document.body.firstChild);
-    document.body.insertBefore(this.template.modal, document.body.firstChild);
-  };
-
-  close = (evt: MouseEvent | undefined, removeDimmer = true): void => {
-    if (evt) {
-      evt.preventDefault();
-      evt.stopPropagation();
-    }
-    if (preventingNewModals) {
-      return;
-    }
-    this.template.modal.classList.add('modal--closing');
-    setTimeout(() => {
-      this.template.modal.parentNode?.removeChild(this.template.modal);
-    }, 300);
-
-    if (removeDimmer) {
-      removeElement(pageDimmer);
-    }
-  };
+  document.body.insertBefore(pageDimmer, document.body.firstChild);
+  document.body.insertBefore(template.modal, document.body.firstChild);
 }
 
-pageDimmer.className = 'page-dimmer';
-pageDimmer.addEventListener('click', Modal.closeOpenModal);
+function closeModal(evt: MouseEvent): void {
+  if (preventingNewModals) {
+    return;
+  }
+  evt.preventDefault();
+  evt.stopPropagation();
 
-export { Modal };
+  template.modal.classList.add('modal--closing');
+  pageDimmer.classList.add('page-dimmer--closing');
+  setTimeout(() => {
+    template.modal.parentNode?.removeChild(template.modal);
+    pageDimmer.parentNode?.removeChild(pageDimmer);
+  }, 300);
+}
+
+template.modal.addEventListener('click', function (e) {
+  e.stopPropagation();
+});
+template.closeIcon.addEventListener('click', closeModal);
+pageDimmer.addEventListener('click', closeModal);
+
+export { showModal };

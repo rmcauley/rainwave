@@ -1,6 +1,6 @@
 {
   "$schema": "./frontend/node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": ["dist", "src-old"],
+  "ignorePatterns": ["frontend", "admin_panel", "stream_widget"],
   "quoteProps": "consistent",
   "sortImports": true,
   "sortImports.newlinesBetween": true,

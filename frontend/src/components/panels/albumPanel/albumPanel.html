@@ -1,61 +1,59 @@
 <div class="album-panel">
   <div class="panel-header album-panel-header" bind="header">
-    <div>
-      <if condition="isNew">
-        <div class="album-panel-new-indicator">{{ $l("new_album") }}</div>
-      </if>
-      <if condition="hasNewSongs">
-        <div class="album-panel-new-songs-indicator">{{ $l("new_songs") }}</div>
-      </if>
-      <if condition="isAllOnCooldown">
-        <div class="album-all-cooldown" bind="albumAllCooldown">
-          <span>{{ $l("album_all_cooldown") }}</span>
+    <if condition="isNew">
+      <div class="album-panel-new-indicator">{{ $l("new_album") }}</div>
+    </if>
+    <if condition="hasNewSongs">
+      <div class="album-panel-new-songs-indicator">{{ $l("new_songs") }}</div>
+    </if>
+    <if condition="isAllOnCooldown">
+      <div class="album-all-cooldown" bind="albumCooldownExplanationLink">
+        <span>{{ $l("album_all_cooldown") }}</span>
+        <sup>?</sup>
+      </div>
+    </if>
+    <else>
+      <if condition="hasCooldown">
+        <div class="album-has-cooldown" bind="albumCooldownExplanationLink">
+          <span>{{ $l("album_has_cooldown") }}</span>
           <sup>?</sup>
         </div>
       </if>
-      <else>
-        <if condition="hasCooldown">
-          <div class="album-has-cooldown" bind="albumHasCooldown">
-            <span>{{ $l("album_has_cooldown") }}</span>
-            <sup>?</sup>
-          </div>
-        </if>
-      </else>
-      <if condition="album.rating_user">
-        <div>{{ $l("your_album_rating", { 'rating_user': context.album.rating_user }) }}</div>
-      </if>
-      <if condition="album.rating_count">
-        <div>
-          <span>{{ $l("album_rating_detail") }}</span>
-          <span>
-            {{ $l("rating_detail_numbers", { "rating": context.album.rating, "count":
-            context.album.rating_count, "percentile": context.album.rating_rank_percentile,
-            "percentile_message": context.ratingPercentileMessage }) }}
-          </span>
-          <div bind="ratingGraph"></div>
-        </div>
-      </if>
+    </else>
+    <if condition="album.rating_user">
+      <div>{{ $l("your_album_rating", { 'rating_user': context.album.rating_user }) }}</div>
+    </if>
+    <if condition="album.rating_count">
+      <div>
+        <span>{{ $l("album_rating_detail") }}</span>
+        <span>
+          {{ $l("rating_detail_numbers", { "rating": context.album.rating, "count":
+          context.album.rating_count, "percentile": context.album.rating_rank_percentile,
+          "percentile_message": context.ratingPercentileMessage }) }}
+        </span>
+        <div bind="ratingGraph"></div>
+      </div>
+    </if>
 
-      <if condition="album.genres.length > 0">
-        <div class="album-panel-header-categories">
-          <div>{{ $l("relevant_categories_rollover")}}</div>
-          <div class="album-panel-header-categories-list">
-            <for each="album.genres">
-              <a href="#!/group/{{ id }}">{{ name }}</a>
-            </for>
-          </div>
+    <if condition="album.genres.length > 0">
+      <div class="album-panel-header-categories">
+        <div>{{ $l("relevant_categories_rollover")}}</div>
+        <div class="album-panel-header-categories-list">
+          <for each="album.genres">
+            <a href="#!/group/{{ id }}">{{ name }}</a>
+          </for>
         </div>
-      </if>
+      </div>
+    </if>
 
-      <if condition="user.perks">
-        <div>
-          <a class="fave-all-songs" bind="faveAllSongs">{{ $l("fave_all_songs") }}</a>
-          <span>-</span>
-          <a class="unfave-all-songs" bind="unfaveAllSongs">{{ $l("unfave_all_songs") }}</a>
-        </div>
-      </if>
-    </div>
-
-    <div bind="art" class="album-art"></div>
+    <if condition="user.perks">
+      <div>
+        <a class="fave-all-songs" bind="faveAllSongs">{{ $l("fave_all_songs") }}</a>
+        <span>-</span>
+        <a class="unfave-all-songs" bind="unfaveAllSongs">{{ $l("unfave_all_songs") }}</a>
+      </div>
+    </if>
   </div>
+
+  <div bind="art" class="album-art"></div>
 </div>

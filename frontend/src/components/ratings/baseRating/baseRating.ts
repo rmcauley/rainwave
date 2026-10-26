@@ -2,7 +2,7 @@ import { formatRating } from '../../../helpers/formatRating';
 
 import './baseRating.scss';
 
-class BaseRating extends HTMLElement {
+abstract class BaseRating extends HTMLElement {
   static observedAttributes = ['user-rating', 'global-rating'];
   get userRating(): number {
     return Number(this.getAttribute('user-rating') ?? 0);

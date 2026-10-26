@@ -90,4 +90,12 @@ class SongRating extends BaseRating {
   };
 }
 
+customElements.define('song-rating', SongRating);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'song-rating': SongRating;
+  }
+}
+
 export { SongRating };

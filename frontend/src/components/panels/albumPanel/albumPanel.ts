@@ -5,6 +5,7 @@ import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { setAlbumArt } from '../../albumArt/albumArt';
 import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
+import { showModal } from '../../modal/modal';
 import { isPlaylistItemNew } from '../../playlist/isPlaylistItemNew';
 import { PanelSongTable } from '../panelSongsTable/panelSongsTable';
 import { albumPanelTemplate } from './albumPanel.template';
@@ -89,6 +90,12 @@ class AlbumPanel {
         this.template.$root.appendChild(table.template.$root);
       });
     }
+
+    if (this.template.albumCooldownExplanationLink) {
+      this.template.albumCooldownExplanationLink.addEventListener('click', () =>
+        showModal('whatIsCooldown'),
+      );
+    }
   }
 
   faveAllSongs = (albumId: number, fave: boolean): void => {
@@ -110,24 +117,3 @@ class AlbumPanel {
 }
 
 export { AlbumPanel };
-
-//   if (album.$t.cooldown_explanation) {
-//     album.$t.cooldown_explanation.addEventListener(
-//       "click",
-//       CooldownExplanation,
-//     );
-//   }
-
-//   for (i = 0; i < album.songs.length; i++) {
-//     Fave.register(album.songs[i]);
-//     Rating.register(album.songs[i]);
-//     if (album.songs[i].requestable) {
-//       Requests.makeClickable(album.songs[i].$t.title, album.songs[i].id);
-//     }
-//     SongsTableDetail(album.songs[i], i > album.songs.length - 4);
-//   }
-
-//   template._headerText = album.name;
-
-//   return template;
-// };

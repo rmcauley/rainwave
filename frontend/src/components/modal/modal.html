@@ -2,15 +2,13 @@
   <div class="modal-header">
     <div class="modal-header-bkg">
       <div class="modal-header-content">
+        <div bind="title"></div>
         <svg
           bind="closeIcon"
-          class="rw-icon-close"
+          class="modal-close-icon"
           viewBox="0 0 100 100"
           use="#rw-icon-close"
         ></svg>
-        <if condition="title">
-          <span>{{ title }}</span>
-        </if>
       </div>
     </div>
   </div>

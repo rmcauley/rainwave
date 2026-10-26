@@ -27,6 +27,16 @@ class PanelSongTable {
         showRatingNumber: true,
       });
       tbody.appendChild(songTemplate.$root);
+
+      //   for (i = 0; i < album.songs.length; i++) {
+      //     Fave.register(album.songs[i]);
+      //     Rating.register(album.songs[i]);
+      //     if (album.songs[i].requestable) {
+      //       Requests.makeClickable(album.songs[i].$t.title, album.songs[i].id);
+      //     }
+      //     SongsTableDetail(album.songs[i], i > album.songs.length - 4);
+      //   }
+
       return songTemplate;
     });
   }

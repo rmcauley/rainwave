@@ -15,4 +15,12 @@ class AlbumRating extends BaseRating {
   }
 }
 
+customElements.define('album-rating', AlbumRating);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'album-rating': AlbumRating;
+  }
+}
+
 export { AlbumRating };
