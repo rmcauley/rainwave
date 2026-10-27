@@ -12,16 +12,15 @@ function updateRatingElements(
   }
 
   const songRatings = rootElement.querySelectorAll<SongRating>(
-    `song-rating[data-song-id="${payload.song_id}"]`,
+    `song-rating[data-item-id="${payload.song_id}"]`,
   );
   songRatings.forEach((songRating) => {
     songRating.userRating = payload.rating_user;
-    songRating.showOrHideRatingClear();
   });
 
   payload.updated_album_ratings.forEach((albumPayload) => {
     const albumRatings = rootElement.querySelectorAll<AlbumRating>(
-      `album-rating[data-album-id="${albumPayload.id}"]`,
+      `album-rating[data-item-id="${albumPayload.id}"]`,
     );
     albumRatings.forEach((albumRating) => {
       albumRating.userRating = albumPayload.rating_user;

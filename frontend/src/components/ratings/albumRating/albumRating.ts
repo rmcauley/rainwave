@@ -13,6 +13,12 @@ class AlbumRating extends BaseRating {
       this.classList.remove('rating--complete');
     }
   }
+
+  static create(itemId: number): AlbumRating {
+    const element = document.createElement('album-rating');
+    element.render(itemId);
+    return element;
+  }
 }
 
 customElements.define('album-rating', AlbumRating);

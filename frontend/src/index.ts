@@ -1,12 +1,13 @@
 import { initMenu } from './components/menu/menu';
+import { showModal } from './components/modal/modal';
 import { Panels } from './components/panels/panels';
 import { Playlist } from './components/playlist/playlist';
 import { initRatingPreferences } from './components/ratings/ratingPreferences';
 import { preferences } from './preferences/preferences';
-import { api } from './rainwaveApi/api';
 
 import './index.scss';
 import './utilityClasses.scss';
+import { api } from './rainwaveApi/api';
 
 function rainwaveInit(): void {
   api.setOptions({
@@ -19,21 +20,12 @@ function rainwaveInit(): void {
 
   initMenu();
   initRatingPreferences();
-  // api.addEventListener('error', showTooltipError)
-  // api.addEventListener('wserror', showTooltipError)
-  // api.addEventListener('sdk_exception', showTooltipError)
-  // api.addEventListener('sdk_error_clear', showTooltipError)
-  // api.addEventListener('wsthrottle')
 
-  // API.on('wserror', function (json) {
-  //   if (json.tl_key === 'auth_failed') {
-  //     const template = Modal($l('auth_required'), 'modal_auth_failure', {}, true);
-  //     if (!template) {return;}
-  //     template._root.parentNode.classList.add('error');
-  //   }
-  // });
-
-  // RWAudio = RWAudioConstructor();
+  api.addEventListener('wserror', function (payload) {
+    if (payload.tl_key === 'auth_failed') {
+      showModal('authFailure');
+    }
+  });
 
   if (preferences.store.powerUserMode) {
     document.body.classList.add('power');

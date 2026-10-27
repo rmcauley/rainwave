@@ -1,9 +1,43 @@
 import { formatRating } from '../../../helpers/formatRating';
+import { hasTouchInput } from '../../../helpers/hasTouchInput';
 import { api } from '../../../rainwaveApi/api';
 import type { RainwaveResponse } from '../../../rainwaveApi/types';
 import { BaseRating } from '../baseRating/baseRating';
 
 class SongRating extends BaseRating {
+  #touchRating: HTMLElement | undefined;
+  #touchRatingNumber: HTMLElement | undefined;
+  #touchRatingSlider: HTMLElement | undefined;
+
+  static create(itemId: number): SongRating {
+    const element = document.createElement('song-rating');
+    element.render(itemId);
+
+    if (api.user.id > 1) {
+      if (hasTouchInput) {
+        element.#touchRating = document.createElement('div');
+        element.#touchRating.classList.add('rating-touch');
+        element.appendChild(element.#touchRating);
+        element.#touchRatingNumber = document.createElement('div');
+        element.#touchRatingNumber.classList.add('rating-touch-number');
+        element.#touchRating.appendChild(element.#touchRatingNumber);
+        element.#touchRatingSlider = document.createElement('div');
+        element.#touchRatingNumber.classList.add('rating-touch-slider');
+        element.#touchRating.appendChild(element.#touchRatingSlider);
+
+        element.addEventListener('touchstart', element.onRatingTouchStart);
+        element.addEventListener('touchmove', element.onRatingTouchMove);
+        element.addEventListener('touchend', element.onRatingTouchEnd);
+      }
+
+      element.addEventListener('click', element.submitSongRating);
+      element.addEventListener('mousemove', element.onRatingMouseMove);
+      element.addEventListener('mouseleave', element.onRatingMouseLeave);
+    }
+
+    return element;
+  }
+
   getRatingFromMouse = (evt: MouseEvent): number => {
     if (evt.offsetX < 0 || evt.offsetY < 0) {
       return 1;
@@ -78,15 +112,24 @@ class SongRating extends BaseRating {
     }
   };
 
-  showOrHideRatingClear = (): void => {
-    const ratingClearButton = this.querySelector('.rating-clear-button');
-    if (ratingClearButton) {
-      if (this.userRating > 0) {
-        ratingClearButton.classList.add('rating-clear-button--enabled');
-      } else {
-        ratingClearButton.classList.remove('rating-clear-button--enabled');
-      }
-    }
+  onRatingMouseMove = (): void => {
+    // TODO
+  };
+
+  onRatingMouseLeave = (): void => {
+    // TODO
+  };
+
+  onRatingTouchStart = (): void => {
+    // TODO
+  };
+
+  onRatingTouchEnd = (): void => {
+    // TODO
+  };
+
+  onRatingTouchMove = (): void => {
+    // TODO
   };
 }
 

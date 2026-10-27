@@ -3,6 +3,8 @@ import { formatRating } from '../../../helpers/formatRating';
 import './baseRating.scss';
 
 abstract class BaseRating extends HTMLElement {
+  #ratingNumber: HTMLElement | undefined;
+
   static observedAttributes = ['user-rating', 'global-rating'];
   get userRating(): number {
     return Number(this.getAttribute('user-rating') ?? 0);
@@ -17,6 +19,14 @@ abstract class BaseRating extends HTMLElement {
   set globalRating(value: number | null) {
     this.setAttribute('global-rating', String(value || 0));
   }
+
+  render = (itemId: number): void => {
+    this.dataset.itemId = itemId.toString();
+    this.classList.add('rating');
+    this.#ratingNumber = document.createElement('div');
+    this.#ratingNumber.classList.add('rating-number');
+    this.appendChild(this.#ratingNumber);
+  };
 
   attributeChangedCallback(_name: string, _old: string | null, _value: string | null): void {
     if (this.userRating) {
