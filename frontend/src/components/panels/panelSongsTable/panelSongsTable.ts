@@ -3,7 +3,11 @@
 // {{ ^Formatting.minute_clock(context.length) }}
 // {{ ^Formatting.rating(context.rating) }}
 
+import { preferences } from '../../../preferences/preferences';
+import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
+import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
+import { SongRating } from '../../ratings/songRating/songRating';
 import { panelSongsTableTemplate } from './panelSongsTable.template';
 import { panelSongsTableRowTemplate } from './panelSongsTableRow.template';
 
@@ -20,22 +24,20 @@ class PanelSongTable {
     this.songs = songs.map((song) => {
       const songTemplate = panelSongsTableRowTemplate({
         song,
-        showArtists: true,
-        showCooldown: true,
-        showLinks: true,
-        showRatingClear: true,
-        showRatingNumber: true,
+        showRatingClear: preferences.store.showDeleteRatingButton,
+        power: preferences.store.powerUserMode,
+        artists: JSON.parse(song.artist_parseable) as Array<components['schemas']['_artist']>,
       });
       tbody.appendChild(songTemplate.$root);
 
-      //   for (i = 0; i < album.songs.length; i++) {
-      //     Fave.register(album.songs[i]);
-      //     Rating.register(album.songs[i]);
-      //     if (album.songs[i].requestable) {
-      //       Requests.makeClickable(album.songs[i].$t.title, album.songs[i].id);
-      //     }
-      //     SongsTableDetail(album.songs[i], i > album.songs.length - 4);
-      //   }
+      songTemplate.rating.appendChild(SongRating.create(song.id, song.rating_user, song.rating));
+      if (song.requestable) {
+        songTemplate.title.addEventListener('click', (): void => {
+          api.fetch('request', { song_id: song.id }).catch((err: unknown) => {
+            showErrorTooltip(err, songTemplate.title);
+          });
+        });
+      }
 
       return songTemplate;
     });

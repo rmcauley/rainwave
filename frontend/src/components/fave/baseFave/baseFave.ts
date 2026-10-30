@@ -52,8 +52,12 @@ abstract class BaseFave extends HTMLElement {
     }
     this.classList.add('fave--clicked');
     this.doFaveApiCall(itemId, !this.fave)
-      .catch((err) => showErrorTooltip(err, this))
-      .finally(() => this.classList.remove('fave--clicked'));
+      .catch((err: unknown) => {
+        showErrorTooltip(err, this);
+      })
+      .finally(() => {
+        this.classList.remove('fave--clicked');
+      });
   };
 }
 

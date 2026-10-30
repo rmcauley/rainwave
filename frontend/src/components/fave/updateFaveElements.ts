@@ -33,9 +33,9 @@ function updateFaveElementsAllSongs(
   if (!payload.success) {
     return;
   }
-  payload.song_ids.forEach((songId) =>
-    performUpdate(rootElement, 'song-fave', songId, payload.fave),
-  );
+  payload.song_ids.forEach((songId) => {
+    performUpdate(rootElement, 'song-fave', songId, payload.fave);
+  });
 }
 
 export { updateFaveElements, updateFaveElementsAllSongs };

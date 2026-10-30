@@ -27,7 +27,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     cssCodeSplit: false,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         codeSplitting: false,
       },

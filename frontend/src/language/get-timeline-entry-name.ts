@@ -14,7 +14,7 @@ function getTimelineEntryName(timelineEntry: TimelineEntry): string {
     });
   }
 
-  return timelineEntry.name || timelineEntry.type;
+  return timelineEntry.name ?? timelineEntry.type;
 }
 
 export { getTimelineEntryName };

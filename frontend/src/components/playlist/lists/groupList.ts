@@ -15,12 +15,14 @@ class GroupList extends SearchList<GroupListItem> {
     api.addEventListener('all_groups_paginated', this.#onPageReceive);
   }
 
-  startLoadApi = (): Promise<unknown> => api.fetch('all_groups_paginated', {});
+  startLoadApi = async (): Promise<unknown> => api.fetch('all_groups_paginated', {});
 
   #onPageReceive = (payload: components['schemas']['all_groups_paginated']): void => {
     this.template.loadingBar.style.transform = `scaleX(${(payload.progress * 0.8) / 100 + 0.2})`;
     if (payload.has_more) {
-      api.fetch('all_groups_paginated', { after: payload.next }).catch((e) => this.showApiError(e));
+      api.fetch('all_groups_paginated', { after: payload.next }).catch((e: unknown) => {
+        this.showApiError(e);
+      });
     }
     const data = payload.data as GroupListItem[];
     data.forEach((artist) => {

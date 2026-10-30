@@ -8,7 +8,7 @@ class SongFave extends BaseFave {
     return el;
   }
 
-  doFaveApiCall(itemId: number, setTo: boolean): Promise<unknown> {
+  async doFaveApiCall(itemId: number, setTo: boolean): Promise<unknown> {
     return api.fetch('fave_song', { fave: setTo, song_id: itemId });
   }
 }

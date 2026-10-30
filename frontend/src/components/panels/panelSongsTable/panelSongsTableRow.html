@@ -5,27 +5,27 @@
   <td class="panel-song-table-row-fave" title="fave"></td>
   <td class="panel-song-table-row-title" title="{{ song.title }}" bind="title">{{ song.title }}</td>
 
-  <if condition="showCooldown">
+  <if condition="power">
     <td class="panel-song-table-row-cooldown" bind="cooldown"></td>
     <td class="panel-song-table-row-length" bind="length"></td>
   </if>
-  <if condition="showRatingClear">
+  <if condition="power">
     <td class="panel-song-table-row-rating-clear">
       <svg use="#rw-icon-close" bind="ratingClear"></svg>
     </td>
   </if>
   <td class="panel-song-table-row-rating" bind="rating"></td>
-  <if condition="showRatingNumber">
+  <if condition="power">
     <td class="panel-song-table-row-rating-number" bind="ratingNumber"></td>
   </if>
-  <if condition="showArtists">
+  <if condition="power">
     <td class="artists">
       <for each="artists">
         <a href="#!/artist/{{ id }}">{{ name }}</a>
       </for>
     </td>
   </if>
-  <if condition="showLinks">
+  <if condition="power">
     <td class="panel-song-table-row-url">
       <if condition="song.url">
         <a class="url" href="{{ song.url }}" target="_blank"></a>

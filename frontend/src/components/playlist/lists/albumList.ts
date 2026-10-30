@@ -57,8 +57,8 @@ class AlbumList extends SearchList<AlbumListItem> {
       }
 
       if (playlistSort === 'rating') {
-        const aRating = a.rating_user || a.rating;
-        const bRating = b.rating_user || b.rating;
+        const aRating = a.rating_user ?? a.rating;
+        const bRating = b.rating_user ?? b.rating;
         if (aRating > bRating) {
           return -1;
         } else if (aRating < bRating) {
@@ -83,12 +83,14 @@ class AlbumList extends SearchList<AlbumListItem> {
     }
   };
 
-  startLoadApi = (): Promise<unknown> => api.fetch('all_albums_paginated', {});
+  startLoadApi = async (): Promise<unknown> => api.fetch('all_albums_paginated', {});
 
   #onPageReceive = (payload: components['schemas']['all_albums_paginated']): void => {
     this.template.loadingBar.style.transform = `scaleX(${(payload.progress * 0.8) / 100 + 0.2})`;
     if (payload.has_more) {
-      api.fetch('all_albums_paginated', { after: payload.next }).catch((e) => this.showApiError(e));
+      api.fetch('all_albums_paginated', { after: payload.next }).catch((e: unknown) => {
+        this.showApiError(e);
+      });
     }
     const data = payload.data as AlbumListItem[];
     data.forEach((album) => (album.nameSearchable = makeSearchableString(album.name)));

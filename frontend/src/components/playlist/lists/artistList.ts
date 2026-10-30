@@ -15,14 +15,14 @@ class ArtistList extends SearchList<ArtistListItem> {
     api.addEventListener('all_artists_paginated', this.#onPageReceive);
   }
 
-  startLoadApi = (): Promise<unknown> => api.fetch('all_artists_paginated', {});
+  startLoadApi = async (): Promise<unknown> => api.fetch('all_artists_paginated', {});
 
   #onPageReceive = (payload: components['schemas']['all_artists_paginated']): void => {
     this.template.loadingBar.style.transform = `scaleX(${(payload.progress * 0.8) / 100 + 0.2})`;
     if (payload.has_more) {
-      api
-        .fetch('all_artists_paginated', { after: payload.next })
-        .catch((e) => this.showApiError(e));
+      api.fetch('all_artists_paginated', { after: payload.next }).catch((e: unknown) => {
+        this.showApiError(e);
+      });
     }
     const data = payload.data as ArtistListItem[];
     data.forEach(function (artist) {

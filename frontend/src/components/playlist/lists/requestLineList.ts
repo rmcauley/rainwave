@@ -23,7 +23,7 @@ class RequestLineList extends SearchList<RequestLineListItem> {
     api.addEventListener('request_line', this.#onRequestLineReceive);
   }
 
-  startLoadApi = (): Promise<void> => Promise.resolve();
+  startLoadApi = async (): Promise<void> => Promise.resolve();
 
   #onRequestLineReceive = (payload: components['schemas']['request_line']): void => {
     this.items = [];
@@ -86,7 +86,9 @@ class RequestLineList extends SearchList<RequestLineListItem> {
     }
   };
 
-  navigateToItem = (item: RequestLineListItem): void => navigateTo('listener', item.id);
+  navigateToItem = (item: RequestLineListItem): void => {
+    navigateTo('listener', item.id);
+  };
 }
 
 export { RequestLineList };

@@ -10,9 +10,9 @@ class Panels {
   constructor() {
     this.template = panelsTemplate();
 
-    api.addEventListener('fave_album_result', (payload) =>
-      updateFaveElements('album-fave', payload, this.template.$root),
-    );
+    api.addEventListener('fave_album_result', (payload) => {
+      updateFaveElements('album-fave', payload, this.template.$root);
+    });
     api.addEventListener('fave_song_result', (payload) => {
       updateFaveElements('song-fave', payload, this.template.$root);
     });

@@ -158,7 +158,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
    *
    * @category Connection
    */
-  public stopWebSocketSync(): Promise<void> {
+  public async stopWebSocketSync(): Promise<void> {
     const socket = this._socket;
 
     if (!socket || socket.readyState === socket.CLOSED) {
@@ -483,7 +483,7 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   // API calls ***********************************************************************************************
 
-  fetch<T extends RainwaveAction>(
+  async fetch<T extends RainwaveAction>(
     action: T,
     params: RainwaveParams<T>,
   ): Promise<RainwaveResponse<T>> {

@@ -69,9 +69,9 @@ function registerSongChangeNotification(): void {
   api.addEventListener('sched_current', notify);
 
   const ua = navigator.userAgent.toLowerCase();
-  if (ua.indexOf('linux') >= 0) {
+  if (ua.includes('linux')) {
     notifier = linuxNotifier;
-  } else if (ua.indexOf('windows') >= 0 && ua.indexOf('gecko') >= 0) {
+  } else if (ua.includes('windows') && ua.includes('gecko')) {
     notifier = windowsFirefoxNotifier;
   } else {
     notifier = standardNotifier;

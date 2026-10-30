@@ -2,7 +2,6 @@ import { isSimpleMode } from '../../../helpers/isSimpleMode.js';
 import { removeElement } from '../../../helpers/removeElement.js';
 import { makeSearchableString } from '../../../language/get-searchable-name.js';
 import { preferences } from '../../../preferences/preferences.js';
-import type { components } from '../../../rainwaveApi/rainwave-openapi.js';
 import { searchListTemplate } from './searchList.template.js';
 
 type SearchListItem = {
@@ -49,7 +48,7 @@ abstract class SearchList<T extends SearchListItem> {
   public visibleItems: Array<T> = [];
 
   constructor() {
-    this.template = searchListTemplate({});
+    this.template = searchListTemplate();
     this.element = this.template.$root;
 
     this.itemHeight = searchListItemHeight;
@@ -127,7 +126,7 @@ abstract class SearchList<T extends SearchListItem> {
     }
   };
 
-  protected showApiError = (_apiError: components['schemas']['error']): void => {
+  protected showApiError = (_apiError: unknown): void => {
     // TODO: show api error
     // TODO: lock component
   };
@@ -259,19 +258,19 @@ abstract class SearchList<T extends SearchListItem> {
   };
 
   keyNavDown = (): void => {
-    return this.keyNavArrowAction(1);
+    this.keyNavArrowAction(1);
   };
 
   keyNavUp = (): void => {
-    return this.keyNavArrowAction(-1);
+    this.keyNavArrowAction(-1);
   };
 
   keyNavPageDown = (): void => {
-    return this.keyNavArrowAction(Math.floor(this.getNumItemsToDisplay() * 0.75));
+    this.keyNavArrowAction(Math.floor(this.getNumItemsToDisplay() * 0.75));
   };
 
   keyNavPageUp = (): void => {
-    return this.keyNavArrowAction(Math.floor(this.getNumItemsToDisplay() * 0.75));
+    this.keyNavArrowAction(Math.floor(this.getNumItemsToDisplay() * 0.75));
   };
 
   keyNavEnd = (): void => {

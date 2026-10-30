@@ -19,7 +19,7 @@ function panelSongsTableRowTemplate(context: panelSongsTableRowContext) {
   v1.appendChild(v5);
   let v8: HTMLElementTagNameMap['td'] | undefined;
   let v9: HTMLElementTagNameMap['td'] | undefined;
-  if (context.showCooldown) {
+  if (context.power) {
     const v6 = document.createElement('td');
     v6.className = 'panel-song-table-row-cooldown';
     v1.appendChild(v6);
@@ -30,7 +30,7 @@ function panelSongsTableRowTemplate(context: panelSongsTableRowContext) {
     v9 = v7;
   }
   let v12: SVGSVGElement | undefined;
-  if (context.showRatingClear) {
+  if (context.power) {
     const v10 = document.createElement('td');
     v10.className = 'panel-song-table-row-rating-clear';
     v1.appendChild(v10);
@@ -42,13 +42,13 @@ function panelSongsTableRowTemplate(context: panelSongsTableRowContext) {
   v13.className = 'panel-song-table-row-rating';
   v1.appendChild(v13);
   let v15: HTMLElementTagNameMap['td'] | undefined;
-  if (context.showRatingNumber) {
+  if (context.power) {
     const v14 = document.createElement('td');
     v14.className = 'panel-song-table-row-rating-number';
     v1.appendChild(v14);
     v15 = v14;
   }
-  if (context.showArtists) {
+  if (context.power) {
     const v16 = document.createElement('td');
     v16.className = 'artists';
     v1.appendChild(v16);
@@ -59,7 +59,7 @@ function panelSongsTableRowTemplate(context: panelSongsTableRowContext) {
       v16.appendChild(v17);
     });
   }
-  if (context.showLinks) {
+  if (context.power) {
     const v18 = document.createElement('td');
     v18.className = 'panel-song-table-row-url';
     v1.appendChild(v18);

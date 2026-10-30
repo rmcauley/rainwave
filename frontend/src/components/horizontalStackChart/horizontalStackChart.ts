@@ -18,7 +18,7 @@ function horizontalStackChart(
   data: HorizontalStackChartDatum[],
   options?: HorizontalStackChartOptions,
 ): HTMLElement {
-  const { addShareToLabel, addShareToTooltip, percentLineInterval } = options || {};
+  const { addShareToLabel, addShareToTooltip, percentLineInterval } = options ?? {};
   const minShare = options?.minShare ?? 0;
 
   const totalValue = data.reduce((tv, d) => tv + d.value, 0);

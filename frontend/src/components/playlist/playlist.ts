@@ -108,14 +108,14 @@ class Playlist {
 
   tabBackwards = (): void => {
     const nextRoute = this.currentRoute
-      ? routeOrder.at(routeOrder.indexOf(this.currentRoute) - 1) || lastTab
+      ? (routeOrder.at(routeOrder.indexOf(this.currentRoute) - 1) ?? lastTab)
       : lastTab;
     navigateTo(nextRoute, undefined);
   };
 
   tabForwards = (): void => {
     const nextRoute = this.currentRoute
-      ? routeOrder.at(routeOrder.indexOf(this.currentRoute) + 1) || firstTab
+      ? (routeOrder.at(routeOrder.indexOf(this.currentRoute) + 1) ?? firstTab)
       : firstTab;
     navigateTo(nextRoute, undefined);
   };
@@ -150,25 +150,35 @@ class Playlist {
     }
 
     if (evt.key === 'ArrowDown') {
-      return this[routeToList[this.currentRoute]].keyNavDown();
+      this[routeToList[this.currentRoute]].keyNavDown();
+      return;
     } else if (evt.key === 'ArrowUp') {
-      return this[routeToList[this.currentRoute]].keyNavUp();
+      this[routeToList[this.currentRoute]].keyNavUp();
+      return;
     } else if (evt.key === 'Enter') {
-      return this[routeToList[this.currentRoute]].keyNavEnter();
+      this[routeToList[this.currentRoute]].keyNavEnter();
+      return;
     } else if (evt.key === 'PageDown') {
-      return this[routeToList[this.currentRoute]].keyNavPageDown();
+      this[routeToList[this.currentRoute]].keyNavPageDown();
+      return;
     } else if (evt.key === 'PageUp') {
-      return this[routeToList[this.currentRoute]].keyNavPageUp();
+      this[routeToList[this.currentRoute]].keyNavPageUp();
+      return;
     } else if (evt.key === 'Home') {
-      return this[routeToList[this.currentRoute]].keyNavHome();
+      this[routeToList[this.currentRoute]].keyNavHome();
+      return;
     } else if (evt.key === 'End') {
-      return this[routeToList[this.currentRoute]].keyNavEnd();
+      this[routeToList[this.currentRoute]].keyNavEnd();
+      return;
     } else if (searchChars.test(evt.key) || evt.key === ' ') {
-      return this[routeToList[this.currentRoute]].keyNavAddCharacter(evt.key);
+      this[routeToList[this.currentRoute]].keyNavAddCharacter(evt.key);
+      return;
     } else if (evt.key === 'Backspace') {
-      return this[routeToList[this.currentRoute]].keyNavBackspace();
+      this[routeToList[this.currentRoute]].keyNavBackspace();
+      return;
     } else if (evt.key === 'Escape') {
-      return this[routeToList[this.currentRoute]].keyNavEscape();
+      this[routeToList[this.currentRoute]].keyNavEscape();
+      return;
     }
   };
 

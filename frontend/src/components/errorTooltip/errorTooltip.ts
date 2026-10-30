@@ -1,12 +1,28 @@
 import { getViewportHeight, getViewportWidth } from '../../helpers/getViewportSize';
 import { removeElement } from '../../helpers/removeElement';
 import { $l } from '../../language';
-import type { RainwaveSchemas } from '../../rainwaveApi/types';
+import type { RainwaveTranslationKey } from '../../language/translations';
 
-function showErrorTooltip(payload: RainwaveSchemas['error'], atElement: HTMLElement): void {
+function showErrorTooltip(payload: unknown, atElement: HTMLElement): void {
+  let text: string;
+  if (payload && typeof payload === 'string') {
+    text = payload;
+  } else if (payload && typeof payload === 'object') {
+    if ('text' in payload && typeof payload.text === 'string') {
+      text = payload.text;
+    } else if ('tl_key' in payload && typeof payload.tl_key === 'string') {
+      text = $l(payload.tl_key as RainwaveTranslationKey);
+    } else if (payload instanceof Error) {
+      text = `${payload.name} ${payload.message}`;
+    } else {
+      text = 'Unknown error';
+    }
+  } else {
+    text = 'Unknown error';
+  }
   const tooltip = document.createElement('div');
   tooltip.className = 'error-tooltip';
-  tooltip.textContent = payload.text || $l(payload.tl_key);
+  tooltip.textContent = text;
 
   let { x, y } = atElement.getBoundingClientRect();
   const viewportHeight = getViewportHeight();

@@ -59,8 +59,12 @@ class AlbumPanel {
 
     const { faveAllSongs, unfaveAllSongs } = this.template;
     if (faveAllSongs && unfaveAllSongs) {
-      faveAllSongs.addEventListener('click', () => this.faveAllSongs(album.id, true));
-      unfaveAllSongs.addEventListener('click', () => this.faveAllSongs(album.id, false));
+      faveAllSongs.addEventListener('click', () => {
+        this.faveAllSongs(album.id, true);
+      });
+      unfaveAllSongs.addEventListener('click', () => {
+        this.faveAllSongs(album.id, false);
+      });
     }
 
     const tables: Record<
@@ -92,9 +96,9 @@ class AlbumPanel {
     }
 
     if (this.template.albumCooldownExplanationLink) {
-      this.template.albumCooldownExplanationLink.addEventListener('click', () =>
-        showModal('whatIsCooldown'),
-      );
+      this.template.albumCooldownExplanationLink.addEventListener('click', () => {
+        showModal('whatIsCooldown');
+      });
     }
   }
 
@@ -111,7 +115,9 @@ class AlbumPanel {
       api
         .fetch('fave_all_songs', { album_id: albumId, fave: true })
         .then(() => (this.faveAllSongsRunning = true))
-        .catch((err) => showErrorTooltip(err, faveAllSongs));
+        .catch((err: unknown) => {
+          showErrorTooltip(err, faveAllSongs);
+        });
     }
   };
 }
