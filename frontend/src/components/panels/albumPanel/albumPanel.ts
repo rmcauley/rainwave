@@ -5,11 +5,11 @@ import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { setAlbumArt } from '../../albumArt/albumArt';
 import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
+import { ratingChart } from '../../horizontalStackChart/ratingChart';
 import { showModal } from '../../modal/modal';
 import { isPlaylistItemNew } from '../../playlist/isPlaylistItemNew';
 import { PanelSongTable } from '../panelSongsTable/panelSongsTable';
 import { albumPanelTemplate } from './albumPanel.template';
-import { albumPanelRatingChart } from './albumPanelRatingChart';
 
 class AlbumPanel {
   template: ReturnType<typeof albumPanelTemplate>;
@@ -49,7 +49,7 @@ class AlbumPanel {
     });
 
     if (this.template.ratingGraph) {
-      const chart = albumPanelRatingChart(album);
+      const chart = ratingChart(album.rating_histogram);
       if (chart) {
         this.template.ratingGraph.parentNode?.replaceChild(chart, this.template.ratingGraph);
       }

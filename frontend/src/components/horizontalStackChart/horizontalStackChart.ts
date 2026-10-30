@@ -24,7 +24,7 @@ function horizontalStackChart(
   const totalValue = data.reduce((tv, d) => tv + d.value, 0);
 
   const container = document.createElement('div');
-  container.className = 'rating-spread-chart';
+  container.className = 'horizontal-stack-chart';
   let xPosPercent = 0;
   data.forEach((datum) => {
     const share = Math.floor((datum.value / totalValue) * 100);

@@ -1,4 +1,6 @@
 import { svgIcon as _svg } from '../../helpers/svg';
+
+import style from './panels.scss';
 function panelsTemplate() {
   const v1 = document.createElement('div');
   v1.setAttribute('id', `panels`);

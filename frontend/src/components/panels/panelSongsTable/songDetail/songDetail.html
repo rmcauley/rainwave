@@ -1,0 +1,22 @@
+<div class="song-detail-artists">
+  <span class="song-detail-artists-label">{{ $l("Artists") + ": " }}</span>
+  <for each="artists">
+    <a href="#!/artist/{{ id }}">{{ name }}</a>
+  </for>
+</div>
+<div class="song-detail-groups">
+  <span>{{ $l("Groups") + ": " }}</span>
+  <for each="groups">
+    <a href="#!/group/{{ id }}">{{ name }}</a>
+  </for>
+</div>
+<if condition="ratingDetailText">
+  <div>
+    <span>{{ $l("song_rating_detail") }}</span>
+    <span style="margin-left: 2px"> {{ ratingDetailText }} </span>
+  </div>
+  <div bind="graphPlacement"></div>
+</if>
+<else>
+  <div>{{ $l("song_has_no_ratings") }}</div>
+</else>

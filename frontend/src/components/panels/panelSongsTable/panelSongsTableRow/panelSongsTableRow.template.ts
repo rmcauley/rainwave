@@ -1,4 +1,4 @@
-import { svgIcon as _svg } from '../../../helpers/svg';
+import { svgIcon as _svg } from '../../../../helpers/svg';
 import type { panelSongsTableRowContext } from './panelSongsTableRow.context';
 function panelSongsTableRowTemplate(context: panelSongsTableRowContext) {
   const v1 = document.createElement('tr');

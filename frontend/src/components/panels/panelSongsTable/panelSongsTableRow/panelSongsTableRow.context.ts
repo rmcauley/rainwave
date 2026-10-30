@@ -1,4 +1,4 @@
-import type { components } from '../../../rainwaveApi/rainwave-openapi';
+import type { components } from '../../../../rainwaveApi/rainwave-openapi';
 
 export interface panelSongsTableRowContext {
   song: components['schemas']['album']['songs'][number];

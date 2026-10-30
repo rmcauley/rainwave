@@ -1,5 +1,4 @@
-@use '../../cssFunctions' as css;
-@use '../../theme' as theme;
+@use '../../../theme.scss' as theme;
 
 .fave {
   width: 14px;
@@ -13,8 +12,7 @@
     height: 13px;
     position: absolute;
     opacity: 0;
-
-    @include css.transition-wtime(200ms, opacity);
+    transition: opacity theme.$transition-duration;
   }
 
   &.is-fave {
