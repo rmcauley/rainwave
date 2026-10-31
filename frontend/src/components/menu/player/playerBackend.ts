@@ -29,10 +29,7 @@ class RainwaveAudioBackend extends EventTarget {
 
     this.audioEl = this.createAudioElement();
     let fileType = 'mp3';
-    if (
-      !isProbablyMobileBrowser() &&
-      this.audioEl.canPlayType('audio/ogg; codecs="vorbis"') !== ''
-    ) {
+    if (!isProbablyMobileBrowser && this.audioEl.canPlayType('audio/ogg; codecs="vorbis"') !== '') {
       fileType = 'ogg';
     }
 

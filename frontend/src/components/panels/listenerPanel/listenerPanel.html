@@ -1,0 +1,49 @@
+<div class="listener-avatar" style="background-image: url({{ listener.avatar }});">
+  <div class="listener-header">
+    <div>
+      <if condition="listener.rank">
+        <span style="color: #{{ listener.colour }}; padding-right: 5px;">
+          {{ listener.rank }}.
+        </span>
+      </if>
+      <span> {{ $l("registered_in_year", { 'year': context.registrationYear }) }} </span>
+    </div>
+    <if condition="isSelf">
+      <div>{{ $l("view_your") }}</div>
+      <div style="padding-left: 10px">
+        <a target="_blank" href="/pages/user_recent_votes"> {{ $l("recent_votes") }} </a>
+      </div>
+      <div style="padding-left: 10px">
+        <a target="_blank" href="/pages/all_faves"> {{ $l("all_faves") }} </a>
+      </div>
+      <div style="padding-left: 10px">
+        <a target="_blank" href="/pages/user_requested_history"> {{ $l("request_history") }} </a>
+      </div>
+    </if>
+  </div>
+
+  <if condition="listener.top_albums.length">
+    <h2>{{ $l("top_rated_albums") }}</h2>
+    <div class="listener-top-albums">
+      <for each="listener.top_albums" bind="topAlbums">
+        <div>
+          <div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
+        </div>
+      </for>
+    </div>
+  </if>
+
+  <if condition="listener.top_request_albums">
+    <h2>{{ $l("top_requested_albums") }}</h2>
+    <div class="listener-top-requests">
+      <for each="listener.top_request_albums" bind="topRequests">
+        <div class="row">
+          <div class="request-count">{{ request_count_listener.toString() }}</div>
+          <div class="title"><a href="#!/album/{{ id }}">{{ name }}</a></div>
+        </div>
+      </for>
+    </div>
+  </if>
+
+  <div class="listener-panel-detail" bind="userDetail"></div>
+</div>

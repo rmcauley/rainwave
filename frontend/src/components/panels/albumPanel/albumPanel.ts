@@ -1,6 +1,6 @@
 import { getStationName } from '../../../helpers/getStationName';
 import { isProbablyMobileBrowser } from '../../../helpers/isProbablyMobile';
-import { STATION_ORDER } from '../../../helpers/stations';
+import { stations } from '../../../helpers/stations';
 import { $l } from '../../../language';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
@@ -90,8 +90,8 @@ class AlbumPanel {
       msg.textContent = $l('no_songs_on_this_station', { station: getStationName(api.user.sid) });
       this.template.$root.appendChild(msg);
     } else {
-      STATION_ORDER.forEach((sid) => {
-        const tableData = tables[sid];
+      stations.forEach((station) => {
+        const tableData = tables[station.id];
         if (tableData) {
           const table = new PanelSongTable(tableData.songs, tableData.header);
           this.template.$root.appendChild(table.template.$root);

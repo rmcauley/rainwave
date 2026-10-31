@@ -1,5 +1,5 @@
 import { getStationName } from '../../../helpers/getStationName';
-import { STATION_ORDER } from '../../../helpers/stations';
+import { stationOrder } from '../../../helpers/stations';
 import { $l } from '../../../language';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 
@@ -8,11 +8,6 @@ type AllSongsTableData = {
   header: string;
   songs: components['schemas']['album']['songs'];
 };
-
-const stationSet = new Set(STATION_ORDER);
-stationSet.delete(window.BOOTSTRAP.user.sid);
-const stationOrder = Array.from(stationSet);
-stationOrder.unshift(window.BOOTSTRAP.user.sid);
 
 function sortAllSongsTableData(a: AllSongsTableData, b: AllSongsTableData): number {
   const stationPosA = stationOrder.indexOf(a.sid);

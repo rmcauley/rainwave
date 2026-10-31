@@ -252,10 +252,8 @@
   "tip_jar_all_donations": "Total amount of donations since July 2007",
 
   "votes_by_station": "Votes By Station",
-  "votes_by_source_station": "Votes by Source Stn.",
   "requests_by_station": "Requests By Station",
   "requests_by_source_station": "Requests by Source Stn.",
-  "rating_counts_across_stations": "Ratings by Source Stn.",
   "ratings_completion_rate": "Rating Completion",
   "rating_spread": "Rating Spread",
   "average_rating_by_station": "Avg. Rating By Station",

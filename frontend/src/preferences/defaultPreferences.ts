@@ -14,7 +14,6 @@ const DEFAULT_PREFERENCES: Preferences = {
   playlistUnratedFirst: false,
   playlistFavesFirst: false,
   playlistAvailableFirst: false,
-  playlistFavesAboveAvailable: false,
   playlistSortSongsLikeAlbums: false,
   showPreviousElections: false,
   showHowManyPreviousElections: 5,

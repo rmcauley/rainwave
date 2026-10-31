@@ -14,9 +14,13 @@ class AlbumRating extends BaseRating {
     }
   }
 
-  static create(itemId: number): AlbumRating {
+  static create(
+    itemId: number,
+    userRating: number | null,
+    globalRating: number | null,
+  ): AlbumRating {
     const element = document.createElement('album-rating');
-    element.render(itemId);
+    element.render(itemId, userRating, globalRating);
     return element;
   }
 }

@@ -58,7 +58,7 @@ function notify(schedCurrent: TimelineEntry): void {
 }
 
 function registerSongChangeNotification(): void {
-  if (isProbablyMobileBrowser()) {
+  if (isProbablyMobileBrowser) {
     return;
   }
 

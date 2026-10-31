@@ -3257,6 +3257,7 @@
             "type": "integer"
           }
         },
+        "required": ["rating", "ratings"],
         "type": "object"
       },
       "_listener_ratings_by_station": {

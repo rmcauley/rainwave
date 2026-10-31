@@ -62,7 +62,7 @@ function initStationSelect(): void {
   separateStationHeader.id = 'station-select-menu-separate-header';
   separateStationHeader.textContent = $l('station_select_separate_header');
   document.getElementById('station-select-menu')!.appendChild(separateStationHeader);
-  stationLinks[6] = renderStationLink(stations.find((s) => s.id === 6)!);
+  stationLinks[6] = renderStationLink(stations.get(6)!);
 
   api.addEventListener('all_stations_info', (data) => {
     Object.entries(stationLinks).forEach(([stationId, stationLink]) => {

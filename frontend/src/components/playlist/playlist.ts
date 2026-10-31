@@ -56,7 +56,7 @@ class Playlist {
   public template: ReturnType<typeof playlistTemplate>;
 
   constructor() {
-    this.template = playlistTemplate(null);
+    this.template = playlistTemplate();
 
     this.albumList = new AlbumList();
     this.template.albumList.appendChild(this.albumList.template.$root);

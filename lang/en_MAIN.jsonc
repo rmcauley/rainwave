@@ -18,21 +18,21 @@
     "Missing argument: '",
     {
       "type": "substitute",
-      "key": "argument"
+      "key": "argument",
     },
-    "'."
+    "'.",
   ],
   "invalid_argument": [
     "Invalid argument '",
     {
       "type": "substitute",
-      "key": "argument"
+      "key": "argument",
     },
     "': ",
     {
       "type": "substitute",
-      "key": "reason"
-    }
+      "key": "reason",
+    },
   ],
   "auth_required": "Authorization required.",
   "auth_failed": "Authorization failed.",
@@ -44,14 +44,14 @@
     "User locked to ",
     {
       "type": "substitute",
-      "key": "station"
+      "key": "station",
     },
     " for ",
     {
       "type": "substitute",
-      "key": "lock_counter"
+      "key": "lock_counter",
     },
-    " more songs."
+    " more songs.",
   ],
   "internal_error": "Internal server error.",
   "song_does_not_exist": "Song does not exist.",
@@ -96,20 +96,20 @@
     "Song is not available on ",
     {
       "type": "substitute",
-      "key": "station"
+      "key": "station",
     },
-    "."
+    ".",
   ],
   "locked_to_station": [
     "You were just voting on ",
     {
       "type": "substitute",
-      "key": "locked_station"
+      "key": "locked_station",
     },
     ", you have to wait ",
     {
       "type": "substitute",
-      "key": "lock_counter"
+      "key": "lock_counter",
     },
     " more ",
     {
@@ -117,15 +117,15 @@
       "key": "lock_counter",
       "plurals": {
         "one": "song",
-        "other": "songs"
-      }
+        "other": "songs",
+      },
     },
     " to vote on ",
     {
       "type": "substitute",
-      "key": "this_station"
+      "key": "this_station",
     },
-    "."
+    ".",
   ],
 
   // The above line happens on station change: 'You were just voting on Game, you have to wait 2 more songs to vote on All'.
@@ -187,9 +187,9 @@
     "Special Event on ",
     {
       "type": "substitute",
-      "key": "station"
+      "key": "station",
     },
-    ": "
+    ": ",
   ],
   "tunein": "Tune In",
   "stop": "Stop",
@@ -223,16 +223,16 @@
     "Played ",
     {
       "type": "substitute",
-      "key": "time"
+      "key": "time",
     },
-    " Ago"
+    " Ago",
   ],
   "timeline_art__request_indicator": "Request",
   "timeline_art__your_request_indicator": "Yours",
   "num_votes": [
     {
       "type": "substitute",
-      "key": "num_votes"
+      "key": "num_votes",
     },
     " ",
     {
@@ -240,16 +240,16 @@
       "key": "num_votes",
       "plurals": {
         "one": "Vote",
-        "other": "Votes"
-      }
-    }
+        "other": "Votes",
+      },
+    },
   ],
   "event_naming__oneup": [
     {
       "type": "substitute",
-      "key": "name"
+      "key": "name",
     },
-    " Power Hour"
+    " Power Hour",
   ],
   // This is the verb, e.g. "to vote".
   "vote": "Vote",
@@ -271,10 +271,8 @@
 
   // User Detail
   "votes_by_station": "Votes By Station",
-  "votes_by_source_station": "Votes by Source Stn.",
   "requests_by_station": "Requests By Station",
   "requests_by_source_station": "Requests by Source Stn.",
-  "rating_counts_across_stations": "Ratings by Source Stn.",
   "ratings_completion_rate": "Rating Completion",
   "rating_spread": "Rating Spread",
   "average_rating_by_station": "Avg. Rating By Station",
@@ -286,9 +284,9 @@
     "Joined ",
     {
       "type": "substitute",
-      "key": "year"
+      "key": "year",
     },
-    "."
+    ".",
   ],
   "top_rated_albums": "Top Rated Albums",
   "top_requested_albums": "Top Requested Albums",
@@ -321,33 +319,33 @@
     "You've rated this album ",
     {
       "type": "substitute",
-      "key": "rating_user"
+      "key": "rating_user",
     },
-    "."
+    ".",
   ],
   "album_rating_ranked_at_v2": [
     "Rated ",
     {
       "type": "substitute",
-      "key": "rating"
+      "key": "rating",
     },
     " by ",
     {
       "type": "substitute",
-      "key": "rating_count"
+      "key": "rating_count",
     },
     " song ratings, ranking ",
     {
       "type": "ordinal",
-      "key": "rank"
+      "key": "rank",
     },
-    "."
+    ".",
   ],
   "album_requests_ranked_at": [
     "Requested ",
     {
       "type": "substitute",
-      "key": "count"
+      "key": "count",
     },
     " ",
     {
@@ -355,61 +353,61 @@
       "key": "count",
       "plurals": {
         "one": "time",
-        "other": "times"
-      }
+        "other": "times",
+      },
     },
     ", ranking ",
     {
       "type": "ordinal",
-      "key": "rank"
+      "key": "rank",
     },
-    "."
+    ".",
   ],
   "album_rating_detail": "Users have rated this album ",
   "song_rating_detail": "Users have rated this song ",
   "rating_detail_numbers": [
     {
       "type": "substitute",
-      "key": "rating"
+      "key": "rating",
     },
     ". (",
     {
       "type": "substitute",
-      "key": "percentile_message"
+      "key": "percentile_message",
     },
-    ")"
+    ")",
   ],
   "rating_percentile_top": [
     "top ",
     {
       "type": "substitute",
-      "key": "percentile_top"
+      "key": "percentile_top",
     },
-    "%"
+    "%",
   ],
   "rating_percentile_bottom": [
     "bottom ",
     {
       "type": "substitute",
-      "key": "percentile"
+      "key": "percentile",
     },
-    "%"
+    "%",
   ],
   "request_percentile_top": [
     "Request popularity: top ",
     {
       "type": "substitute",
-      "key": "percentile_top"
+      "key": "percentile_top",
     },
-    "%."
+    "%.",
   ],
   "request_percentile_bottom": [
     "Request popularity: bottom ",
     {
       "type": "substitute",
-      "key": "percentile"
+      "key": "percentile",
     },
-    "%."
+    "%.",
   ],
   "song_has_no_ratings": "Song has too few ratings to report.",
   "Rate": "Rate",
@@ -423,9 +421,9 @@
       "key": "count",
       "plurals": {
         "one": "Artist",
-        "other": "Artists"
-      }
-    }
+        "other": "Artists",
+      },
+    },
   ],
   "Users": "Users",
   "Groups": "Categories",
@@ -434,20 +432,20 @@
     "Songs from ",
     {
       "type": "substitute",
-      "key": "station"
-    }
+      "key": "station",
+    },
   ],
   "album_on_station": [
     "On ",
     {
       "type": "substitute",
-      "key": "station"
+      "key": "station",
     },
     ": ",
     {
       "type": "substitute",
-      "key": "album"
-    }
+      "key": "album",
+    },
   ],
   "groups_tab_title": "Categories",
   "RequestLine": "Request Line",
@@ -466,9 +464,9 @@
     "There are no songs on ",
     {
       "type": "substitute",
-      "key": "station"
+      "key": "station",
     },
-    " for this album."
+    " for this album.",
   ],
   "fave_all_songs": "Fave all songs",
   "unfave_all_songs": "Unfave all songs",
@@ -489,7 +487,7 @@
   "#_requests": [
     {
       "type": "substitute",
-      "key": "num_requests"
+      "key": "num_requests",
     },
     " ",
     {
@@ -497,34 +495,34 @@
       "key": "num_requests",
       "plurals": {
         "one": "Request",
-        "other": "Requests"
-      }
-    }
+        "other": "Requests",
+      },
+    },
   ],
   "requests_all_on_cooldown": "All On Cooldown!",
   "request_you_are_x_in_line": [
     {
       "type": "ordinal",
-      "key": "position"
+      "key": "position",
     },
-    " In Line"
+    " In Line",
   ],
   "request_grab_tag__paused": "Suspended",
   "request_on_cooldown_for": [
     "On cooldown for ",
     {
       "type": "substitute",
-      "key": "cool_time"
+      "key": "cool_time",
     },
-    "."
+    ".",
   ],
   "request_on_cooldown_ends_soon": "Coming off cooldown.",
   "request_in_election": [
     {
       "type": "substitute",
-      "key": "blocked_by"
+      "key": "blocked_by",
     },
-    " is queued for voting."
+    " is queued for voting.",
   ],
   "blocked_by_name__group": "Category",
   "blocked_by_name__album": "Album",
@@ -533,9 +531,9 @@
     "This song is on ",
     {
       "type": "substitute",
-      "key": "station"
+      "key": "station",
     },
-    "."
+    ".",
   ],
   "no_song_selected": "(no song selected)",
   "make_a_request": "Open the library and click/tap a song title to add it to your request queue.",
@@ -559,8 +557,8 @@
     "Now Playing On ",
     {
       "type": "substitute",
-      "key": "station"
-    }
+      "key": "station",
+    },
   ],
 
   // Preferences
@@ -662,5 +660,5 @@
   "power_hours": "Power Hours",
   "start": "Start",
   "end": "End",
-  "success": "Success"
+  "success": "Success",
 }

@@ -2,7 +2,7 @@ import { isProbablyMobileBrowser } from '../helpers/isProbablyMobile';
 import { preferences } from '../preferences/preferences';
 
 function shouldShowClockInTitle(): boolean {
-  if (isProbablyMobileBrowser()) {
+  if (isProbablyMobileBrowser) {
     return false;
   } else if (preferences.store.showClockInTitle === 'on') {
     return true;

@@ -7,6 +7,7 @@ import { syncClock } from './helpers/clock';
 
 import './index.scss';
 import './utilityClasses.scss';
+import { stations } from './helpers/stations';
 import { preferences } from './preferences/preferences';
 import { api } from './rainwaveApi/api';
 
@@ -42,7 +43,13 @@ function rainwaveInit(): void {
   const panels = new Panels();
   document.getElementById('main')!.appendChild(panels.template.$root);
 
-  // correctCurrentUrlForStation();
+  if (window.location.pathname === '/') {
+    stations.forEach((station) => {
+      if (station.id === api.user.sid) {
+        window.history.replaceState(null, '', station.url);
+      }
+    });
+  }
 
   api.processPayload(window.BOOTSTRAP);
 }

@@ -30,7 +30,6 @@ function formatCooldown(seconds: number): string {
   }
   if (seconds >= 60 && detail < 3) {
     humantime += `${Math.floor(seconds / 60)}${timeFormatMinute} `;
-    seconds = seconds % 60;
   }
 
   return humantime.trim();

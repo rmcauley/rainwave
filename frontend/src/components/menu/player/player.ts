@@ -17,7 +17,7 @@ function sanitizeVolume(newVolume: number): number {
 
 function initPlayer(): void {
   const relay = window.BOOTSTRAP.relays[0]!;
-  const audioUrl = `${relay.protocol}://${relay.hostname}:${relay.port}/${stations[api.user.sid]!.url}?${api.user.id}:${api.user.listen_key}`;
+  const audioUrl = `${relay.protocol}://${relay.hostname}:${relay.port}/${stations.get(api.user.sid)!.url}?${api.user.id}:${api.user.listen_key}`;
   const player = new RainwaveAudioBackend(audioUrl, document.getElementById('measure-box')!);
 
   const el = document.getElementById('player')!;

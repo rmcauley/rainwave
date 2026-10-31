@@ -16,7 +16,6 @@ const translateR5: Record<string, keyof Preferences> = {
   p_null1: 'playlistUnratedFirst',
   p_favup: 'playlistFavesFirst',
   p_avup: 'playlistAvailableFirst',
-  p_fav1: 'playlistFavesAboveAvailable',
   p_songsort: 'playlistSortSongsLikeAlbums',
   l_stk: 'showPreviousElections',
   l_stksz: 'showHowManyPreviousElections',

@@ -1284,8 +1284,8 @@ export interface components {
       traceback?: string;
     };
     _listener_rating_spread_item: {
-      rating?: number;
-      ratings?: number;
+      rating: number;
+      ratings: number;
     };
     _listener_ratings_by_station: {
       average_rating: string;
