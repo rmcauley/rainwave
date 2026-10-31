@@ -2,9 +2,13 @@ import { api } from '../../../rainwaveApi/api';
 import { BaseFave } from '../baseFave/baseFave';
 
 class AlbumFave extends BaseFave {
-  static appendToParent(parent: HTMLElement, itemId: number, fave: boolean): AlbumFave {
+  static create(
+    itemId: number,
+    fave: boolean | null,
+    faveHighlightElement: HTMLElement,
+  ): AlbumFave {
     const el = document.createElement('album-fave');
-    el.appendToParent(parent, itemId, fave);
+    el.render(itemId, fave, faveHighlightElement);
     return el;
   }
 

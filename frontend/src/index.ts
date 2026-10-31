@@ -3,10 +3,11 @@ import { showModal } from './components/modal/modal';
 import { Panels } from './components/panels/panels';
 import { Playlist } from './components/playlist/playlist';
 import { initRatingPreferences } from './components/ratings/ratingPreferences';
-import { preferences } from './preferences/preferences';
+import { syncClock } from './helpers/clock';
 
 import './index.scss';
 import './utilityClasses.scss';
+import { preferences } from './preferences/preferences';
 import { api } from './rainwaveApi/api';
 
 function rainwaveInit(): void {
@@ -17,6 +18,8 @@ function rainwaveInit(): void {
   });
   api.processPayload({ api_info: window.BOOTSTRAP.api_info });
   api.processPayload({ user: window.BOOTSTRAP.user });
+
+  syncClock(window.BOOTSTRAP.api_info);
 
   initMenu();
   initRatingPreferences();

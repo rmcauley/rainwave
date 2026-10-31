@@ -155,7 +155,7 @@ class AlbumList extends SearchList<AlbumListItem> {
     span.textContent = item.name;
     element.appendChild(span);
 
-    AlbumFave.appendToParent(element, item.id, item.fave);
+    element.appendChild(AlbumFave.create(item.id, item.fave, element));
 
     this.renderItemUpdate(item, element);
 

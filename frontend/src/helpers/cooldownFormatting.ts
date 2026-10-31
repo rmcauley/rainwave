@@ -7,7 +7,7 @@ const timeFormatHour = translation.timeformat_h as string;
 const timeFormatMinute = translation.timeformat_m as string;
 const timeFormatSeconds = translation.timeformat_s as string;
 
-function cooldown(seconds: number): string {
+function formatCooldown(seconds: number): string {
   if (seconds < 60) {
     return '';
   }
@@ -36,7 +36,7 @@ function cooldown(seconds: number): string {
   return humantime.trim();
 }
 
-function cooldownGlance(seconds: number): string {
+function formatCooldownBrief(seconds: number): string {
   seconds -= getServerTime();
   if (seconds < 60) {
     return '';
@@ -57,4 +57,4 @@ function cooldownGlance(seconds: number): string {
   return `${seconds}${timeFormatSeconds}`;
 }
 
-export { cooldown, cooldownGlance };
+export { formatCooldown, formatCooldownBrief };

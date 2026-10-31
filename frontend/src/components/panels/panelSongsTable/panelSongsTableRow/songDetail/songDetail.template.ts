@@ -1,4 +1,4 @@
-import { $l } from '../../../../language';
+import { $l } from '../../../../../language';
 import type { songDetailContext } from './songDetail.context';
 function songDetailTemplate(context: songDetailContext) {
   const v1 = document.createDocumentFragment();

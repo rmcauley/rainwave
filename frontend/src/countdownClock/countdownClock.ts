@@ -1,7 +1,7 @@
 import { getServerTime } from '../helpers/clock';
+import { formatSongLength } from '../helpers/formatSongLength';
 import { preferences } from '../preferences/preferences';
 import { api } from '../rainwaveApi/api';
-import { getCountdownClockFormatted } from './countdownClockFormat';
 import { shouldShowClockInTitle } from './shouldShowClockInTitle';
 
 // Countdown clock HTML element
@@ -31,7 +31,7 @@ function countdownClockLoop(): void {
   }
 
   const now = getServerTime();
-  const minuteClock = getCountdownClockFormatted(nowPlayingEndsAt - now);
+  const minuteClock = formatSongLength(nowPlayingEndsAt - now);
 
   if (nowPlayingCountdownClock && nowPlayingEndsAt - now >= 0) {
     nowPlayingCountdownClock.textContent = minuteClock;

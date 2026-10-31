@@ -1,4 +1,4 @@
-import type { components } from '../../../../rainwaveApi/rainwave-openapi';
+import type { components } from '../../../../../rainwaveApi/rainwave-openapi';
 
 export interface songDetailContext {
   artists: components['schemas']['song']['artists'];

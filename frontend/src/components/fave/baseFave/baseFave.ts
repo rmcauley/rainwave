@@ -5,6 +5,8 @@ import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
 import './baseFave.scss';
 
 abstract class BaseFave extends HTMLElement {
+  #faveHighlightElement: HTMLElement | undefined;
+
   static observedAttributes = ['fave'];
   get fave(): boolean {
     return this.getAttribute('fave') === 'true';
@@ -13,7 +15,7 @@ abstract class BaseFave extends HTMLElement {
     this.setAttribute('fave', value ? 'true' : 'false');
   }
 
-  appendToParent(parent: HTMLElement, itemId: number, fave: boolean): void {
+  render(itemId: number, fave: boolean | null, faveHighlightElement: HTMLElement): void {
     this.dataset.itemId = itemId.toString();
     this.classList.add('fave');
     this.appendChild(svgIcon('#rw-fave-empty'));
@@ -23,21 +25,22 @@ abstract class BaseFave extends HTMLElement {
       this.addEventListener('click', this.onFaveClick);
     }
 
-    parent.appendChild(this);
-    this.fave = fave;
+    this.#faveHighlightElement = faveHighlightElement;
+
+    this.fave = fave || false;
   }
 
   attributeChangedCallback(name: string, _old: string | null, value: string | null): void {
     if (name === 'fave') {
       if (value === 'true') {
         this.classList.add('fave--faved');
-        if (this.parentNode instanceof HTMLElement) {
-          this.parentNode.classList.add('fave-highlight');
+        if (this.#faveHighlightElement) {
+          this.#faveHighlightElement.classList.add('fave-highlight');
         }
       } else {
         this.classList.remove('fave--faved');
-        if (this.parentNode instanceof HTMLElement) {
-          this.parentNode.classList.remove('fave-highlight');
+        if (this.#faveHighlightElement) {
+          this.#faveHighlightElement.classList.remove('fave-highlight');
         }
       }
     }

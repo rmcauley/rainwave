@@ -10,7 +10,6 @@ function panelSongsTableRowTemplate(context: panelSongsTableRowContext) {
   v2.appendChild(v3);
   const v4 = document.createElement('td');
   v4.className = 'panel-song-table-row-fave';
-  v4.setAttribute('title', `fave`);
   v1.appendChild(v4);
   const v5 = document.createElement('td');
   v5.appendChild(document.createTextNode(context.song.title));
@@ -75,6 +74,7 @@ function panelSongsTableRowTemplate(context: panelSongsTableRowContext) {
     $root: v1,
     row: v1,
     detailIcon: v2,
+    fave: v4,
     title: v5,
     cooldown: v8,
     length: v9,
