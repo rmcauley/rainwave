@@ -1578,27 +1578,12 @@ export interface components {
     _artist_detail: unknown;
     /** @description all_songs[station_id][album_id] = [song1, song2, ...] - for song names, inspect song.album[0].name. */
     _all_songs_for_artist: {
-      1?: {
-        [key: string]: components['schemas']['_song_in_artist'][];
-      };
-      2?: {
-        [key: string]: components['schemas']['_song_in_artist'][];
-      };
-      3?: {
-        [key: string]: components['schemas']['_song_in_artist'][];
-      };
-      4?: {
-        [key: string]: components['schemas']['_song_in_artist'][];
-      };
-      5?: {
-        [key: string]: components['schemas']['_song_in_artist'][];
-      };
-      6?: {
+      [key: string]: {
         [key: string]: components['schemas']['_song_in_artist'][];
       };
     };
     artist: components['schemas']['_artist'] & {
-      all_songs?: components['schemas']['_all_songs_for_artist'];
+      all_songs: components['schemas']['_all_songs_for_artist'];
     };
     artists: components['schemas']['_search_artist'][];
     build_version: number;

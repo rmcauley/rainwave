@@ -1,5 +1,5 @@
 from psycopg import sql
-from typing import Literal, TypedDict, cast
+from typing import TypedDict
 from api import rainwave_typeddicts
 from common import stations
 from common.db.cursor import RainwaveCursor
@@ -86,14 +86,9 @@ async def get_song_list_by_album_for_artist_display(
         if not song["sid"] in stations.station_ids:
             continue
         song["requestable"] = requestable and song["requestable"]
-        sid_index = cast(Literal["1", "2", "3", "4", "5", "6"], str(song["sid"]))
-        if not to_return.get(sid_index, None):
-            to_return[sid_index] = {}
-        sid_dict = to_return.get(sid_index, {})
-        album_id_index = str(song["album_id"])
-        if not album_id_index in sid_dict:
-            sid_dict[album_id_index] = []
-        sid_dict[album_id_index].append(
+        sid_dict = to_return.setdefault(str(song["sid"]), {})
+        album_song_list = sid_dict.setdefault(str(song["album_id"]), [])
+        album_song_list.append(
             {
                 "albums": [{"id": song["album_id"], "name": song["album_name"]}],
                 "id": song["id"],

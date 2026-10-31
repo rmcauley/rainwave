@@ -4414,61 +4414,14 @@
       "_all_songs_for_artist": {
         "type": "object",
         "description": "all_songs[station_id][album_id] = [song1, song2, ...] - for song names, inspect song.album[0].name.",
-        "properties": {
-          "1": {
-            "additionalProperties": {
-              "items": {
-                "$ref": "#/components/schemas/_song_in_artist"
-              },
-              "type": "array"
+        "additionalProperties": {
+          "additionalProperties": {
+            "items": {
+              "$ref": "#/components/schemas/_song_in_artist"
             },
-            "type": "object"
+            "type": "array"
           },
-          "2": {
-            "additionalProperties": {
-              "items": {
-                "$ref": "#/components/schemas/_song_in_artist"
-              },
-              "type": "array"
-            },
-            "type": "object"
-          },
-          "3": {
-            "additionalProperties": {
-              "items": {
-                "$ref": "#/components/schemas/_song_in_artist"
-              },
-              "type": "array"
-            },
-            "type": "object"
-          },
-          "4": {
-            "additionalProperties": {
-              "items": {
-                "$ref": "#/components/schemas/_song_in_artist"
-              },
-              "type": "array"
-            },
-            "type": "object"
-          },
-          "5": {
-            "additionalProperties": {
-              "items": {
-                "$ref": "#/components/schemas/_song_in_artist"
-              },
-              "type": "array"
-            },
-            "type": "object"
-          },
-          "6": {
-            "additionalProperties": {
-              "items": {
-                "$ref": "#/components/schemas/_song_in_artist"
-              },
-              "type": "array"
-            },
-            "type": "object"
-          }
+          "type": "object"
         }
       },
       "artist": {
@@ -4478,6 +4431,7 @@
           },
           {
             "type": "object",
+            "required": ["all_songs"],
             "properties": {
               "all_songs": {
                 "$ref": "#/components/schemas/_all_songs_for_artist"

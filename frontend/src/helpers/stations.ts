@@ -47,6 +47,8 @@ const stations: Station[] = [
   },
 ];
 
+const STATION_ORDER = new Set(stations.map((station) => station.id));
+
 function correctCurrentUrlForStation(): void {
   if (window.location.pathname !== '/') {
     return;
@@ -59,4 +61,4 @@ function correctCurrentUrlForStation(): void {
 }
 
 export type { Station };
-export { correctCurrentUrlForStation, stations };
+export { correctCurrentUrlForStation, stations, STATION_ORDER };
