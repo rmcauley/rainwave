@@ -4,12 +4,15 @@ import { Panels } from './components/panels/panels';
 import { Playlist } from './components/playlist/playlist';
 import { initRatingPreferences } from './components/ratings/ratingPreferences';
 import { syncClock } from './helpers/clock';
-
-import './index.scss';
-import './utilityClasses.scss';
+import { onErrorHandler } from './helpers/errorHandler';
 import { stations } from './helpers/stations';
 import { preferences } from './preferences/preferences';
 import { api } from './rainwaveApi/api';
+
+import './index.scss';
+import './utilityClasses.scss';
+
+window.addEventListener('error', onErrorHandler);
 
 function rainwaveInit(): void {
   api.setOptions({

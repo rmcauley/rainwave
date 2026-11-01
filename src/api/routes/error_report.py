@@ -50,16 +50,13 @@ class ErrorReport(AuthRequiredAPIHandler):
     async def post(self) -> None:
         error_report = self.get_validated_input(JavaScriptErrorReport)
         error_report_dict: rainwave_typeddicts.AdminJsError = {
-            "browserLanguage": error_report.browserLanguage,
-            "columnNumber": error_report.columnNumber,
-            "lineNumber": error_report.lineNumber,
             "location": error_report.location,
             "message": error_report.message,
+            "cause": error_report.cause[:2048],
             "name": error_report.name[:2048],
             "stack": error_report.stack[:2048],
             "time": int(timestamp()),
             "user_id": self.user.id,
-            "userAgent": error_report.userAgent,
             "username": self.user.public_data["name"],
         }
 

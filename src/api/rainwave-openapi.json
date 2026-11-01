@@ -1976,6 +1976,40 @@
         "tags": ["Core"]
       }
     },
+    "/api4/error_report": {
+      "post": {
+        "operationId": "errorReport",
+        "description": "Submits a Javascript error object. Intended for the official Rainwave frontend, requires a referer of rainwave.cc.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_admin_js_error"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error_report_result": {
+                      "$ref": "#/components/schemas/error_report_result"
+                    }
+                  },
+                  "required": ["error_report_result"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api4/fave_album": {
       "post": {
         "operationId": "faveAlbum",
@@ -5453,58 +5487,17 @@
           "message": {
             "type": "string"
           },
-          "lineNumber": {
-            "oneOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "columnNumber": {
-            "oneOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "stack": {
             "type": "string"
           },
           "location": {
             "type": "string"
           },
-          "userAgent": {
-            "type": "string"
-          },
-          "browserLanguage": {
+          "cause": {
             "type": "string"
           }
         },
-        "required": [
-          "user_id",
-          "username",
-          "time",
-          "name",
-          "message",
-          "lineNumber",
-          "columnNumber",
-          "stack",
-          "location",
-          "userAgent",
-          "browserLanguage"
-        ]
+        "required": ["user_id", "username", "time", "name", "message", "stack", "location", "cause"]
       },
       "admin_js_errors": {
         "type": "array",
@@ -6125,7 +6118,6 @@
           "rate_song_mobile_dialog",
           "rating",
           "rating_cleared",
-          "rating_counts_across_stations",
           "rating_detail_numbers",
           "rating_percentile_bottom",
           "rating_percentile_top",
@@ -6259,7 +6251,6 @@
           "vote_now",
           "vote_submitted",
           "voted",
-          "votes_by_source_station",
           "votes_by_station",
           "waiting_for_hotkey",
           "websocket_throttle",

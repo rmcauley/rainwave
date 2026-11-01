@@ -1,6 +1,6 @@
 from typing import cast
 
-from pydantic import AliasChoices, BaseModel, Field
+from pydantic import BaseModel
 
 from api import rainwave_typeddicts
 from common.cache.cache import cache_get, cache_set
@@ -9,18 +9,9 @@ from common.cache.cache import cache_get, cache_set
 class JavaScriptErrorReport(BaseModel):
     name: str
     message: str
-    lineNumber: int | str | None = Field(
-        default=None, validation_alias=AliasChoices("lineNumber", "line_number")
-    )
-    columnNumber: int | str | None = Field(
-        default=None, validation_alias=AliasChoices("columnNumber", "column_number")
-    )
     stack: str
+    cause: str
     location: str
-    userAgent: str = Field(validation_alias=AliasChoices("userAgent", "user_agent"))
-    browserLanguage: str = Field(
-        validation_alias=AliasChoices("browserLanguage", "browser_language")
-    )
 
 
 async def get_error_reports() -> rainwave_typeddicts.AdminJsErrors:

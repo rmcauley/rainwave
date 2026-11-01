@@ -758,6 +758,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api4/error_report': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Submits a Javascript error object. Intended for the official Rainwave frontend, requires a referer of rainwave.cc. */
+    post: operations['errorReport'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api4/fave_album': {
     parameters: {
       query?: never;
@@ -1812,12 +1829,9 @@ export interface components {
       time: number;
       name: string;
       message: string;
-      lineNumber: number | string | null;
-      columnNumber: number | string | null;
       stack: string;
       location: string;
-      userAgent: string;
-      browserLanguage: string;
+      cause: string;
     };
     admin_js_errors: components['schemas']['_admin_js_error'][];
     _admin_music_scan_error: {
@@ -2098,7 +2112,6 @@ export interface components {
       | 'rate_song_mobile_dialog'
       | 'rating'
       | 'rating_cleared'
-      | 'rating_counts_across_stations'
       | 'rating_detail_numbers'
       | 'rating_percentile_bottom'
       | 'rating_percentile_top'
@@ -2232,7 +2245,6 @@ export interface components {
       | 'vote_now'
       | 'vote_submitted'
       | 'voted'
-      | 'votes_by_source_station'
       | 'votes_by_station'
       | 'waiting_for_hotkey'
       | 'websocket_throttle'
@@ -3547,6 +3559,31 @@ export interface operations {
         content: {
           'application/json': {
             requests: components['schemas']['requests'];
+          };
+        };
+      };
+    };
+  };
+  errorReport: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['_admin_js_error'];
+      };
+    };
+    responses: {
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            error_report_result: components['schemas']['error_report_result'];
           };
         };
       };

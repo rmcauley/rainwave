@@ -19,9 +19,9 @@ const MODALS: Record<modalNames, modalData> = {
   whatIsCooldown: { template: whatIsCooldownModalTemplate, closeable: true },
 };
 
-function showModal(modal: modalNames): void {
+function showModal(modal: modalNames): typeof template | undefined {
   if (preventingNewModals) {
-    return;
+    return undefined;
   }
 
   const closeable = MODALS[modal].closeable;
@@ -38,6 +38,8 @@ function showModal(modal: modalNames): void {
 
   document.body.insertBefore(pageDimmer, document.body.firstChild);
   document.body.insertBefore(template.modal, document.body.firstChild);
+
+  return template;
 }
 
 function closeModal(evt: MouseEvent): void {
