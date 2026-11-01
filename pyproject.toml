@@ -22,7 +22,7 @@ dependencies = [
   "pyzmq==27.2.0",
   "qrcode==8.2",
   "requests==2.34.2",
-  "tornado==6.5.10",
+  "tornado==6.6",
   "types-lxml==2026.2.16",
   "types-pytz==2026.5.0.20261006",
   "types-requests==2.33.0.20261006",
