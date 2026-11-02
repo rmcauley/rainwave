@@ -15,6 +15,7 @@ interface Preferences {
   playlistSortSongsLikeAlbums: boolean;
   showPreviousElections: boolean;
   showHowManyPreviousElections: number;
+  showSongsThatLostElection: boolean;
 }
 
 interface PreferenceChange<K extends keyof Preferences = keyof Preferences> {

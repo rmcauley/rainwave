@@ -19,6 +19,7 @@ const translateR5: Record<string, keyof Preferences> = {
   p_songsort: 'playlistSortSongsLikeAlbums',
   l_stk: 'showPreviousElections',
   l_stksz: 'showHowManyPreviousElections',
+  prefs_l_displose: 'showSongsThatLostElection',
 };
 
 let legacyPreferences: Preferences;

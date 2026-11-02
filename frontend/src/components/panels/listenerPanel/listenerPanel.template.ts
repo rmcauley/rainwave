@@ -17,7 +17,7 @@ function listenerPanelTemplate(context: listenerPanelContext) {
   }
   const v5 = document.createElement('span');
   v5.appendChild(
-    document.createTextNode($l('registered_in_year', { year: context.listener.regdate })),
+    document.createTextNode($l('registered_in_year', { year: context.registrationYear })),
   );
   v3.appendChild(v5);
   if (context.isSelf) {
@@ -103,7 +103,7 @@ function listenerPanelTemplate(context: listenerPanelContext) {
     v29 = v23;
   }
   const v30 = document.createElement('div');
-  v30.className = 'user-detail-container';
+  v30.className = 'listener-panel-detail';
   v1.appendChild(v30);
   return { $root: v1, topAlbums: v20, topRequests: v29, userDetail: v30 };
 }
