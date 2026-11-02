@@ -1,3 +1,4 @@
+import { locale } from '../language/translations';
 import { RainwaveEventListener } from '../rainwaveApi/eventListener';
 import { DEFAULT_PREFERENCES } from './defaultPreferences';
 import { legacyPreferences } from './loadLegacyPreferences';
@@ -13,6 +14,7 @@ class PreferencesClass extends RainwaveEventListener<Preferences> {
     this.store = {
       ...DEFAULT_PREFERENCES,
       ...legacyPreferences,
+      locale: locale,
     };
 
     try {
@@ -23,6 +25,7 @@ class PreferencesClass extends RainwaveEventListener<Preferences> {
           Object.assign(this.store, parsed);
         }
       }
+      this.store.locale = locale;
     } catch (e) {
       // oxlint-disable-next-line no-console
       console.warn('Preferences could not be loaded from storage.  Preferences reset.', e);

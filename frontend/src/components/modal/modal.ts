@@ -1,3 +1,4 @@
+import { preferencesModal } from '../preferencesModal/preferencesModal';
 import { authFailureModalTemplate } from './authFailureModal/authFailureModal.template';
 import { errorModalTemplate } from './errorModal/errorModal.template';
 import { modalTemplate } from './modal.template';
@@ -10,13 +11,14 @@ pageDimmer.className = 'page-dimmer';
 
 const template = modalTemplate();
 
-type modalNames = 'authFailure' | 'error' | 'whatIsCooldown';
+type modalNames = 'authFailure' | 'error' | 'whatIsCooldown' | 'preferences';
 type modalData = { template: () => { $root: HTMLElement | DocumentFragment }; closeable: boolean };
 
 const MODALS: Record<modalNames, modalData> = {
   authFailure: { template: authFailureModalTemplate, closeable: false },
   error: { template: errorModalTemplate, closeable: false },
   whatIsCooldown: { template: whatIsCooldownModalTemplate, closeable: true },
+  preferences: { template: preferencesModal, closeable: true },
 };
 
 function showModal(modal: modalNames): typeof template | undefined {

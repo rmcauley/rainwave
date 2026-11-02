@@ -1,6 +1,8 @@
 import type { Preferences } from './preferenceTypes';
 
 const DEFAULT_PREFERENCES: Preferences = {
+  locale: 'en-CA',
+  showSongsThatLostElection: false,
   volume: 1,
   muted: false,
   powerUserMode: false,
@@ -15,8 +17,8 @@ const DEFAULT_PREFERENCES: Preferences = {
   playlistFavesFirst: false,
   playlistAvailableFirst: false,
   playlistSortSongsLikeAlbums: false,
-  showPreviousElections: false,
-  showHowManyPreviousElections: 5,
+  showAllPreviousElections: false,
+  permanentlyVisiblePreviousElections: 0,
 };
 
 export { DEFAULT_PREFERENCES };

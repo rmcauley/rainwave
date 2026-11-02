@@ -1,27 +1,26 @@
 import type { RainwaveTranslationKey } from '../../language/translations';
 import type { Preferences } from '../../preferences/preferenceTypes';
 import { preferencesBoolean } from './preferencesBoolean/preferencesBoolean';
-import { preferencesLanguage } from './preferencesLanguage/preferencesLanguage';
 import { preferencesMultiOption } from './preferencesMultiOption/preferencesMultiOption';
 
 type PreferenceLayoutEntry = {
   tlKey: RainwaveTranslationKey;
-  prefKey: keyof Preferences | 'language';
-  component: (prefKey: keyof Preferences) => HTMLElement;
+  prefKey: keyof Preferences;
+  component: (prefKey: keyof Preferences, label: string) => HTMLElement;
 };
 
 type PreferenceSection = {
   header?: RainwaveTranslationKey;
-  preferences: Array<PreferenceLayoutEntry>;
+  prefsList: Array<PreferenceLayoutEntry>;
 };
 
 const preferencesLayout: Array<PreferenceSection> = [
   {
-    preferences: [
+    prefsList: [
       {
         tlKey: 'change_language',
-        prefKey: 'language',
-        component: preferencesLanguage,
+        prefKey: 'locale',
+        component: preferencesMultiOption,
       },
       {
         tlKey: 'prefs_notify',
@@ -32,7 +31,7 @@ const preferencesLayout: Array<PreferenceSection> = [
   },
   {
     header: 'site_mode',
-    preferences: [
+    prefsList: [
       {
         tlKey: 'prefs_pwr',
         prefKey: 'powerUserMode',
@@ -42,7 +41,7 @@ const preferencesLayout: Array<PreferenceSection> = [
   },
   {
     header: 'tab_title_preferences',
-    preferences: [
+    prefsList: [
       {
         tlKey: 'prefs_t_tl',
         prefKey: 'showSongInTitle',
@@ -57,7 +56,7 @@ const preferencesLayout: Array<PreferenceSection> = [
   },
   {
     header: 'timeline_preferences',
-    preferences: [
+    prefsList: [
       {
         tlKey: 'prefs_l_displose',
         prefKey: 'showSongsThatLostElection',
@@ -65,14 +64,14 @@ const preferencesLayout: Array<PreferenceSection> = [
       },
       {
         tlKey: 'prefs_l_stksz',
-        prefKey: 'showHowManyPreviousElections',
+        prefKey: 'permanentlyVisiblePreviousElections',
         component: preferencesMultiOption,
       },
     ],
   },
   {
     header: 'playlist_preferences',
-    preferences: [
+    prefsList: [
       {
         tlKey: 'prefs_p_sort',
         prefKey: 'playlistSort',
@@ -102,7 +101,7 @@ const preferencesLayout: Array<PreferenceSection> = [
   },
   {
     header: 'rating_preferences',
-    preferences: [
+    prefsList: [
       {
         tlKey: 'prefs_r_incmplt',
         prefKey: 'indicateIncompleteAlbums',

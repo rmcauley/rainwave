@@ -1,3 +1,4 @@
+import { locale } from '../language/translations';
 import { DEFAULT_PREFERENCES } from './defaultPreferences';
 import type { Preferences } from './preferenceTypes';
 
@@ -17,8 +18,8 @@ const translateR5: Record<string, keyof Preferences> = {
   p_favup: 'playlistFavesFirst',
   p_avup: 'playlistAvailableFirst',
   p_songsort: 'playlistSortSongsLikeAlbums',
-  l_stk: 'showPreviousElections',
-  l_stksz: 'showHowManyPreviousElections',
+  l_stk: 'showAllPreviousElections',
+  l_stksz: 'permanentlyVisiblePreviousElections',
   prefs_l_displose: 'showSongsThatLostElection',
 };
 
@@ -45,10 +46,12 @@ if (legacyPrefsCookie) {
             legacyPreferences.volume = parseFloat(value);
           } else if (mappedKey === 'playlistSort') {
             legacyPreferences.playlistSort = value === 'rt' ? 'rating' : 'alphabetical';
-          } else if (mappedKey === 'showHowManyPreviousElections') {
-            legacyPreferences.showHowManyPreviousElections = parseInt(value);
+          } else if (mappedKey === 'permanentlyVisiblePreviousElections') {
+            legacyPreferences.permanentlyVisiblePreviousElections = parseInt(value);
           } else if (mappedKey === 'showClockInTitle') {
             legacyPreferences.showClockInTitle = 'default';
+          } else if (mappedKey === 'locale') {
+            legacyPreferences.locale = locale;
           } else {
             legacyPreferences[mappedKey] = value === 'true';
           }

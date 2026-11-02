@@ -2,24 +2,21 @@ import type { preferencesMultiOptionContext } from './preferencesMultiOption.con
 function preferencesMultiOptionTemplate(context: preferencesMultiOptionContext) {
   const v1 = document.createElement('div');
   v1.className = 'preferences-multi-option';
-  const v2 = document.createElement('div');
-  v2.className = 'preferences-multi-option-wrapper';
+  const v2 = document.createElement('label');
+  v2.appendChild(document.createTextNode(context.label));
   v1.appendChild(v2);
   const v3 = document.createElement('div');
-  v3.className = 'preferences-multi-option-floating-highlight';
-  v2.appendChild(v3);
+  v1.appendChild(v3);
   const v4 = context.values.map((context) => {
     const v5 = document.createDocumentFragment();
-    const v6 = document.createElement('span');
+    const v6 = document.createElement('div');
     v6.appendChild(document.createTextNode(context));
     v6.className = 'preferences-multi-option-value';
+    v6.setAttribute('data-value', context);
     v5.appendChild(v6);
-    v2.appendChild(v5);
-    return { $root: v5, link: v6 };
+    v3.appendChild(v5);
+    return { $root: v5, button: v6 };
   });
-  const v7 = document.createElement('label');
-  v7.appendChild(document.createTextNode(context.label));
-  v1.appendChild(v7);
-  return { $root: v1, highlight: v3, values: v4 };
+  return { $root: v1, values: v4 };
 }
 export { preferencesMultiOptionTemplate };

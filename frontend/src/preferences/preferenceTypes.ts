@@ -1,4 +1,7 @@
+import type { RainwaveLocale } from '../language/translations';
+
 interface Preferences {
+  locale: RainwaveLocale;
   volume: number;
   muted: boolean;
   powerUserMode: boolean;
@@ -13,8 +16,8 @@ interface Preferences {
   playlistFavesFirst: boolean;
   playlistAvailableFirst: boolean;
   playlistSortSongsLikeAlbums: boolean;
-  showPreviousElections: boolean;
-  showHowManyPreviousElections: number;
+  showAllPreviousElections: boolean;
+  permanentlyVisiblePreviousElections: number;
   showSongsThatLostElection: boolean;
 }
 
@@ -23,20 +26,5 @@ interface PreferenceChange<K extends keyof Preferences = keyof Preferences> {
   value: Preferences[K];
   previous: Preferences[K];
 }
-
-const POWER_MODE_ONLY_PREFERENCES: Array<keyof Preferences> = [
-  'indicateIncompleteAlbums',
-  'hideGlobalRatings',
-  'showDeleteRatingButton',
-  'playlistSort',
-  'playlistUnratedFirst',
-  'playlistFavesFirst',
-  'playlistAvailableFirst',
-  'playlistSortSongsLikeAlbums',
-  'showPreviousElections',
-  'showHowManyPreviousElections',
-];
-
-export { POWER_MODE_ONLY_PREFERENCES };
 
 export type { Preferences, PreferenceChange };
