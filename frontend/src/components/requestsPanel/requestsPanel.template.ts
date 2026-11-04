@@ -1,0 +1,54 @@
+import { svgIcon as _svg } from '../../helpers/svg';
+import { $l } from '../../language';
+
+import style from './requestsPanel.scss';
+function requestsPanelTemplate() {
+  const v1 = document.createDocumentFragment();
+  const v2 = document.createElement('div');
+  v2.className = 'requests-panel-bar';
+  v1.appendChild(v2);
+  const v3 = document.createElement('div');
+  v3.className = 'requests-panel-bar-item';
+  v2.appendChild(v3);
+  const v4 = _svg('#rw-icon-info');
+  v3.appendChild(v4);
+  const v5 = document.createElement('div');
+  v5.appendChild(document.createTextNode($l('Suspend')));
+  v3.appendChild(v5);
+  const v6 = document.createElement('div');
+  v6.className = 'requests-panel-bar-item';
+  v2.appendChild(v6);
+  const v7 = _svg('#rw-icon-info');
+  v6.appendChild(v7);
+  const v8 = document.createElement('div');
+  v8.appendChild(document.createTextNode($l('Faves')));
+  v6.appendChild(v8);
+  const v9 = document.createElement('div');
+  v9.className = 'requests-panel-bar-item';
+  v2.appendChild(v9);
+  const v10 = _svg('#rw-icon-info');
+  v9.appendChild(v10);
+  const v11 = document.createElement('div');
+  v11.appendChild(document.createTextNode($l('Unrated')));
+  v9.appendChild(v11);
+  const v12 = document.createElement('div');
+  v12.className = 'requests-panel-bar-item';
+  v2.appendChild(v12);
+  const v13 = _svg('#rw-icon-info');
+  v12.appendChild(v13);
+  const v14 = document.createElement('div');
+  v14.appendChild(document.createTextNode($l('Clear')));
+  v12.appendChild(v14);
+  const v15 = document.createElement('div');
+  v15.className = 'requests-panel-list';
+  v1.appendChild(v15);
+  return {
+    $root: v1,
+    pauseUnpauseButton: v3,
+    faveFillButton: v6,
+    unratedFillButton: v9,
+    clearButton: v12,
+    songList: v15,
+  };
+}
+export { requestsPanelTemplate };

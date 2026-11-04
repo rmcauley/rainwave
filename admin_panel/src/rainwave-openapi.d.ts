@@ -3494,11 +3494,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody?: {
-      content: {
-        'application/json': Record<string, never>;
-      };
-    };
+    requestBody?: never;
     responses: {
       default: {
         headers: {
@@ -3788,11 +3784,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody?: {
-      content: {
-        'application/json': Record<string, never>;
-      };
-    };
+    requestBody?: never;
     responses: {
       default: {
         headers: {
@@ -3897,11 +3889,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody?: {
-      content: {
-        'application/json': Record<string, never>;
-      };
-    };
+    requestBody?: never;
     responses: {
       default: {
         headers: {
@@ -3948,11 +3936,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody: {
-      content: {
-        'application/json': Record<string, never>;
-      };
-    };
+    requestBody?: never;
     responses: {
       default: {
         headers: {
@@ -4097,11 +4081,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody: {
-      content: {
-        'application/json': Record<string, never>;
-      };
-    };
+    requestBody?: never;
     responses: {
       default: {
         headers: {

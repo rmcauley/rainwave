@@ -194,13 +194,7 @@
   text-align: center;
   width: 20px;
 
-  @include transition-wtime(
-    300ms,
-    border-color,
-    color,
-    opacity,
-    background-color
-  );
+  @include transition-wtime(300ms, border-color, color, opacity, background-color);
 
   .desktop & {
     opacity: 0.6;

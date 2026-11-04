@@ -2,7 +2,7 @@ import type { components, paths } from './rainwave-openapi';
 
 type JsonBody<T> = T extends { requestBody: { content: { 'application/json': infer B } } }
   ? B
-  : never;
+  : undefined;
 
 type JsonResponse<T> = T extends {
   responses: { default: { content: { 'application/json': infer R } } };

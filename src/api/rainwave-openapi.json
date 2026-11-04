@@ -1867,18 +1867,6 @@
     "/api4/clear_requests": {
       "post": {
         "operationId": "clearRequests",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {},
-                "required": [],
-                "type": "object"
-              }
-            }
-          },
-          "required": false
-        },
         "responses": {
           "default": {
             "content": {
@@ -2302,18 +2290,6 @@
     "/api4/pause_request_queue": {
       "post": {
         "operationId": "pauseRequestQueue",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {},
-                "required": [],
-                "type": "object"
-              }
-            }
-          },
-          "required": false
-        },
         "responses": {
           "default": {
             "content": {
@@ -2467,18 +2443,6 @@
     "/api4/request_favorited_songs": {
       "post": {
         "operationId": "requestFavoritedSongs",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {},
-                "required": [],
-                "type": "object"
-              }
-            }
-          },
-          "required": false
-        },
         "responses": {
           "default": {
             "content": {
@@ -2542,18 +2506,6 @@
     "/api4/request_unrated_songs": {
       "post": {
         "operationId": "requestUnratedSongs",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {},
-                "required": [],
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "default": {
             "content": {
@@ -2751,18 +2703,6 @@
     "/api4/unpause_request_queue": {
       "post": {
         "operationId": "unpauseRequestQueue",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {},
-                "required": [],
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "default": {
             "content": {
