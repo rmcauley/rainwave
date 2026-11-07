@@ -124,6 +124,7 @@ def user_requests_to_api(
             "rating": song_request["rating"],
             "rating_complete": song_request["album_rating_complete"],
             "rating_user": song_request["rating_user"],
+            "fave": song_request["album_fave"],
         }
         song_request_api: rainwave_typeddicts.Request = {
             "albums": [album],

@@ -3447,9 +3447,12 @@
           },
           "rating_user": {
             "$ref": "#/components/schemas/_rating_user"
+          },
+          "fave": {
+            "type": "boolean"
           }
         },
-        "required": ["name", "id", "rating", "rating_user", "rating_complete", "art"],
+        "required": ["name", "id", "rating", "rating_user", "rating_complete", "art", "fave"],
         "type": "object"
       },
       "_request_line_entry": {

@@ -1,0 +1,97 @@
+<div class="song">
+  <if condition="isRequestPanel">
+    <div class="song-request-cancel" bind="requestCancel">
+      <svg use="#rw-icon-close"></svg>
+    </div>
+  </if>
+
+  <if condition="isTimeline">
+    <div class="song-highlight song-highlight-left"></div>
+    <div class="song-highlight song-highlight-right"></div>
+    <div class="song-highlight song-highlight-topleft"></div>
+    <div class="song-highlight song-highlight-topright"></div>
+    <div class="song-highlight song-highlight-bottomleft"></div>
+    <div class="song-highlight song-highlight-bottomright"></div>
+  </if>
+
+  <div class="song-flex">
+    <if condition="^context.isTimeline && context.isPowerUserMode">
+      <div class="song-vote-button">
+        <span class="song-vote-button-text" bind="voteButtonText">{{ $l("vote") }}</span>
+      </div>
+    </if>
+
+    <div class="song-art">
+      <if condition="isRequestPanel">
+        <div class="song-art-drag" bind="requestDrag">
+          <svg use="#rw-sort"></svg>
+        </div>
+      </if>
+      <div bind="artImage" class="song-art-image">
+        <if condition="^context.isTimeline && context.sid === 5">
+          <div class="song-station-indicator song-station-indicator-{{ song.origin_sid }}"></div>
+        </if>
+
+        <if condition="^context.electionRequestUserName && context.electionRequestUserId">
+          <if condition="electionIsOwnRequest">
+            <div class="song-requester song-requester--your-request">
+              <a href="#!/listener/{{ electionRequestUserId }}"> {{ electionRequestUserName }} </a>
+            </div>
+            <div class="song-requester-indicator song-requester-indicator--your-request">
+              {{ $l("timeline_art__your_request_indicator") }}
+            </div>
+          </if>
+          <else>
+            <div class="song-requester">
+              <a href="#!/listener/{{ electionRequestUserId }}"> {{ electionRequestUserName }} </a>
+            </div>
+            <div class="song-requester-indicator">{{ $l("timeline_art__request_indicator") }}</div>
+          </else>
+        </if>
+      </div>
+    </div>
+
+    <div class="song-content">
+      <div>
+        <div class="song-content-fave" bind="fave"></div>
+        <div class="song-content-title" bind="title" title="{{ song.title }}">{{ song.title }}</div>
+        <if condition="isTimeline">
+          <div class="song-content-votes">
+            <span bind="votes"></span>
+          </div>
+        </if>
+        <div class="song-content-rating" bind="rating"></div>
+      </div>
+
+      <div>
+        <div class="song-content-album-fave" bind="albumFave"></div>
+        <div class="song-content-album-title" bind="albumTitle" title="{{ song.albums[0].name }}">
+          <a href="#!/album/{{ song.albums[0].id }}">{{ song.albums[0].name }}</a>
+        </div>
+        <div class="song-content-album-rating" bind="albumRating"></div>
+      </div>
+
+      <div>
+        <if condition="isRequestPanel">
+          <div class="song-content-cooldown-info" bind="cooldownInfo"></div>
+        </if>
+        <else>
+          <div class="song-content-artists">
+            <for each="song.artists" bind="artists">
+              <a href="#!/artist/{{ id }}">{{ name }}</a>
+              <span>,</span>
+            </for>
+          </div>
+
+          <if condition="^context.song.url && context.song.link_text">
+            <div class="song-content-link">
+              <a class="song-content-link-anchor" href="{{ song.url }}" target="_blank">
+                {{ song.link_text }}
+              </a>
+            </div>
+          </if>
+        </else>
+      </div>
+    </div>
+  </div>
+</div>

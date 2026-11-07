@@ -38,10 +38,6 @@ function setAlbumArt(element: HTMLElement, artUrl: string | null): void {
     element.style.backgroundImage = 'url(/static/images4/noart_1.jpg)';
   } else {
     element.style.backgroundImage = `url(${artUrl}_320.jpg)`;
-    // if (!isProbablyMobileBrowser) {
-    //   element.addEventListener('click', (evt) => onAlbumArtClick(evt, element));
-    //   element.addEventListener('mouseleave', (evt) => normalizeArt(evt, element));
-    // }
   }
 }
 

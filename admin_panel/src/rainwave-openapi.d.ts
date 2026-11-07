@@ -1370,6 +1370,7 @@ export interface components {
       rating: number;
       rating_complete: boolean;
       rating_user: components['schemas']['_rating_user'];
+      fave: boolean;
     };
     _request_line_entry: {
       line_expiry_election: components['schemas']['_time'] | null;

@@ -29,5 +29,6 @@
   },
   "mypy.enabled": false,
   "git.openRepositoryInParentFolders": "always",
-  "editor.indentSize": 2
+  "editor.indentSize": 2,
+  "js/ts.tsdk.path": "node_modules/typescript"
 }

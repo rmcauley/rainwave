@@ -1,5 +1,4 @@
 import { getStationName } from '../../../helpers/getStationName';
-import { isProbablyMobileBrowser } from '../../../helpers/isProbablyMobile';
 import { stations } from '../../../helpers/stations';
 import { $l } from '../../../language';
 import { api } from '../../../rainwaveApi/api';
@@ -46,7 +45,7 @@ class AlbumPanel {
       isNew,
       ratingPercentileMessage,
       user: api.user,
-      showGenres: !isProbablyMobileBrowser,
+      showGenres: true,
     });
 
     if (this.template.ratingGraph) {
