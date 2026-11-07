@@ -1,8 +1,11 @@
 import { getViewportHeight } from '../../helpers/getViewportSize';
+import { $l } from '../../language';
 import { api } from '../../rainwaveApi/api';
 import type { components } from '../../rainwaveApi/rainwave-openapi';
 import { setAlbumArt } from '../albumArt/albumArt';
 import { showErrorTooltip } from '../errorTooltip/errorTooltip';
+import { menuRequestsLabel } from '../menu/menu';
+import { panelHeaderTemplate } from '../panels/panelHeader/panelHeader.template';
 import { requestsPanelTemplate } from './requestsPanel.template';
 
 const DRAG_SCROLL_MAX_SPEED_MARGIN_PERCENT = 0.15;
@@ -12,6 +15,7 @@ const DRAG_SCROLL_MAX_SPEED = 20;
 class RequestsPanel {
   template: ReturnType<typeof requestsPanelTemplate>;
 
+  private header: HTMLElement;
   private dragElement: HTMLElement | undefined;
   private dragIcon: HTMLElement | undefined;
   private dragRequest: components['schemas']['requests'][number] | undefined;
@@ -35,6 +39,9 @@ class RequestsPanel {
     this.listPageY = 0;
 
     this.template = requestsPanelTemplate();
+    this.header = panelHeaderTemplate().$root;
+    this.template.$root.insertBefore(this.header, this.template.$root.firstChild);
+
     this.template.clearButton.addEventListener('click', this.onClearClick);
     this.template.faveFillButton.addEventListener('click', this.onFaveFillClick);
     this.template.pauseUnpauseButton.addEventListener('click', this.onPauseUnpauseClick);
@@ -259,7 +266,7 @@ class RequestsPanel {
   };
 
   private onUserUpdate = (_user: components['schemas']['user']): void => {
-    // TODO: this
+    this.updateStatus();
   };
 
   private onClearClick = (): void => {
@@ -294,76 +301,52 @@ class RequestsPanel {
       showErrorTooltip(err, element);
     });
   };
+
+  private updateStatus = (): void => {
+    if (api.user.requests_paused) {
+      this.template.$root.classList.add('requests-panel--paused');
+      this.template.pauseUnpauseLabel.textContent = $l('unpause_request_queue');
+    } else {
+      this.template.$root.classList.add('requests-panel--paused');
+      this.template.pauseUnpauseLabel.textContent = $l('pause_request_queue');
+    }
+
+    this.template.$root.classList.remove('requests-panel--warning');
+    menuRequestsLabel.classList.remove(`${menuRequestsLabel.dataset.className}--warning`);
+
+    if (api.user.tuned_in) {
+      if (api.user.requests_paused) {
+        this.header.textContent = $l('request_grab_tag__paused');
+        menuRequestsLabel.textContent = $l('request_grab_tag__paused');
+      } else {
+        const goodRequests = this.entries.filter((entry) => entry.valid);
+        const allBad = goodRequests.length === this.entries.length;
+
+        if (allBad) {
+          this.header.textContent = $l('requests_all_on_cooldown');
+          this.template.$root.classList.add('requests-panel--warning');
+          menuRequestsLabel.textContent = $l('Requests');
+          menuRequestsLabel.classList.add(`${menuRequestsLabel.dataset.className}--warning`);
+        } else if (api.user.request_position) {
+          this.header.textContent = $l('request_you_are_x_in_line', {
+            position: api.user.request_position,
+          });
+          menuRequestsLabel.textContent = this.header.textContent;
+        } else if (goodRequests.length > 0) {
+          menuRequestsLabel.textContent = $l('#_requests', {
+            num_requests: goodRequests.length,
+          });
+          menuRequestsLabel.textContent = $l('Requests');
+        } else {
+          this.header.textContent = $l('Requests');
+          menuRequestsLabel.textContent = $l('Requests');
+        }
+      }
+    } else {
+      this.header.textContent = $l('Requests');
+      menuRequestsLabel.textContent = $l('Requests');
+    }
+  };
 }
 
 export { RequestsPanel };
-
-//   list.showQueuePaused = function () {
-//     if (User.requests_paused) {
-//       rootContainer.classList.add('paused');
-//       link.classList.add('paused');
-//     } else {
-//       rootContainer.classList.remove('paused');
-//       link.classList.remove('paused');
-//     }
-//     list.updateHeader();
-//   };
-
-//   list.updateHeader = function () {
-//     let goodRequests = 0;
-//     const songs = list.getSongs();
-//     let allBad = songs.length > 0;
-//     for (let i = 0; i < songs.length; i++) {
-//       if (songs[i].valid) {
-//         allBad = false;
-//         goodRequests++;
-//       }
-//     }
-
-//     rootContainer.classList.remove('warning');
-//     link.classList.remove('warning');
-//     header.removeAttribute('href');
-//     header.classList.add('no-pointer');
-
-//     if (User.tuned_in) {
-//       if (!User.requests_paused) {
-//         if (link && goodRequests) {
-//           if (!Sizing.simple) {
-//             linkText.textContent = $l('#_requests', {
-//               num_requests: goodRequests,
-//             });
-//           } else {
-//             linkText.textContent = $l('#_requests', {
-//               num_requests: songs.length,
-//             });
-//           }
-//         } else if (link) {
-//           linkText.textContent = $l('Requests');
-//         }
-
-//         if (allBad) {
-//           header.textContent = $l('requests_all_on_cooldown');
-//           rootContainer.classList.add('warning');
-//           link.classList.add('warning');
-//         } else if (User.request_position) {
-//           header.textContent = $l('request_you_are_x_in_line', {
-//             position: User.request_position,
-//           });
-//           header.setAttribute('href', '#!/request_line');
-//           header.classList.remove('no-pointer');
-//         } else {
-//           header.textContent = $l('Requests');
-//         }
-//       } else {
-//         header.textContent = $l('request_grab_tag__paused');
-//         if (link) {
-//           linkText.textContent = $l('request_grab_tag__paused');
-//         }
-//       }
-//     } else {
-//       header.textContent = $l('Requests');
-//       if (link) {
-//         linkText.textContent = $l('Requests');
-//       }
-//     }
-//   };

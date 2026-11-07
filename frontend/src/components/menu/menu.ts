@@ -3,6 +3,8 @@ import { initStationSelect } from './stationSelect/stationSelect';
 
 import './menu.scss';
 
+const menuRequestsLabel = document.getElementById('requests-link-text')!;
+
 function initMenu(): void {
   // if (template.settings_link) {
   //   template.settings_link.addEventListener('click', SettingsWindow);
@@ -31,4 +33,4 @@ function initMenu(): void {
   initStationSelect();
 }
 
-export { initMenu };
+export { initMenu, menuRequestsLabel };

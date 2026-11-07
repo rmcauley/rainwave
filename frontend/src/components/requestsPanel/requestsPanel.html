@@ -1,19 +1,21 @@
-<div class="requests-panel-bar">
-  <div class="requests-panel-bar-item" bind="pauseUnpauseButton">
-    <svg use="#rw-icon-info"></svg>
-    <div>{{ $l("Suspend") }}</div>
+<div class="requests-panel">
+  <div class="requests-panel-bar">
+    <div class="requests-panel-bar-item" bind="pauseUnpauseButton">
+      <svg use="#rw-icon-info"></svg>
+      <div bind="pauseUnpauseLabel">{{ $l("Suspend") }}</div>
+    </div>
+    <div class="requests-panel-bar-item" bind="faveFillButton">
+      <svg use="#rw-icon-info"></svg>
+      <div>{{ $l("Faves") }}</div>
+    </div>
+    <div class="requests-panel-bar-item" bind="unratedFillButton">
+      <svg use="#rw-icon-info"></svg>
+      <div>{{ $l("Unrated") }}</div>
+    </div>
+    <div class="requests-panel-bar-item" bind="clearButton">
+      <svg use="#rw-icon-info"></svg>
+      <div>{{ $l("Clear") }}</div>
+    </div>
   </div>
-  <div class="requests-panel-bar-item" bind="faveFillButton">
-    <svg use="#rw-icon-info"></svg>
-    <div>{{ $l("Faves") }}</div>
-  </div>
-  <div class="requests-panel-bar-item" bind="unratedFillButton">
-    <svg use="#rw-icon-info"></svg>
-    <div>{{ $l("Unrated") }}</div>
-  </div>
-  <div class="requests-panel-bar-item" bind="clearButton">
-    <svg use="#rw-icon-info"></svg>
-    <div>{{ $l("Clear") }}</div>
-  </div>
+  <div class="requests-panel-list" bind="songList"></div>
 </div>
-<div class="requests-panel-list" bind="songList"></div>
