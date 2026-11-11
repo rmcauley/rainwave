@@ -73,14 +73,10 @@ if (context.electionIsOwnRequest) {
 const v21 = document.createElement('div');
 v21.className='song-requester song-requester--your-request';
 v19.appendChild(v21);
-if (context.isMobile) {
 const v22 = document.createElement('a');
 v22.appendChild(document.createTextNode(context.electionRequestUserName));
 v22.href=`#!/listener/`+context.electionRequestUserId;
 v21.appendChild(v22);
-} else {
-v21.appendChild(document.createTextNode(context.electionRequestUserName));
-}
 const v23 = document.createElement('div');
 v23.appendChild(document.createTextNode($l("timeline_art__your_request_indicator")));
 v23.className='song-requester-indicator song-requester-indicator--your-request';
@@ -89,14 +85,10 @@ v19.appendChild(v23);
 const v24 = document.createElement('div');
 v24.className='song-requester';
 v19.appendChild(v24);
-if (context.isMobile) {
 const v25 = document.createElement('a');
 v25.appendChild(document.createTextNode(context.electionRequestUserName));
 v25.href=`#!/listener/`+context.electionRequestUserId;
 v24.appendChild(v25);
-} else {
-v24.appendChild(document.createTextNode(context.electionRequestUserName));
-}
 const v26 = document.createElement('div');
 v26.appendChild(document.createTextNode($l("timeline_art__request_indicator")));
 v26.className='song-requester-indicator';
@@ -116,72 +108,74 @@ v30.appendChild(document.createTextNode(context.song.title));
 v30.className='song-content-title';
 v30.setAttribute('title',context.song.title);
 v28.appendChild(v30);
-let v33: HTMLElementTagNameMap['span'] | undefined;
+let v33: HTMLElementTagNameMap['div'] | undefined;
+let v34: HTMLElementTagNameMap['span'] | undefined;
 if (context.isTimeline) {
 const v31 = document.createElement('div');
 v31.className='song-content-votes';
 v28.appendChild(v31);
 const v32 = document.createElement('span');
 v31.appendChild(v32);
-v33 = v32;
+v33 = v31;
+v34 = v32;
 }
-const v34 = document.createElement('div');
-v34.className='song-content-rating';
-v28.appendChild(v34);
 const v35 = document.createElement('div');
-v27.appendChild(v35);
+v35.className='song-content-rating';
+v28.appendChild(v35);
 const v36 = document.createElement('div');
-v36.className='song-content-album-fave';
-v35.appendChild(v36);
+v27.appendChild(v36);
 const v37 = document.createElement('div');
-v37.className='song-content-album-title';
-v37.setAttribute('title',context.song.albums[0].name);
-v35.appendChild(v37);
-const v38 = document.createElement('a');
-v38.appendChild(document.createTextNode(context.song.albums[0].name));
-v38.href=`#!/album/`+context.song.albums[0].id;
-v37.appendChild(v38);
-const v39 = document.createElement('div');
-v39.className='song-content-album-rating';
-v35.appendChild(v39);
+v37.className='song-content-album-fave';
+v36.appendChild(v37);
+const v38 = document.createElement('div');
+v38.className='song-content-album-title';
+v38.setAttribute('title',context.song.albums[0].name);
+v36.appendChild(v38);
+const v39 = document.createElement('a');
+v39.appendChild(document.createTextNode(context.song.albums[0].name));
+v39.href=`#!/album/`+context.song.albums[0].id;
+v38.appendChild(v39);
 const v40 = document.createElement('div');
-v27.appendChild(v40);
-let v49: HTMLElementTagNameMap['div'] | undefined;
-let v50: Array<{"$root": DocumentFragment;}> | undefined;
-if (context.isRequestPanel) {
+v40.className='song-content-album-rating';
+v36.appendChild(v40);
 const v41 = document.createElement('div');
-v41.className='song-content-cooldown-info';
-v40.appendChild(v41);
-v49 = v41;
-} else {
+v27.appendChild(v41);
+let v50: HTMLElementTagNameMap['div'] | undefined;
+let v51: Array<{"$root": DocumentFragment;}> | undefined;
+if (context.isRequestPanel) {
 const v42 = document.createElement('div');
-v42.className='song-content-artists';
-v40.appendChild(v42);
-const v43 = context.song.artists.map(context => {
-const v44 = document.createDocumentFragment();
-const v45 = document.createElement('a');
-v45.appendChild(document.createTextNode(context.name));
-v45.href=`#!/artist/`+context.id;
-v44.appendChild(v45);
-const v46 = document.createElement('span');
-v46.appendChild(document.createTextNode(`,`));
-v44.appendChild(v46);
-v42.appendChild(v44);
-return {"$root": v44,};
+v42.className='song-content-cooldown-info';
+v41.appendChild(v42);
+v50 = v42;
+} else {
+const v43 = document.createElement('div');
+v43.className='song-content-artists';
+v41.appendChild(v43);
+const v44 = context.song.artists.map(context => {
+const v45 = document.createDocumentFragment();
+const v46 = document.createElement('a');
+v46.appendChild(document.createTextNode(context.name));
+v46.href=`#!/artist/`+context.id;
+v45.appendChild(v46);
+const v47 = document.createElement('span');
+v47.appendChild(document.createTextNode(`,`));
+v45.appendChild(v47);
+v43.appendChild(v45);
+return {"$root": v45,};
 });
 if (context.song.url && context.song.link_text) {
-const v47 = document.createElement('div');
-v47.className='song-content-link';
-v40.appendChild(v47);
-const v48 = document.createElement('a');
-v48.appendChild(document.createTextNode(context.song.link_text));
-v48.className='song-content-link-anchor';
-v48.href=context.song.url;
-v48.setAttribute('target',`_blank`);
-v47.appendChild(v48);
+const v48 = document.createElement('div');
+v48.className='song-content-link';
+v41.appendChild(v48);
+const v49 = document.createElement('a');
+v49.appendChild(document.createTextNode(context.song.link_text));
+v49.className='song-content-link-anchor';
+v49.href=context.song.url;
+v49.setAttribute('target',`_blank`);
+v48.appendChild(v49);
 }
-v50 = v43;
+v51 = v44;
 }
-return {"$root": v1,"requestCancel": v4,"voteButtonText": v14,"requestDrag": v18,"artImage": v19,"fave": v29,"title": v30,"votes": v33,"rating": v34,"albumFave": v36,"albumTitle": v37,"albumRating": v39,"cooldownInfo": v49,"artists": v50,}
+return {"$root": v1,"requestCancel": v4,"voteButtonText": v14,"requestDrag": v18,"artImage": v19,"fave": v29,"title": v30,"votesContainer": v33,"votes": v34,"rating": v35,"albumFave": v37,"albumTitle": v38,"albumRating": v40,"cooldownInfo": v50,"artists": v51,}
 ;}
 export { songTemplate };

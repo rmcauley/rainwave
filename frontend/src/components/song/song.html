@@ -56,8 +56,8 @@
         <div class="song-content-fave" bind="fave"></div>
         <div class="song-content-title" bind="title" title="{{ song.title }}">{{ song.title }}</div>
         <if condition="isTimeline">
-          <div class="song-content-votes">
-            <span bind="votes"></span>
+          <div class="song-content-votes" bind="votesContainer">
+            <div bind="votes"></div>
           </div>
         </if>
         <div class="song-content-rating" bind="rating"></div>

@@ -1,125 +1,146 @@
+import { removeElement } from '../../../helpers/removeElement';
+import { $l } from '../../../language';
+import { preferences } from '../../../preferences/preferences';
+import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
+import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
 import type { SongConstructorData } from '../../song/song';
 import { Song } from '../../song/song';
 
 class TimelineSong extends Song {
-  private autovoted: boolean;
+  song: components['schemas']['_timeline_song'];
+  private _autoVoted: boolean = false;
+  private _canVote: boolean = false;
+  private _voteRegistered: boolean = false;
+  private _voteSubmitting: boolean = false;
 
   constructor(
     data: Omit<SongConstructorData, 'isTimeline' | 'isRequestPanel' | 'song'> & {
       song: components['schemas']['_timeline_song'];
+      canVote: boolean;
+      autoVoted: boolean;
+      voteRegistered: boolean;
     },
   ) {
     super({ ...data, isTimeline: true, isRequestPanel: false });
-
-    this.autovoted = false;
+    this.song = data.song;
+    this.canVote = data.canVote;
+    this._autoVoted = data.autoVoted;
+    this._voteRegistered = data.voteRegistered;
   }
 
-  update = (): void => {
-    //
-    //   if (template.votes && song.entry_votes) {
-    //     if (Sizing.simple)
-    //       {template.votes.textContent = $l('num_votes', {
-    //         num_votes: song.entry_votes,
-    //       });}
-    //     else {template.votes.textContent = song.entry_votes;}
-    //   }
-    //     if (template.votes) {
-    //       if (!song.entry_votes) {
-    //         template.votes.textContent = '';
-    //       } else if (Sizing.simple) {
-    //         template.votes.textContent = $l('num_votes', {
-    //           num_votes: song.entry_votes,
-    //         });
-    //       } else {
-    //         template.votes.textContent = song.entry_votes;
-    //       }
-    //     }
+  get canVote(): boolean {
+    return this._canVote;
+  }
+  set canVote(canVote: boolean) {
+    this._canVote = canVote;
+    if (canVote) {
+      this.template.$root.classList.add('timeline-song--voting-enabled');
+    } else {
+      this.template.$root.classList.remove('timeline-song--voting-enabled');
+    }
+  }
+
+  get voteRegistered(): boolean {
+    return this._canVote;
+  }
+  set voteRegistered(voteRegistered: boolean) {
+    this._canVote = voteRegistered;
+    if (voteRegistered) {
+      this.template.$root.classList.add('timeline-song--vote-registered');
+    } else {
+      this.template.$root.classList.remove('timeline-song--vote-registered');
+    }
+  }
+
+  update = (): void => {};
+
+  updateVoteCount = (): void => {
+    if (this.template.votes) {
+      if (this.song.entry_votes === 0) {
+        this.template.votes.textContent = '';
+      } else if (preferences.store.powerUserMode) {
+        this.template.votes.textContent = $l('num_votes', {
+          num_votes: this.song.entry_votes,
+        });
+      } else {
+        this.template.votes.textContent = this.song.entry_votes.toString();
+      }
+    }
   };
 
-  //   if (song.entry_id) {
-  //     const indicators = [];
+  showLiveVoting = (diff: number): void => {
+    if (!this.template.votesContainer || document.hidden) {
+      return;
+    }
 
-  //     const indicate = function (diff) {
-  //       const div = document.createElement('div');
-  //       if (diff <= 0) {
-  //         div.className = 'plusminus negative';
-  //         div.textContent = diff;
-  //       } else {
-  //         div.className = 'plusminus positive';
-  //         div.textContent = `+${  diff}`;
-  //       }
-  //       template.votes.parentNode.insertBefore(div, template.votes);
-  //       for (let i = 0; i < indicators.length; i++) {
-  //         if (Sizing.simple) {
-  //           indicators[i].style[Fx.transform] = `translateX(${  (indicators.length - i) * 23  }px)`;
-  //         } else {
-  //           indicators[i].style[Fx.transform] =
-  //             `translateX(-100%) translateX(-${  (indicators.length - i) * 23 + 5  }px)`;
-  //         }
-  //         indicators[i].style.opacity = 0.7;
-  //       }
-  //       while (indicators.length >= 3) {
-  //         Fx.removeElement(indicators.shift());
-  //       }
-  //       indicators.push(div);
-  //       requestNextAnimationFrame(function () {
-  //         div.classList.add('show');
-  //       });
-  //       setTimeout(function () {
-  //         if (indicators.includes(div)) {
-  //           Fx.removeElement(div);
-  //           indicators.splice(indicators.indexOf(div), 1);
-  //         }
-  //       }, 2000);
-  //     };
+    const currentIndicators = this.template.votesContainer.querySelectorAll(
+      '.timeline-song-live-vote',
+    );
+    currentIndicators.forEach((indicator, index) => {
+      if (indicator instanceof HTMLElement) {
+        if (index < 3) {
+          if (preferences.store.powerUserMode) {
+            indicator.style.transform = `translateX(${(index + 1) * 23}px)`;
+          } else {
+            indicator.style.transform = `translateX(-100%) translateX(-${(index + 1) * 23 + 5}px)`;
+          }
+          indicator.style.opacity = `${0.8 - (index + 1) / 10}`;
+        } else {
+          removeElement(indicator);
+        }
+      }
+    });
 
-  //     song.liveVoting = function (json) {
-  //       const diff = json.entry_votes - song.entry_votes;
-  //       song.entry_votes = json.entry_votes;
+    const indicator = document.createElement('div');
+    if (diff <= 0) {
+      indicator.className = 'timeline-song-live-vote timeline-song-live-vote--negative';
+      indicator.textContent = diff.toString();
+    } else {
+      indicator.className = 'timeline-song-live-vote timeline-song-live-vote--positive';
+      indicator.textContent = `+${diff}`;
+    }
+    this.template.votesContainer.insertBefore(indicator, this.template.votesContainer?.firstChild);
 
-  //       if (!document.hidden && diff) {
-  //         indicate(diff);
-  //       }
+    setTimeout(() => {
+      if (indicator.parentElement) {
+        removeElement(indicator);
+      }
+    }, 2000);
+  };
 
-  //       if (!json.entry_votes) {
-  //         template.votes.textContent = '';
-  //       } else if (Sizing.simple) {
-  //         template.votes.textContent = $l('num_votes', {
-  //           num_votes: json.entry_votes,
-  //         });
-  //       } else {
-  //         template.votes.textContent = json.entry_votes;
-  //       }
-  //     };
-  //   song.vote = function (e) {
-  //     if (e?.target?.nodeName.toLowerCase() == 'a' && e.target.getAttribute('href')) {
-  //       if (MOBILE) {
-  //         e.preventDefault();
-  //         e.stopPropagation();
-  //       } else {
-  //         return;
-  //       }
-  //     }
-  //     if (!song.el.classList.contains('voting-enabled')) {
-  //       return;
-  //     }
-  //     if (
-  //       (!song.autovoted && song.el.classList.contains('voting-registered')) ||
-  //       song.el.classList.contains('voting-clicked')
-  //     ) {
-  //       return;
-  //     }
-  //     if (song.autovoted) {
-  //       song.el.classList.remove('autovoted');
-  //       song.el.classList.remove('voting-registered');
-  //       song.autovoted = false;
-  //     }
-  //     song.el.classList.add('voting-clicked');
-  //     API.async_get('vote', { entry_id: song.entry_id }, null, function () {
-  //       song.el.classList.remove('voting-clicked');
-  //     });
-  //   };
+  updateLiveVoting = (entryVotes: number): void => {
+    const diff = entryVotes - this.song.entry_votes;
+    this.song.entry_votes = entryVotes;
+
+    if (!document.hidden && diff) {
+      this.showLiveVoting(diff);
+    }
+
+    this.updateVoteCount();
+  };
+
+  submitVote = (evt: MouseEvent): void => {
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    if (!this._canVote) {
+      return;
+    }
+
+    if ((!this._autoVoted && this._voteRegistered) || this._voteSubmitting) {
+      return;
+    }
+    if (this._autoVoted) {
+      this.template.$root.classList.remove('timeline-song--autovoted');
+      this.template.$root.classList.remove('timeline-song--vote-registered');
+      this._autoVoted = false;
+    }
+    this.template.$root.classList.add('timeline-song--vote-submitted');
+    api.fetch('vote', { entry_id: this.song.entry_id }).catch((err: unknown) => {
+      showErrorTooltip(err, this.template.title);
+    });
+  };
 
   //   song.enableVoting = function () {
   //     song.el.classList.add('voting-enabled');
