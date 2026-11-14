@@ -34,7 +34,6 @@ function searchPanelTemplate() {
   v1.appendChild(v8);
   return {
     $root: v1,
-    searchFormContainer: v2,
     searchForm: v3,
     searchInput: v4,
     cancelIcon: v5,

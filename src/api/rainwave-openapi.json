@@ -3734,7 +3734,14 @@
                 "type": "boolean"
               },
               "cool_end": {
-                "$ref": "#/components/schemas/_time"
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/_time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "origin_sid": {
                 "$ref": "#/components/schemas/_station_id"
@@ -4031,9 +4038,12 @@
           },
           "rating_user": {
             "$ref": "#/components/schemas/_rating_user"
+          },
+          "rating_complete": {
+            "type": "boolean"
           }
         },
-        "required": ["id", "rating", "art", "name", "rating_user", "fave"],
+        "required": ["id", "rating", "art", "name", "rating_user", "fave", "rating_complete"],
         "type": "object"
       },
       "_updated_album_rating": {

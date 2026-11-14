@@ -1,6 +1,12 @@
+import { textHighlight } from '../../../helpers/textHighlight';
+import { $l } from '../../../language';
 import { api } from '../../../rainwaveApi/api';
 import type { paths } from '../../../rainwaveApi/rainwave-openapi';
 import { getErrorText } from '../../errorTooltip/errorTooltip';
+import { panelTableTemplate } from '../panelTable/panelTable.template';
+import { panelTableAlbumRow } from '../panelTable/panelTableAlbumRow/panelTableAlbumRow';
+import { panelTableArtistRowTemplate } from '../panelTable/panelTableArtistRow/panelTableArtistRow.template';
+import { panelTableSongRow } from '../panelTable/panelTableSongRow/panelTableSongRow';
 import { searchPanelTemplate } from './searchPanel.template';
 
 class SearchPanel {
@@ -73,94 +79,58 @@ class SearchPanel {
 
   onResults = (
     payload: paths['/api4/search']['post']['responses']['default']['content']['application/json'],
+    query: string,
   ): void => {
-    // TODO
+    this.clearResults();
+
+    if (payload.artists.length > 0) {
+      const tableTemplate = panelTableTemplate({ header: $l('Artists') });
+      payload.artists.forEach((artist) => {
+        const artistTemplate = panelTableArtistRowTemplate(artist);
+        textHighlight(artistTemplate.name, query);
+        tableTemplate.table.appendChild(artistTemplate.$root);
+      });
+      this.template.searchResults.appendChild(tableTemplate.table);
+    }
+
+    if (payload.albums.length > 0) {
+      const tableTemplate = panelTableTemplate({ header: $l('Albums') });
+      payload.albums.forEach((album) => {
+        const albumTemplate = panelTableAlbumRow(album);
+        textHighlight(albumTemplate.name, query);
+        tableTemplate.table.appendChild(albumTemplate.$root);
+      });
+      this.template.searchResults.appendChild(tableTemplate.table);
+    }
+
+    if (payload.songs.length > 0) {
+      const tableTemplate = panelTableTemplate({ header: $l('Songs') });
+      payload.songs.forEach((song) => {
+        const songTemplate = panelTableSongRow(song);
+        textHighlight(songTemplate.title, query);
+        tableTemplate.table.appendChild(songTemplate.$root);
+      });
+      this.template.searchResults.appendChild(tableTemplate.table);
+    }
+
+    if (
+      payload.songs.length >= 100 ||
+      payload.albums.length >= 50 ||
+      payload.artists.length >= 50
+    ) {
+      const limitReached = document.createElement('div');
+      limitReached.className = 'search-panel-limit-reached';
+      limitReached.textContent = $l('search_result_limit');
+      this.template.searchResults.appendChild(limitReached);
+    }
   };
 
-  // const highlightText = function (title) {
-  //   // too many characters = too big a regex.  NOPE.
-  //   if (searchText.length > 8) {
-  //     return;
-  //   }
-  //   const t = title.textContent;
-  //   let m = t.match(searchRegex);
-  //   if (!m) {
-  //     m = t.match(searchRegexGreedy);
-  //   }
-  //   if (m?.length == 4) {
-  //     title.textContent = '';
-
-  //     if (m[1]) {
-  //       const beforeEl = document.createElement('span');
-  //       beforeEl.textContent = m[1];
-  //       title.appendChild(beforeEl);
-  //     }
-
-  //     const highlightEl = document.createElement('span');
-  //     highlightEl.className = 'search-highlight';
-  //     highlightEl.textContent = m[2];
-  //     title.appendChild(highlightEl);
-
-  //     if (m[2]) {
-  //       const afterEl = document.createElement('span');
-  //       afterEl.textContent = m[3];
-  //       title.appendChild(afterEl);
-  //     }
-  //   }
-  // };
-
-  // const searchResult = function (json) {
-  //   if (json.artists.length + json.albums.length + json.songs.length === 0) {
-  //     return searchError({ tl_key: 'no_search_results' });
-  //   }
-
-  //   while (el.hasChildNodes()) {
-  //     el.removeChild(el.lastChild);
-  //   }
-
-  //   this.template.$root.classList.add('active');
-  //   input.addEventListener('input', searchResetColor);
-  //   RWTemplates.search_results(json, el);
-  //   let div, a, i;
-
-  //   for (i = 0; i < json.artists.length; i++) {
-  //     highlightText(json.artists[i].$t.title);
-  //   }
-
-  //   for (i = 0; i < json.albums.length; i++) {
-  //     highlightText(json.albums[i].$t.title);
-  //     Fave.register(json.albums[i], true);
-  //     Rating.register(json.albums[i]);
-  //   }
-
-  //   for (i = 0; i < json.songs.length; i++) {
-  //     highlightText(json.songs[i].$t.title);
-
-  //     div = document.createElement('div');
-  //     div.className = 'album-name';
-  //     a = document.createElement('a');
-  //     a.setAttribute('href', `#!/album/${json.songs[i].album_id}`);
-  //     a.textContent = json.songs[i].album_name;
-  //     div.appendChild(a);
-  //     json.songs[i].$t.row.insertBefore(div, json.songs[i].$t.title);
-
-  //     Fave.register(json.songs[i]);
-  //     Rating.register(json.songs[i]);
-  //     if (json.songs[i].requestable) {
-  //       Requests.makeClickable(json.songs[i].$t.title, json.songs[i].id);
-  //     }
-  //     SongsTableDetail(json.songs[i], i > json.songs.length - 4);
-  //   }
-
-  //   scroller.set_height(false);
-  //   scroller.refresh();
-  // };
-
   onSubmit = (): void => {
+    const search = this.template.searchInput.value;
     api
-      .fetch('search', { search: this.template.searchInput.value })
+      .fetch('search', { search })
       .then((payload) => {
-        this.onResults(payload);
+        this.onResults(payload, search);
       })
       .catch((err: unknown): void => {
         this.onError(err);

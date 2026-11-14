@@ -1,0 +1,35 @@
+<tr class="panel-table-row" bind="row">
+  <td class="panel-table-row-detail-icon" bind="detailIcon">
+    <svg use="#rw-info"></svg>
+  </td>
+  <td class="panel-table-row-fave" bind="fave"></td>
+  <td class="panel-table-row-title" title="{{ song.title }}" bind="title">{{ song.title }}</td>
+
+  <if condition="power">
+    <td class="panel-table-row-cooldown" bind="cooldown"></td>
+    <td class="panel-table-row-length" bind="length"></td>
+  </if>
+  <if condition="power">
+    <td class="panel-table-row-rating-clear">
+      <svg use="#rw-close" bind="ratingClear"></svg>
+    </td>
+  </if>
+  <td class="panel-table-row-rating" bind="rating"></td>
+  <if condition="power">
+    <td class="panel-table-row-rating-number" bind="ratingNumber"></td>
+  </if>
+  <if condition="^context.power && context.artists">
+    <td class="artists">
+      <for each="artists">
+        <a href="#!/artist/{{ id }}">{{ name }}</a>
+      </for>
+    </td>
+  </if>
+  <if condition="power">
+    <td class="panel-table-row-url">
+      <if condition="song.url">
+        <a class="url" href="{{ song.url }}" target="_blank"></a>
+      </if>
+    </td>
+  </if>
+</tr>

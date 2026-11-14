@@ -1,0 +1,9 @@
+<tr class="panel-table-row" bind="row">
+  <td class="panel-table-row-fave" bind="fave"></td>
+  <td class="panel-table-row-title" title="{{ album.name }}" bind="name">{{ album.name }}</td>
+
+  <td class="panel-table-row-rating" bind="rating"></td>
+  <if condition="power">
+    <td class="panel-table-row-rating-number" bind="ratingNumber"></td>
+  </if>
+</tr>

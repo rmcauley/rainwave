@@ -18,9 +18,11 @@ class AlbumRating extends BaseRating {
     itemId: number,
     userRating: number | null,
     globalRating: number | null,
+    ratingComplete: boolean,
   ): AlbumRating {
     const element = document.createElement('album-rating');
     element.render(itemId, userRating, globalRating);
+    element.ratingComplete = ratingComplete;
     return element;
   }
 }

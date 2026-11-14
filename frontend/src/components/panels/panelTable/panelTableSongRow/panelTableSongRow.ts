@@ -6,21 +6,25 @@ import type { components } from '../../../../rainwaveApi/rainwave-openapi';
 import { showErrorTooltip } from '../../../errorTooltip/errorTooltip';
 import { SongFave } from '../../../fave/songFave/songFave';
 import { SongRating } from '../../../ratings/songRating/songRating';
-import { panelSongsTableRowTemplate } from './panelSongsTableRow.template';
+import { panelTableSongRowTemplate } from './panelTableSongRow.template';
 import { songDetail } from './songDetail/songDetail';
 
-function panelSongsTableRow(
-  song: components['schemas']['album']['songs'][number],
-): ReturnType<typeof panelSongsTableRowTemplate> {
-  const template = panelSongsTableRowTemplate({
+function panelTableSongRow(
+  song: Omit<components['schemas']['album']['songs'][number], 'artist_parseable'> & {
+    artist_parseable?: components['schemas']['album']['songs'][number]['artist_parseable'];
+  },
+): ReturnType<typeof panelTableSongRowTemplate> {
+  const template = panelTableSongRowTemplate({
     song,
     showRatingClear: preferences.store.showDeleteRatingButton,
     power: preferences.store.powerUserMode,
-    artists: JSON.parse(song.artist_parseable) as Array<components['schemas']['_artist']>,
+    artists: song.artist_parseable
+      ? (JSON.parse(song.artist_parseable) as Array<components['schemas']['_artist']>)
+      : undefined,
   });
 
   if (song.cool) {
-    template.$root.classList.add('panel-song-table-row--cool');
+    template.$root.classList.add('panel-table-row--cool');
     if (template.cooldown) {
       template.cooldown.textContent = formatCooldownBrief(song.cool_end);
     }
@@ -32,12 +36,12 @@ function panelSongsTableRow(
 
   template.fave.appendChild(SongFave.create(song.id, song.fave, template.title));
   if (song.fave) {
-    template.$root.classList.add('panel-song-table-row--fave');
+    template.$root.classList.add('panel-table-row--fave');
   }
 
   template.rating.appendChild(SongRating.create(song.id, song.rating_user, song.rating));
   if (song.requestable) {
-    template.$root.classList.add('panel-song-table-row--requestable');
+    template.$root.classList.add('panel-table-row--requestable');
     template.title.addEventListener('click', (): void => {
       api.fetch('request', { song_id: song.id }).catch((err: unknown) => {
         showErrorTooltip(err, template.title);
@@ -46,7 +50,7 @@ function panelSongsTableRow(
   }
 
   template.detailIcon.addEventListener('click', () => {
-    template.detailIcon.classList.add('panel-song-table-row-detail-icon--loading');
+    template.detailIcon.classList.add('panel-table-row-detail-icon--loading');
     api
       .fetch('song', { id: song.id })
       .then((detailPayload) => {
@@ -57,11 +61,11 @@ function panelSongsTableRow(
         showErrorTooltip(err, template.detailIcon);
       })
       .finally(() => {
-        template.detailIcon.classList.remove('panel-song-table-row-detail-icon--loading');
+        template.detailIcon.classList.remove('panel-table-row-detail-icon--loading');
       });
   });
 
   return template;
 }
 
-export { panelSongsTableRow };
+export { panelTableSongRow };

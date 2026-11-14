@@ -1437,7 +1437,7 @@ export interface components {
       artist_parseable: string;
       added_on: components['schemas']['_time'];
       cool: boolean;
-      cool_end: components['schemas']['_time'];
+      cool_end: components['schemas']['_time'] | null;
       origin_sid: components['schemas']['_station_id'];
       requestable: boolean;
     };
@@ -1499,6 +1499,7 @@ export interface components {
       name: string;
       rating: number;
       rating_user: components['schemas']['_rating_user'];
+      rating_complete: boolean;
     };
     _updated_album_rating: {
       id: number;

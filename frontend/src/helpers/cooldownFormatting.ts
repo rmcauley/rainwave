@@ -35,7 +35,11 @@ function formatCooldown(seconds: number): string {
   return humantime.trim();
 }
 
-function formatCooldownBrief(seconds: number): string {
+function formatCooldownBrief(seconds: number | null): string {
+  if (seconds === null) {
+    return '';
+  }
+
   seconds -= getServerTime();
   if (seconds < 60) {
     return '';

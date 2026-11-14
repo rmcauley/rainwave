@@ -1,5 +1,5 @@
-import type { panelSongsTableContext } from './panelSongsTable.context';
-function panelSongsTableTemplate(context: panelSongsTableContext) {
+import type { panelTableContext } from './panelTable.context';
+function panelTableTemplate(context: panelTableContext) {
   const v1 = document.createElement('div');
   v1.className = 'panel-songs';
   if (context.header) {
@@ -13,4 +13,4 @@ function panelSongsTableTemplate(context: panelSongsTableContext) {
   v1.appendChild(v3);
   return { $root: v1, table: v3 };
 }
-export { panelSongsTableTemplate };
+export { panelTableTemplate };

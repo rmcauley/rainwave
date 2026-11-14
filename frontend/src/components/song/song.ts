@@ -36,6 +36,7 @@ abstract class Song {
         this.song.albums[0].id,
         this.song.albums[0].rating_user,
         this.song.albums[0].rating,
+        this.song.albums[0].rating_complete,
       ),
     );
     this.template.albumFave.appendChild(

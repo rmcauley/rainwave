@@ -2,10 +2,11 @@ import { formatRating } from '../../../../../helpers/formatRating';
 import { $l } from '../../../../../language';
 import type { components } from '../../../../../rainwaveApi/rainwave-openapi';
 import { ratingChart } from '../../../../horizontalStackChart/ratingChart';
+import type { panelTableSongRowContext } from '../panelTableSongRow.context';
 import { songDetailTemplate } from './songDetail.template';
 
 function songDetail(
-  song: components['schemas']['album']['songs'][number],
+  song: panelTableSongRowContext['song'],
   detail: components['schemas']['song'],
   colspan: number,
 ): HTMLElement {
