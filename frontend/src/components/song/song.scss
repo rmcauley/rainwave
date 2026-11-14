@@ -1,17 +1,27 @@
 @use '../../../theme' as *;
 @use '../../../cssFunctions' as *;
 
-$song-transitions: opacity $transtime, transform $transtime,
-  background-position 250ms linear, visibility $transtime;
-$webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
-  background-position 250ms linear, visibility $transtime;
+$song-transitions:
+  opacity $transtime,
+  transform $transtime,
+  background-position 250ms linear,
+  visibility $transtime;
+$webkit-song-transitions:
+  opacity $transtime,
+  -webkit-transform $transtime,
+  background-position 250ms linear,
+  visibility $transtime;
 
 .song {
   box-sizing: border-box;
   position: absolute;
   cursor: default;
-  transition: $webkit-song-transitions, background-color $transtime;
-  transition: $song-transitions, background-color $transtime;
+  transition:
+    $webkit-song-transitions,
+    background-color $transtime;
+  transition:
+    $song-transitions,
+    background-color $transtime;
   height: $art-size;
   width: 100%;
 
@@ -102,7 +112,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
     padding-right: 18px;
     background-repeat: no-repeat;
     background-size: 14px 14px;
-    background-image: url("/static/images4/link_external.svg");
+    background-image: url('/static/images4/link_external.svg');
     background-position: right;
   }
 
@@ -167,7 +177,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
 
       @include transform(rotate(-90deg) translateX(-50%) translateY(-50%));
 
-      html[lang="ko_KO"] & {
+      html[lang='ko_KO'] & {
         @include transform(translateX(-50%) translateY(-50%));
       }
     }
@@ -186,8 +196,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
 
       .vote-button-rotate {
         @include transform(
-          rotate(-90deg) translateX(-50%) translateY(-50%) translateX(2px)
-            translateY(-2px)
+          rotate(-90deg) translateX(-50%) translateY(-50%) translateX(2px) translateY(-2px)
         );
       }
     }
@@ -208,7 +217,8 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
     width: 100%;
     left: 0;
     background: $vote-highlight;
-    transition: transform 450ms $transfunc,
+    transition:
+      transform 450ms $transfunc,
       background $highlight-fade-duration linear;
 
     @include transform(scaleX(0));
@@ -305,7 +315,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
 
     &.voting-clicked,
     &.voting-registered {
-      background-image: url("/static/images4/vote_hover_r5.png");
+      background-image: url('/static/images4/vote_hover_r5.png');
     }
 
     &.voting-clicked {
@@ -335,7 +345,8 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
       .song-highlight {
         visibility: visible;
         background: transparent;
-        transition: transform 450ms $transfunc,
+        transition:
+          transform 450ms $transfunc,
           background $highlight-fade-duration linear;
 
         @include transform(scaleX(0.5));
@@ -455,7 +466,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
     background: $station-game;
 
     &::before {
-      content: "G";
+      content: 'G';
     }
   }
 
@@ -463,7 +474,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
     background: $station-ocr;
 
     &::before {
-      content: "O";
+      content: 'O';
     }
   }
 
@@ -471,7 +482,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
     background: $station-covers;
 
     &::before {
-      content: "Co";
+      content: 'Co';
     }
   }
 
@@ -479,7 +490,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
     background: $station-chip;
 
     &::before {
-      content: "Ch";
+      content: 'Ch';
     }
   }
 
@@ -487,7 +498,7 @@ $webkit-song-transitions: opacity $transtime, -webkit-transform $transtime,
     background: $station-all;
 
     &::before {
-      content: "A";
+      content: 'A';
     }
   }
 }

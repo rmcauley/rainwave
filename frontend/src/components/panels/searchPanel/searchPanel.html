@@ -1,0 +1,22 @@
+<div class="search-panel">
+  <div class="search-panel-form">
+    <form bind="searchForm">
+      <input
+        type="text"
+        bind="searchInput"
+        placeholder="{{ $l('search...') }}"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        class="search-panel-form-input"
+      />
+      <svg use="rw-cancel" bind="cancelIcon" class="search-panel-form-cancel-icon"></svg>
+      <button class="search-panel-form-button" bind="searchButton" type="submit">
+        <svg use="rw-search" bind="searchIcon" class="search-panel-form-search-icon"></svg>
+      </button>
+    </form>
+  </div>
+
+  <div class="search-panel-results" bind="searchResults"></div>
+</div>

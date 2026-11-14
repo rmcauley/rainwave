@@ -42,8 +42,6 @@ abstract class Song {
       AlbumFave.create(this.song.albums[0].id, this.song.albums[0].fave, this.template.title),
     );
   }
-
-  abstract update(): void;
 }
 
 export { Song };

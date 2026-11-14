@@ -3,23 +3,23 @@ import { removeElement } from '../../helpers/removeElement';
 import { $l } from '../../language';
 import type { RainwaveTranslationKey } from '../../language/translations';
 
-function showErrorTooltip(payload: unknown, atElement: HTMLElement): void {
-  let text: string;
+function getErrorText(payload: unknown, fallback = 'Unknown error'): string {
   if (payload && typeof payload === 'string') {
-    text = payload;
+    return payload;
   } else if (payload && typeof payload === 'object') {
     if ('text' in payload && typeof payload.text === 'string') {
-      text = payload.text;
+      return payload.text;
     } else if ('tl_key' in payload && typeof payload.tl_key === 'string') {
-      text = $l(payload.tl_key as RainwaveTranslationKey);
+      return $l(payload.tl_key as RainwaveTranslationKey);
     } else if (payload instanceof Error) {
-      text = `${payload.name} ${payload.message}`;
-    } else {
-      text = 'Unknown error';
+      return `${payload.name} ${payload.message}`;
     }
-  } else {
-    text = 'Unknown error';
   }
+  return fallback;
+}
+
+function showErrorTooltip(payload: unknown, atElement: HTMLElement): void {
+  const text = getErrorText(payload);
   const tooltip = document.createElement('div');
   tooltip.className = 'error-tooltip';
   tooltip.textContent = text;
@@ -50,4 +50,4 @@ function showErrorTooltip(payload: unknown, atElement: HTMLElement): void {
   }, 5000);
 }
 
-export { showErrorTooltip };
+export { showErrorTooltip, getErrorText };

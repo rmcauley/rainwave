@@ -10,42 +10,56 @@ import { Song } from '../../song/song';
 class TimelineSong extends Song {
   song: components['schemas']['_timeline_song'];
   private _autoVoted: boolean = false;
-  private _canVote: boolean = false;
+  private _voteEnabled: boolean = false;
   private _voteRegistered: boolean = false;
   private _voteSubmitting: boolean = false;
 
   constructor(
     data: Omit<SongConstructorData, 'isTimeline' | 'isRequestPanel' | 'song'> & {
       song: components['schemas']['_timeline_song'];
-      canVote: boolean;
+      voteEnabled: boolean;
       autoVoted: boolean;
       voteRegistered: boolean;
     },
   ) {
     super({ ...data, isTimeline: true, isRequestPanel: false });
     this.song = data.song;
-    this.canVote = data.canVote;
+    this.voteEnabled = data.voteEnabled;
     this._autoVoted = data.autoVoted;
     this._voteRegistered = data.voteRegistered;
   }
 
-  get canVote(): boolean {
-    return this._canVote;
+  get autoVoted(): boolean {
+    return this._autoVoted;
   }
-  set canVote(canVote: boolean) {
-    this._canVote = canVote;
-    if (canVote) {
+  set autoVoted(autoVoted: boolean) {
+    this._autoVoted = autoVoted;
+    if (autoVoted) {
+      this.template.$root.classList.add('timeline-song--auto-voted');
+    } else {
+      this.template.$root.classList.remove('timeline-song--auto-voted');
+    }
+    this.updateVoteButtonText();
+  }
+
+  get voteEnabled(): boolean {
+    return this._voteEnabled;
+  }
+  set voteEnabled(voteEnabled: boolean) {
+    this._voteEnabled = voteEnabled;
+    if (voteEnabled) {
       this.template.$root.classList.add('timeline-song--voting-enabled');
     } else {
       this.template.$root.classList.remove('timeline-song--voting-enabled');
     }
+    this.updateVoteButtonText();
   }
 
   get voteRegistered(): boolean {
-    return this._canVote;
+    return this._voteEnabled;
   }
   set voteRegistered(voteRegistered: boolean) {
-    this._canVote = voteRegistered;
+    this._voteEnabled = voteRegistered;
     if (voteRegistered) {
       this.template.$root.classList.add('timeline-song--vote-registered');
     } else {
@@ -53,7 +67,29 @@ class TimelineSong extends Song {
     }
   }
 
-  update = (): void => {};
+  get voteSubmitting(): boolean {
+    return this._voteSubmitting;
+  }
+  set voteSubmitting(voteSubmitting: boolean) {
+    this._voteSubmitting = voteSubmitting;
+    if (voteSubmitting) {
+      this.template.$root.classList.add('timeline-song--vote-submitting');
+    } else {
+      this.template.$root.classList.remove('timeline-song--vote-submitting');
+    }
+  }
+
+  updateVoteButtonText = (): void => {
+    if (!this.template.voteButtonText) {
+      return;
+    }
+
+    if (this.autoVoted || this.voteRegistered) {
+      this.template.voteButtonText.textContent = $l('voted');
+    } else {
+      this.template.voteButtonText.textContent = $l('vote');
+    }
+  };
 
   updateVoteCount = (): void => {
     if (this.template.votes) {
@@ -124,7 +160,7 @@ class TimelineSong extends Song {
     evt.preventDefault();
     evt.stopPropagation();
 
-    if (!this._canVote) {
+    if (!this._voteEnabled) {
       return;
     }
 
@@ -142,49 +178,15 @@ class TimelineSong extends Song {
     });
   };
 
-  //   song.enableVoting = function () {
-  //     song.el.classList.add('voting-enabled');
-  //   };
-
-  //   song.disableVoting = function () {
-  //     song.el.classList.remove('voting-enabled');
-  //   };
-
-  //   song.clearVotingStatus = function () {
-  //     song.el.classList.remove('voting-clicked');
-  //     song.el.classList.remove('voting-registered');
-  //     song.el.classList.remove('voting-enabled');
-  //     if (song.$t.vote_button_text) {
-  //       song.$t.vote_button_text.textContent = $l('vote');
-  //     }
-  //   };
-
-  //   song.removeAutovote = function () {
-  //     song.el.classList.remove('autovoted');
-  //     song.autovoted = false;
-  //   };
-
-  //   song.registerVote = function () {
-  //     song.removeAutovote();
-  //     song.el.classList.remove('voting-clicked');
-  //     song.el.classList.add('voting-registered');
-  //     if (song.$t.vote_button_text) {
-  //       song.$t.vote_button_text.textContent = $l('voted');
-  //     }
-  //     for (let i = 0; i < parentEvent.songs.length; i++) {
-  //       if (parentEvent.songs[i].id != song.id) {
-  //         parentEvent.songs[i].unregisterVote();
-  //       }
-  //     }
-  //   };
-
-  //   song.unregisterVote = function () {
-  //     song.el.classList.remove('voting-clicked');
-  //     song.el.classList.remove('voting-registered');
-  //     if (song.$t.vote_button_text) {
-  //       song.$t.vote_button_text.textContent = $l('vote');
-  //     }
-  //   };
+  clearVotingStatus = (): void => {
+    this.autoVoted = false;
+    this.voteSubmitting = false;
+    this.voteRegistered = false;
+    this.voteEnabled = false;
+    if (this.template.voteButtonText) {
+      this.template.voteButtonText.textContent = $l('vote');
+    }
+  };
 }
 
 export { TimelineSong };
