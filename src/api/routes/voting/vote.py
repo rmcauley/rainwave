@@ -31,7 +31,7 @@ class SubmitVote(AuthRequiredAPIHandler):
         input = self.get_validated_input(rainwave_dto.Api4VotePostRequest)
         lock_count = 0
         voted = False
-        elec_id = None
+        elec_id = input.entry_id
         timeline = typing.cast(
             TimelineOnStation | None, await cache_get_station(self.sid, "timeline")
         )

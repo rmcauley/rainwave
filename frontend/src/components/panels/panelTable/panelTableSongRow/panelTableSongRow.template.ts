@@ -6,7 +6,7 @@ function panelTableSongRowTemplate(context: panelTableSongRowContext) {
   const v2 = document.createElement('td');
   v2.className = 'panel-table-row-detail-icon';
   v1.appendChild(v2);
-  const v3 = _svg('#rw-info');
+  const v3 = _svg('rw-info');
   v2.appendChild(v3);
   const v4 = document.createElement('td');
   v4.className = 'panel-table-row-fave';
@@ -33,7 +33,7 @@ function panelTableSongRowTemplate(context: panelTableSongRowContext) {
     const v10 = document.createElement('td');
     v10.className = 'panel-table-row-rating-clear';
     v1.appendChild(v10);
-    const v11 = _svg('#rw-close');
+    const v11 = _svg('rw-close');
     v10.appendChild(v11);
     v12 = v11;
   }

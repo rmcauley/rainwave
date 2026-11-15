@@ -1,5 +1,5 @@
-import { getServerTime } from '../helpers/clock';
 import { formatSongLength } from '../helpers/formatSongLength';
+import { getServerTime } from '../helpers/serverTime';
 import { preferences } from '../preferences/preferences';
 import { api } from '../rainwaveApi/api';
 import { shouldShowClockInTitle } from './shouldShowClockInTitle';

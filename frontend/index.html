@@ -62,6 +62,8 @@
           Reference
         </div>
       </div>
+      <div id="normal-song-measure" style="height: 200px"></div>
+      <div id="power-song-measure" style="height: 100px"></div>
     </div>
 
     <svg style="display: none" aria-hidden="true">
@@ -132,6 +134,9 @@
           d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"
         ></path>
       </symbol>
+      <symbol id="rw-pulldown" viewBox="0 0 16 6">
+        <polygon points="8.3,5.1 1,1.9 1.6,0.5 8.3,3.5 15,0.5 15.6,1.9"></polygon>
+      </symbol>
     </svg>
 
     <div id="rainwave">
@@ -140,9 +145,7 @@
           <div id="station-select">
             <div id="station-select-header">
               <div id="station-select-current-station">Game</div>
-              <svg id="station-select-open-icon" viewBox="0 0 16 6">
-                <polygon points="8.3,5.1 1,1.9 1.6,0.5 8.3,3.5 15,0.5 15.6,1.9"></polygon>
-              </svg>
+              <svg id="station-select-open-icon"><use href="#rw-pulldown"></use></svg>
             </div>
             <div id="station-select-mouse-area" class="open">
               <div id="station-select-menu-header"></div>

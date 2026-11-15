@@ -294,6 +294,7 @@ class SongOnStation:
             "id": album.data["album_id"],
             "name": album.data["album_name"],
             "rating": album.data["album_rating"],
+            "rating_complete": False,
             "rating_user": 0,
         }
 

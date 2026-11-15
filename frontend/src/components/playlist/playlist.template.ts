@@ -1,4 +1,6 @@
 import { svgIcon as _svg } from '../../helpers/svg';
+
+import style from './playlist.scss';
 function playlistTemplate() {
   const v1 = document.createElement('div');
   v1.setAttribute('id', `playlist`);
@@ -24,7 +26,7 @@ function playlistTemplate() {
   v7.href = `#!/request_line`;
   v7.className = 'playlist-header-tabs-tab';
   v3.appendChild(v7);
-  const v8 = _svg('#rw-close');
+  const v8 = _svg('rw-close');
   v8.setAttribute('class', `rw-close`);
   v8.setAttribute('viewbox', `0 0 100 100`);
   v2.appendChild(v8);

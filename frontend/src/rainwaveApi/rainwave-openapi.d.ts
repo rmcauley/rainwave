@@ -1810,7 +1810,7 @@ export interface components {
     user_recent_votes: components['schemas']['_user_recent_vote'][];
     user_requested_history: components['schemas']['_user_recent_vote'][];
     vote_result: components['schemas']['_boolean_result'] & {
-      elec_id: number | null;
+      elec_id: number;
       entry_id: number;
     };
     websocket_host: string;

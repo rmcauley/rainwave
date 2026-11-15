@@ -1,5 +1,5 @@
-import { getServerTime } from '../../../helpers/clock';
 import { formatCooldownBrief } from '../../../helpers/cooldownFormatting';
+import { getServerTime } from '../../../helpers/serverTime';
 import { $l } from '../../../language';
 import type { RainwaveTranslationKey } from '../../../language/translations';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';

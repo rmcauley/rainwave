@@ -15,7 +15,7 @@ function modalTemplate() {
   v3.appendChild(v4);
   const v5 = document.createElement('div');
   v4.appendChild(v5);
-  const v6 = _svg('#rw-close');
+  const v6 = _svg('rw-close');
   v6.setAttribute('class', `modal-close-icon`);
   v6.setAttribute('viewbox', `0 0 100 100`);
   v4.appendChild(v6);

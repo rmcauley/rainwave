@@ -1,4 +1,4 @@
-import { getServerTime } from '../../../helpers/clock';
+import { getServerTime } from '../../../helpers/serverTime';
 import { makeSearchableString } from '../../../language/get-searchable-name';
 import { preferences } from '../../../preferences/preferences';
 import { api } from '../../../rainwaveApi/api';

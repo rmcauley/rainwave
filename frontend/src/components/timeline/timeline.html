@@ -1,0 +1,11 @@
+<div class="timeline" bind="timeline">
+  <div class="timeline-history-header" bind="historyHeader">
+    <div class="history-header-header">{{ $l("previouslyplayed") }}</div>
+    <svg class="history-pulldown-arrow" use="rw-pulldown"></svg>
+  </div>
+  <div bind="historyBar" class="progress history-bar">
+    <div class="progress-bkg">
+      <div bind="progressHistoryInside" class="progress-inside"></div>
+    </div>
+  </div>
+</div>

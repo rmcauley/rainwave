@@ -21,7 +21,7 @@ function panelsTemplate() {
   v4.appendChild(v5);
   const v6 = document.createElement('div');
   v5.appendChild(v6);
-  const v7 = _svg('#rw-close');
+  const v7 = _svg('rw-close');
   v7.setAttribute('class', `rw-close`);
   v7.setAttribute('viewbox', `0 0 100 100`);
   v5.appendChild(v7);

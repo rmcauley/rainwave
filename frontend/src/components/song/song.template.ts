@@ -11,7 +11,7 @@ function songTemplate(context: songContext) {
     const v2 = document.createElement('div');
     v2.className = 'song-request-cancel';
     v1.appendChild(v2);
-    const v3 = _svg('#rw-close');
+    const v3 = _svg('rw-close');
     v2.appendChild(v3);
     v4 = v2;
   }
@@ -57,7 +57,7 @@ function songTemplate(context: songContext) {
     const v16 = document.createElement('div');
     v16.className = 'song-art-drag';
     v15.appendChild(v16);
-    const v17 = _svg('#rw-sort');
+    const v17 = _svg('rw-sort');
     v16.appendChild(v17);
     v18 = v16;
   }

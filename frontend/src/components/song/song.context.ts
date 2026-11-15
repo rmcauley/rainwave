@@ -1,9 +1,9 @@
 import type { components } from '../../rainwaveApi/rainwave-openapi';
 
 export interface songContext {
-  electionRequestUserId?: number;
-  electionRequestUserName?: string;
-  electionIsOwnRequest?: string;
+  electionRequestUserId?: number | null;
+  electionRequestUserName?: string | null;
+  electionIsOwnRequest?: boolean;
   userId: number;
   sid: number;
   isRequestPanel: boolean;

@@ -4,3 +4,8 @@
 - Give more space to Now Playing
 - Hover effect
 - Auto close on exit
+
+
+-------
+
+- Messages previously handled by the timeline (audio playback errors, connection errors) need different handling now

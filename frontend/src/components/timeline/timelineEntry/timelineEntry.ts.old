@@ -17,8 +17,7 @@ const RWEvent = function (event) {
   for (i = 0; i < event.songs.length; i++) {
     event.songs[i] = Song(event.songs[i], event);
     if (
-      event.songs[i].$t.art &&
-      event.songs[i].$t.art.classList.contains("art-expandable")
+      event.songs[i].$t.art?.classList.contains("art-expandable")
     ) {
       event.songs[i].$t.art._reset_router = true;
     }
@@ -206,7 +205,7 @@ const RWEvent = function (event) {
     Clock.pageClockBarFunction = progressBarUpdate;
   };
 
-  var progressBarUpdate = function () {
+  const progressBarUpdate = function () {
     const newVal = Math.min(
       Math.max(
         Math.floor(((event.end - Clock.now) / (event.songs[0].length - 1)) * 100),

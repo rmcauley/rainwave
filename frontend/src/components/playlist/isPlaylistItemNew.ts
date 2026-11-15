@@ -1,4 +1,4 @@
-import { getServerTime } from '../../helpers/clock';
+import { getServerTime } from '../../helpers/serverTime';
 
 const isNewThreshold = 86400 * 7;
 
