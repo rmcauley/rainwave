@@ -4,41 +4,35 @@ import { preferences } from '../preferences/preferences';
 import { api } from '../rainwaveApi/api';
 import { shouldShowClockInTitle } from './shouldShowClockInTitle';
 
-// Countdown clock HTML element
-let nowPlayingCountdownClock: HTMLElement | null = null;
-function setNowPlayingCountdownClock(el: HTMLElement): void {
-  nowPlayingCountdownClock = el;
-}
-
-let nowPlayingCountdownCallback: ((end: number, now: number) => void) | undefined;
-function setNowPlayingCountdownCallback(
-  callback: NonNullable<typeof nowPlayingCountdownCallback>,
-): void {
-  nowPlayingCountdownCallback = callback;
+const countdownListeners: Array<(nowPlayingEndsAt: number, minuteClock: string) => void> = [];
+function addCountdownListener(callback: (typeof countdownListeners)[number]): void {
+  countdownListeners.push(callback);
 }
 
 const originalTitle = document.title;
 let nowPlayingTitle = '';
 let nowPlayingEndsAt = 0;
 api.addEventListener('sched_current', (nowPlaying) => {
-  nowPlayingTitle = `${nowPlaying.songs[0]!.albums[0].name} - ${nowPlaying.songs[0]!.title}`;
+  const song = nowPlaying.songs[0];
+  if (!song) {
+    return;
+  }
+  nowPlayingTitle = `${song.albums[0].name} - ${song.title}`;
   nowPlayingEndsAt = nowPlaying.end;
 });
 
 function countdownClockLoop(): void {
-  if (nowPlayingEndsAt <= 0) {
+  if (nowPlayingEndsAt < 0) {
     return;
   }
 
   const now = getServerTime();
   const minuteClock = formatSongLength(nowPlayingEndsAt - now);
 
-  if (nowPlayingCountdownClock && nowPlayingEndsAt - now >= 0) {
-    nowPlayingCountdownClock.textContent = minuteClock;
-  }
-
-  if (nowPlayingCountdownCallback && !document.hidden) {
-    nowPlayingCountdownCallback(nowPlayingEndsAt, now);
+  if (!document.hidden) {
+    countdownListeners.forEach((countdownListener) => {
+      countdownListener(nowPlayingEndsAt, minuteClock);
+    });
   }
 
   if (!shouldShowClockInTitle()) {
@@ -58,4 +52,4 @@ function countdownClockLoop(): void {
   }
 }
 
-export { setNowPlayingCountdownClock, setNowPlayingCountdownCallback, countdownClockLoop };
+export { addCountdownListener, countdownClockLoop };

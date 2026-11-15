@@ -1,4 +1,5 @@
 import { arrayShuffle } from '../../../helpers/arrayShuffle';
+import { $l } from '../../../language';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { TimelineSong } from '../timelineSong/timelineSong';
@@ -19,18 +20,21 @@ class TimelineEntry {
 
     this.songs = [];
     data.songs.forEach((song) => {
+      const electionIsOwnRequest = song.elec_request_user_id === api.user.id;
       const timelineSong = new TimelineSong({
-        autoVoted: false,
+        autoVoted: data.voting_allowed && electionIsOwnRequest,
         song,
-        voteEnabled: false,
-        voteRegistered: false,
-        electionIsOwnRequest: song.elec_request_user_id === api.user.id,
+        voteEnabled: data.voting_allowed,
+        voteRegistered: data.voting_allowed && electionIsOwnRequest,
+        electionIsOwnRequest,
         electionRequestUserId: song.elec_request_user_id,
         electionRequestUserName: song.elec_request_username,
       });
       this.template.songs.appendChild(timelineSong.template.$root);
       this.songs.push(timelineSong);
     });
+
+    this.template.header.textContent = $l('coming_up');
   }
 
   changeToCurrent = (data: components['schemas']['_timeline_entry']): void => {
@@ -44,11 +48,12 @@ class TimelineEntry {
     newSongs.forEach((timelineSong) => {
       this.template.songs.appendChild(timelineSong.template.$root);
     });
-    this.hideHeader();
+    this.setHeaderText($l('now_playing'));
   };
 
   changeToHistory = (): void => {
     this.clearVotingStatus();
+    this.hideHeader();
   };
 
   setHeaderText = (newHeaderText: string): void => {
@@ -71,9 +76,9 @@ class TimelineEntry {
     });
   };
 
-  disableVoting = (): void => {
+  setVoteEnabled = (voteEnabled: boolean): void => {
     this.songs.forEach((timelineSong) => {
-      timelineSong.voteEnabled = false;
+      timelineSong.voteEnabled = voteEnabled;
     });
   };
 
@@ -81,6 +86,11 @@ class TimelineEntry {
     this.songs.forEach((timelineSong) => {
       timelineSong.clearVotingStatus();
     });
+  };
+
+  onCountdownClock = (_nowPlayingEndsAt: number, minuteClock: string): void => {
+    this.template.clock.textContent = minuteClock;
+    // TODO: inner progress based on nowPlayingEndsAt
   };
 }
 

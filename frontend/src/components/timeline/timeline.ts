@@ -1,3 +1,4 @@
+import { addCountdownListener } from '../../countdownClock/countdownClock';
 import { preferences } from '../../preferences/preferences';
 import { api } from '../../rainwaveApi/api';
 import type { components } from '../../rainwaveApi/rainwave-openapi';
@@ -49,6 +50,8 @@ class Timeline {
     this.template.historyHeader.addEventListener('click', () => {
       preferences.set('showAllPreviousElections', true);
     });
+
+    addCountdownListener(this.onCountdownClock);
   }
 
   private onAlreadyVoted = (payload: components['schemas']['already_voted']): void => {
@@ -73,6 +76,11 @@ class Timeline {
     timelineEntry.registerVote(electionEntryId);
   };
 
+  private onCountdownClock = (nowPlayingEndsAt: number, minuteClock: string): void => {
+    const entry = this.getEntry(this.schedCurrentData);
+    entry.onCountdownClock(nowPlayingEndsAt, minuteClock);
+  };
+
   private onUserUpdate = (_payload: components['schemas']['user']): void => {};
 
   private onLiveVoting = (_payload: components['schemas']['live_voting']): void => {};
@@ -82,6 +90,8 @@ class Timeline {
     if (!entry) {
       entry = new TimelineEntry(entryData);
       this.entries.set(entryData.id, entry);
+    } else {
+      entry.setVoteEnabled(entryData.voting_allowed);
     }
     return entry;
   };
@@ -90,10 +100,21 @@ class Timeline {
     this.schedHistoryData.forEach((entryData) => {
       this.getEntry(entryData).changeToHistory();
     });
-    this.getEntry(this.schedCurrentData).changeToCurrent(this.schedCurrentData);
-    this.schedNextData.forEach((entryData) => {
-      this.getEntry(entryData);
-      // TODO: autovoted, enable voting, etc
+    const currentEntry = this.getEntry(this.schedCurrentData);
+    currentEntry.changeToCurrent(this.schedCurrentData);
+    let scheduleName = currentEntry.data.name;
+    this.schedNextData.forEach((entryData, index) => {
+      const nextEntry = this.getEntry(entryData);
+      // TODO: this could use some tweaking when PHs are happening
+      if (nextEntry.data.name) {
+        nextEntry.showHeader();
+        if (nextEntry.data.name !== scheduleName) {
+          scheduleName = nextEntry.data.name;
+          if (nextEntry.data.type === 'OneUp' && index > 0) {
+            nextEntry.hideHeader();
+          }
+        }
+      }
     });
   };
 
