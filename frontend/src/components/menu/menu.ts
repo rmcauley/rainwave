@@ -1,7 +1,8 @@
+import { HamburgerMenu } from './hamburgerMenu/hamburgerMenu';
 import { initPlayer } from './player/player';
-import { initStationSelect } from './stationSelect/stationSelect';
 
 import './menu.scss';
+import { StationSelect } from './stationSelect/stationSelect';
 
 const menuRequestsLabel = document.getElementById('requests-link-text')!;
 
@@ -30,7 +31,12 @@ function initMenu(): void {
   //   template.user_link.addEventListener('click', closeBurger);
   // }
   initPlayer();
-  initStationSelect();
+
+  const stationSelect = new StationSelect();
+  stationSelect.init();
+
+  const hamburgerMenu = new HamburgerMenu();
+  hamburgerMenu.init();
 }
 
 export { initMenu, menuRequestsLabel };

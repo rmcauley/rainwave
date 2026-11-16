@@ -32,10 +32,6 @@
       opacity 300ms $transfunc,
       background-color 300ms $transfunc,
       transform $transtime;
-    transition:
-      opacity 300ms $transfunc,
-      background-color 300ms $transfunc,
-      transform $transtime;
   }
 
   .history-header-header {

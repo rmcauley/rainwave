@@ -4,35 +4,11 @@ import { stations } from '../../../helpers/stations';
 import { $l } from '../../../language';
 import type { RainwaveTranslationKey } from '../../../language/translations';
 import { api } from '../../../rainwaveApi/api';
+import type { components } from '../../../rainwaveApi/rainwave-openapi';
+import { DropdownMenu } from '../dropdownMenu/dropdownMenu';
 
 import './stationSelect.scss';
 import { stationSelectTemplate } from './stationSelect.template';
-
-const stationSelectMenu = document.getElementById('station-select-mouse-area')!;
-
-function closeStationSelect(_evt: Event): void {
-  if (stationSelectMenu.classList.contains('open')) {
-    stationSelectMenu.classList.remove('open');
-
-    document.body.removeEventListener('touchstart', closeStationSelect);
-  }
-}
-
-function openStationSelect(_evt: Event): void {
-  if (!stationSelectMenu.classList.contains('open')) {
-    stationSelectMenu.classList.add('open');
-
-    document.body.addEventListener('touchstart', closeStationSelect);
-  }
-}
-
-function toggleStationSelect(evt: Event): void {
-  if (stationSelectMenu.classList.contains('open')) {
-    closeStationSelect(evt);
-  } else {
-    openStationSelect(evt);
-  }
-}
 
 function renderStationLink(station: Station): ReturnType<typeof stationSelectTemplate> {
   const stationLink = stationSelectTemplate({
@@ -45,27 +21,29 @@ function renderStationLink(station: Station): ReturnType<typeof stationSelectTem
   return stationLink;
 }
 
-function initStationSelect(): void {
-  document.getElementById('station-select-header')!.addEventListener('click', toggleStationSelect);
-  document.getElementById('station-select-menu-header')!.textContent = $l(
-    'station_select_all_header',
-  );
+class StationSelect extends DropdownMenu {
+  allStationsData: components['schemas']['all_stations_info'];
+  stationLinks: Record<number, ReturnType<typeof stationSelectTemplate>>;
 
-  const stationLinks: Record<number, ReturnType<typeof stationSelectTemplate>> = {};
-  stations.forEach((station): void => {
-    if (station.id !== 6) {
-      stationLinks[station.id] = renderStationLink(station);
-    }
-  });
+  constructor() {
+    super(document.getElementById('station-select-mouse-area')!);
 
-  const separateStationHeader = document.createElement('div');
-  separateStationHeader.id = 'station-select-menu-separate-header';
-  separateStationHeader.textContent = $l('station_select_separate_header');
-  document.getElementById('station-select-menu')!.appendChild(separateStationHeader);
-  stationLinks[6] = renderStationLink(stations.get(6)!);
+    document.getElementById('station-select-header')!.addEventListener('click', this.toggle);
+    document.getElementById('station-select-menu-header')!.textContent = $l(
+      'station_select_all_header',
+    );
 
-  api.addEventListener('all_stations_info', (data) => {
-    Object.entries(stationLinks).forEach(([stationId, stationLink]) => {
+    this.stationLinks = {};
+    this.allStationsData = {};
+  }
+
+  init = (): void => {
+    api.addEventListener('all_stations_info', this.onUpdate);
+  };
+
+  onUpdate = (data: components['schemas']['all_stations_info']): void => {
+    this.allStationsData = data;
+    Object.entries(this.stationLinks).forEach(([stationId, stationLink]) => {
       const stationData = data[stationId];
       if (stationData) {
         stationLink.menuNpArt.style.backgroundImage = `url("${getAlbumArt(stationData.art)}")`;
@@ -73,7 +51,23 @@ function initStationSelect(): void {
         stationLink.menuNpSong.textContent = stationData.title;
       }
     });
-  });
+  };
+
+  onFirstOpen = (): void => {
+    stations.forEach((station): void => {
+      if (station.id !== 6) {
+        this.stationLinks[station.id] = renderStationLink(station);
+      }
+    });
+
+    const separateStationHeader = document.createElement('div');
+    separateStationHeader.id = 'station-select-menu-separate-header';
+    separateStationHeader.textContent = $l('station_select_separate_header');
+    document.getElementById('station-select-menu')!.appendChild(separateStationHeader);
+    this.stationLinks[6] = renderStationLink(stations.get(6)!);
+
+    this.onUpdate(this.allStationsData);
+  };
 }
 
-export { initStationSelect };
+export { StationSelect };
