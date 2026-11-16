@@ -12,6 +12,7 @@ type SongConstructorData = Omit<songContext, 'isPowerUserMode' | 'sid' | 'userId
 
 const normalModeSongHeight = document.getElementById('normal-song-measure')!.offsetHeight;
 const powerModeSongHeight = document.getElementById('power-song-measure')!.offsetHeight;
+const songHeight = preferences.store.powerUserMode ? powerModeSongHeight : normalModeSongHeight;
 
 abstract class Song {
   template: ReturnType<typeof songTemplate>;
@@ -48,5 +49,5 @@ abstract class Song {
   }
 }
 
-export { Song, powerModeSongHeight, normalModeSongHeight };
+export { Song, powerModeSongHeight, normalModeSongHeight, songHeight };
 export type { SongConstructorData };

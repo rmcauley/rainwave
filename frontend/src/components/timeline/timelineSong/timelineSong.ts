@@ -106,7 +106,7 @@ class TimelineSong extends Song {
   };
 
   showLiveVoting = (diff: number): void => {
-    if (!this.template.votesContainer || document.hidden) {
+    if (!this.template.votesContainer) {
       return;
     }
 
