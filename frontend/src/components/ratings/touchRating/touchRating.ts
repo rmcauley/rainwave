@@ -1,4 +1,4 @@
-import { getViewportHeight, getViewportWidth } from '../../../helpers/getViewportSize';
+import { getViewportHeight, getViewportWidth } from '../../../helpers/viewportSizeAndLayout';
 import type { SongRating } from '../songRating/songRating';
 
 const TOUCH_RATING_WIDTH = 200;

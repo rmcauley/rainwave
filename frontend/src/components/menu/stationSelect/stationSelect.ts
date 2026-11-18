@@ -6,8 +6,6 @@ import type { RainwaveTranslationKey } from '../../../language/translations';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { DropdownMenu } from '../dropdownMenu/dropdownMenu';
-
-import './stationSelect.scss';
 import { stationSelectTemplate } from './stationSelect.template';
 
 function renderStationLink(station: Station): ReturnType<typeof stationSelectTemplate> {
@@ -35,11 +33,9 @@ class StationSelect extends DropdownMenu {
 
     this.stationLinks = {};
     this.allStationsData = {};
-  }
 
-  init = (): void => {
     api.addEventListener('all_stations_info', this.onUpdate);
-  };
+  }
 
   onUpdate = (data: components['schemas']['all_stations_info']): void => {
     this.allStationsData = data;

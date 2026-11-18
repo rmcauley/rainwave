@@ -1,5 +1,3 @@
-@use '../../../theme' as theme;
-
 #station-select {
   position: relative;
 }
@@ -16,7 +14,7 @@
   flex-shrink: 0;
   padding: 0 20px;
   height: 100%;
-  background: theme.$blue;
+  background: var(--blue);
 }
 
 #station-select-current-station {
@@ -26,34 +24,19 @@
 
 #station-select-open-icon {
   width: 20px;
-  fill: theme.$text;
-  transition-timing-function: theme.$transition-timing-function;
-  transition-duration: theme.$transition-duration;
+  fill: var(--text);
+  transition-timing-function: var(--transition-timing-function);
+  transition-duration: var(--transition-duration);
   transform-origin: center center;
 }
 
 #station-select-mouse-area {
-  position: absolute;
-  z-index: 0;
-  padding: 20px;
-  opacity: 0;
   width: 550px;
-  max-width: 100vw;
-  visibility: hidden;
-  transition-property: opacity, transform, visibility;
-  transition-duration: theme.$transition-duration;
-  transform: translateX(-20px) translateY(calc(-100px));
-}
-
-#station-select-mouse-area.open {
-  visibility: visible;
-  opacity: 1;
-  transform: translateX(-20px) translateY(calc(-20px));
 }
 
 #station-select-menu-header,
 #station-select-menu-separate-header {
-  background: theme.$menu-link-open;
+  background: var(--menu-link-open);
   text-transform: uppercase;
   padding: 5px 10px;
 }
@@ -61,7 +44,7 @@
 #station-select-menu {
   position: relative;
   overflow: hidden;
-  background-color: theme.$station-select-background;
+  background-color: var(--station-select-background);
 }
 
 .station-select-station {

@@ -1,18 +1,18 @@
+import './dropdownMenu.scss';
+
 abstract class DropdownMenu {
   el: HTMLElement;
-  className: string;
 
   private opened: boolean;
 
   constructor(el: HTMLElement) {
     this.el = el;
-    this.className = el.className;
     this.opened = false;
   }
 
   close = (_evt: Event): void => {
-    if (this.el.classList.contains(`${this.className}--open`)) {
-      this.el.classList.remove(`${this.className}--open`);
+    if (this.el.classList.contains('dropdown-menu--open')) {
+      this.el.classList.remove('dropdown-menu--open');
 
       document.body.removeEventListener('touchstart', this.close);
     }
@@ -23,15 +23,15 @@ abstract class DropdownMenu {
       this.onFirstOpen();
       this.opened = true;
     }
-    if (!this.el.classList.contains(`${this.className}--open`)) {
-      this.el.classList.add(`${this.className}--open`);
+    if (!this.el.classList.contains('dropdown-menu--open')) {
+      this.el.classList.add('dropdown-menu--open');
 
       document.body.addEventListener('touchstart', this.close);
     }
   };
 
   toggle = (evt: Event): void => {
-    if (this.el.classList.contains(`${this.className}--open`)) {
+    if (this.el.classList.contains('dropdown-menu--open')) {
       this.close(evt);
     } else {
       this.open(evt);

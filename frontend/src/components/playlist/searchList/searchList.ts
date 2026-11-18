@@ -1,5 +1,5 @@
-import { isSimpleMode } from '../../../helpers/isSimpleMode.js';
 import { removeElement } from '../../../helpers/removeElement.js';
+import { isCurrentlyPowerUserMode } from '../../../helpers/viewportSizeAndLayout.js';
 import { makeSearchableString } from '../../../language/get-searchable-name.js';
 import { preferences } from '../../../preferences/preferences.js';
 import { searchListTemplate } from './searchList.template.js';
@@ -381,7 +381,7 @@ abstract class SearchList<T extends SearchListItem> {
 
   onSearchCancelClick = (): void => {
     this.clearSearch();
-    if (isSimpleMode()) {
+    if (!isCurrentlyPowerUserMode()) {
       this.template.searchBox.focus();
     }
   };
@@ -400,7 +400,7 @@ abstract class SearchList<T extends SearchListItem> {
     }
 
     if (this.searchString.length > 0) {
-      if (isSimpleMode()) {
+      if (!isCurrentlyPowerUserMode()) {
         this.template.searchBox.value = this.searchString;
       }
       this.template.searchBox.classList.add('active');

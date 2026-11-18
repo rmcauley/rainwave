@@ -1,0 +1,8 @@
+.album-art {
+  background-color: var(--background);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: var(--art-size);
+  height: var(--art-size);
+}

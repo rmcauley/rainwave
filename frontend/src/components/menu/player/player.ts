@@ -3,9 +3,9 @@ import { $l } from '../../../language';
 import { preferences } from '../../../preferences/preferences';
 import { api } from '../../../rainwaveApi/api';
 import { RainwaveAudioBackend } from './playerBackend';
+import { updateMediaSession } from './updateMediaSession';
 
 import './player.scss';
-import { updateMediaSession } from './updateMediaSession';
 
 function sanitizeVolume(newVolume: number): number {
   if (!Number.isFinite(newVolume)) {

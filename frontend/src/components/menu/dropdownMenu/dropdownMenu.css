@@ -1,0 +1,18 @@
+.dropdown-menu {
+  position: absolute;
+  z-index: 0;
+  padding: 20px;
+  opacity: 0;
+  max-width: 100vw;
+  visibility: hidden;
+  transition-property: opacity, transform, visibility;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: var(--transition-timing-function);
+  transform: translateX(-20px) translateY(calc(-100px));
+
+  &--open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-20px) translateY(calc(-20px));
+  }
+}

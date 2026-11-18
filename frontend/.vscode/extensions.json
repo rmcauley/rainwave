@@ -1,8 +1,3 @@
 {
-  "recommendations": [
-    "stylelint.vscode-stylelint",
-    "mrmlnc.vscode-scss",
-    "oxc.oxc-vscode",
-    "typescriptteam.native-preview"
-  ]
+  "recommendations": ["stylelint.vscode-stylelint", "oxc.oxc-vscode"]
 }

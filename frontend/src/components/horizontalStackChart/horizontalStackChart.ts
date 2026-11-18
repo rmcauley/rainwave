@@ -1,4 +1,4 @@
-import './ratingSpreadChart.module.scss';
+// import './horizontalStackChart.scss';
 
 interface HorizontalStackChartDatum {
   value: number;

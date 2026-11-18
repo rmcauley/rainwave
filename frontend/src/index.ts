@@ -10,7 +10,6 @@ import { preferences } from './preferences/preferences';
 import { api } from './rainwaveApi/api';
 
 import './index.scss';
-import './utilityClasses.scss';
 
 window.addEventListener('error', onErrorHandler);
 
@@ -47,11 +46,10 @@ function rainwaveInit(): void {
   document.getElementById('main')!.appendChild(panels.template.$root);
 
   if (window.location.pathname === '/') {
-    stations.forEach((station) => {
-      if (station.id === api.user.sid) {
-        window.history.replaceState(null, '', station.url);
-      }
-    });
+    const station = stations.get(api.user.sid);
+    if (station) {
+      window.history.replaceState(null, '', station.url);
+    }
   }
 
   api.processPayload(window.BOOTSTRAP);

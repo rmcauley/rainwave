@@ -1,4 +1,4 @@
-@use './theme' as theme;
+@import url('/src/theme.css');
 
 @font-face {
   font-family: 'Roboto Condensed';
@@ -22,7 +22,7 @@
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-// CORE CONTENT **********************************************************************************************
+/* CORE CONTENT **********************************************************************************************/
 
 body {
   font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
@@ -34,20 +34,19 @@ a:visited,
 .link {
   cursor: pointer;
   text-decoration: none;
-  color: theme.$text;
-  transition-timing-function: theme.$transition-timing-function;
-  transform: color;
+  color: var(--text);
+  transition-timing-function: var(--transition-timing-function);
 
   &.obvious {
-    color: theme.$link !important;
+    color: var(--link) !important;
 
     .desktop &:hover {
-      color: theme.$link-h !important;
+      color: var(--link-hover) !important;
     }
   }
 
   .desktop &:hover {
-    color: theme.$link-h !important;
+    color: var(--link-hover) !important;
   }
 }
 
@@ -67,4 +66,25 @@ a:visited,
 #main {
   width: 1024px;
   max-width: 100%;
+}
+
+.touchable {
+  transition-timing-function: var(--transition-timing-function);
+  transition-duration: var(--transition-duration-instant);
+  transition-property: transform;
+
+  @media (hover: none) and (pointer: coarse) {
+    transform: scale(0.97);
+  }
+}
+
+.scrollable {
+  scroll-margin: 0;
+  scroll-padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #000;
+}
+
+.simple .power-only {
+  display: none;
 }

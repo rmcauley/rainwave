@@ -1,5 +1,5 @@
-import { getViewportHeight, getViewportWidth } from '../../helpers/getViewportSize';
 import { removeElement } from '../../helpers/removeElement';
+import { getViewportHeight, getViewportWidth } from '../../helpers/viewportSizeAndLayout';
 import { $l } from '../../language';
 import type { RainwaveTranslationKey } from '../../language/translations';
 

@@ -2,7 +2,7 @@ import { svgIcon } from '../../../helpers/svg';
 import { api } from '../../../rainwaveApi/api';
 import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
 
-import './baseFave.scss';
+// import './baseFave.scss';
 
 abstract class BaseFave extends HTMLElement {
   #faveHighlightElement: HTMLElement | undefined;

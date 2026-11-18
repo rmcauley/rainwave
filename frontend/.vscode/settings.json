@@ -10,8 +10,7 @@
     "source.fixAll.stylelint": "always"
   },
   "editor.defaultFormatter": "oxc.oxc-vscode",
-  "stylelint.lintFiles.glob": "**/*.{css,scss}",
-  "stylelint.validate": ["css", "postcss", "scss"],
+  "stylelint.validate": ["css"],
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
@@ -27,7 +26,6 @@
   "[html]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "mypy.enabled": false,
   "git.openRepositoryInParentFolders": "always",
   "editor.indentSize": 2,
   "js/ts.tsdk.path": "node_modules/typescript"

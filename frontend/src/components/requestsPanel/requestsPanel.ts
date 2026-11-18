@@ -1,4 +1,4 @@
-import { getViewportHeight } from '../../helpers/getViewportSize';
+import { getViewportHeight } from '../../helpers/viewportSizeAndLayout';
 import { $l } from '../../language';
 import { api } from '../../rainwaveApi/api';
 import type { components } from '../../rainwaveApi/rainwave-openapi';

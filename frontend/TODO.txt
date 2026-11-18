@@ -5,6 +5,7 @@
 - Hover effect
 - Auto close on exit
 - Test functionality of autovoting
+- Respect no motion accessibility
 
 -------
 

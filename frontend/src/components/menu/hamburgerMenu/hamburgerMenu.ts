@@ -2,14 +2,12 @@ import { api } from '../../../rainwaveApi/api';
 import { DropdownMenu } from '../dropdownMenu/dropdownMenu';
 import { hamburgerMenuTemplate } from './hamburgerMenu.template';
 
+import './hamburgerMenu.scss';
+
 class HamburgerMenu extends DropdownMenu {
   constructor() {
     super(document.getElementById('hamburger-menu-mouse-area')!);
   }
-
-  init = (): void => {
-    // dummy function to satisfy TS/oxlint
-  };
 
   onFirstOpen = (): void => {
     const template = hamburgerMenuTemplate({ user: api.user });

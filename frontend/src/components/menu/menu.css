@@ -1,18 +1,18 @@
-@use '../../theme' as theme;
-
 #header {
-  background: theme.$menu-pad-bkg;
-  height: theme.$menu-height;
+  background: var(--blue-dark5);
+  height: var(--menu-height);
   width: 100%;
   padding: 0;
+}
 
-  @media (theme.$phone-media) {
-    height: theme.$phone-menu-height;
+@media (width <= 599px) {
+  #header {
+    height: var(--phone-menu-height);
   }
 }
 
 #menu {
-  background: theme.$blue;
+  background: var(--blue);
   width: 1024px;
   max-width: 100%;
   padding: 0;
@@ -39,6 +39,13 @@
   padding-right: 10px;
 }
 
+/* If menu right is under 500px width, remove text labels */
+@container menu-right (width <= 500px) {
+  .menu-right-text {
+    display: none;
+  }
+}
+
 .menu-right-item {
   display: flex;
   align-items: center;
@@ -52,22 +59,16 @@
   }
 
   &.open {
-    background: theme.$menu-link-open;
-  }
-}
-
-@container menu-right (max-width: 500px) {
-  .menu-right-text {
-    display: none;
+    background: var(--menu-link-open);
   }
 }
 
 #requests-link {
   &.paused {
-    background: theme.$requests-paused;
+    background: var(--requests-paused);
   }
 
   &.warning {
-    background: theme.$error-bkg;
+    background: var(--error-background);
   }
 }
