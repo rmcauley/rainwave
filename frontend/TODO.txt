@@ -13,3 +13,5 @@
     - audio playback errors
     - connection errors
     - Locked to station message
+
+- external link icon color is fill: $text, stroke: $blue

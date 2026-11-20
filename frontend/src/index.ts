@@ -9,7 +9,7 @@ import { stations } from './helpers/stations';
 import { preferences } from './preferences/preferences';
 import { api } from './rainwaveApi/api';
 
-import './index.scss';
+import './index.css';
 
 window.addEventListener('error', onErrorHandler);
 

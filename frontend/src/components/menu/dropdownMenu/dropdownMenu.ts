@@ -1,4 +1,4 @@
-import './dropdownMenu.scss';
+import './dropdownMenu.css';
 
 abstract class DropdownMenu {
   el: HTMLElement;

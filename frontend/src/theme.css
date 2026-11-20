@@ -80,8 +80,8 @@
   --panel-background: hsl(from var(--background) h s calc(l + 4));
   --panel-background-dark: hsl(from var(--panel-background) h s calc(l - 3));
   --panel-border: hsl(from var(--panel-background) h s calc(l + 19));
-  --search-error-b: hsl(from var(--error-background) h s calc(l + 40));
-  --search-on-b: hsl(from var(--blue) h s calc(l - 35));
+  --search-error-border: hsl(from var(--error-background) h s calc(l + 40));
+  --search-active-border: hsl(from var(--blue) h s calc(l - 35));
   --row-bkg: transparent;
   --row-bkg-alternating: #1f2123;
   --row-cool-bkg: --cooldown;
@@ -90,12 +90,12 @@
   /* ==========================================
      IMAGES
      ========================================== */
-  --site-rating: url('/static/rating-bar/site-gradient.png');
-  --user-rating: url('/static/rating-bar/user-gradient.png');
-  --incomplete-rating: url('/static/rating-bar/incomplete-gradient.png');
-  --fav-rating: url('/static/rating-bar/user_favourite-gradient.png');
-  --touch-rating: url('/static/rating-bar/touch.png');
-  --hidden-rating: url('/static/rating-bar/hidden-global.png');
+  --fave-rating: url('/public/static/images/rating-bar/user-fave.png');
+  --global-hidden-rating: url('/public/static/images/rating-bar/global-hidden.png');
+  --global-rating: url('/public/static/images/rating-bar/global.png');
+  --incomplete-rating: url('/public/static/images/rating-bar/incomplete.png');
+  --touch-rating: url('/public/static/images/rating-bar/touch.png');
+  --user-rating: url('/public/static/images/rating-bar/user.png');
 
   /* ==========================================
      SIZE DEFINITIONS

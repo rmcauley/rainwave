@@ -5,8 +5,6 @@ import { api } from '../../../rainwaveApi/api';
 import { RainwaveAudioBackend } from './playerBackend';
 import { updateMediaSession } from './updateMediaSession';
 
-import './player.scss';
-
 function sanitizeVolume(newVolume: number): number {
   if (!Number.isFinite(newVolume)) {
     return 1;

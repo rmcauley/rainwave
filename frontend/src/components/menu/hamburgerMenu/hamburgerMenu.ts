@@ -2,8 +2,6 @@ import { api } from '../../../rainwaveApi/api';
 import { DropdownMenu } from '../dropdownMenu/dropdownMenu';
 import { hamburgerMenuTemplate } from './hamburgerMenu.template';
 
-import './hamburgerMenu.scss';
-
 class HamburgerMenu extends DropdownMenu {
   constructor() {
     super(document.getElementById('hamburger-menu-mouse-area')!);

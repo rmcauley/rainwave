@@ -1,8 +1,8 @@
 import { HamburgerMenu } from './hamburgerMenu/hamburgerMenu';
 import { initPlayer } from './player/player';
-
-import './menu.scss';
 import { StationSelect } from './stationSelect/stationSelect';
+
+import './menu.css';
 
 const menuRequestsLabel = document.getElementById('requests-link-text')!;
 
