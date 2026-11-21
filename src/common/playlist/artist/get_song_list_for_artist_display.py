@@ -65,7 +65,7 @@ def get_select_sql_for_songs_for_artist_or_group_display() -> sql.SQL:
 
 async def get_song_list_by_album_for_artist_display(
     cursor: RainwaveCursor, artist_id: int, sid: int, user_id: int
-) -> rainwave_typeddicts.AllSongsForArtist:
+) -> rainwave_typeddicts.AllSongsInCrossStationQuery:
     query = get_select_sql_for_songs_for_artist_or_group_display() + sql.SQL("""
         FROM r4_song_artist 
             JOIN r4_songs USING (song_id) 
@@ -78,7 +78,7 @@ async def get_song_list_by_album_for_artist_display(
         """)
     query_params = (sid, sid, user_id, artist_id)
 
-    to_return: rainwave_typeddicts.AllSongsForArtist = {}
+    to_return: rainwave_typeddicts.AllSongsInCrossStationQuery = {}
     requestable = True if user_id > 1 else False
     async for song in cursor.for_each_row(
         query, query_params, row_type=SongListForArtistDisplayRow
@@ -102,6 +102,7 @@ async def get_song_list_by_album_for_artist_display(
                 "link_text": song["link_text"],
                 "rating_user": song["rating_user"],
                 "fave": song["fave"],
+                "cool_end": song["cool_end"],
             }
         )
 

@@ -31,13 +31,23 @@ body {
   background-color: var(--background);
 }
 
+* {
+  scroll-margin: 0;
+  scroll-padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #000;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: var(--transition-timing-function);
+  transition-property: transform, opacity;
+}
+
 a,
 a:visited,
 .link {
   cursor: pointer;
   text-decoration: none;
   color: var(--text);
-  transition-timing-function: var(--transition-timing-function);
+  transition-duration: var(--transition-duration-instant);
 
   &.obvious {
     color: var(--link);
@@ -75,18 +85,7 @@ a:visited,
 }
 
 .touchable {
-  transition-timing-function: var(--transition-timing-function);
-  transition-duration: var(--transition-duration-instant);
-  transition-property: transform;
-
   @media (hover: none) and (pointer: coarse) {
     transform: scale(0.97);
   }
-}
-
-.scrollable {
-  scroll-margin: 0;
-  scroll-padding: 0;
-  scrollbar-width: thin;
-  scrollbar-color: #555 #000;
 }

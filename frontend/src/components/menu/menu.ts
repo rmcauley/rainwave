@@ -14,6 +14,8 @@ function initMenu(): void {
   new StationSelect();
   // oxlint-disable-next-line no-new
   new HamburgerMenu();
+
+  document.getElementById('menu')!.style.display = '';
 }
 
 export { initMenu, menuRequestsLabel };

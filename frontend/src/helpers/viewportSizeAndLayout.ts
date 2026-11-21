@@ -3,10 +3,7 @@ import { preferences } from '../preferences/preferences';
 let viewportWidth = document.documentElement.clientWidth;
 let viewportHeight = document.documentElement.clientHeight;
 
-window.addEventListener('resize', () => {
-  viewportWidth = document.documentElement.clientWidth;
-  viewportHeight = document.documentElement.clientHeight;
-
+function updateSiteMode(): void {
   if (preferences.store.powerUserMode && viewportWidth >= 1440) {
     if (!document.body.classList.contains('power')) {
       document.body.classList.add('power');
@@ -26,6 +23,12 @@ window.addEventListener('resize', () => {
       document.body.classList.add('narrow');
     }
   }
+}
+
+window.addEventListener('resize', () => {
+  viewportWidth = document.documentElement.clientWidth;
+  viewportHeight = document.documentElement.clientHeight;
+  updateSiteMode();
 });
 
 function getViewportWidth(): number {
@@ -40,4 +43,4 @@ function isCurrentlyPowerUserMode(): boolean {
   return document.body.classList.contains('power');
 }
 
-export { getViewportWidth, getViewportHeight, isCurrentlyPowerUserMode };
+export { getViewportWidth, getViewportHeight, isCurrentlyPowerUserMode, updateSiteMode };

@@ -1,12 +1,10 @@
 import { initMenu } from './components/menu/menu';
 import { showModal } from './components/modal/modal';
-import { Panels } from './components/panels/panels';
-import { Playlist } from './components/playlist/playlist';
 import { initRatingPreferences } from './components/ratings/ratingPreferences';
 import { onErrorHandler } from './helpers/errorHandler';
 import { syncClock } from './helpers/serverTime';
 import { stations } from './helpers/stations';
-import { preferences } from './preferences/preferences';
+import { updateSiteMode } from './helpers/viewportSizeAndLayout';
 import { api } from './rainwaveApi/api';
 
 import './index.css';
@@ -22,6 +20,8 @@ function rainwaveInit(): void {
   api.processPayload({ api_info: window.BOOTSTRAP.api_info });
   api.processPayload({ user: window.BOOTSTRAP.user });
 
+  updateSiteMode();
+
   syncClock(window.BOOTSTRAP.api_info);
 
   initMenu();
@@ -32,18 +32,6 @@ function rainwaveInit(): void {
       showModal('authFailure');
     }
   });
-
-  if (preferences.store.powerUserMode) {
-    document.body.classList.add('power');
-  } else {
-    document.body.classList.add('simple');
-  }
-
-  const playlist = new Playlist();
-  document.getElementById('main')!.appendChild(playlist.template.$root);
-
-  const panels = new Panels();
-  document.getElementById('main')!.appendChild(panels.template.$root);
 
   if (window.location.pathname === '/') {
     const station = stations.get(api.user.sid);

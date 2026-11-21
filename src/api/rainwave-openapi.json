@@ -3692,7 +3692,7 @@
         "required": ["id", "name"],
         "type": "object"
       },
-      "_song_in_artist": {
+      "_song_in_cross_station_query": {
         "allOf": [
           {
             "$ref": "#/components/schemas/_song_bare"
@@ -3705,6 +3705,16 @@
               "cool": {
                 "type": "boolean"
               },
+              "cool_end": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/_time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "requestable": {
                 "type": "boolean"
               },
@@ -3712,7 +3722,7 @@
                 "$ref": "#/components/schemas/_station_id"
               }
             },
-            "required": ["cool", "requestable", "sid"],
+            "required": ["cool", "requestable", "sid", "cool_end"],
             "type": "object"
           }
         ]
@@ -4399,13 +4409,13 @@
         "type": "object"
       },
       "_artist_detail": {},
-      "_all_songs_for_artist": {
+      "_all_songs_in_cross_station_query": {
         "type": "object",
         "description": "all_songs[station_id][album_id] = [song1, song2, ...] - for song names, inspect song.album[0].name.",
         "additionalProperties": {
           "additionalProperties": {
             "items": {
-              "$ref": "#/components/schemas/_song_in_artist"
+              "$ref": "#/components/schemas/_song_in_cross_station_query"
             },
             "type": "array"
           },
@@ -4422,7 +4432,7 @@
             "required": ["all_songs"],
             "properties": {
               "all_songs": {
-                "$ref": "#/components/schemas/_all_songs_for_artist"
+                "$ref": "#/components/schemas/_all_songs_in_cross_station_query"
               }
             }
           }
@@ -4538,17 +4548,7 @@
           {
             "properties": {
               "all_songs_for_sid": {
-                "additionalProperties": {
-                  "additionalProperties": {
-                    "items": {
-                      "$ref": "#/components/schemas/_song_in_artist"
-                    },
-                    "type": "array"
-                  },
-                  "type": "object"
-                },
-                "description": "all_songs_for_sid[album_id][station_id] = [song1, song2...]",
-                "type": "object"
+                "$ref": "#/components/schemas/_all_songs_in_cross_station_query"
               }
             },
             "required": ["all_songs_for_sid"],

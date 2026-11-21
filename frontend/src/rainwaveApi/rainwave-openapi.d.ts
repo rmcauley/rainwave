@@ -1427,9 +1427,10 @@ export interface components {
       id: number;
       name: string;
     };
-    _song_in_artist: components['schemas']['_song_bare'] &
+    _song_in_cross_station_query: components['schemas']['_song_bare'] &
       components['schemas']['_song_bare_album'] & {
         cool: boolean;
+        cool_end: components['schemas']['_time'] | null;
         requestable: boolean;
         sid: components['schemas']['_station_id'];
       };
@@ -1596,13 +1597,13 @@ export interface components {
     };
     _artist_detail: unknown;
     /** @description all_songs[station_id][album_id] = [song1, song2, ...] - for song names, inspect song.album[0].name. */
-    _all_songs_for_artist: {
+    _all_songs_in_cross_station_query: {
       [key: string]: {
-        [key: string]: components['schemas']['_song_in_artist'][];
+        [key: string]: components['schemas']['_song_in_cross_station_query'][];
       };
     };
     artist: components['schemas']['_artist'] & {
-      all_songs: components['schemas']['_all_songs_for_artist'];
+      all_songs: components['schemas']['_all_songs_in_cross_station_query'];
     };
     artists: components['schemas']['_search_artist'][];
     build_version: number;
@@ -1626,12 +1627,7 @@ export interface components {
       sid: components['schemas']['_station_id'];
     };
     group: components['schemas']['_song_group'] & {
-      /** @description all_songs_for_sid[album_id][station_id] = [song1, song2...] */
-      all_songs_for_sid: {
-        [key: string]: {
-          [key: string]: components['schemas']['_song_in_artist'][];
-        };
-      };
+      all_songs_for_sid: components['schemas']['_all_songs_in_cross_station_query'];
     };
     listener: {
       avatar: string | null;

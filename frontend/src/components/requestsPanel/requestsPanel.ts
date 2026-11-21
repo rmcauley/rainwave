@@ -5,7 +5,7 @@ import type { components } from '../../rainwaveApi/rainwave-openapi';
 import { setAlbumArt } from '../albumArt/albumArt';
 import { showErrorTooltip } from '../errorTooltip/errorTooltip';
 import { menuRequestsLabel } from '../menu/menu';
-import { panelHeaderTemplate } from '../panels/panelHeader/panelHeader.template';
+import { panelHeaderTemplate } from '../panelHeader/panelHeader.template';
 import { requestsPanelTemplate } from './requestsPanel.template';
 
 const DRAG_SCROLL_MAX_SPEED_MARGIN_PERCENT = 0.15;

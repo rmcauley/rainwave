@@ -52,9 +52,7 @@ class GroupHandler(APIHandler):
             )
 
             # all_songs_for_sid[album_id][station_id] = [song1, song2...]
-            all_songs_for_sid: dict[
-                str, dict[str, list[rainwave_typeddicts.SongInArtist]]
-            ] = {}
+            all_songs_for_sid: rainwave_typeddicts.AllSongsInCrossStationQuery = {}
             requestable = (
                 True
                 if self.optional_user and not self.optional_user.is_anonymous()
@@ -96,6 +94,7 @@ class GroupHandler(APIHandler):
                         "link_text": song["link_text"],
                         "rating_user": song["rating_user"],
                         "fave": song["fave"],
+                        "cool_end": song["cool_end"],
                     }
                 )
             self.response["group"] = {
