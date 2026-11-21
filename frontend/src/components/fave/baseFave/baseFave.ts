@@ -4,10 +4,14 @@ import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
 
 // import './baseFave.scss';
 
+type FaveableObject = { fave: boolean | null };
+
 abstract class BaseFave extends HTMLElement {
-  #faveHighlightElement: HTMLElement | undefined;
+  private faveHighlightElement: HTMLElement | undefined;
+  private itemObject: FaveableObject | undefined;
 
   static observedAttributes = ['fave'];
+
   get fave(): boolean {
     return this.getAttribute('fave') === 'true';
   }
@@ -15,7 +19,7 @@ abstract class BaseFave extends HTMLElement {
     this.setAttribute('fave', value ? 'true' : 'false');
   }
 
-  render(itemId: number, fave: boolean | null, faveHighlightElement: HTMLElement): void {
+  render(itemId: number, itemObject: FaveableObject, faveHighlightElement: HTMLElement): void {
     this.dataset.itemId = itemId.toString();
     this.classList.add('fave');
     this.appendChild(svgIcon('#rw-fave-empty'));
@@ -25,22 +29,29 @@ abstract class BaseFave extends HTMLElement {
       this.addEventListener('click', this.onFaveClick);
     }
 
-    this.#faveHighlightElement = faveHighlightElement;
+    this.faveHighlightElement = faveHighlightElement;
+    this.itemObject = itemObject;
 
-    this.fave = fave || false;
+    this.fave = itemObject.fave || false;
   }
 
   attributeChangedCallback(name: string, _old: string | null, value: string | null): void {
     if (name === 'fave') {
       if (value === 'true') {
+        if (this.itemObject) {
+          this.itemObject.fave = true;
+        }
         this.classList.add('fave--faved');
-        if (this.#faveHighlightElement) {
-          this.#faveHighlightElement.classList.add('fave-highlight');
+        if (this.faveHighlightElement) {
+          this.faveHighlightElement.classList.add('fave-highlight');
         }
       } else {
+        if (this.itemObject) {
+          this.itemObject.fave = false;
+        }
         this.classList.remove('fave--faved');
-        if (this.#faveHighlightElement) {
-          this.#faveHighlightElement.classList.remove('fave-highlight');
+        if (this.faveHighlightElement) {
+          this.faveHighlightElement.classList.remove('fave-highlight');
         }
       }
     }
@@ -65,3 +76,4 @@ abstract class BaseFave extends HTMLElement {
 }
 
 export { BaseFave };
+export type { FaveableObject };

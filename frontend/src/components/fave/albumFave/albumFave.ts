@@ -1,14 +1,15 @@
 import { api } from '../../../rainwaveApi/api';
+import type { FaveableObject } from '../baseFave/baseFave';
 import { BaseFave } from '../baseFave/baseFave';
 
 class AlbumFave extends BaseFave {
   static create(
     itemId: number,
-    fave: boolean | null,
+    album: FaveableObject,
     faveHighlightElement: HTMLElement,
   ): AlbumFave {
     const el = document.createElement('album-fave');
-    el.render(itemId, fave, faveHighlightElement);
+    el.render(itemId, album, faveHighlightElement);
     return el;
   }
 

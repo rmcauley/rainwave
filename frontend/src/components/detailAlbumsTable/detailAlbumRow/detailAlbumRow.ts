@@ -14,7 +14,7 @@ function detailAlbumRow(
     template.$root.classList.add('panel-table-row--cool');
   }
 
-  template.fave.appendChild(AlbumFave.create(album.id, album.fave, template.name));
+  template.fave.appendChild(AlbumFave.create(album.id, album, template.name));
   template.rating.appendChild(
     AlbumRating.create(album.id, album.rating_user, album.rating, album.rating_complete),
   );

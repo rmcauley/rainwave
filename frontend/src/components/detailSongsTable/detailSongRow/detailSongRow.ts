@@ -33,7 +33,7 @@ function detailSongRow(
     template.length.textContent = formatSongLength(song.length);
   }
 
-  template.fave.appendChild(SongFave.create(song.id, song.fave, template.title));
+  template.fave.appendChild(SongFave.create(song.id, song, template.title));
   if (song.fave) {
     template.$root.classList.add('panel-table-row--fave');
   }

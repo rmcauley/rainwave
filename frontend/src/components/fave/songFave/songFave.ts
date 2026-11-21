@@ -1,10 +1,11 @@
 import { api } from '../../../rainwaveApi/api';
+import type { FaveableObject } from '../baseFave/baseFave';
 import { BaseFave } from '../baseFave/baseFave';
 
 class SongFave extends BaseFave {
-  static create(itemId: number, fave: boolean | null, faveHighlightElement: HTMLElement): SongFave {
+  static create(itemId: number, song: FaveableObject, faveHighlightElement: HTMLElement): SongFave {
     const el = document.createElement('song-fave');
-    el.render(itemId, fave, faveHighlightElement);
+    el.render(itemId, song, faveHighlightElement);
     return el;
   }
 

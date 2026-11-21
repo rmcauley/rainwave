@@ -32,9 +32,7 @@ abstract class Song {
     this.template.rating.appendChild(
       SongRating.create(this.song.id, this.song.rating_user, this.song.rating),
     );
-    this.template.fave.appendChild(
-      SongFave.create(this.song.id, this.song.fave, this.template.title),
-    );
+    this.template.fave.appendChild(SongFave.create(this.song.id, this.song, this.template.title));
     this.template.albumRating.appendChild(
       AlbumRating.create(
         this.song.albums[0].id,
@@ -44,7 +42,7 @@ abstract class Song {
       ),
     );
     this.template.albumFave.appendChild(
-      AlbumFave.create(this.song.albums[0].id, this.song.albums[0].fave, this.template.title),
+      AlbumFave.create(this.song.albums[0].id, this.song.albums[0], this.template.title),
     );
   }
 }
