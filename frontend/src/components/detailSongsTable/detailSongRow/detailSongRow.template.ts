@@ -2,28 +2,28 @@ import { svgIcon as _svg } from '../../../helpers/svg';
 import type { detailSongRowContext } from './detailSongRow.context';
 function detailSongRowTemplate(context: detailSongRowContext) {
   const v1 = document.createElement('tr');
-  v1.className = 'panel-table-row';
+  v1.className = 'detail-table-row';
   const v2 = document.createElement('td');
-  v2.className = 'panel-table-row-detail-icon';
+  v2.className = 'detail-table-row-detail-icon';
   v1.appendChild(v2);
   const v3 = _svg('rw-info');
   v2.appendChild(v3);
   const v4 = document.createElement('td');
-  v4.className = 'panel-table-row-fave';
+  v4.className = 'detail-table-row-fave';
   v1.appendChild(v4);
   const v5 = document.createElement('td');
   v5.appendChild(document.createTextNode(context.song.title));
-  v5.className = 'panel-table-row-title';
+  v5.className = 'detail-table-row-title';
   v5.setAttribute('title', context.song.title);
   v1.appendChild(v5);
   let v8: HTMLElementTagNameMap['td'] | undefined;
   let v9: HTMLElementTagNameMap['td'] | undefined;
   if (context.power) {
     const v6 = document.createElement('td');
-    v6.className = 'panel-table-row-cooldown';
+    v6.className = 'detail-table-row-cooldown';
     v1.appendChild(v6);
     const v7 = document.createElement('td');
-    v7.className = 'panel-table-row-length';
+    v7.className = 'detail-table-row-length';
     v1.appendChild(v7);
     v8 = v6;
     v9 = v7;
@@ -31,19 +31,19 @@ function detailSongRowTemplate(context: detailSongRowContext) {
   let v12: SVGSVGElement | undefined;
   if (context.power) {
     const v10 = document.createElement('td');
-    v10.className = 'panel-table-row-rating-clear';
+    v10.className = 'detail-table-row-rating-clear';
     v1.appendChild(v10);
     const v11 = _svg('rw-close');
     v10.appendChild(v11);
     v12 = v11;
   }
   const v13 = document.createElement('td');
-  v13.className = 'panel-table-row-rating';
+  v13.className = 'detail-table-row-rating';
   v1.appendChild(v13);
   let v15: HTMLElementTagNameMap['td'] | undefined;
   if (context.power) {
     const v14 = document.createElement('td');
-    v14.className = 'panel-table-row-rating-number';
+    v14.className = 'detail-table-row-rating-number';
     v1.appendChild(v14);
     v15 = v14;
   }
@@ -60,7 +60,7 @@ function detailSongRowTemplate(context: detailSongRowContext) {
   }
   if (context.power) {
     const v18 = document.createElement('td');
-    v18.className = 'panel-table-row-url';
+    v18.className = 'detail-table-row-url';
     v1.appendChild(v18);
     if (context.song.url) {
       const v19 = document.createElement('a');

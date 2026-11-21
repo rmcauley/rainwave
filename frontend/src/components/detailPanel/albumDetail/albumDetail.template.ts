@@ -1,21 +1,21 @@
 import { $l } from '../../../language';
-import type { albumPanelContext } from './albumPanel.context';
-function albumPanelTemplate(context: albumPanelContext) {
+import type { albumDetailContext } from './albumDetail.context';
+function albumDetailTemplate(context: albumDetailContext) {
   const v1 = document.createElement('div');
-  v1.className = 'album-panel';
+  v1.className = 'album-detail';
   const v2 = document.createElement('div');
-  v2.className = 'panel-header album-panel-header';
+  v2.className = 'album-detail-header';
   v1.appendChild(v2);
   if (context.isNew) {
     const v3 = document.createElement('div');
     v3.appendChild(document.createTextNode($l('new_album')));
-    v3.className = 'album-panel-new-indicator';
+    v3.className = 'album-detail-new-indicator';
     v2.appendChild(v3);
   }
   if (context.hasNewSongs) {
     const v4 = document.createElement('div');
     v4.appendChild(document.createTextNode($l('new_songs')));
-    v4.className = 'album-panel-new-songs-indicator';
+    v4.className = 'album-detail-new-songs-indicator';
     v2.appendChild(v4);
   }
   let v12: HTMLElementTagNameMap['div'] | undefined;
@@ -78,13 +78,13 @@ function albumPanelTemplate(context: albumPanelContext) {
   }
   if (context.album.genres.length > 0) {
     const v19 = document.createElement('div');
-    v19.className = 'album-panel-header-categories';
+    v19.className = 'album-detail-header-categories';
     v2.appendChild(v19);
     const v20 = document.createElement('div');
     v20.appendChild(document.createTextNode($l('relevant_categories_rollover')));
     v19.appendChild(v20);
     const v21 = document.createElement('div');
-    v21.className = 'album-panel-header-categories-list';
+    v21.className = 'album-detail-header-categories-list';
     v19.appendChild(v21);
     context.album.genres.forEach((context) => {
       const v22 = document.createElement('a');
@@ -125,4 +125,4 @@ function albumPanelTemplate(context: albumPanelContext) {
     art: v29,
   };
 }
-export { albumPanelTemplate };
+export { albumDetailTemplate };

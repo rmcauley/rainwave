@@ -2,7 +2,7 @@ import { stations } from '../../../../helpers/stations';
 import type { HorizontalStackChartOptions } from '../../../horizontalStackChart/horizontalStackChart';
 import { horizontalStackChart } from '../../../horizontalStackChart/horizontalStackChart';
 
-function listenerPanelStationBarChart(
+function listenerDetailStationBarChart(
   data: Map<number, number>,
   headerText: string,
   options?: HorizontalStackChartOptions,
@@ -36,4 +36,4 @@ function listenerPanelStationBarChart(
   return element;
 }
 
-export { listenerPanelStationBarChart };
+export { listenerDetailStationBarChart };

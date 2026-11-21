@@ -1,9 +1,9 @@
 import type { detailArtistRowContext } from './detailArtistRow.context';
 function detailArtistRowTemplate(context: detailArtistRowContext) {
   const v1 = document.createElement('tr');
-  v1.className = 'panel-table-row';
+  v1.className = 'detail-table-row';
   const v2 = document.createElement('td');
-  v2.className = 'panel-table-row-title';
+  v2.className = 'detail-table-row-title';
   v2.setAttribute('title', context.name);
   v1.appendChild(v2);
   const v3 = document.createElement('a');

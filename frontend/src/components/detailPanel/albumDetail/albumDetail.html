@@ -1,10 +1,10 @@
-<div class="album-panel">
-  <div class="panel-header album-panel-header" bind="header">
+<div class="album-detail">
+  <div class="album-detail-header" bind="header">
     <if condition="isNew">
-      <div class="album-panel-new-indicator">{{ $l("new_album") }}</div>
+      <div class="album-detail-new-indicator">{{ $l("new_album") }}</div>
     </if>
     <if condition="hasNewSongs">
-      <div class="album-panel-new-songs-indicator">{{ $l("new_songs") }}</div>
+      <div class="album-detail-new-songs-indicator">{{ $l("new_songs") }}</div>
     </if>
     <if condition="isAllOnCooldown">
       <div class="album-all-cooldown" bind="albumCooldownExplanationLink">
@@ -36,9 +36,9 @@
     </if>
 
     <if condition="album.genres.length > 0">
-      <div class="album-panel-header-categories">
+      <div class="album-detail-header-categories">
         <div>{{ $l("relevant_categories_rollover")}}</div>
-        <div class="album-panel-header-categories-list">
+        <div class="album-detail-header-categories-list">
           <for each="album.genres">
             <a href="#!/group/{{ id }}">{{ name }}</a>
           </for>

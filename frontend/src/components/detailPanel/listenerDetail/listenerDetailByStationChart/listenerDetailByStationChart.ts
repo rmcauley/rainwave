@@ -2,7 +2,7 @@ import { stations } from '../../../../helpers/stations';
 import type { HorizontalStackChartDatum } from '../../../horizontalStackChart/horizontalStackChart';
 import { horizontalStackChart } from '../../../horizontalStackChart/horizontalStackChart';
 
-function listenerPanelByStationChart<D extends { sid: number }, T extends keyof D>(
+function listenerDetailByStationChart<D extends { sid: number }, T extends keyof D>(
   data: Array<D & Record<T, number>>,
   valueKey: T,
   headerText: string,
@@ -28,4 +28,4 @@ function listenerPanelByStationChart<D extends { sid: number }, T extends keyof 
   return element;
 }
 
-export { listenerPanelByStationChart };
+export { listenerDetailByStationChart };

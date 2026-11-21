@@ -1,4 +1,3 @@
-import { preferences } from '../../../preferences/preferences';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { AlbumFave } from '../../fave/albumFave/albumFave';
 import { AlbumRating } from '../../ratings/albumRating/albumRating';
@@ -9,7 +8,6 @@ function detailAlbumRow(
 ): ReturnType<typeof detailAlbumRowTemplate> {
   const template = detailAlbumRowTemplate({
     album,
-    power: preferences.store.powerUserMode,
   });
 
   if (album.cool) {

@@ -1,6 +1,6 @@
 import { $l } from '../../../language';
-import type { listenerPanelContext } from './listenerPanel.context';
-function listenerPanelTemplate(context: listenerPanelContext) {
+import type { listenerDetailContext } from './listenerDetail.context';
+function listenerDetailTemplate(context: listenerDetailContext) {
   const v1 = document.createElement('div');
   v1.className = 'listener-avatar';
   v1.setAttribute('style', `background-image: url(` + context.listener.avatar + `);`);
@@ -107,4 +107,4 @@ function listenerPanelTemplate(context: listenerPanelContext) {
   v1.appendChild(v30);
   return { $root: v1, topAlbums: v20, topRequests: v29, userDetail: v30 };
 }
-export { listenerPanelTemplate };
+export { listenerDetailTemplate };

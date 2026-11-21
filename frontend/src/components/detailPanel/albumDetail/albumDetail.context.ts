@@ -1,7 +1,7 @@
 import type { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 
-export type albumPanelContext = {
+type albumDetailContext = {
   album: components['schemas']['album'];
   isNew: boolean;
   hasNewSongs: boolean;
@@ -11,3 +11,5 @@ export type albumPanelContext = {
   ratingPercentileMessage: string;
   showGenres: boolean;
 };
+
+export type { albumDetailContext };
