@@ -25,6 +25,8 @@ class AlbumList extends SearchList<AlbumListItem> {
 
     api.addEventListener('all_albums_paginated', this.#onPageReceive);
     api.addEventListener('album_diff', this.#onAlbumDiff);
+    api.addEventListener('fave_album_result', this.updateFave);
+    api.addEventListener('rate_result', this.updateRating);
   }
 
   sortItems = (): void => {
