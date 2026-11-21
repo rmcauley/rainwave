@@ -1,6 +1,6 @@
 import type { stationSelectContext } from './stationSelect.context';
 
-import style from './stationSelect.scss';
+import './stationSelect.css';
 function stationSelectTemplate(context: stationSelectContext) {
   const v1 = document.createElement('a');
   v1.className = 'station-select-station';

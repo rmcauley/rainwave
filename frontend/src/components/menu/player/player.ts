@@ -2,7 +2,10 @@ import { stations } from '../../../helpers/stations';
 import { $l } from '../../../language';
 import { preferences } from '../../../preferences/preferences';
 import { api } from '../../../rainwaveApi/api';
+import { removeSystemMessage, showSystemMessage } from '../../systemMessages/systemMessages';
 import { RainwaveAudioBackend } from './playerBackend';
+
+import './player.css';
 import { updateMediaSession } from './updateMediaSession';
 
 function sanitizeVolume(newVolume: number): number {
@@ -20,7 +23,7 @@ function initPlayer(): void {
 
   const el = document.getElementById('player')!;
   const volumeEl = document.getElementById('player-body-volume')!;
-  const volumeRect = document.getElementById('player-body-volume-svg-bars')!;
+  const volumeRect = document.getElementById('player-body-volume-svg-value')!;
   const loadingEl = document.getElementById('player-load-indicator')!;
   const playEl = document.getElementById('player-body-play')!;
   const stopEl = document.getElementById('player-body-stop')!;
@@ -29,8 +32,7 @@ function initPlayer(): void {
   let isMuted = preferences.store.muted;
 
   function clearAudioErrors(): void {
-    // ErrorHandler.removePermanentError('audio_error');
-    // ErrorHandler.removePermanentError('audio_connect_error');
+    removeSystemMessage('audio-error');
     loadingEl.classList.remove('loading');
   }
 
@@ -81,7 +83,7 @@ function initPlayer(): void {
       a.addEventListener('click', function () {
         clearAudioErrors();
       });
-      // ErrorHandler.nonpermanentError(ErrorHandler.makeError('audio_error', 500), a);
+      showSystemMessage('audio-error', a, true);
     }
   }
 
@@ -101,8 +103,8 @@ function initPlayer(): void {
   }
 
   function volumeControlMouseup(): void {
-    volumeEl.removeEventListener('mousemove', changeVolumeFromMouse);
-    document.removeEventListener('mouseup', volumeControlMouseup);
+    volumeEl.removeEventListener('pointermove', changeVolumeFromMouse);
+    document.removeEventListener('pointerup', volumeControlMouseup);
   }
 
   function volumeControlMousedown(evt: MouseEvent): void {
@@ -113,15 +115,15 @@ function initPlayer(): void {
     if (isMuted) {
       toggleMute();
     }
-    volumeEl.addEventListener('mousemove', changeVolumeFromMouse);
-    document.addEventListener('mouseup', volumeControlMouseup);
+    volumeEl.addEventListener('pointermove', changeVolumeFromMouse);
+    document.addEventListener('pointerup', volumeControlMouseup);
   }
 
   api.addEventListener('user', (user) => {
     if (user.tuned_in) {
-      document.body.classList.add('tuned-in');
+      el.classList.add('tuned-in');
     } else {
-      document.body.classList.remove('tuned-in');
+      el.classList.remove('tuned-in');
     }
     if (!player.isActive) {
       return;
@@ -132,7 +134,7 @@ function initPlayer(): void {
     }
   });
 
-  volumeEl.addEventListener('mousedown', volumeControlMousedown);
+  volumeEl.addEventListener('pointerdown', volumeControlMousedown);
   muteEl.addEventListener('click', toggleMute);
   playEl.addEventListener('click', player.playToggle);
   stopEl.addEventListener('click', player.stop);

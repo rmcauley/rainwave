@@ -1,6 +1,4 @@
 import { svgIcon as _svg } from '../../helpers/svg';
-
-import style from './modal.scss';
 function modalTemplate() {
   const v1 = document.createElement('div');
   v1.className = 'modal';

@@ -1,7 +1,5 @@
 import { svgIcon as _svg } from '../../helpers/svg';
 import { $l } from '../../language';
-
-import style from './timeline.scss';
 function timelineTemplate() {
   const v1 = document.createElement('div');
   v1.className = 'timeline';

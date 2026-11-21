@@ -96,7 +96,7 @@ def find_single_root_element(
 
 def find_style_file_name(template_file_name: str) -> str | None:
     """Returns the .scss file sitting next to the template, if any."""
-    style_file_name = os.path.splitext(template_file_name)[0] + ".scss"
+    style_file_name = os.path.splitext(template_file_name)[0] + ".css"
     if os.path.exists(style_file_name):
         return os.path.basename(style_file_name)
     return None
@@ -177,7 +177,7 @@ def compile_templates(source_dir: str) -> None:
                     context_param = f"context: {context_type_name(template_name)}"
 
                 if style_file_name:
-                    file_buffer += f"import style from './{style_file_name}';\n"
+                    file_buffer += f"import './{style_file_name}';\n"
 
                 file_buffer += solve_ts_imports(
                     template_output_file_name,

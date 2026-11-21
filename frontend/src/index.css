@@ -27,6 +27,8 @@
 body {
   font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
   user-select: none;
+  color: var(--text);
+  background-color: var(--background);
 }
 
 a,
@@ -38,15 +40,15 @@ a:visited,
   transition-timing-function: var(--transition-timing-function);
 
   &.obvious {
-    color: var(--link) !important;
+    color: var(--link);
 
-    .desktop &:hover {
-      color: var(--link-hover) !important;
+    &:hover {
+      color: var(--link-hover);
     }
   }
 
-  .desktop &:hover {
-    color: var(--link-hover) !important;
+  &:hover {
+    color: var(--link-hover);
   }
 }
 
@@ -66,6 +68,10 @@ a:visited,
 #main {
   width: 1024px;
   max-width: 100%;
+
+  body.power & {
+    width: 100%;
+  }
 }
 
 .touchable {
@@ -83,8 +89,4 @@ a:visited,
   scroll-padding: 0;
   scrollbar-width: thin;
   scrollbar-color: #555 #000;
-}
-
-.simple .power-only {
-  display: none;
 }

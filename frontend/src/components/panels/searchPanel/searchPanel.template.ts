@@ -1,7 +1,5 @@
 import { svgIcon as _svg } from '../../../helpers/svg';
 import { $l } from '../../../language';
-
-import style from './searchPanel.scss';
 function searchPanelTemplate() {
   const v1 = document.createElement('div');
   v1.className = 'search-panel';

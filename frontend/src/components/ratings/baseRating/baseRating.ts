@@ -1,6 +1,6 @@
 import { formatRating } from '../../../helpers/formatRating';
 
-import './baseRating.scss';
+import './baseRating.css';
 
 abstract class BaseRating extends HTMLElement {
   #ratingNumber: HTMLElement | undefined;

@@ -1,6 +1,4 @@
 import { svgIcon as _svg } from '../../helpers/svg';
-
-import style from './playlist.scss';
 function playlistTemplate() {
   const v1 = document.createElement('div');
   v1.setAttribute('id', `playlist`);

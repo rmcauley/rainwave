@@ -1,8 +1,6 @@
 import { svgIcon as _svg } from '../../helpers/svg';
 import { $l } from '../../language';
 import type { songContext } from './song.context';
-
-import style from './song.scss';
 function songTemplate(context: songContext) {
   const v1 = document.createElement('div');
   v1.className = 'song';
