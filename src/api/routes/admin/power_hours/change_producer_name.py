@@ -1,7 +1,7 @@
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
-from api.rainwave_dto import Api4AdminChangePowerHourNamePostRequest
+from api.rainwave_dto import AdminChangePowerHourNamePostRequest
 
 from api.routes.admin.power_hours.get_power_hour_by_id import (
     get_api_power_hour,
@@ -21,7 +21,7 @@ class ChangeProducerName(APIHandler):
     sid_required = False
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminChangePowerHourNamePostRequest)
+        input = self.get_validated_input(AdminChangePowerHourNamePostRequest)
         async with get_cursor() as cursor:
             await get_power_hour_by_id(cursor, input.sched_id)
             await cursor.update(

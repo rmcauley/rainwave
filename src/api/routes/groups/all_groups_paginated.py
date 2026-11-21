@@ -19,7 +19,7 @@ class AllGroupsPaginatedHandler(APIHandler):
     sid_required = True
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4AllGroupsPaginatedPostRequest)
+        input = self.get_validated_input(rainwave_dto.AllGroupsPaginatedPostRequest)
         all_groups = cached_all_groups[self.sid]
         offset = input.after or 0
         page = all_groups[offset : offset + DEFAULT_COLLECTION_PAGE_LIMIT]

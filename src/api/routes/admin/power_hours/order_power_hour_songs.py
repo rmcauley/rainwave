@@ -6,7 +6,7 @@ from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.exceptions import APIException
-from api.rainwave_dto import Api4AdminOrderPowerHourSongsPostRequest
+from api.rainwave_dto import AdminOrderPowerHourSongsPostRequest
 from api import fieldtypes
 
 from common.db.cursor import get_cursor
@@ -23,7 +23,7 @@ class OrderPowerHourSongs(APIHandler):
     sid_required = False
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminOrderPowerHourSongsPostRequest)
+        input = self.get_validated_input(AdminOrderPowerHourSongsPostRequest)
         order_ids = fieldtypes.integer_list(input.order)
         if order_ids is None:
             raise APIException(

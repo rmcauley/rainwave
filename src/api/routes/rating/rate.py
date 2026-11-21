@@ -23,7 +23,7 @@ class SubmitRatingRequest(RegisteredUserAPIHandler):
     sync_across_sessions = True
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4RatePostRequest)
+        input = self.get_validated_input(rainwave_dto.RatePostRequest)
         async with get_cursor() as cursor:
             song_id = await cursor.fetch_var(
                 "SELECT song_id FROM r4_songs WHERE song_id = %s AND song_verified = TRUE",

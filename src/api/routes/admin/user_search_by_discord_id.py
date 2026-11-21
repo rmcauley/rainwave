@@ -1,6 +1,6 @@
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from api.rainwave_dto import Api4UserSearchByDiscordUserIdPostRequest
+from api.rainwave_dto import UserSearchByDiscordUserIdPostRequest
 from api.exceptions import APIException
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common import config
@@ -19,7 +19,7 @@ class UserSearchByDiscordUserIdRequest(APIHandler):
         return "admin_user_search_result"
 
     async def post(self):
-        input = self.get_validated_input(Api4UserSearchByDiscordUserIdPostRequest)
+        input = self.get_validated_input(UserSearchByDiscordUserIdPostRequest)
         async with get_cursor() as cursor:
             if self.request.remote_ip not in config.api_trusted_ip_addresses:
                 raise APIException(

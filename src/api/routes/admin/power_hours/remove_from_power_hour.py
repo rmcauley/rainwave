@@ -2,7 +2,7 @@ from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
 from api.exceptions import APIException
-from api.rainwave_dto import Api4AdminPowerHourRemoveSongPostRequest
+from api.rainwave_dto import AdminPowerHourRemoveSongPostRequest
 
 from api.routes.admin.power_hours.get_power_hour_by_id import (
     get_api_power_hour,
@@ -22,7 +22,7 @@ class RemoveFromPowerHour(APIHandler):
     sid_required = True
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminPowerHourRemoveSongPostRequest)
+        input = self.get_validated_input(AdminPowerHourRemoveSongPostRequest)
         async with get_cursor() as cursor:
             sched_id = await cursor.fetch_var(
                 "SELECT sched_id FROM r4_one_ups WHERE one_up_id = %s",

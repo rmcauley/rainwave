@@ -17,9 +17,7 @@ class AllArtistsPaginatedHandler(APIHandler):
         return "all_artists_paginated"
 
     async def post(self):
-        input = self.get_validated_input(
-            rainwave_dto.Api4AllArtistsPaginatedPostRequest
-        )
+        input = self.get_validated_input(rainwave_dto.AllArtistsPaginatedPostRequest)
         all_artists = cached_all_artists.cached_all_artists[self.sid]
         offset = input.after or 0
         page = all_artists[offset : offset + DEFAULT_COLLECTION_PAGE_LIMIT]

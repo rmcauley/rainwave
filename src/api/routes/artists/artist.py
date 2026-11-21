@@ -25,7 +25,7 @@ class ArtistHandler(APIHandler):
         return "artist"
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4ArtistPostRequest)
+        input = self.get_validated_input(rainwave_dto.ArtistPostRequest)
         async with get_cursor() as cursor:
             artist = await cursor.fetch_row(
                 "SELECT artist_id, artist_name FROM r4_artists WHERE artist_id = %s",

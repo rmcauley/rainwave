@@ -27,7 +27,7 @@ class AlbumHandler(AuthRequiredAPIHandler):
         return "album"
 
     async def post(self) -> None:
-        input = self.get_validated_input(rainwave_dto.Api4AlbumPostRequest)
+        input = self.get_validated_input(rainwave_dto.AlbumPostRequest)
         async with get_cursor() as cursor:
             album = await get_album_on_station(
                 cursor,

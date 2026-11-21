@@ -22,7 +22,7 @@ class SubmitSongFave(RegisteredUserAPIHandler):
         return "fave_song_result"
 
     async def post(self) -> None:
-        input = self.get_validated_input(rainwave_dto.Api4FaveSongPostRequest)
+        input = self.get_validated_input(rainwave_dto.FaveSongPostRequest)
         async with get_cursor() as cursor:
             song_id = await cursor.fetch_var(
                 "SELECT song_id FROM r4_songs WHERE song_id = %s AND song_verified = TRUE",

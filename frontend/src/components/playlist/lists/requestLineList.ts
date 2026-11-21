@@ -2,7 +2,7 @@ import { $l } from '../../../language';
 import { makeSearchableString } from '../../../language/get-searchable-name';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
-import { navigateTo } from '../../router/navigateTo';
+import { navigateTo } from '../../../router/navigateTo';
 import { SearchList } from '../searchList/searchList';
 
 type RequestLineListItem = components['schemas']['request_line'][number] & {

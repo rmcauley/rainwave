@@ -3,7 +3,7 @@ from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.exceptions import APIException
 from api.handler_classes.auth_required_handler import AuthRequiredAPIHandler
-from api.rainwave_dto import Api4SearchPostRequest
+from api.rainwave_dto import SearchPostRequest
 from common.db.cursor import get_cursor
 from common.playlist.get_searchable_string import get_searchable_string
 from typing import TypedDict
@@ -55,7 +55,7 @@ class SearchHandler(AuthRequiredAPIHandler):
     fields = {"search": (fieldtypes.string, True)}
 
     async def post(self):
-        input = self.get_validated_input(Api4SearchPostRequest)
+        input = self.get_validated_input(SearchPostRequest)
         async with get_cursor() as cursor:
             search_term = get_searchable_string(input.search)
             if len(search_term) < 3:

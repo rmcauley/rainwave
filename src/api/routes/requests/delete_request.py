@@ -20,7 +20,7 @@ class DeleteRequest(RegisteredUserAPIHandler):
         return "delete_request_result"
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4DeleteRequestPostRequest)
+        input = self.get_validated_input(rainwave_dto.DeleteRequestPostRequest)
         async with get_cursor() as cursor:
             if await self.user.remove_request(cursor, input.song_id):
                 self.response["delete_request_result"] = {

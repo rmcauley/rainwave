@@ -3,8 +3,8 @@ import { makeSearchableString } from '../../../language/get-searchable-name';
 import { preferences } from '../../../preferences/preferences';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
+import { navigateTo } from '../../../router/navigateTo';
 import { AlbumFave } from '../../fave/albumFave/albumFave';
-import { navigateTo } from '../../router/navigateTo';
 import { isPlaylistItemNew } from '../isPlaylistItemNew';
 import { SearchList } from '../searchList/searchList';
 

@@ -3,7 +3,7 @@ from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.exceptions import APIException
-from api.rainwave_dto import Api4AdminDeletePowerHourPostRequest
+from api.rainwave_dto import AdminDeletePowerHourPostRequest
 from common.db.cursor import get_cursor
 
 
@@ -18,7 +18,7 @@ class DeletePowerHour(APIHandler):
     sid_required = False
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminDeletePowerHourPostRequest)
+        input = self.get_validated_input(AdminDeletePowerHourPostRequest)
         async with get_cursor() as cursor:
             schedule_entry = await get_power_hour_by_id(cursor, input.sched_id)
             if not schedule_entry:

@@ -4,7 +4,7 @@ from pytz import timezone
 from api.exceptions import APIException
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
-from api.rainwave_dto import Api4AdminEuropifyPowerHourPostRequest
+from api.rainwave_dto import AdminEuropifyPowerHourPostRequest
 
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.routes.admin.power_hours.get_power_hour_by_id import (
@@ -26,7 +26,7 @@ class EuropifyPowerHour(RegisteredUserAPIHandler):
     sid_required = True
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminEuropifyPowerHourPostRequest)
+        input = self.get_validated_input(AdminEuropifyPowerHourPostRequest)
         async with get_cursor() as cursor:
             existing_schedule_entry = await get_power_hour_by_id(cursor, input.sched_id)
             if not existing_schedule_entry.data["sched_start"]:

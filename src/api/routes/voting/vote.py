@@ -28,7 +28,7 @@ class SubmitVote(AuthRequiredAPIHandler):
     sync_across_sessions = True
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4VotePostRequest)
+        input = self.get_validated_input(rainwave_dto.VotePostRequest)
         lock_count = 0
         voted = False
         elec_id = input.entry_id

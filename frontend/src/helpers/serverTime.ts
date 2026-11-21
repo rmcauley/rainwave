@@ -1,7 +1,7 @@
 import { api } from '../rainwaveApi/api';
-import type { RainwaveSchemas } from '../rainwaveApi/types';
+import type { components } from '../rainwaveApi/rainwave-openapi';
 
-function calculateTimeDiff(apiInfo: RainwaveSchemas['api_info']): number {
+function calculateTimeDiff(apiInfo: components['schemas']['api_info']): number {
   return apiInfo.time - Math.round(new Date().getTime() / 1000) + 2;
 }
 
@@ -12,7 +12,7 @@ function getServerTime(): number {
   return Math.round(new Date().getTime() / 1000) + timeDiff;
 }
 
-function syncClock(apiInfo: RainwaveSchemas['api_info']): void {
+function syncClock(apiInfo: components['schemas']['api_info']): void {
   timeDiff = calculateTimeDiff(apiInfo);
 }
 

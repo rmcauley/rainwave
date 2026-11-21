@@ -1,6 +1,6 @@
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
-from api.rainwave_dto import Api4AdminResetAlbumCooldownPostRequest
+from api.rainwave_dto import AdminResetAlbumCooldownPostRequest
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common.db.cursor import get_cursor
 
@@ -17,7 +17,7 @@ class ResetAlbumCooldown(APIHandler):
         return "set_album_cooldown_result"
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminResetAlbumCooldownPostRequest)
+        input = self.get_validated_input(AdminResetAlbumCooldownPostRequest)
         async with get_cursor() as cursor:
             await cursor.update(
                 "UPDATE r4_album_sid SET album_cool_multiply = 1, album_cool_override = NULL WHERE album_id = %s AND sid = %s",

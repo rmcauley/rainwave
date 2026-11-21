@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  '/api4/admin/add_album_to_power_hour': {
+  '/admin/add_album_to_power_hour': {
     parameters: {
       query?: never;
       header?: never;
@@ -20,7 +20,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/add_donation': {
+  '/admin/add_donation': {
     parameters: {
       query?: never;
       header?: never;
@@ -36,7 +36,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/add_song_to_power_hour': {
+  '/admin/add_song_to_power_hour': {
     parameters: {
       query?: never;
       header?: never;
@@ -52,7 +52,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/change_power_hour_name': {
+  '/admin/change_power_hour_name': {
     parameters: {
       query?: never;
       header?: never;
@@ -68,7 +68,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/change_power_hour_start_time': {
+  '/admin/change_power_hour_start_time': {
     parameters: {
       query?: never;
       header?: never;
@@ -84,7 +84,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/change_power_hour_url': {
+  '/admin/change_power_hour_url': {
     parameters: {
       query?: never;
       header?: never;
@@ -100,7 +100,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/create_power_hour': {
+  '/admin/create_power_hour': {
     parameters: {
       query?: never;
       header?: never;
@@ -116,7 +116,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/delete_power_hour': {
+  '/admin/delete_power_hour': {
     parameters: {
       query?: never;
       header?: never;
@@ -132,7 +132,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/duplicate_power_hour': {
+  '/admin/duplicate_power_hour': {
     parameters: {
       query?: never;
       header?: never;
@@ -148,7 +148,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/europify_power_hour': {
+  '/admin/europify_power_hour': {
     parameters: {
       query?: never;
       header?: never;
@@ -164,7 +164,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/js_errors': {
+  '/admin/js_errors': {
     parameters: {
       query?: never;
       header?: never;
@@ -180,7 +180,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/music_scan_errors': {
+  '/admin/music_scan_errors': {
     parameters: {
       query?: never;
       header?: never;
@@ -196,7 +196,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/order_power_hour_songs': {
+  '/admin/order_power_hour_songs': {
     parameters: {
       query?: never;
       header?: never;
@@ -212,7 +212,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/power_hour': {
+  '/admin/power_hour': {
     parameters: {
       query?: never;
       header?: never;
@@ -228,7 +228,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/power_hour_remove_song': {
+  '/admin/power_hour_remove_song': {
     parameters: {
       query?: never;
       header?: never;
@@ -244,7 +244,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/power_hours': {
+  '/admin/power_hours': {
     parameters: {
       query?: never;
       header?: never;
@@ -260,7 +260,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/reset_album_cooldown': {
+  '/admin/reset_album_cooldown': {
     parameters: {
       query?: never;
       header?: never;
@@ -276,7 +276,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/reset_song_cooldown': {
+  '/admin/reset_song_cooldown': {
     parameters: {
       query?: never;
       header?: never;
@@ -292,7 +292,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/set_album_cooldown': {
+  '/admin/set_album_cooldown': {
     parameters: {
       query?: never;
       header?: never;
@@ -308,7 +308,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/set_song_cooldown': {
+  '/admin/set_song_cooldown': {
     parameters: {
       query?: never;
       header?: never;
@@ -324,7 +324,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/set_song_request_only': {
+  '/admin/set_song_request_only': {
     parameters: {
       query?: never;
       header?: never;
@@ -340,7 +340,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/album_art': {
+  '/admin/album_art': {
     parameters: {
       query?: never;
       header?: never;
@@ -356,7 +356,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/album_songs': {
+  '/admin/album_songs': {
     parameters: {
       query?: never;
       header?: never;
@@ -372,7 +372,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/albums': {
+  '/admin/albums': {
     parameters: {
       query?: never;
       header?: never;
@@ -388,7 +388,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/admin/shuffle_power_hour': {
+  '/admin/shuffle_power_hour': {
     parameters: {
       query?: never;
       header?: never;
@@ -404,7 +404,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/update_user_avatar_by_discord_id': {
+  '/update_user_avatar_by_discord_id': {
     parameters: {
       query?: never;
       header?: never;
@@ -420,7 +420,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/update_user_nickname_by_discord_id': {
+  '/update_user_nickname_by_discord_id': {
     parameters: {
       query?: never;
       header?: never;
@@ -436,7 +436,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/enable_perks_by_discord_ids': {
+  '/enable_perks_by_discord_ids': {
     parameters: {
       query?: never;
       header?: never;
@@ -452,7 +452,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/user_search': {
+  '/user_search': {
     parameters: {
       query?: never;
       header?: never;
@@ -468,7 +468,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/user_search_by_discord_user_id': {
+  '/user_search_by_discord_user_id': {
     parameters: {
       query?: never;
       header?: never;
@@ -484,7 +484,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/album': {
+  '/album': {
     parameters: {
       query?: never;
       header?: never;
@@ -500,7 +500,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/all_albums': {
+  '/all_albums': {
     parameters: {
       query?: never;
       header?: never;
@@ -517,7 +517,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/all_albums_paginated': {
+  '/all_albums_paginated': {
     parameters: {
       query?: never;
       header?: never;
@@ -534,7 +534,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/all_artists': {
+  '/all_artists': {
     parameters: {
       query?: never;
       header?: never;
@@ -550,7 +550,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/all_artists_paginated': {
+  '/all_artists_paginated': {
     parameters: {
       query?: never;
       header?: never;
@@ -566,7 +566,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/all_faves': {
+  '/all_faves': {
     parameters: {
       query?: never;
       header?: never;
@@ -582,7 +582,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/all_groups': {
+  '/all_groups': {
     parameters: {
       query?: never;
       header?: never;
@@ -598,7 +598,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/all_groups_paginated': {
+  '/all_groups_paginated': {
     parameters: {
       query?: never;
       header?: never;
@@ -614,7 +614,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/all_songs': {
+  '/all_songs': {
     parameters: {
       query?: never;
       header?: never;
@@ -630,7 +630,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/artist': {
+  '/artist': {
     parameters: {
       query?: never;
       header?: never;
@@ -646,7 +646,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/check_sched_current_id': {
+  '/check_sched_current_id': {
     parameters: {
       query?: never;
       header?: never;
@@ -662,7 +662,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/auth': {
+  '/auth': {
     parameters: {
       query?: never;
       header?: never;
@@ -678,7 +678,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/ping': {
+  '/ping': {
     parameters: {
       query?: never;
       header?: never;
@@ -694,7 +694,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/clear_rating': {
+  '/clear_rating': {
     parameters: {
       query?: never;
       header?: never;
@@ -710,7 +710,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/clear_requests': {
+  '/clear_requests': {
     parameters: {
       query?: never;
       header?: never;
@@ -726,7 +726,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/clear_requests_on_cooldown': {
+  '/clear_requests_on_cooldown': {
     parameters: {
       query?: never;
       header?: never;
@@ -742,7 +742,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/delete_request': {
+  '/delete_request': {
     parameters: {
       query?: never;
       header?: never;
@@ -758,7 +758,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/error_report': {
+  '/error_report': {
     parameters: {
       query?: never;
       header?: never;
@@ -775,7 +775,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/fave_album': {
+  '/fave_album': {
     parameters: {
       query?: never;
       header?: never;
@@ -791,7 +791,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/fave_all_songs': {
+  '/fave_all_songs': {
     parameters: {
       query?: never;
       header?: never;
@@ -807,7 +807,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/fave_song': {
+  '/fave_song': {
     parameters: {
       query?: never;
       header?: never;
@@ -823,7 +823,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/group': {
+  '/group': {
     parameters: {
       query?: never;
       header?: never;
@@ -839,7 +839,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/info_all': {
+  '/info_all': {
     parameters: {
       query?: never;
       header?: never;
@@ -855,7 +855,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/listener': {
+  '/listener': {
     parameters: {
       query?: never;
       header?: never;
@@ -871,7 +871,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/order_requests': {
+  '/order_requests': {
     parameters: {
       query?: never;
       header?: never;
@@ -887,7 +887,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/pause_request_queue': {
+  '/pause_request_queue': {
     parameters: {
       query?: never;
       header?: never;
@@ -903,7 +903,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/playback_history': {
+  '/playback_history': {
     parameters: {
       query?: never;
       header?: never;
@@ -919,7 +919,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/rate': {
+  '/rate': {
     parameters: {
       query?: never;
       header?: never;
@@ -935,7 +935,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/request': {
+  '/request': {
     parameters: {
       query?: never;
       header?: never;
@@ -951,7 +951,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/request_favorited_songs': {
+  '/request_favorited_songs': {
     parameters: {
       query?: never;
       header?: never;
@@ -967,7 +967,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/request_line': {
+  '/request_line': {
     parameters: {
       query?: never;
       header?: never;
@@ -983,7 +983,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/request_unrated_songs': {
+  '/request_unrated_songs': {
     parameters: {
       query?: never;
       header?: never;
@@ -999,7 +999,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/search': {
+  '/search': {
     parameters: {
       query?: never;
       header?: never;
@@ -1015,7 +1015,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/song': {
+  '/song': {
     parameters: {
       query?: never;
       header?: never;
@@ -1031,7 +1031,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/station_song_count': {
+  '/station_song_count': {
     parameters: {
       query?: never;
       header?: never;
@@ -1047,7 +1047,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/stations': {
+  '/stations': {
     parameters: {
       query?: never;
       header?: never;
@@ -1063,7 +1063,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/top_100': {
+  '/top_100': {
     parameters: {
       query?: never;
       header?: never;
@@ -1079,7 +1079,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/unpause_request_queue': {
+  '/unpause_request_queue': {
     parameters: {
       query?: never;
       header?: never;
@@ -1095,7 +1095,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/unrated_songs': {
+  '/unrated_songs': {
     parameters: {
       query?: never;
       header?: never;
@@ -1111,7 +1111,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/user_info': {
+  '/user_info': {
     parameters: {
       query?: never;
       header?: never;
@@ -1127,7 +1127,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/user_recent_votes': {
+  '/user_recent_votes': {
     parameters: {
       query?: never;
       header?: never;
@@ -1143,7 +1143,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/user_requested_history': {
+  '/user_requested_history': {
     parameters: {
       query?: never;
       header?: never;
@@ -1159,7 +1159,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/vote': {
+  '/vote': {
     parameters: {
       query?: never;
       header?: never;
@@ -1175,7 +1175,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api4/websocket/{sid}': {
+  '/websocket/{sid}': {
     parameters: {
       query?: never;
       header?: never;

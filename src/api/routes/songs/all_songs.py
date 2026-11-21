@@ -20,7 +20,7 @@ class AllSongsHandler(RegisteredUserAPIHandler):
     pagination = True
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4AllSongsPostRequest)
+        input = self.get_validated_input(rainwave_dto.AllSongsPostRequest)
         async with get_cursor() as cursor:
             order = "album_name, song_title"
             distinct_on = "album_name, song_title"

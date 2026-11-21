@@ -1,10 +1,13 @@
 abstract class Panel {
-  el: HTMLDivElement;
+  el: HTMLElement;
 
   constructor(id: string) {
-    this.el = document.createElement('div');
-    this.el.id = id;
-    this.el.className = 'panel';
+    const el = document.getElementById(id);
+    if (!el) {
+      throw new Error(`Could not find panel ${id}`);
+    }
+    this.el = el;
+    this.el.classList.add('panel');
   }
 
   open = (): void => {

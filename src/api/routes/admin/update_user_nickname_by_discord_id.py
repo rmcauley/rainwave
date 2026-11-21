@@ -1,7 +1,7 @@
 from api.handler_classes.api_handler import APIHandler
 from api.handle_url import handle_api_url
 from api.exceptions import APIException
-from api.rainwave_dto import Api4UpdateUserNicknameByDiscordIdPostRequest
+from api.rainwave_dto import UpdateUserNicknameByDiscordIdPostRequest
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common import config
 from common.db.cursor import get_cursor
@@ -18,7 +18,7 @@ class UpdateUserNicknameByDiscordId(APIHandler):
         return "update_user_nickname_by_discord_id_result"
 
     async def post(self):
-        input = self.get_validated_input(Api4UpdateUserNicknameByDiscordIdPostRequest)
+        input = self.get_validated_input(UpdateUserNicknameByDiscordIdPostRequest)
         async with get_cursor() as cursor:
             if self.request.remote_ip not in config.api_trusted_ip_addresses:
                 raise APIException(

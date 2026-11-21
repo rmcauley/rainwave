@@ -1,6 +1,6 @@
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
-from api.rainwave_dto import Api4AdminCreatePowerHourPostRequest
+from api.rainwave_dto import AdminCreatePowerHourPostRequest
 
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.routes.admin.power_hours.get_power_hour_by_id import get_api_power_hour
@@ -20,7 +20,7 @@ class CreatePowerHour(RegisteredUserAPIHandler):
     sid_required = False
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminCreatePowerHourPostRequest)
+        input = self.get_validated_input(AdminCreatePowerHourPostRequest)
         async with get_tx_cursor() as cursor:
             schedule_entry_row = await create_schedule_entry(
                 cursor,

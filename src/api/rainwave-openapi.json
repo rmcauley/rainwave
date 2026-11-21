@@ -32,7 +32,7 @@
     }
   ],
   "paths": {
-    "/api4/admin/add_album_to_power_hour": {
+    "/admin/add_album_to_power_hour": {
       "post": {
         "operationId": "adminAddAlbumToPowerHour",
         "requestBody": {
@@ -75,7 +75,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/add_donation": {
+    "/admin/add_donation": {
       "post": {
         "operationId": "adminAddDonation",
         "requestBody": {
@@ -124,7 +124,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/add_song_to_power_hour": {
+    "/admin/add_song_to_power_hour": {
       "post": {
         "operationId": "adminAddSongToPowerHour",
         "requestBody": {
@@ -167,7 +167,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/change_power_hour_name": {
+    "/admin/change_power_hour_name": {
       "post": {
         "operationId": "adminChangePowerHourName",
         "requestBody": {
@@ -210,7 +210,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/change_power_hour_start_time": {
+    "/admin/change_power_hour_start_time": {
       "post": {
         "operationId": "adminChangePowerHourStartTime",
         "requestBody": {
@@ -253,7 +253,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/change_power_hour_url": {
+    "/admin/change_power_hour_url": {
       "post": {
         "operationId": "adminChangePowerHourUrl",
         "requestBody": {
@@ -303,7 +303,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/create_power_hour": {
+    "/admin/create_power_hour": {
       "post": {
         "operationId": "adminCreatePowerHour",
         "requestBody": {
@@ -379,7 +379,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/delete_power_hour": {
+    "/admin/delete_power_hour": {
       "post": {
         "operationId": "adminDeletePowerHour",
         "requestBody": {
@@ -419,7 +419,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/duplicate_power_hour": {
+    "/admin/duplicate_power_hour": {
       "post": {
         "operationId": "adminDuplicatePowerHour",
         "requestBody": {
@@ -459,7 +459,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/europify_power_hour": {
+    "/admin/europify_power_hour": {
       "post": {
         "operationId": "adminEuropifyPowerHour",
         "requestBody": {
@@ -499,7 +499,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/js_errors": {
+    "/admin/js_errors": {
       "post": {
         "operationId": "adminJSErrors",
         "responses": {
@@ -523,7 +523,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/music_scan_errors": {
+    "/admin/music_scan_errors": {
       "post": {
         "operationId": "adminMusicScanErrors",
         "responses": {
@@ -547,7 +547,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/order_power_hour_songs": {
+    "/admin/order_power_hour_songs": {
       "post": {
         "operationId": "adminOrderPowerHourSongs",
         "requestBody": {
@@ -591,7 +591,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/power_hour": {
+    "/admin/power_hour": {
       "post": {
         "operationId": "adminGetPowerHour",
         "requestBody": {
@@ -631,7 +631,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/power_hour_remove_song": {
+    "/admin/power_hour_remove_song": {
       "post": {
         "operationId": "adminRemoveSongFromPowerHour",
         "requestBody": {
@@ -671,7 +671,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/power_hours": {
+    "/admin/power_hours": {
       "post": {
         "operationId": "adminGetPowerHours",
         "responses": {
@@ -695,7 +695,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/reset_album_cooldown": {
+    "/admin/reset_album_cooldown": {
       "post": {
         "operationId": "adminResetAlbumCooldown",
         "requestBody": {
@@ -735,7 +735,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/reset_song_cooldown": {
+    "/admin/reset_song_cooldown": {
       "post": {
         "operationId": "adminResetSongCooldown",
         "requestBody": {
@@ -775,7 +775,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/set_album_cooldown": {
+    "/admin/set_album_cooldown": {
       "post": {
         "operationId": "adminSetAlbumCooldown",
         "requestBody": {
@@ -835,7 +835,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/set_song_cooldown": {
+    "/admin/set_song_cooldown": {
       "post": {
         "operationId": "adminSetSongCooldown",
         "requestBody": {
@@ -895,7 +895,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/set_song_request_only": {
+    "/admin/set_song_request_only": {
       "post": {
         "operationId": "adminSetSongRequestOnly",
         "requestBody": {
@@ -941,7 +941,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/album_art": {
+    "/admin/album_art": {
       "post": {
         "operationId": "adminAlbumArt",
         "requestBody": {
@@ -981,7 +981,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/album_songs": {
+    "/admin/album_songs": {
       "post": {
         "operationId": "adminAlbumSongs",
         "requestBody": {
@@ -1024,7 +1024,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/albums": {
+    "/admin/albums": {
       "post": {
         "operationId": "adminAlbums",
         "requestBody": {
@@ -1064,7 +1064,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/admin/shuffle_power_hour": {
+    "/admin/shuffle_power_hour": {
       "post": {
         "operationId": "adminShufflePowerHour",
         "requestBody": {
@@ -1104,7 +1104,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/update_user_avatar_by_discord_id": {
+    "/update_user_avatar_by_discord_id": {
       "post": {
         "operationId": "adminUpdateUserAvatarByDiscordId",
         "requestBody": {
@@ -1147,7 +1147,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/update_user_nickname_by_discord_id": {
+    "/update_user_nickname_by_discord_id": {
       "post": {
         "operationId": "adminUpdateUserNicknameByDiscordId",
         "requestBody": {
@@ -1190,7 +1190,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/enable_perks_by_discord_ids": {
+    "/enable_perks_by_discord_ids": {
       "post": {
         "operationId": "adminEnablePerksByDiscordIds",
         "requestBody": {
@@ -1233,7 +1233,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/user_search": {
+    "/user_search": {
       "post": {
         "operationId": "adminUserSearch",
         "requestBody": {
@@ -1273,7 +1273,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/user_search_by_discord_user_id": {
+    "/user_search_by_discord_user_id": {
       "post": {
         "operationId": "adminUserSearchByDiscordUserId",
         "requestBody": {
@@ -1313,7 +1313,7 @@
         "tags": ["Admin"]
       }
     },
-    "/api4/album": {
+    "/album": {
       "post": {
         "operationId": "getAlbum",
         "requestBody": {
@@ -1366,7 +1366,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/all_albums": {
+    "/all_albums": {
       "post": {
         "description": "Returns all albums on the station, sorted by album name.",
         "operationId": "getAllAlbums",
@@ -1391,7 +1391,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/all_albums_paginated": {
+    "/all_albums_paginated": {
       "post": {
         "description": "Returns all albums on the station, sorted by album ID.",
         "operationId": "getAllAlbumsPaginated",
@@ -1431,7 +1431,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/all_artists": {
+    "/all_artists": {
       "post": {
         "operationId": "getAllArtists",
         "responses": {
@@ -1455,7 +1455,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/all_artists_paginated": {
+    "/all_artists_paginated": {
       "post": {
         "operationId": "getAllArtistsPaginated",
         "requestBody": {
@@ -1494,7 +1494,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/all_faves": {
+    "/all_faves": {
       "post": {
         "operationId": "getAllFaves",
         "requestBody": {
@@ -1536,7 +1536,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/all_groups": {
+    "/all_groups": {
       "post": {
         "operationId": "getAllGroups",
         "requestBody": {
@@ -1576,7 +1576,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/all_groups_paginated": {
+    "/all_groups_paginated": {
       "post": {
         "operationId": "getAllGroupsPaginated",
         "requestBody": {
@@ -1616,7 +1616,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/all_songs": {
+    "/all_songs": {
       "post": {
         "operationId": "getAllSongs",
         "requestBody": {
@@ -1670,7 +1670,7 @@
         "tags": ["Statistics"]
       }
     },
-    "/api4/artist": {
+    "/artist": {
       "post": {
         "operationId": "getArtist",
         "requestBody": {
@@ -1710,7 +1710,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/check_sched_current_id": {
+    "/check_sched_current_id": {
       "post": {
         "operationId": "checkSchedCurrentId",
         "requestBody": {
@@ -1746,7 +1746,7 @@
         "tags": ["Websocket"]
       }
     },
-    "/api4/auth": {
+    "/auth": {
       "post": {
         "operationId": "auth",
         "requestBody": {
@@ -1789,7 +1789,7 @@
         "tags": ["Websocket"]
       }
     },
-    "/api4/ping": {
+    "/ping": {
       "post": {
         "operationId": "ping",
         "requestBody": {
@@ -1824,7 +1824,7 @@
         "tags": ["Websocket"]
       }
     },
-    "/api4/clear_rating": {
+    "/clear_rating": {
       "post": {
         "operationId": "clearRating",
         "requestBody": {
@@ -1864,7 +1864,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/clear_requests": {
+    "/clear_requests": {
       "post": {
         "operationId": "clearRequests",
         "responses": {
@@ -1888,7 +1888,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/clear_requests_on_cooldown": {
+    "/clear_requests_on_cooldown": {
       "post": {
         "operationId": "clearRequestsOnCooldown",
         "requestBody": {
@@ -1924,7 +1924,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/delete_request": {
+    "/delete_request": {
       "post": {
         "operationId": "deleteRequest",
         "requestBody": {
@@ -1964,7 +1964,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/error_report": {
+    "/error_report": {
       "post": {
         "operationId": "errorReport",
         "description": "Submits a Javascript error object. Intended for the official Rainwave frontend, requires a referer of rainwave.cc.",
@@ -1998,7 +1998,7 @@
         }
       }
     },
-    "/api4/fave_album": {
+    "/fave_album": {
       "post": {
         "operationId": "faveAlbum",
         "requestBody": {
@@ -2041,7 +2041,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/fave_all_songs": {
+    "/fave_all_songs": {
       "post": {
         "operationId": "faveAllSongsInAlbum",
         "requestBody": {
@@ -2084,7 +2084,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/fave_song": {
+    "/fave_song": {
       "post": {
         "operationId": "faveSong",
         "requestBody": {
@@ -2127,7 +2127,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/group": {
+    "/group": {
       "post": {
         "operationId": "getGroup",
         "requestBody": {
@@ -2167,7 +2167,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/info_all": {
+    "/info_all": {
       "post": {
         "operationId": "getAllStationsInfo",
         "requestBody": {
@@ -2203,7 +2203,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/listener": {
+    "/listener": {
       "post": {
         "operationId": "getListener",
         "requestBody": {
@@ -2243,7 +2243,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/order_requests": {
+    "/order_requests": {
       "post": {
         "operationId": "reorderRequests",
         "requestBody": {
@@ -2287,7 +2287,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/pause_request_queue": {
+    "/pause_request_queue": {
       "post": {
         "operationId": "pauseRequestQueue",
         "responses": {
@@ -2314,7 +2314,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/playback_history": {
+    "/playback_history": {
       "post": {
         "operationId": "getPlaybackHistory",
         "requestBody": {
@@ -2357,7 +2357,7 @@
         "tags": ["Statistics"]
       }
     },
-    "/api4/rate": {
+    "/rate": {
       "post": {
         "operationId": "rateSong",
         "requestBody": {
@@ -2400,7 +2400,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/request": {
+    "/request": {
       "post": {
         "operationId": "requestSong",
         "requestBody": {
@@ -2440,7 +2440,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/request_favorited_songs": {
+    "/request_favorited_songs": {
       "post": {
         "operationId": "requestFavoritedSongs",
         "responses": {
@@ -2467,7 +2467,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/request_line": {
+    "/request_line": {
       "post": {
         "operationId": "getRequestLine",
         "requestBody": {
@@ -2503,7 +2503,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/request_unrated_songs": {
+    "/request_unrated_songs": {
       "post": {
         "operationId": "requestUnratedSongs",
         "responses": {
@@ -2530,7 +2530,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/search": {
+    "/search": {
       "post": {
         "operationId": "search",
         "requestBody": {
@@ -2576,7 +2576,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/song": {
+    "/song": {
       "post": {
         "operationId": "getSong",
         "requestBody": {
@@ -2616,7 +2616,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/station_song_count": {
+    "/station_song_count": {
       "post": {
         "operationId": "getStationSongCount",
         "requestBody": {
@@ -2652,7 +2652,7 @@
         "tags": ["Statistics"]
       }
     },
-    "/api4/stations": {
+    "/stations": {
       "post": {
         "operationId": "getStations",
         "responses": {
@@ -2676,7 +2676,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/top_100": {
+    "/top_100": {
       "post": {
         "operationId": "getTop100",
         "responses": {
@@ -2700,7 +2700,7 @@
         "tags": ["Statistics"]
       }
     },
-    "/api4/unpause_request_queue": {
+    "/unpause_request_queue": {
       "post": {
         "operationId": "unpauseRequestQueue",
         "responses": {
@@ -2727,7 +2727,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/unrated_songs": {
+    "/unrated_songs": {
       "post": {
         "operationId": "getUnratedSongs",
         "requestBody": {
@@ -2770,7 +2770,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/user_info": {
+    "/user_info": {
       "post": {
         "operationId": "getUserInfo",
         "requestBody": {
@@ -2813,7 +2813,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/user_recent_votes": {
+    "/user_recent_votes": {
       "post": {
         "operationId": "getUserRecentVotes",
         "requestBody": {
@@ -2856,7 +2856,7 @@
         "tags": ["Statistics"]
       }
     },
-    "/api4/user_requested_history": {
+    "/user_requested_history": {
       "post": {
         "operationId": "getUserRequestedHistory",
         "requestBody": {
@@ -2899,7 +2899,7 @@
         "tags": ["Statistics"]
       }
     },
-    "/api4/vote": {
+    "/vote": {
       "post": {
         "operationId": "vote",
         "requestBody": {
@@ -2939,7 +2939,7 @@
         "tags": ["Core"]
       }
     },
-    "/api4/websocket/{sid}": {
+    "/websocket/{sid}": {
       "get": {
         "description": "Upgrades HTTP connection to a WebSocket session for the station.",
         "parameters": [

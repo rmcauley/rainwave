@@ -1,7 +1,6 @@
 import { preferences } from '../../preferences/preferences';
-import { navigateTo } from '../router/navigateTo';
-import type { Routes } from '../router/router';
-import { router } from '../router/router';
+import { navigateTo } from '../../router/navigateTo';
+import { router, type Routes } from '../../router/router';
 import { AlbumList } from './lists/albumList';
 import { ArtistList } from './lists/artistList';
 import { GroupList } from './lists/groupList';

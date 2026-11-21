@@ -1,7 +1,7 @@
 import { makeSearchableString } from '../../../language/get-searchable-name';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
-import { navigateTo } from '../../router/navigateTo';
+import { navigateTo } from '../../../router/navigateTo';
 import { SearchList } from '../searchList/searchList';
 
 type ArtistListItem = components['schemas']['all_artists_paginated']['data'][number] & {

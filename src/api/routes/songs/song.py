@@ -21,7 +21,7 @@ class SongHandler(APIHandler):
         return "song"
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4SongPostRequest)
+        input = self.get_validated_input(rainwave_dto.SongPostRequest)
         async with get_cursor() as cursor:
             song_on_station = await SongOnStation.load(cursor, input.id, self.sid)
             extra_detail = await song_on_station.load_extra_detail(cursor)

@@ -1,7 +1,7 @@
 from api import rainwave_typeddicts
 from api.handle_url import handle_api_url
 from api.handler_classes.api_handler import APIHandler
-from api.rainwave_dto import Api4AdminAlbumsPostRequest
+from api.rainwave_dto import AdminAlbumsPostRequest
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from common.db.cursor import get_cursor
 
@@ -16,7 +16,7 @@ class AdminAlbums(APIHandler):
         return "admin_albums"
 
     async def post(self) -> None:
-        input = self.get_validated_input(Api4AdminAlbumsPostRequest)
+        input = self.get_validated_input(AdminAlbumsPostRequest)
         async with get_cursor() as cursor:
             self.response["admin_albums"] = await cursor.fetch_all(
                 """

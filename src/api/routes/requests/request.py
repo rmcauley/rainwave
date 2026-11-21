@@ -24,7 +24,7 @@ class SubmitRequest(RegisteredUserAPIHandler):
         return "request_result"
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4RequestPostRequest)
+        input = self.get_validated_input(rainwave_dto.RequestPostRequest)
         async with get_cursor() as cursor:
             try:
                 song_on_station = await SongOnStation.load(

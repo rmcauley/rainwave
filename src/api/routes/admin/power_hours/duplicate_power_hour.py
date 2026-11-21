@@ -1,7 +1,7 @@
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.exceptions import APIException
-from api.rainwave_dto import Api4AdminDuplicatePowerHourPostRequest
+from api.rainwave_dto import AdminDuplicatePowerHourPostRequest
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.routes.admin.power_hours.get_power_hour_by_id import (
     get_api_power_hour,
@@ -22,7 +22,7 @@ class DuplicatePowerHour(RegisteredUserAPIHandler):
     sid_required = True
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminDuplicatePowerHourPostRequest)
+        input = self.get_validated_input(AdminDuplicatePowerHourPostRequest)
         async with get_cursor() as cursor:
             existing_schedule_entry = await get_power_hour_by_id(cursor, input.sched_id)
             if not existing_schedule_entry.data["sched_start"]:

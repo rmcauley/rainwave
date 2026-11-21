@@ -76,7 +76,7 @@ class SearchPanel {
   };
 
   onResults = (
-    payload: paths['/api4/search']['post']['responses']['default']['content']['application/json'],
+    payload: paths['/search']['post']['responses']['default']['content']['application/json'],
     query: string,
   ): void => {
     this.clearResults();

@@ -34,7 +34,7 @@ class WebsocketAuth(APIHandler):
             raise APIException("missing_argument", status_code=400)
 
         input = self.get_validated_input(
-            rainwave_dto.Api4AuthPostRequest, self.websocket_message
+            rainwave_dto.AuthPostRequest, self.websocket_message
         )
 
         async with get_cursor() as cursor:

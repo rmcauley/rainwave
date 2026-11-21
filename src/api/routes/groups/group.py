@@ -24,7 +24,7 @@ class GroupHandler(APIHandler):
         return "group"
 
     async def post(self) -> None:
-        input = self.get_validated_input(rainwave_dto.Api4GroupPostRequest)
+        input = self.get_validated_input(rainwave_dto.GroupPostRequest)
         async with get_cursor() as cursor:
             group = await cursor.fetch_row(
                 "SELECT * FROM r4_groups WHERE group_id = %s",

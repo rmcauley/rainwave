@@ -6,7 +6,7 @@ from api.routes.admin.power_hours.get_power_hour_by_id import (
     get_power_hour_by_id,
 )
 from common.db.cursor import get_cursor
-from api.rainwave_dto import Api4AdminAddAlbumToPowerHourPostRequest
+from api.rainwave_dto import AdminAddAlbumToPowerHourPostRequest
 
 
 @handle_api_url("admin/add_album_to_power_hour")
@@ -21,7 +21,7 @@ class AddAlbumToPowerHour(APIHandler):
     allow_sid_zero = True
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminAddAlbumToPowerHourPostRequest)
+        input = self.get_validated_input(AdminAddAlbumToPowerHourPostRequest)
         async with get_cursor() as cursor:
             power_hour = await get_power_hour_by_id(cursor, input.sched_id)
             await power_hour.add_album_id(cursor, input.album_id)

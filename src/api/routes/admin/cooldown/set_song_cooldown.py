@@ -1,7 +1,7 @@
 from api.handle_url import handle_api_url
 from api.rainwave_return_key_to_open_api import RainwaveResponseKey
 from api.handler_classes.api_handler import APIHandler
-from api.rainwave_dto import Api4AdminSetSongCooldownPostRequest
+from api.rainwave_dto import AdminSetSongCooldownPostRequest
 
 from common.db.cursor import get_cursor
 
@@ -17,7 +17,7 @@ class SetSongCooldown(APIHandler):
     description = "Sets the song cooldown multiplier and override.  Passing null or false for either argument will retain its current setting. (non-destructive update)"
 
     async def post(self):
-        input = self.get_validated_input(Api4AdminSetSongCooldownPostRequest)
+        input = self.get_validated_input(AdminSetSongCooldownPostRequest)
         async with get_cursor() as cursor:
             if input.multiply is not None and input.override is not None:
                 await cursor.update(

@@ -71,7 +71,7 @@ class AllAlbumsPaginatedHandler(APIHandler):
         return "all_albums_paginated"
 
     async def post(self):
-        input = self.get_validated_input(rainwave_dto.Api4AllAlbumsPaginatedPostRequest)
+        input = self.get_validated_input(rainwave_dto.AllAlbumsPaginatedPostRequest)
         async with get_cursor() as cursor:
             user_id = self.optional_user.id if self.optional_user else 1
             base_sql = get_all_albums_list_sql(user_id)

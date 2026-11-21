@@ -137,7 +137,10 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
     this._socket = socket;
 
     try {
-      const authResult = await this.fetch('auth', { user_id: this._userId, key: this._apiKey });
+      const authResult = await this.fetch('auth', {
+        user_id: this._userId,
+        key: this._apiKey,
+      });
       if (authResult.wsok) {
         this._onAuthenticationOK();
       }
@@ -389,8 +392,13 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
   }
 
   private _nextRequest(): void {
-    // This first half of the if always allows auth requests through to the server.
-    if (!this._requestQueue[0]?.auth && !this._hasAuthorized) {
+    const firstQueued = this._requestQueue[0];
+    if (!firstQueued) {
+      return;
+    }
+
+    // This if always allows auth requests through to the server.
+    if (firstQueued.auth === undefined && !this._hasAuthorized) {
       return;
     }
 
@@ -427,12 +435,20 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
       this._onActivityTimeout(requestWithKey);
     }, STALLED_SOCKET_TIMEOUT) as unknown as number;
 
-    this._socketSend({
-      action: request.action,
-      message_id: request.messageId,
-      sid: this._sid,
-      ...request.params,
-    });
+    if (typeof request.params === 'object') {
+      this._socketSend({
+        action: `/api4${request.action}`,
+        message_id: request.messageId,
+        sid: this._sid,
+        ...request.params,
+      });
+    } else {
+      this._socketSend({
+        action: request.action,
+        message_id: request.messageId,
+        sid: this._sid,
+      });
+    }
     this._sentRequests.push(requestWithKey);
   }
 
@@ -483,10 +499,10 @@ class RainwaveApi extends RainwaveEventListener<components['schemas'] & Rainwave
 
   // API calls ***********************************************************************************************
 
-  async fetch<T extends RainwaveAction>(
-    action: T,
-    params: RainwaveParams<T>,
-  ): Promise<RainwaveResponse<T>> {
+  async fetch<A extends RainwaveAction>(
+    action: A,
+    params: RainwaveParams<A>,
+  ): Promise<RainwaveResponse<A>> {
     return new Promise((resolve, reject) => {
       this._request(action, params, resolve, reject);
     });
