@@ -45,6 +45,12 @@ class DetailPanel extends Panel {
     router.addEventListener('artist', this.onRouteChange);
     router.addEventListener('group', this.onRouteChange);
     router.addEventListener('listener', this.onRouteChange);
+
+    router.addEventListener('change', ([route]) => {
+      if (!route || !(route in detailRenderers)) {
+        this.close();
+      }
+    });
   }
 
   // oxlint-disable-next-line typescript/no-unnecessary-type-parameters

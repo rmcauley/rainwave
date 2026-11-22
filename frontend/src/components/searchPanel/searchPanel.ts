@@ -1,45 +1,34 @@
 import { $l } from '../../language';
 import { api } from '../../rainwaveApi/api';
 import type { paths } from '../../rainwaveApi/rainwave-openapi';
+import { router } from '../../router/router';
 import { detailAlbumsTable } from '../detailAlbumsTable/detailAlbumsTable';
 import { detailArtistsTable } from '../detailArtistsTable/detailArtistsTable';
 import { detailSongsTable } from '../detailSongsTable/detailSongsTable';
 import { getErrorText } from '../errorTooltip/errorTooltip';
+import { Panel } from '../panel/panel';
 import { searchPanelTemplate } from './searchPanel.template';
 
-class SearchPanel {
+class SearchPanel extends Panel {
   template: ReturnType<typeof searchPanelTemplate>;
 
   constructor() {
+    super('search-panel');
+
     this.template = searchPanelTemplate();
+    this.el.appendChild(this.template.$root);
 
     this.template.searchForm.addEventListener('submit', this.onSubmit);
+    this.template.searchInput.addEventListener('keypress', this.onInputKeypress);
+    this.template.searchInput.addEventListener('input', this.onInputChange);
+    this.template.cancelIcon.addEventListener('click', this.onCancelClick);
 
-    this.template.searchInput.addEventListener('keypress', (evt) => {
-      if (evt.key === 'Escape') {
-        this.onClear();
+    router.addEventListener('change', ([newKey]) => {
+      if (newKey === 'search') {
+        this.open();
       } else {
-        this.resetColor();
+        this.close();
       }
-    });
-
-    this.template.searchInput.addEventListener('input', () => {
-      if (
-        this.template.searchInput.value &&
-        !this.template.$root.classList.contains('search-panel--has-value')
-      ) {
-        this.template.$root.classList.add('search-panel--has-value');
-      } else if (
-        !this.template.searchInput.value &&
-        this.template.$root.classList.contains('search-panel--has-value')
-      ) {
-        this.template.$root.classList.remove('search-panel--has-value');
-      }
-    });
-
-    this.template.cancelIcon.addEventListener('click', () => {
-      this.onClear();
-      this.template.searchInput.focus();
     });
   }
 
@@ -67,12 +56,39 @@ class SearchPanel {
     this.template.searchInput.addEventListener('input', this.resetColor);
   };
 
+  onCancelClick = (): void => {
+    this.onClear();
+    this.template.searchInput.focus();
+  };
+
   onClear = (): void => {
     this.clearResults();
 
     this.template.searchInput.value = '';
     this.template.$root.classList.remove('search-panel--has-value');
     this.resetColor();
+  };
+
+  onInputKeypress = (evt: KeyboardEvent): void => {
+    if (evt.key === 'Escape') {
+      this.onClear();
+    } else {
+      this.resetColor();
+    }
+  };
+
+  onInputChange = (): void => {
+    if (
+      this.template.searchInput.value &&
+      !this.template.$root.classList.contains('search-panel--has-value')
+    ) {
+      this.template.$root.classList.add('search-panel--has-value');
+    } else if (
+      !this.template.searchInput.value &&
+      this.template.$root.classList.contains('search-panel--has-value')
+    ) {
+      this.template.$root.classList.remove('search-panel--has-value');
+    }
   };
 
   onResults = (

@@ -5,6 +5,7 @@ import type { components } from '../../rainwaveApi/rainwave-openapi';
 import { setAlbumArt } from '../albumArt/albumArt';
 import { showErrorTooltip } from '../errorTooltip/errorTooltip';
 import { menuRequestsLabel } from '../menu/menu';
+import { Panel } from '../panel/panel';
 import { panelHeaderTemplate } from '../panelHeader/panelHeader.template';
 import { requestsPanelTemplate } from './requestsPanel.template';
 
@@ -12,7 +13,7 @@ const DRAG_SCROLL_MAX_SPEED_MARGIN_PERCENT = 0.15;
 const DRAG_SCROLL_GRADUAL_WINDOW_PERCENT = 0.15;
 const DRAG_SCROLL_MAX_SPEED = 20;
 
-class RequestsPanel {
+class RequestsPanel extends Panel {
   template: ReturnType<typeof requestsPanelTemplate>;
 
   private header: HTMLElement;
@@ -29,6 +30,8 @@ class RequestsPanel {
   private rerenderAfterDrag: boolean;
 
   constructor() {
+    super('requests-panel');
+
     this.entries = [];
     this.elements = new Map();
     this.rerenderAfterDrag = false;
@@ -56,6 +59,8 @@ class RequestsPanel {
     //     list.helpmsg.textContent = $l('make_a_request');
 
     // TODO: steal request indicator if power user mode is on
+
+    this.el.appendChild(this.template.$root);
   }
 
   private onRequestsUpdate = (payload: components['schemas']['requests']): void => {

@@ -18,7 +18,9 @@ const routeKeys: Set<keyof Routes> = new Set([
   'search',
 ]);
 
-class RouterClass extends RainwaveEventListener<Routes> {
+class RouterClass extends RainwaveEventListener<
+  Routes & { change: [keyof Routes | undefined, number | undefined] }
+> {
   currentRoute: keyof Routes | undefined;
   currentId: number | undefined;
 
@@ -36,11 +38,11 @@ class RouterClass extends RainwaveEventListener<Routes> {
         this.currentRoute = route as keyof Routes;
         if (id && !Number.isNaN(Number(id))) {
           this.currentId = Number(id);
-          this.emit(route as keyof Routes, [route as keyof Routes, Number(id)]);
-        } else {
-          this.currentId = undefined;
-          this.emit(route as keyof Routes, [route as keyof Routes, undefined]);
         }
+        this.emit(route as keyof Routes, [route as keyof Routes, this.currentId]);
+        this.emit('change', [route as keyof Routes, this.currentId]);
+      } else {
+        this.emit('change', [undefined, undefined]);
       }
     }
   };
