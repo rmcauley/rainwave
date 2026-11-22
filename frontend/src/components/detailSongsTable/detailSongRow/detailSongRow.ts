@@ -38,7 +38,7 @@ function detailSongRow(
     template.$root.classList.add('panel-table-row--fave');
   }
 
-  template.rating.appendChild(SongRating.create(song.id, song.rating_user, song.rating));
+  template.rating.appendChild(SongRating.create(song.id, song));
   if (song.requestable) {
     template.$root.classList.add('panel-table-row--requestable');
     template.title.addEventListener('click', (): void => {

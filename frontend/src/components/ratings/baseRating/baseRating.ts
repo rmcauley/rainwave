@@ -2,8 +2,11 @@ import { formatRating } from '../../../helpers/formatRating';
 
 import './baseRating.css';
 
+type RatableObject = { rating: number | null; rating_user: number | null };
+
 abstract class BaseRating extends HTMLElement {
-  #ratingNumber: HTMLElement | undefined;
+  private ratingNumber: HTMLElement | undefined;
+  protected ratingObject: RatableObject | undefined;
 
   static observedAttributes = ['user-rating', 'global-rating', 'hover-rating'];
 
@@ -28,37 +31,49 @@ abstract class BaseRating extends HTMLElement {
     this.setAttribute('global-rating', String(value ?? 0));
   }
 
-  render = (itemId: number, userRating: number | null, globalRating: number | null): void => {
+  render = (itemId: number, ratingObject: RatableObject): void => {
     this.dataset.itemId = itemId.toString();
     this.classList.add('rating');
-    this.#ratingNumber = document.createElement('div');
-    this.#ratingNumber.classList.add('rating-number');
-    this.appendChild(this.#ratingNumber);
-    this.userRating = userRating;
-    this.globalRating = globalRating;
+    this.ratingNumber = document.createElement('div');
+    this.ratingNumber.classList.add('rating-number');
+    this.appendChild(this.ratingNumber);
+    this.ratingObject = ratingObject;
+    this.userRating = ratingObject.rating_user;
+    this.globalRating = ratingObject.rating;
   };
 
   attributeChangedCallback(_name: string, _old: string | null, _value: string | null): void {
+    this.ratingAttributeChangedCallback();
+  }
+
+  ratingAttributeChangedCallback(): void {
     if (this.hoverRating) {
       this.classList.add('rating--user');
       this.style.setProperty('--rating', this.hoverRating.toString());
-      if (this.#ratingNumber) {
-        this.#ratingNumber.textContent = formatRating(this.hoverRating);
+      if (this.ratingNumber) {
+        this.ratingNumber.textContent = formatRating(this.hoverRating);
       }
     } else if (this.userRating) {
       this.classList.add('rating--user');
       this.style.setProperty('--rating', this.userRating.toString());
-      if (this.#ratingNumber) {
-        this.#ratingNumber.textContent = formatRating(this.userRating);
+      if (this.ratingNumber) {
+        this.ratingNumber.textContent = formatRating(this.userRating);
+      }
+      if (this.ratingObject) {
+        this.ratingObject.rating_user = this.userRating;
       }
     } else {
       this.classList.remove('rating--user');
       this.style.setProperty('--rating', this.globalRating.toString());
-      if (this.#ratingNumber) {
-        this.#ratingNumber.textContent = '';
+      if (this.ratingNumber) {
+        this.ratingNumber.textContent = '';
+      }
+      if (this.ratingObject) {
+        this.ratingObject.rating = this.globalRating;
       }
     }
   }
 }
 
 export { BaseRating };
+export type { RatableObject };

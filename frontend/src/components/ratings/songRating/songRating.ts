@@ -3,18 +3,15 @@ import { hasTouchInput } from '../../../helpers/hasTouchInput';
 import { api } from '../../../rainwaveApi/api';
 import type { components } from '../../../rainwaveApi/rainwave-openapi';
 import { showErrorTooltip } from '../../errorTooltip/errorTooltip';
+import type { RatableObject } from '../baseRating/baseRating';
 import { BaseRating } from '../baseRating/baseRating';
 import { startTouchRating } from '../touchRating/touchRating';
 import { getPreciseRatingFromMouse, getRatingFromMouse } from './getRatingFromMouse';
 
 class SongRating extends BaseRating {
-  static create(
-    itemId: number,
-    userRating: number | null,
-    globalRating: number | null,
-  ): SongRating {
+  static create(itemId: number, ratingObject: RatableObject): SongRating {
     const element = document.createElement('song-rating');
-    element.render(itemId, userRating, globalRating);
+    element.render(itemId, ratingObject);
 
     if (api.user.id > 1) {
       if (hasTouchInput) {

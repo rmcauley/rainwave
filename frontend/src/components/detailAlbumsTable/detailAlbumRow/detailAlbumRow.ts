@@ -15,9 +15,7 @@ function detailAlbumRow(
   }
 
   template.fave.appendChild(AlbumFave.create(album.id, album, template.name));
-  template.rating.appendChild(
-    AlbumRating.create(album.id, album.rating_user, album.rating, album.rating_complete),
-  );
+  template.rating.appendChild(AlbumRating.create(album.id, album));
 
   return template;
 }

@@ -1,6 +1,12 @@
+import type { RatableObject } from '../baseRating/baseRating';
 import { BaseRating } from '../baseRating/baseRating';
 
+type AlbumRatableObject = RatableObject & { rating_complete: boolean };
+
 class AlbumRating extends BaseRating {
+  declare ratingObject: AlbumRatableObject | undefined;
+  static observedAttributes = [...BaseRating.observedAttributes, 'rating-complete'];
+
   get ratingComplete(): boolean {
     return this.getAttribute('rating-complete') === 'true';
   }
@@ -14,16 +20,18 @@ class AlbumRating extends BaseRating {
     }
   }
 
-  static create(
-    itemId: number,
-    userRating: number | null,
-    globalRating: number | null,
-    ratingComplete: boolean,
-  ): AlbumRating {
+  static create(itemId: number, ratingObject: AlbumRatableObject): AlbumRating {
     const element = document.createElement('album-rating');
-    element.render(itemId, userRating, globalRating);
-    element.ratingComplete = ratingComplete;
+    element.render(itemId, ratingObject);
+    element.ratingComplete = ratingObject.rating_complete;
     return element;
+  }
+
+  attributeChangedCallback(_name: string, _old: string | null, _value: string | null): void {
+    if (this.ratingObject) {
+      this.ratingObject.rating_complete = this.ratingComplete;
+    }
+    this.ratingAttributeChangedCallback();
   }
 }
 

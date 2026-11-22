@@ -29,17 +29,10 @@ abstract class Song {
       userId: api.user.id,
     });
     setAlbumArt(this.template.artImage, this.song.albums[0].art);
-    this.template.rating.appendChild(
-      SongRating.create(this.song.id, this.song.rating_user, this.song.rating),
-    );
+    this.template.rating.appendChild(SongRating.create(this.song.id, this.song));
     this.template.fave.appendChild(SongFave.create(this.song.id, this.song, this.template.title));
     this.template.albumRating.appendChild(
-      AlbumRating.create(
-        this.song.albums[0].id,
-        this.song.albums[0].rating_user,
-        this.song.albums[0].rating,
-        this.song.albums[0].rating_complete,
-      ),
+      AlbumRating.create(this.song.albums[0].id, this.song.albums[0]),
     );
     this.template.albumFave.appendChild(
       AlbumFave.create(this.song.albums[0].id, this.song.albums[0], this.template.title),
