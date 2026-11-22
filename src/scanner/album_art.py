@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 import os
+import shutil
+import subprocess
 
-from PIL import Image, ImageFile
+from PIL import Image, ImageFile, AvifImagePlugin, WebPImagePlugin, JpegImagePlugin
 
 from common import config, log
 from common.db.cursor import RainwaveCursor
@@ -17,6 +19,10 @@ class AlbumArt:
 
 MAX_IMAGE_DIMENSION = 640
 MIN_IMAGE_DIMENSION = 320
+COPY_FORMATS = [
+    AvifImagePlugin.AvifImageFile.format,
+    WebPImagePlugin.WebPImageFile.format,
+]
 unmatched_art: list[AlbumArt] = []
 
 
@@ -69,13 +75,13 @@ async def process_album_art(
 
         with Image.open(filename) as imgfile:
             img: Image.Image | ImageFile.ImageFile = imgfile
-            if img.mode != "RGB":
-                img = img.convert("RGB")
+            copy_file = True
 
             if img.size[0] > MAX_IMAGE_DIMENSION or img.size[1] > MAX_IMAGE_DIMENSION:
                 img.thumbnail(
                     (MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION), Image.Resampling.LANCZOS
                 )
+                copy_file = False
 
             if img.size[0] < MIN_IMAGE_DIMENSION or img.size[1] < MIN_IMAGE_DIMENSION:
                 await add_scan_error(
@@ -86,7 +92,28 @@ async def process_album_art(
                 )
 
             for album_id in album_ids:
-                img.save(get_album_art_path(sid, album_id))
+                destination = get_album_art_path(sid, album_id)
+                if copy_file and img.format in COPY_FORMATS:
+                    shutil.copy(filename, destination)
+                elif copy_file and img.format == JpegImagePlugin.JpegImageFile.format:
+                    with subprocess.Popen(
+                        ["cjxl", filename, destination],
+                        stdout=subprocess.PIPE,
+                        encoding="utf-8",
+                    ) as process:
+                        _outs, errs = process.communicate(timeout=5)
+                        if errs:
+                            await add_scan_error(
+                                filename,
+                                NonFatalScannerError(f"{filename} cjxl: {errs}"),
+                            )
+                else:
+                    if img.mode != "RGB":
+                        img = img.convert("RGB")
+                    img.save(
+                        get_album_art_path(sid, album_id),
+                        format=AvifImagePlugin.AvifImageFile.format,
+                    )
                 await reconcile_album_art(cursor, album_id)
 
                 log.debug(
