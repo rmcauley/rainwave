@@ -15,7 +15,7 @@ function initMenu(): void {
   // oxlint-disable-next-line no-new
   new HamburgerMenu();
 
-  document.getElementById('menu')!.style.display = '';
+  document.getElementById('menu')!.style.opacity = '';
 }
 
 export { initMenu, menuRequestsLabel };

@@ -12,25 +12,7 @@
   }
 }
 
-#player {
-  height: 100%;
-  flex-shrink: 0;
-  position: relative;
-}
-
-#player-body {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 5px;
-  height: 100%;
-}
-
 .player-icon {
-  height: 60%;
-  flex-shrink: 0;
-  fill: var(--text);
-  opacity: 0.3;
   cursor: pointer;
   transition-timing-function: var(--transition-timing-function);
   transition-duration: var(--transition-duration);
@@ -48,11 +30,6 @@
 
 #player-body-volume-svg {
   cursor: pointer;
-  height: 100%;
-  flex-shrink: 0;
-  fill: var(--text);
-  aspect-ratio: 2/1;
-  position: relative;
 }
 
 #player-body-volume-svg-background {

@@ -1,30 +1,4 @@
-#station-select {
-  position: relative;
-}
-
-#station-select-header {
-  cursor: pointer;
-  position: relative;
-  z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 230px;
-  border-right: 1px solid #0b5c89;
-  flex-shrink: 0;
-  padding: 0 20px;
-  height: 100%;
-  background: var(--blue);
-}
-
-#station-select-current-station {
-  font-size: 2em;
-  text-transform: uppercase;
-}
-
 #station-select-open-icon {
-  width: 20px;
-  fill: var(--text);
   transition-timing-function: var(--transition-timing-function);
   transition-duration: var(--transition-duration);
   transform-origin: center center;

@@ -5,18 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="description" content="Listen, rate, and request your favourite video game music." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <style>
-      html,
-      body {
-        background: #1c1d1f;
-        color: #fff;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-    </style>
+    <link rel="canonical" href="https://rainwave.cc" />
 
     <link
       rel="preload"
@@ -25,6 +14,167 @@
       type="font/woff2"
       crossorigin="anonymous"
     />
+
+    <style>
+      @font-face {
+        font-family: 'Roboto Condensed';
+        font-style: normal;
+        font-weight: 400;
+        font-display: block;
+        src: url('/static/roboto.woff2') format('woff2');
+        unicode-range:
+          U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+          U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      @font-face {
+        font-family: 'Roboto Condensed';
+        font-style: normal;
+        font-weight: 700;
+        font-display: block;
+        src: url('/static/roboto.woff2') format('woff2');
+        unicode-range:
+          U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+          U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      :root {
+        --background: #1c1d1f;
+        --text: #fff;
+        --menu-height: 45px;
+        --phone-menu-height: 40px;
+        --blue: #1f95e5;
+        --blue-dark5: hsl(from var(--blue) h s calc(l - 5));
+      }
+
+      html,
+      body {
+        font-family: 'Roboto Condensed', 'Helvetica Neue', sans-serif;
+        user-select: none;
+        color: var(--text);
+        background-color: var(--background);
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      #header {
+        background: var(--blue-dark5);
+        height: var(--menu-height);
+        width: 100%;
+        padding: 0;
+      }
+
+      @media (width <= 599px) {
+        #header {
+          height: var(--phone-menu-height);
+        }
+      }
+
+      #menu {
+        background: var(--blue);
+        width: 1024px;
+        max-width: 100%;
+        padding: 0;
+        margin: 0 auto;
+        display: flex;
+        justify-content: flex-start;
+        height: 100%;
+        gap: 10px;
+      }
+
+      #station-select {
+        position: relative;
+      }
+
+      #station-select-header {
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 250px;
+        border-right: 1px solid #0b5c89;
+        flex-shrink: 0;
+        padding: 0 20px;
+        height: 100%;
+        background: var(--blue);
+      }
+
+      #station-select-current-station {
+        font-size: 2em;
+        text-transform: uppercase;
+      }
+
+      #station-select-open-icon {
+        width: 20px;
+        fill: var(--text);
+      }
+
+      #player {
+        height: 100%;
+        flex-shrink: 0;
+        position: relative;
+      }
+
+      #player-body {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 5px;
+        height: 100%;
+      }
+
+      .player-icon {
+        height: 60%;
+        flex-shrink: 0;
+        fill: var(--text);
+      }
+
+      #player-body-volume {
+        height: 60%;
+      }
+
+      #player-body-volume-svg {
+        height: 100%;
+        flex-shrink: 0;
+        fill: var(--text);
+        aspect-ratio: 2/1;
+        position: relative;
+      }
+
+      #menu-right {
+        flex-grow: 1;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        align-items: center;
+        container-type: inline-size;
+        container-name: menu-right;
+        padding-right: 10px;
+      }
+
+      @container menu-right (width <= 500px) {
+        .menu-right-text {
+          display: none;
+        }
+      }
+
+      .menu-right-item {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 5px;
+        height: 1.8em;
+        padding: 0 10px;
+
+        svg {
+          height: 1em;
+        }
+      }
+    </style>
 
     <script vite-ignore src="/api4/bootstrap" async></script>
     <script type="module" src="/src/index.ts"></script>
@@ -44,8 +194,24 @@
       property="og:description"
       content="Listen, rate, and request your favourite video game music."
     />
-    <meta property="og:locale" content="en-CA" />
     <meta property="og:url" content="https://rainwave.cc" />
+    <meta property="og:image" content="https://rainwave.cc/static/images/logo.avif" />
+    <meta property="og:image:width" content="256" />
+    <meta property="og:image:height" content="256" />
+    <meta name="twitter:card" content="summary" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": "https://rainwave.cc",
+        "url": "https://rainwave.cc",
+        "name": "Rainwave",
+        "logo": "https://rainwave.cc/static/images/logo.avif",
+        "genre": ["Video Game Music", "Chiptune", "Soundtracks"],
+        "description": "Listen, rate, and request your favourite video game music."
+      }
+    </script>
   </head>
 
   <body>
@@ -194,7 +360,7 @@
 
     <div id="rainwave">
       <header id="header">
-        <menu id="menu" style="display: none">
+        <menu id="menu" style="opacity: 0">
           <div id="station-select-mouse-area" class="dropdown-menu">
             <div id="station-select-menu-header"></div>
             <div id="station-select-menu"></div>
@@ -388,6 +554,8 @@
         <div id="request-panel"></div>
         <div id="search-panel"></div>
       </main>
+
+      <dialog id="modal" closedby="any"></dialog>
     </div>
   </body>
 </html>

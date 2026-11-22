@@ -1,8 +1,8 @@
 :root {
   /* Primary colors */
-  --background: #1c1d1f;
-  --text: #fff;
-  --blue: #1f95e5;
+  --background: #1c1d1f; /* Duplicated in index.html */
+  --text: #fff; /* Duplicated in index.html */
+  --blue: #1f95e5; /* Duplicated in index.html */
   --orange: #f7941e;
   --donor: #ff0;
   --fave: #f7ff9f;
@@ -13,7 +13,7 @@
   --text-dark14: hsl(from var(--text) h s calc(l - 14));
   --text-dark54: hsl(from var(--text) h s calc(l - 54));
   --text-dark73: hsl(from var(--text) h s calc(l - 73));
-  --blue-dark5: hsl(from var(--blue) h s calc(l - 5));
+  --blue-dark5: hsl(from var(--blue) h s calc(l - 5)); /* Duplicated in index.html */
 
   /* Stations */
   --station-game: #1f95e5;
@@ -73,8 +73,8 @@
   --menu-link-open: #1977b7;
   --submenu-separator: #25b3ff;
   --audio-icon-active-fill: #ffb224;
-  --menu-height: 45px;
-  --phone-menu-height: 40px;
+  --menu-height: 45px; /* Duplicated in index.html */
+  --phone-menu-height: 40px; /* Duplicated in index.html */
 
   /* Panels */
   --panel-background: hsl(from var(--background) h s calc(l + 4));

@@ -6,9 +6,6 @@ import { whatIsCooldownModalTemplate } from './whatIsCooldownModal/whatIsCooldow
 
 let preventingNewModals = false;
 
-const pageDimmer = document.createElement('div');
-pageDimmer.className = 'page-dimmer';
-
 const template = modalTemplate();
 
 type modalNames = 'authFailure' | 'error' | 'whatIsCooldown' | 'preferences';
@@ -26,19 +23,11 @@ function showModal(modal: modalNames): typeof template | undefined {
     return undefined;
   }
 
-  const closeable = MODALS[modal].closeable;
-  while (template.body.firstChild) {
-    template.body.removeChild(template.body.firstChild);
-  }
-
-  if (closeable) {
-    template.closeIcon.classList.remove('modal-close-icon--hidden');
-  } else {
+  if (!MODALS[modal].closeable) {
     template.closeIcon.classList.add('modal-close-icon--hidden');
     preventingNewModals = true;
   }
 
-  document.body.insertBefore(pageDimmer, document.body.firstChild);
   document.body.insertBefore(template.modal, document.body.firstChild);
 
   return template;
@@ -52,17 +41,11 @@ function closeModal(evt: MouseEvent): void {
   evt.stopPropagation();
 
   template.modal.classList.add('modal--closing');
-  pageDimmer.classList.add('page-dimmer--closing');
-  setTimeout(() => {
-    template.modal.parentNode?.removeChild(template.modal);
-    pageDimmer.parentNode?.removeChild(pageDimmer);
-  }, 300);
 }
 
 template.modal.addEventListener('click', function (e) {
   e.stopPropagation();
 });
 template.closeIcon.addEventListener('click', closeModal);
-pageDimmer.addEventListener('click', closeModal);
 
 export { showModal };
