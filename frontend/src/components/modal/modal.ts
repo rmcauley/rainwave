@@ -6,7 +6,9 @@ import { whatIsCooldownModalTemplate } from './whatIsCooldownModal/whatIsCooldow
 
 let preventingNewModals = false;
 
-const template = modalTemplate();
+const modalEl = document.getElementById('modal')! as HTMLDialogElement;
+
+let template: ReturnType<typeof modalTemplate> | undefined;
 
 type modalNames = 'authFailure' | 'error' | 'whatIsCooldown' | 'preferences';
 type modalData = { template: () => { $root: HTMLElement | DocumentFragment }; closeable: boolean };
@@ -18,21 +20,6 @@ const MODALS: Record<modalNames, modalData> = {
   preferences: { template: preferencesModal, closeable: true },
 };
 
-function showModal(modal: modalNames): typeof template | undefined {
-  if (preventingNewModals) {
-    return undefined;
-  }
-
-  if (!MODALS[modal].closeable) {
-    template.closeIcon.classList.add('modal-close-icon--hidden');
-    preventingNewModals = true;
-  }
-
-  document.body.insertBefore(template.modal, document.body.firstChild);
-
-  return template;
-}
-
 function closeModal(evt: MouseEvent): void {
   if (preventingNewModals) {
     return;
@@ -40,12 +27,34 @@ function closeModal(evt: MouseEvent): void {
   evt.preventDefault();
   evt.stopPropagation();
 
-  template.modal.classList.add('modal--closing');
+  modalEl.close();
 }
 
-template.modal.addEventListener('click', function (e) {
-  e.stopPropagation();
-});
-template.closeIcon.addEventListener('click', closeModal);
+function showModal(modal: modalNames): typeof template | undefined {
+  if (preventingNewModals) {
+    return undefined;
+  }
+
+  if (!template) {
+    template = modalTemplate();
+    template.modal.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+    template.closeIcon.addEventListener('click', closeModal);
+    modalEl.appendChild(template.$root);
+  }
+
+  if (!MODALS[modal].closeable) {
+    template.closeIcon.parentElement?.removeChild(template.closeIcon);
+    preventingNewModals = true;
+    modalEl.closedBy = 'none';
+  }
+
+  template.body.replaceChildren(MODALS[modal].template().$root);
+
+  modalEl.showModal();
+
+  return template;
+}
 
 export { showModal };
