@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
 
+import { rainwaveTemplates } from './vite/rwTemplatesPlugin/plugin.ts';
+
 const backendOrigin = process.env.VITE_BACKEND_ORIGIN ?? 'https://rainwave.cc';
 
 export default defineConfig({
+  plugins: [rainwaveTemplates()],
   server: {
     proxy: {
       '/api4': {

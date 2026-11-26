@@ -1,4 +1,4 @@
-import { showModal } from '../components/modal/modal';
+import { modalEl, showModal } from '../components/modal/modal';
 import { $l } from '../language';
 import { api } from '../rainwaveApi/api';
 import type { components } from '../rainwaveApi/rainwave-openapi';
@@ -16,7 +16,7 @@ const onErrorHandler = (evt: ErrorEvent): void => {
     return;
   }
 
-  modal.$root.classList.add('error-handler-modal');
+  modalEl.classList.add('error-handler-modal');
 
   const errorBasics = {
     location: window.location.href,

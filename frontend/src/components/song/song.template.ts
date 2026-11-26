@@ -64,7 +64,7 @@ function songTemplate(context: songContext) {
   v15.appendChild(v19);
   if (context.isTimeline && context.sid === 5) {
     const v20 = document.createElement('div');
-    v20.className = 'song-station-indicator song-station-indicator-{{ song.origin_sid }}';
+    v20.className = `song-station-indicator song-station-indicator-` + context.song.origin_sid;
     v19.appendChild(v20);
   }
   if (context.electionRequestUserName && context.electionRequestUserId) {

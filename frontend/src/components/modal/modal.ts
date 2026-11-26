@@ -37,9 +37,6 @@ function showModal(modal: modalNames): typeof template | undefined {
 
   if (!template) {
     template = modalTemplate();
-    template.modal.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
     template.closeIcon.addEventListener('click', closeModal);
     modalEl.appendChild(template.$root);
   }
@@ -57,4 +54,4 @@ function showModal(modal: modalNames): typeof template | undefined {
   return template;
 }
 
-export { showModal };
+export { modalEl, showModal };

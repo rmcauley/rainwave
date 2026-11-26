@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "declaration": false,
     "emitDecoratorMetadata": true,
@@ -21,5 +22,5 @@
     "target": "es2023",
     "useDefineForClassFields": true
   },
-  "include": ["src", "../lang", "vite.config.ts", "vitest.config.ts"]
+  "include": ["src", "vite", "../lang", "vite.config.ts", "vitest.config.ts"]
 }

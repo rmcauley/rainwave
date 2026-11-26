@@ -15,7 +15,7 @@ function searchListTemplate() {
   v4.setAttribute('autocapitalize', `off`);
   v4.setAttribute('spellcheck', `false`);
   v4.className = 'search-box';
-  v4.setAttribute('disabled', `disabled`);
+  v4.setAttribute('disabled', '');
   v2.appendChild(v4);
   const v5 = document.createElement('img');
   v5.setAttribute('src', `/static/images4/search.png`);
