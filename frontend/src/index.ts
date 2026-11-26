@@ -1,5 +1,6 @@
 import { initMenu } from './components/menu/menu';
 import { showModal } from './components/modal/modal';
+import { Playlist } from './components/playlist/playlist';
 import { initRatingPreferences } from './components/ratings/ratingPreferences';
 import { onErrorHandler } from './helpers/errorHandler';
 import { syncClock } from './helpers/serverTime';
@@ -26,6 +27,9 @@ function rainwaveInit(): void {
 
   initMenu();
   initRatingPreferences();
+
+  // oxlint-disable-next-line no-new
+  new Playlist();
 
   api.addEventListener('wserror', function (payload) {
     if (payload.tl_key === 'auth_failed') {

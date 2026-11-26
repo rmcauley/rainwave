@@ -1,7 +1,6 @@
 import { svgIcon as _svg } from '../../helpers/svg';
 function playlistTemplate() {
-  const v1 = document.createElement('div');
-  v1.setAttribute('id', `playlist`);
+  const v1 = document.createDocumentFragment();
   const v2 = document.createElement('div');
   v2.setAttribute('id', `playlist-header`);
   v1.appendChild(v2);

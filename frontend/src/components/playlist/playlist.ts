@@ -1,6 +1,7 @@
 import { preferences } from '../../preferences/preferences';
 import { navigateTo } from '../../router/navigateTo';
 import { router, type Routes } from '../../router/router';
+import { Panel } from '../panel/panel';
 import { AlbumList } from './lists/albumList';
 import { ArtistList } from './lists/artistList';
 import { GroupList } from './lists/groupList';
@@ -46,7 +47,7 @@ const navKeys: Set<KeyboardEvent['key']> = new Set([
 const fKeys = /^F\d+$/;
 const searchChars = /^[\d\w\-.&':+~,]$/;
 
-class Playlist {
+class Playlist extends Panel {
   private currentRoute: keyof typeof routeToList | undefined;
   private albumList: AlbumList;
   private artistList: ArtistList;
@@ -55,6 +56,8 @@ class Playlist {
   public template: ReturnType<typeof playlistTemplate>;
 
   constructor() {
+    super('playlist');
+
     this.template = playlistTemplate();
 
     this.albumList = new AlbumList();
@@ -78,6 +81,8 @@ class Playlist {
       window.addEventListener('keydown', this.onKeyDown, { capture: true });
       window.addEventListener('keypress', this.onKeyPress, { capture: true });
     }
+
+    this.el.appendChild(this.template.$root);
   }
 
   private onRoute = ([newRoute, itemId]: [

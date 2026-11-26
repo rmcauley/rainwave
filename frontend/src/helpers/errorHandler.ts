@@ -48,7 +48,7 @@ const onErrorHandler = (evt: ErrorEvent): void => {
 
   const sending = document.createElement('p');
   sending.textContent = $l('report_sending');
-  modal.body.appendChild(sending);
+  modal.$root.appendChild(sending);
 
   api
     .fetch('error_report', submitObj)

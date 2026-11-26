@@ -1,0 +1,14 @@
+.panel {
+  body.simple & {
+    position: absolute;
+    z-index: 100;
+    width: 450px;
+    max-width: 100%;
+    background: var(--panel-background);
+    border-left: solid 1px var(--panel-border);
+    top: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition-property: transform, opacity, visibility;
+  }
+}
