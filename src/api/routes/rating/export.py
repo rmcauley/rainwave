@@ -2,6 +2,7 @@ from asyncio import Future
 from typing import Any, List
 
 import orjson
+from api.exceptions import APIException
 from api.handler_classes.registered_user_handler import RegisteredUserAPIHandler
 from api.handle_url import handle_api_url
 from tornado.web import RequestHandler
@@ -26,6 +27,13 @@ class RatingsExportHandler(RegisteredUserAPIHandler):
         return RequestHandler.finish(self, chunk)
 
     async def get(self) -> None:
+        if self.websocket_handling:
+            raise APIException("404")
+
+        self.set_header(
+            "Content-Disposition", 'attachment; filename="rainwave_export.json"'
+        )
+
         async with get_cursor() as cursor:
             self.write('{"ratings_export":[')
             # Send headers and first bytes
