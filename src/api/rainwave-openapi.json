@@ -1824,6 +1824,31 @@
         "tags": ["Websocket"]
       }
     },
+    "/ratings_export": {
+      "get": {
+        "operationId": "getRatingsExport",
+        "description": "Obtain all ratings for the logged in user, with song ID, song title, and album name.",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "ratings_export": {
+                      "$ref": "#/components/schemas/ratings_export"
+                    }
+                  },
+                  "required": ["ratings_export"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": ["Other"]
+      }
+    },
     "/clear_rating": {
       "post": {
         "operationId": "clearRating",
@@ -4806,6 +4831,27 @@
             "type": "object"
           }
         ]
+      },
+      "ratings_export": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["rating_user", "song_id", "song_title", "album_name"],
+          "properties": {
+            "rating_user": {
+              "type": "number"
+            },
+            "song_id": {
+              "type": "integer"
+            },
+            "song_title": {
+              "type": "string"
+            },
+            "album_name": {
+              "type": "string"
+            }
+          }
+        }
       },
       "redownload_m3u": {
         "description": "This API event occurs when a user who is logged in tunes in without using their listener key. This prompts them to tune in again in order to obtain the correct M3U.",

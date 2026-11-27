@@ -694,6 +694,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ratings_export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Obtain all ratings for the logged in user, with song ID, song title, and album name. */
+        get: operations["getRatingsExport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clear_rating": {
         parameters: {
             query?: never;
@@ -1693,6 +1710,12 @@ export interface components {
             song_id: number;
             updated_album_ratings: components["schemas"]["_updated_album_rating"][];
         };
+        ratings_export: {
+            rating_user: number;
+            song_id: number;
+            song_title: string;
+            album_name: string;
+        }[];
         /** @description This API event occurs when a user who is logged in tunes in without using their listener key. This prompts them to tune in again in order to obtain the correct M3U. */
         redownload_m3u: {
             text: string;
@@ -3081,6 +3104,27 @@ export interface operations {
                 content: {
                     "application/json": {
                         pong: components["schemas"]["pong"];
+                    };
+                };
+            };
+        };
+    };
+    getRatingsExport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        ratings_export: components["schemas"]["ratings_export"];
                     };
                 };
             };
